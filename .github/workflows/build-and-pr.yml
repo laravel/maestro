@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Maestro
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -26,7 +26,7 @@ jobs:
         run: php artisan build --kit=Livewire
 
       - name: Checkout Livewire Starter Kit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: laravel/livewire-starter-kit
           path: livewire-starter-kit
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Maestro
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -78,7 +78,7 @@ jobs:
         run: php artisan build --kit=Livewire --workos
 
       - name: Checkout Livewire Starter Kit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: laravel/livewire-starter-kit
           ref: workos
@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Maestro
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -131,7 +131,7 @@ jobs:
         run: php artisan build --kit=React
 
       - name: Checkout React Starter Kit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: laravel/react-starter-kit
           path: react-starter-kit
@@ -176,7 +176,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Maestro
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -191,7 +191,7 @@ jobs:
         run: php artisan build --kit=React --workos
 
       - name: Checkout React Starter Kit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: laravel/react-starter-kit
           ref: workos
@@ -237,7 +237,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Maestro
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -252,7 +252,7 @@ jobs:
         run: php artisan build --kit=Vue
 
       - name: Checkout Vue Starter Kit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: laravel/vue-starter-kit
           path: vue-starter-kit
@@ -297,7 +297,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Maestro
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -312,7 +312,7 @@ jobs:
         run: php artisan build --kit=Vue --workos
 
       - name: Checkout Vue Starter Kit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: laravel/vue-starter-kit
           ref: workos
