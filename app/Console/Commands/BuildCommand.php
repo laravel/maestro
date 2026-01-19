@@ -56,7 +56,7 @@ class BuildCommand extends Command
 
         $workos = $this->option('workos');
 
-        if (! $workos) {
+        if (! $workos && ! $this->option('kit')) {
             $workos = confirm(
                 label: 'Would you like to build the WorkOS variant?',
                 default: false,
