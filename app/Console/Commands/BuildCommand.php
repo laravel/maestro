@@ -148,7 +148,7 @@ class BuildCommand extends Command
 
         $variantLabel = $this->getVariantLabel($kit, $workos, $components);
         info("{$variantLabel} starter kit built successfully in the 'build' folder.");
-        info("Run './run-kit.sh' to start the development server.");
+        info("Run 'composer kit:run' to start the development server.");
 
         return self::SUCCESS;
     }

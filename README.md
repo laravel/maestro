@@ -36,13 +36,15 @@ php artisan build --kit=react --workos # Builds the WorkOS variant for the React
 ```
 
 When building a **WorkOS** variant for a starter kit, you can add your **WorkOS** client ID and the
-API key in the root `.env` file, with this, when running the `./run-kit.sh` script, it will copy these
+API key in the root `.env` file, with this, when running `composer kit:run`, it will copy these
 values to the built starter kit.
 
 ## Running the built starter kit
 
-You can use this script, that will run the built starter kit in the `http://localhost:8000`:
+You can use this command to run the built starter kit at `http://localhost:8000` with hot-reloading enabled:
 
 ```bash
-./run-kit.sh
+composer kit:run
 ```
+
+This will start both the development server and a file watcher that automatically copies changes from the kit folders to the build directory.
