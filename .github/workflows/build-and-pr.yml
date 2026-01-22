@@ -174,7 +174,7 @@ jobs:
 
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           path: ${{ matrix.path }}
           token: ${{ secrets.STARTER_KIT_TOKEN }}
