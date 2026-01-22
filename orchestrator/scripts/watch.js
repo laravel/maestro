@@ -92,6 +92,9 @@ function shouldRestorePlaceholders(relativePath) {
 /**
  * Restore placeholders in file content.
  * This reverses the replacePlaceholders logic from BuildCommand.php.
+ * Only replaces values in specific contexts:
+ * - Inertia::render('value'
+ * - ->component('value')
  */
 function restorePlaceholders(content, kitType, uiComponents) {
     if (!kitType) {
@@ -108,13 +111,27 @@ function restorePlaceholders(content, kitType, uiComponents) {
 
         const placeholder = `{{${key}}}`;
 
-        // Replace the kit-specific value back with the placeholder
-        if (modified.includes(replacement)) {
-            modified = modified.split(replacement).join(placeholder);
-        }
+        // Replace Inertia::render('value' with Inertia::render('{{placeholder}}'
+        modified = modified.replace(
+            new RegExp(`(Inertia::render\\(')${escapeRegExp(replacement)}(')`, 'g'),
+            `$1${placeholder}$2`
+        );
+
+        // Replace ->component('value') with ->component('{{placeholder}}')
+        modified = modified.replace(
+            new RegExp(`(->component\\(')${escapeRegExp(replacement)}('\\))`, 'g'),
+            `$1${placeholder}$2`
+        );
     }
 
     return modified;
+}
+
+/**
+ * Escape special regex characters in a string.
+ */
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
