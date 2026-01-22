@@ -108,7 +108,7 @@ jobs:
 
     steps:
       - name: Checkout Maestro
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -125,7 +125,7 @@ jobs:
         run: php artisan build --kit=${{ matrix.kit }} ${{ matrix.build_flags }}
 
       - name: Checkout Starter Kit
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ matrix.repository }}
           ref: ${{ matrix.branch }}
