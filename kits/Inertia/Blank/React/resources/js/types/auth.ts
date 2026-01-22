@@ -1,14 +1,4 @@
-export interface Auth {
-    user: User;
-}
-
-export interface SharedData {
-    name: string;
-    auth: Auth;
-    [key: string]: unknown;
-}
-
-export interface User {
+export type User = {
     id: number;
     name: string;
     email: string;
@@ -17,4 +7,8 @@ export interface User {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
+};
+
+export type Auth = {
+    user: User;
+};
