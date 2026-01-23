@@ -84,6 +84,12 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
 
+      - name: Setup Environment
+        working-directory: build
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
       - name: Build Frontend Assets
         working-directory: build
         run: npm run build
