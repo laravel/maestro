@@ -1,0 +1,93 @@
+name: Browser Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Livewire Kit
+            kit: Livewire
+
+          - name: React Kit
+            kit: React
+
+          - name: Vue Kit
+            kit: Vue
+
+    steps:
+      - name: Checkout Maestro
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Composer Dependencies
+        working-directory: orchestrator
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Build ${{ matrix.name }}
+        working-directory: orchestrator
+        run: php artisan build --kit=${{ matrix.kit }}
+
+      - name: Copy Browser Tests to Build
+        run: cp -r browser_tests/* build/
+
+      - name: Install Build Composer Dependencies
+        working-directory: build
+        run: |
+          composer remove --dev phpunit/phpunit --no-interaction --no-update
+          composer require --dev pestphp/pest pestphp/pest-plugin-browser pestphp/pest-plugin-laravel --no-interaction
+
+      - name: Install Build Node Dependencies
+        working-directory: build
+        run: npm install
+
+      - name: Install Playwright
+        working-directory: build
+        run: npm install playwright
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('build/package-lock.json') }}
+
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        working-directory: build
+        run: npx playwright install --with-deps
+
+      - name: Install Playwright Dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
+
+      - name: Build Frontend Assets
+        working-directory: build
+        run: npm run build
+
+      - name: Run Browser Tests
+        working-directory: build
+        run: php vendor/bin/pest --parallel

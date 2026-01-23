@@ -133,10 +133,12 @@ jobs:
           token: ${{ secrets.STARTER_KIT_TOKEN }}
 
       - name: Copy Build to Starter Kit
+        working-directory: ${{ matrix.path }}
         run: |
-          rm -rf ${{ matrix.path }}/*
-          cp -r build/* ${{ matrix.path }}/
-          cp -r build/.[!.]* ${{ matrix.path }}/ 2>/dev/null || true
+          git rm -rf . 
+          git checkout HEAD -- .git
+          cp -r ../build/* .
+          cp -r ../build/.[!.]* . 2>/dev/null || true
 
       - name: Check for Changes
         id: changes
@@ -171,6 +173,22 @@ jobs:
           npm install
           npm run format
           npm run lint
+
+      - name: Remove Lock Files
+        if: steps.changes.outputs.has_changes == 'true'
+        working-directory: ${{ matrix.path }}
+        run: rm -f composer.lock package-lock.json
+
+      - name: Discard Permission-Only Changes
+        if: steps.changes.outputs.has_changes == 'true'
+        working-directory: ${{ matrix.path }}
+        run: |
+          git diff --diff-filter=M --name-only | while read file; do
+            if git diff "$file" | grep -q '^diff --git' && \
+               ! git diff "$file" | grep -qE '^(\+[^+]|-[^-])'; then
+              git checkout -- "$file"
+            fi
+          done
 
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
