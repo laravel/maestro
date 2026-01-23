@@ -135,8 +135,7 @@ jobs:
       - name: Copy Build to Starter Kit
         working-directory: ${{ matrix.path }}
         run: |
-          rm -rf .
-          git checkout HEAD -- .git
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
           cp -r ../build/* .
           cp -r ../build/.[!.]* . 2>/dev/null || true
 
