@@ -27,88 +27,88 @@ jobs:
             pr_branch: maestro-update
             node: false
 
-#          - name: Livewire Kit (Blank)
-#            kit: Livewire
-#            build_flags: '--blank'
-#            repository: laravel/blank-livewire-starter-kit
-#            path: blank-livewire-starter-kit
-#            branch: main
-#            pr_branch: maestro-update
-#            node: false
-#
-#          - name: Livewire Kit (WorkOS)
-#            kit: Livewire
-#            build_flags: '--workos'
-#            repository: laravel/livewire-starter-kit
-#            path: livewire-starter-kit
-#            branch: workos
-#            pr_branch: maestro-update-workos
-#            node: false
-#
-#          - name: Livewire Kit (Components)
-#            kit: Livewire
-#            build_flags: '--components'
-#            repository: laravel/livewire-starter-kit
-#            path: livewire-starter-kit
-#            branch: components
-#            pr_branch: maestro-update-components
-#            node: false
-#
-#          # React variants
-#          - name: React Kit
-#            kit: React
-#            build_flags: ''
-#            repository: laravel/react-starter-kit
-#            path: react-starter-kit
-#            branch: main
-#            pr_branch: maestro-update
-#            node: true
-#
-#          - name: React Kit (Blank)
-#            kit: React
-#            build_flags: '--blank'
-#            repository: laravel/blank-react-starter-kit
-#            path: blank-react-starter-kit
-#            branch: main
-#            pr_branch: maestro-update
-#            node: true
-#
-#          - name: React Kit (WorkOS)
-#            kit: React
-#            build_flags: '--workos'
-#            repository: laravel/react-starter-kit
-#            path: react-starter-kit
-#            branch: workos
-#            pr_branch: maestro-update-workos
-#            node: true
-#
-#          # Vue variants
-#          - name: Vue Kit
-#            kit: Vue
-#            build_flags: ''
-#            repository: laravel/vue-starter-kit
-#            path: vue-starter-kit
-#            branch: main
-#            pr_branch: maestro-update
-#            node: true
-#
-#          - name: Vue Kit (Blank)
-#            kit: Vue
-#            build_flags: '--blank'
-#            repository: laravel/blank-vue-starter-kit
-#            path: blank-vue-starter-kit
-#            branch: main
-#            pr_branch: maestro-update
-#            node: true
-#
-#          - name: Vue Kit (WorkOS)
-#            kit: Vue
-#            build_flags: '--workos'
-#            repository: laravel/vue-starter-kit
-#            path: vue-starter-kit
-#            branch: workos
-#            pr_branch: maestro-update-workos
-#            node: true
+          - name: Livewire Kit (Blank)
+            kit: Livewire
+            build_flags: '--blank'
+            repository: laravel/blank-livewire-starter-kit
+            path: blank-livewire-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: false
+
+          - name: Livewire Kit (WorkOS)
+            kit: Livewire
+            build_flags: '--workos'
+            repository: laravel/livewire-starter-kit
+            path: livewire-starter-kit
+            branch: workos
+            pr_branch: maestro-update-workos
+            node: false
+
+          - name: Livewire Kit (Components)
+            kit: Livewire
+            build_flags: '--components'
+            repository: laravel/livewire-starter-kit
+            path: livewire-starter-kit
+            branch: components
+            pr_branch: maestro-update-components
+            node: false
+
+          # React variants
+          - name: React Kit
+            kit: React
+            build_flags: ''
+            repository: laravel/react-starter-kit
+            path: react-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: React Kit (Blank)
+            kit: React
+            build_flags: '--blank'
+            repository: laravel/blank-react-starter-kit
+            path: blank-react-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: React Kit (WorkOS)
+            kit: React
+            build_flags: '--workos'
+            repository: laravel/react-starter-kit
+            path: react-starter-kit
+            branch: workos
+            pr_branch: maestro-update-workos
+            node: true
+
+          # Vue variants
+          - name: Vue Kit
+            kit: Vue
+            build_flags: ''
+            repository: laravel/vue-starter-kit
+            path: vue-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: Vue Kit (Blank)
+            kit: Vue
+            build_flags: '--blank'
+            repository: laravel/blank-vue-starter-kit
+            path: blank-vue-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: Vue Kit (WorkOS)
+            kit: Vue
+            build_flags: '--workos'
+            repository: laravel/vue-starter-kit
+            path: vue-starter-kit
+            branch: workos
+            pr_branch: maestro-update-workos
+            node: true
 
     steps:
       - name: Checkout Maestro
