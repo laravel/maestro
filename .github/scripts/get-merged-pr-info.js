@@ -1,12 +1,39 @@
 module.exports = async ({ github, context, core }) => {
-    const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        commit_sha: context.sha,
-    });
+    const maxRetries = 5;
+    const retryDelay = 2000; // 2 seconds
 
-    const mergedPr = prs.find((pr) => pr.merged_at);
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    const findMergedPr = async () => {
+        const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            commit_sha: context.sha,
+        });
+
+        return prs.find((pr) => pr.merged_at);
+    };
+
+    let mergedPr = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        core.info(`Attempt ${attempt}/${maxRetries}: Looking for merged PR associated with commit ${context.sha}`);
+
+        mergedPr = await findMergedPr();
+
+        if (mergedPr) {
+            core.info(`Found merged PR #${mergedPr.number}: ${mergedPr.title}`);
+            break;
+        }
+
+        if (attempt < maxRetries) {
+            core.info(`No merged PR found yet, retrying in ${retryDelay / 1000} seconds...`);
+            await sleep(retryDelay);
+        }
+    }
+
     if (!mergedPr) {
+        core.warning(`No merged PR found after ${maxRetries} attempts for commit ${context.sha}`);
         core.setOutput('title', 'Update from Maestro');
         core.setOutput('found', 'false');
         core.setOutput('author', '');
@@ -22,7 +49,7 @@ module.exports = async ({ github, context, core }) => {
     core.setOutput('url', mergedPr.html_url);
     core.setOutput('found', 'true');
 
-    const fallbackEmail = `${mergedPr.user.id}+${mergedPr.user.login}@users.noreply.github.com`
+    const fallbackEmail = `${mergedPr.user.id}+${mergedPr.user.login}@users.noreply.github.com`;
     try {
         const { data: user } = await github.rest.users.getByUsername({
             username: mergedPr.user.login,
@@ -31,6 +58,7 @@ module.exports = async ({ github, context, core }) => {
         const email = user.email || fallbackEmail;
         core.setOutput('author_email', email);
     } catch (e) {
+        core.warning(`Failed to fetch user email for ${mergedPr.user.login}: ${e.message}`);
         core.setOutput('author_email', fallbackEmail);
     }
 };
