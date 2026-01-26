@@ -58,6 +58,7 @@ const kitFolderMap = {
  */
 function loadUiComponents() {
     const content = fs.readFileSync(uiComponentsFile, 'utf-8');
+
     return JSON.parse(content);
 }
 
@@ -83,6 +84,7 @@ function getKitType(starterKit) {
     if (starterKit.startsWith('vue')) {
         return 'vue';
     }
+
     return null;
 }
 
@@ -153,6 +155,106 @@ function restoreComposerVariant(content, kitType) {
 }
 
 /**
+ * Recursively get all files in a directory.
+ */
+function getAllFiles(dir, files = []) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+
+        if (!entry.isDirectory()) {
+            files.push(fullPath);
+
+            continue;
+        }
+
+        // Skip common directories that shouldn't be synced
+        if (entry.name === 'node_modules' || entry.name === 'vendor' || entry.name.startsWith('.')) {
+            continue;
+        }
+        getAllFiles(fullPath, files);
+    }
+
+    return files;
+}
+
+/**
+ * Check if file content differs from the destination.
+ * For text files, compares processed content. For binary files, compares raw content.
+ */
+function fileNeedsSync(srcPath, destPath, processedContent) {
+    if (!fs.existsSync(destPath)) {
+        return true;
+    }
+
+    if (processedContent !== null) {
+        // Text file: compare processed content
+        const destContent = fs.readFileSync(destPath, 'utf-8');
+
+        return processedContent !== destContent;
+    }
+
+    // Binary file: compare raw content
+    const stat1 = fs.statSync(srcPath);
+    const stat2 = fs.statSync(destPath);
+
+    if (stat1.size !== stat2.size) {
+        return true;
+    }
+
+    const content1 = fs.readFileSync(srcPath);
+    const content2 = fs.readFileSync(destPath);
+
+    return !content1.equals(content2);
+}
+
+/**
+ * Perform initial sync of all files from build to kits.
+ * This catches any changes that occurred while the watcher wasn't running.
+ */
+function performInitialSync(folders, ig, kitType, uiComponents) {
+    log('Performing initial sync to catch any missed changes...', 'blue');
+
+    const allFiles = getAllFiles(buildDir);
+    let syncedCount = 0;
+
+    for (const filePath of allFiles) {
+        const relativePath = getRelativePath(filePath);
+
+        // Skip files that match .gitignore patterns
+        if (ig.ignores(relativePath)) {
+            continue;
+        }
+
+        const targetFolder = getTargetFolder(relativePath, folders);
+        const destPath = path.join(kitsDir, targetFolder, relativePath);
+        const processedContent = processFileContent(filePath, relativePath, targetFolder, kitType, uiComponents);
+
+        // Skip if file hasn't changed
+        if (!fileNeedsSync(filePath, destPath, processedContent)) {
+            continue;
+        }
+
+        try {
+            writeToKit(filePath, destPath, processedContent);
+            log(`Synced: ${relativePath} -> kits/${targetFolder}`, 'green');
+            syncedCount++;
+        } catch (error) {
+            log(`Error syncing ${relativePath}: ${error.message}`, 'red');
+        }
+    }
+
+    if (syncedCount > 0) {
+        log(`Initial sync complete: ${syncedCount} file(s) updated`, 'green');
+
+        return;
+    }
+
+    log('Initial sync complete: all files up to date', 'green');
+}
+
+/**
  * Recursively find all .gitignore files in a directory.
  */
 function findGitignoreFiles(dir, files = []) {
@@ -208,6 +310,7 @@ function loadGitignores() {
                 if (line.startsWith('!')) {
                     return '!' + path.join(relativeDirPath, line.slice(1));
                 }
+
                 return path.join(relativeDirPath, line);
             }
 
@@ -227,10 +330,9 @@ function loadGitignores() {
  * Read the current starter kit from the storage file.
  */
 function getStarterKit() {
-    if (!fs.existsSync(starterKitFile)) {
-        return null;
-    }
-    return fs.readFileSync(starterKitFile, 'utf-8').trim();
+    return !fs.existsSync(starterKitFile)
+        ? null
+        : fs.readFileSync(starterKitFile, 'utf-8').trim();
 }
 
 /**
@@ -251,6 +353,7 @@ function findSourceKitFolder(relativePath, folders) {
             return folders[i];
         }
     }
+
     return null;
 }
 
@@ -259,51 +362,75 @@ function isInertiaKit(targetFolder) {
 }
 
 /**
+ * Check if a file is a text file based on its extension.
+ */
+function isTextFile(relativePath) {
+    return !relativePath.match(/\.(png|jpg|jpeg|gif|ico|woff|woff2|ttf|eot|svg)$/i);
+}
+
+/**
+ * Get the target kit folder for a file.
+ * Returns the highest-priority folder that contains the file, or the highest-priority folder if not found.
+ */
+function getTargetFolder(relativePath, folders) {
+    return findSourceKitFolder(relativePath, folders) ?? folders[folders.length - 1];
+}
+
+/**
+ * Process file content, applying placeholder restoration if needed.
+ * Returns the processed content for text files, or null for binary files.
+ */
+function processFileContent(srcPath, relativePath, targetFolder, kitType, uiComponents) {
+    if (!isTextFile(relativePath)) {
+        return null;
+    }
+
+    let content = fs.readFileSync(srcPath, 'utf-8');
+
+    // Apply placeholder restoration for specific paths
+    if (kitType && shouldRestorePlaceholders(relativePath)) {
+        content = restorePlaceholders(content, kitType, uiComponents);
+    }
+
+    // Apply variant restoration for composer.json in Inertia kits
+    if (kitType && relativePath === 'composer.json' && isInertiaKit(targetFolder)) {
+        content = restoreComposerVariant(content, kitType);
+    }
+
+    return content;
+}
+
+/**
+ * Write a file to the kit folder.
+ * Handles both text files (with processed content) and binary files.
+ */
+function writeToKit(srcPath, destPath, processedContent) {
+    const destDir = path.dirname(destPath);
+
+    if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+    }
+
+    if (processedContent !== null) {
+        fs.writeFileSync(destPath, processedContent);
+
+        return;
+    }
+
+    fs.copyFileSync(srcPath, destPath);
+}
+
+/**
  * Copy a file from build to the appropriate kit folder.
  * Restores placeholders for files in placeholder paths.
  */
 function copyToKit(srcPath, relativePath, folders, kitType, uiComponents) {
-    // Find the highest-priority folder that has this file
-    let targetFolder = findSourceKitFolder(relativePath, folders);
-
-    // If no folder has this file, use the highest-priority folder
-    if (!targetFolder) {
-        targetFolder = folders[folders.length - 1];
-    }
-
+    const targetFolder = getTargetFolder(relativePath, folders);
     const destPath = path.join(kitsDir, targetFolder, relativePath);
-    const destDir = path.dirname(destPath);
 
     try {
-        if (!fs.existsSync(destDir)) {
-            fs.mkdirSync(destDir, { recursive: true });
-        }
-
-        // Check if we need to restore placeholders for this file
-        if (kitType && shouldRestorePlaceholders(relativePath)) {
-            const content = fs.readFileSync(srcPath, 'utf-8');
-            const restoredContent = restorePlaceholders(content, kitType, uiComponents);
-
-            if (content !== restoredContent) {
-                fs.writeFileSync(destPath, restoredContent);
-                log(`Copied (placeholders restored): ${relativePath} -> kits/${targetFolder}`, 'green');
-                return;
-            }
-        }
-
-        // Check if we need to restore variant placeholder in composer.json for Inertia kits
-        if (kitType && relativePath === 'composer.json' && isInertiaKit(targetFolder)) {
-            const content = fs.readFileSync(srcPath, 'utf-8');
-            const restoredContent = restoreComposerVariant(content, kitType);
-
-            if (content !== restoredContent) {
-                fs.writeFileSync(destPath, restoredContent);
-                log(`Copied (variant restored): ${relativePath} -> kits/${targetFolder}`, 'green');
-                return;
-            }
-        }
-
-        fs.copyFileSync(srcPath, destPath);
+        const processedContent = processFileContent(srcPath, relativePath, targetFolder, kitType, uiComponents);
+        writeToKit(srcPath, destPath, processedContent);
         log(`Copied: ${relativePath} -> kits/${targetFolder}`, 'green');
     } catch (error) {
         log(`Error copying ${relativePath}: ${error.message}`, 'red');
@@ -346,6 +473,7 @@ function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponent
 
     if (eventType === 'unlink') {
         deleteFromKit(relativePath, folders);
+
         return;
     }
 
@@ -384,6 +512,9 @@ function startWatching() {
     }
 
     const ig = loadGitignores();
+
+    // Perform initial sync to catch any changes that occurred while watcher wasn't running
+    performInitialSync(folders, ig, kitType, uiComponents);
 
     const watcher = chokidar.watch(buildDir, {
         ignored: /(^|[\/\\])\../, // ignore dotfiles
