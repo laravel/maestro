@@ -73,19 +73,28 @@ We have two stacks of starter kits: **Inertia** and **Livewire**. For these stac
 
 The file hierarchy is as follows:
 
+### Shared
+
+The `kits/Shared` folder contains files that are 100% identical between Livewire and Inertia kits. This includes:
+
+- **Shared/Blank:** Common blank files (config, migrations, artisan, phpunit.xml, etc.)
+- **Shared/Base:** Common base files (factories, gitignore files, etc.)
+- **Shared/Fortify:** Common Fortify files (Actions, Concerns, providers)
+- **Shared/WorkOS:** Common WorkOS files (routes, migrations, env, config)
+
 ### Livewire
 
-Blank -> Base -> Auth Layer (Fortify/WorkOS) -> Components (Fortify only variant)
+Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/Auth -> Livewire/Auth -> Components (Fortify only)
 
 ### Inertia
 
-Blank -> Base -> UI Layer (React/Vue) -> Auth Layer (Fortify/WorkOS)
+Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Vue] -> Shared/Auth -> Inertia/Auth/Base -> Inertia/Auth/[React|Vue]
 
-Where `Blank` has the shared files across all variants, and so on.
+Where `Shared/Blank` has the shared files across all variants, and each subsequent layer adds or overrides files.
 
 When applying a change inside the `build` folder, **Maestro** is smart enough to know where that change should be
-replicated to, always preferring to apply the change to the customization, so if a file exists both in the
-`Blank` and the `Auth Layer`, the change is replicated to the most specific layer (`Auth Layer`) by default.
+replicated to, always preferring to apply the change to the most specific layer. So if a file exists in both
+`Shared/Blank` and `Livewire/Fortify`, the change is replicated to `Livewire/Fortify` by default.
 
 ## Orchestrator
 

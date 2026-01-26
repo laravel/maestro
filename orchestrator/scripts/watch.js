@@ -33,23 +33,24 @@ function log(message, color = 'reset') {
  * Kit folder mapping based on starter kit value.
  * Folders are listed in priority order (lowest to highest).
  * Higher priority folders override lower priority ones.
+ * Shared folders contain files common to both Livewire and Inertia kits.
  */
 const kitFolderMap = {
     // Livewire variants
-    'livewire-blank': ['Livewire/Blank'],
-    'livewire': ['Livewire/Blank', 'Livewire/Base', 'Livewire/Fortify'],
-    'livewire-components': ['Livewire/Blank', 'Livewire/Base', 'Livewire/Fortify', 'Livewire/Components'],
-    'livewire-workos': ['Livewire/Blank', 'Livewire/Base', 'Livewire/WorkOS'],
+    'livewire-blank': ['Shared/Blank', 'Livewire/Blank'],
+    'livewire': ['Shared/Blank', 'Livewire/Blank', 'Shared/Base', 'Livewire/Base', 'Shared/Fortify', 'Livewire/Fortify'],
+    'livewire-components': ['Shared/Blank', 'Livewire/Blank', 'Shared/Base', 'Livewire/Base', 'Shared/Fortify', 'Livewire/Fortify', 'Livewire/Components'],
+    'livewire-workos': ['Shared/Blank', 'Livewire/Blank', 'Shared/Base', 'Livewire/Base', 'Shared/WorkOS', 'Livewire/WorkOS'],
 
     // React variants
-    'react-blank': ['Inertia/Blank/Base', 'Inertia/Blank/React'],
-    'react': ['Inertia/Blank/Base', 'Inertia/Blank/React', 'Inertia/Base', 'Inertia/React', 'Inertia/Fortify/Base', 'Inertia/Fortify/React'],
-    'react-workos': ['Inertia/Blank/Base', 'Inertia/Blank/React', 'Inertia/Base', 'Inertia/React', 'Inertia/WorkOS/Base', 'Inertia/WorkOS/React'],
+    'react-blank': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/React'],
+    'react': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/React', 'Shared/Base', 'Inertia/Base', 'Inertia/React', 'Shared/Fortify', 'Inertia/Fortify/Base', 'Inertia/Fortify/React'],
+    'react-workos': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/React', 'Shared/Base', 'Inertia/Base', 'Inertia/React', 'Shared/WorkOS', 'Inertia/WorkOS/Base', 'Inertia/WorkOS/React'],
 
     // Vue variants
-    'vue-blank': ['Inertia/Blank/Base', 'Inertia/Blank/Vue'],
-    'vue': ['Inertia/Blank/Base', 'Inertia/Blank/Vue', 'Inertia/Base', 'Inertia/Vue', 'Inertia/Fortify/Base', 'Inertia/Fortify/Vue'],
-    'vue-workos': ['Inertia/Blank/Base', 'Inertia/Blank/Vue', 'Inertia/Base', 'Inertia/Vue', 'Inertia/WorkOS/Base', 'Inertia/WorkOS/Vue'],
+    'vue-blank': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Vue'],
+    'vue': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Vue', 'Shared/Base', 'Inertia/Base', 'Inertia/Vue', 'Shared/Fortify', 'Inertia/Fortify/Base', 'Inertia/Fortify/Vue'],
+    'vue-workos': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Vue', 'Shared/Base', 'Inertia/Base', 'Inertia/Vue', 'Shared/WorkOS', 'Inertia/WorkOS/Base', 'Inertia/WorkOS/Vue'],
 };
 
 /**

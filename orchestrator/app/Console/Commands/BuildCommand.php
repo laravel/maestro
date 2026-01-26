@@ -135,6 +135,14 @@ class BuildCommand extends Command
     }
 
     /**
+     * Get the path to a shared kit directory.
+     */
+    protected function sharedPath(string $path = ''): string
+    {
+        return $this->kitPath('Shared'.($path ? '/'.$path : ''));
+    }
+
+    /**
      * Get the variant label for display.
      */
     protected function getVariantLabel(string $kit, bool $workos, bool $components, bool $blank = false): string
@@ -175,7 +183,7 @@ class BuildCommand extends Command
         }
         File::makeDirectory($buildPath, 0755, true);
 
-        info('Copying Blank kit files...');
+        info('Copying Shared Blank files...');
         File::copyDirectory($basePath, $buildPath);
 
         return $buildPath;
@@ -201,10 +209,16 @@ class BuildCommand extends Command
      */
     protected function buildLivewireKit(bool $workos = false, bool $components = false, bool $blank = false): int
     {
-        $buildPath = $this->prepareBuildDirectory($this->kitPath('Livewire/Blank'));
+        $buildPath = $this->prepareBuildDirectory($this->sharedPath('Blank'));
+
+        info('Copying Livewire Blank kit files...');
+        File::copyDirectory($this->kitPath('Livewire/Blank'), $buildPath);
 
         if (! $blank) {
-            info('Copying Base kit files...');
+            info('Copying Shared Base files...');
+            File::copyDirectory($this->sharedPath('Base'), $buildPath);
+
+            info('Copying Livewire Base kit files...');
             File::copyDirectory($this->kitPath('Livewire/Base'), $buildPath);
 
             if ($workos) {
@@ -226,16 +240,22 @@ class BuildCommand extends Command
      */
     protected function buildInertiaKit(string $kit, bool $workos = false, bool $blank = false): int
     {
-        $buildPath = $this->prepareBuildDirectory($this->kitPath('Inertia/Blank/Base'));
+        $buildPath = $this->prepareBuildDirectory($this->sharedPath('Blank'));
 
-        info("Copying Blank {$kit} kit files...");
+        info('Copying Inertia Blank Base kit files...');
+        File::copyDirectory($this->kitPath('Inertia/Blank/Base'), $buildPath);
+
+        info("Copying Inertia Blank {$kit} kit files...");
         File::copyDirectory($this->kitPath("Inertia/Blank/{$kit}"), $buildPath);
 
         if (! $blank) {
-            info('Copying Base kit files...');
+            info('Copying Shared Base files...');
+            File::copyDirectory($this->sharedPath('Base'), $buildPath);
+
+            info('Copying Inertia Base kit files...');
             File::copyDirectory($this->kitPath('Inertia/Base'), $buildPath);
 
-            info("Copying {$kit} kit files...");
+            info("Copying Inertia {$kit} kit files...");
             File::copyDirectory($this->kitPath("Inertia/{$kit}"), $buildPath);
 
             if ($workos) {
@@ -334,19 +354,22 @@ class BuildCommand extends Command
      */
     protected function applyWorkosVariant(string $buildPath, string $kit): void
     {
+        info('Copying Shared WorkOS files...');
+        File::copyDirectory($this->sharedPath('WorkOS'), $buildPath);
+
         if ($kit === 'Livewire') {
             $workosPath = $this->kitPath('Livewire/WorkOS');
 
-            info('Copying WorkOS files...');
+            info('Copying Livewire WorkOS files...');
             File::copyDirectory($workosPath, $buildPath);
         } else {
             $workosBasePath = $this->kitPath('Inertia/WorkOS/Base');
             $workosKitPath = $this->kitPath("Inertia/WorkOS/{$kit}");
 
-            info('Copying WorkOS Base files...');
+            info('Copying Inertia WorkOS Base files...');
             File::copyDirectory($workosBasePath, $buildPath);
 
-            info("Copying WorkOS {$kit} files...");
+            info("Copying Inertia WorkOS {$kit} files...");
             File::copyDirectory($workosKitPath, $buildPath);
         }
     }
@@ -356,10 +379,13 @@ class BuildCommand extends Command
      */
     protected function applyFortifyVariant(string $buildPath, string $kit): void
     {
+        info('Copying Shared Fortify files...');
+        File::copyDirectory($this->sharedPath('Fortify'), $buildPath);
+
         if ($kit === 'Livewire') {
             $fortifyPath = $this->kitPath('Livewire/Fortify');
 
-            info('Copying Fortify files...');
+            info('Copying Livewire Fortify files...');
             File::copyDirectory($fortifyPath, $buildPath);
 
             return;
@@ -368,10 +394,10 @@ class BuildCommand extends Command
         $fortifyBasePath = $this->kitPath('Inertia/Fortify/Base');
         $fortifyKitPath = $this->kitPath("Inertia/Fortify/{$kit}");
 
-        info('Copying Fortify Base files...');
+        info('Copying Inertia Fortify Base files...');
         File::copyDirectory($fortifyBasePath, $buildPath);
 
-        info("Copying Fortify {$kit} files...");
+        info("Copying Inertia Fortify {$kit} files...");
         File::copyDirectory($fortifyKitPath, $buildPath);
     }
 
