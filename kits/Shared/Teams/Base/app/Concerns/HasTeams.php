@@ -5,6 +5,7 @@ namespace App\Concerns;
 use App\Enums\TeamRole;
 use App\Models\Membership;
 use App\Models\Team;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -20,7 +21,7 @@ trait HasTeams
     {
         return $this->belongsToMany(Team::class, 'team_members', 'model_id', 'team_id')
             ->wherePivot('model_type', static::class)
-            ->withPivot(['role', 'is_default'])
+            ->withPivot(['role'])
             ->withTimestamps();
     }
 
@@ -54,21 +55,27 @@ trait HasTeams
     }
 
     /**
-     * Get the user's current team (resolved from context).
+     * Get the user's current team.
+     *
+     * @return BelongsTo<Team, $this>
      */
-    public function currentTeam(): ?Team
+    public function currentTeam(): BelongsTo
     {
-        return app()->bound('currentTeam') ? app('currentTeam') : $this->defaultTeam();
+        return $this->belongsTo(Team::class, 'current_team_id');
     }
 
     /**
-     * Get the user's default team.
+     * Switch to the given team.
      */
-    public function defaultTeam(): ?Team
+    public function switchTeam(Team $team): bool
     {
-        return $this->teams()
-            ->wherePivot('is_default', true)
-            ->first();
+        if (! $this->belongsToTeam($team)) {
+            return false;
+        }
+
+        $this->update(['current_team_id' => $team->id]);
+
+        return true;
     }
 
     /**
@@ -99,22 +106,6 @@ trait HasTeams
             ->first();
 
         return $membership?->role;
-    }
-
-    /**
-     * Sets the given team as the default one.
-     */
-    public function setDefaultTeam(Team $team): void
-    {
-        if (! $this->belongsToTeam($team)) {
-            return;
-        }
-
-        $this->memberships()->update(['is_default' => false]);
-
-        $this->memberships()
-            ->where('team_id', $team->id)
-            ->update(['is_default' => true]);
     }
 
     /**
