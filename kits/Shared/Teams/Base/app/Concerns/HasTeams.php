@@ -19,8 +19,7 @@ trait HasTeams
      */
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, 'team_members', 'model_id', 'team_id')
-            ->wherePivot('model_type', static::class)
+        return $this->belongsToMany(Team::class, 'team_members', 'user_id', 'team_id')
             ->withPivot(['role'])
             ->withTimestamps();
     }
@@ -35,12 +34,11 @@ trait HasTeams
         return $this->hasManyThrough(
             Team::class,
             Membership::class,
-            'model_id',
+            'user_id',
             'id',
             'id',
             'team_id'
-        )->where('team_members.model_type', static::class)
-            ->where('team_members.role', TeamRole::Owner->value);
+        )->where('team_members.role', TeamRole::Owner->value);
     }
 
     /**
@@ -50,8 +48,7 @@ trait HasTeams
      */
     public function memberships(): HasMany
     {
-        return $this->hasMany(Membership::class, 'model_id')
-            ->where('model_type', static::class);
+        return $this->hasMany(Membership::class, 'user_id');
     }
 
     /**

@@ -18,8 +18,7 @@ class RemoveTeamMember
         Gate::forUser($user)->authorize('removeMember', $team);
 
         $team->memberships()
-            ->where('model_type', $member::class)
-            ->where('model_id', $member->id)
+            ->where('user_id', $member->id)
             ->delete();
 
         if ($member->current_team_id === $team->id) {

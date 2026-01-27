@@ -48,7 +48,6 @@ class UserFactory extends Factory
             ]);
 
             $team->members()->attach($user, [
-                'model_type' => $user::class,
                 'role' => TeamRole::Owner->value,
             ]);
 
