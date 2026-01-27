@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('is_personal')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
