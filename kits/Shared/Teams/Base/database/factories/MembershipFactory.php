@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Enums\TeamRole;
 use App\Models\Membership;
 use App\Models\Team;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,10 +19,11 @@ class MembershipFactory extends Factory
      */
     public function definition(): array
     {
+        $userModel = config('teams.user_model');
+
         return [
             'team_id' => Team::factory(),
-            'model_type' => User::class,
-            'model_id' => User::factory(),
+            'user_id' => $userModel::factory(),
             'role' => TeamRole::Member,
         ];
     }
