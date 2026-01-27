@@ -114,14 +114,6 @@ jobs:
       - name: Checkout Maestro
         uses: actions/checkout@v6
 
-      - name: Get Merged PR Information
-        id: pr-info
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const script = require('./.github/scripts/get-merged-pr-info.js');
-            await script({ github, context, core });
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -200,6 +192,15 @@ jobs:
               git checkout -- "$file"
             fi
           done
+
+      - name: Get Merged PR Information
+        if: steps.changes.outputs.has_changes == 'true'
+        id: pr-info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const script = require('./.github/scripts/get-merged-pr-info.js');
+            await script({ github, context, core });
 
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
