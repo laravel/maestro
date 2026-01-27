@@ -24,19 +24,8 @@ class MembershipFactory extends Factory
             'team_id' => Team::factory(),
             'model_type' => User::class,
             'model_id' => User::factory(),
-            'is_default' => false,
             'role' => TeamRole::Member,
         ];
-    }
-
-    /**
-     * Indicate that this is the member's default team.
-     */
-    public function default(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_default' => true,
-        ]);
     }
 
     /**
