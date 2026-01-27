@@ -32,4 +32,14 @@ class TeamFactory extends Factory
             'is_personal' => true,
         ]);
     }
+
+    /**
+     * Indicate that the team has been deleted.
+     */
+    public function trashed(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'deleted_at' => now(),
+        ]);
+    }
 }
