@@ -29,7 +29,6 @@ class Membership extends Model
         'team_id',
         'model_type',
         'model_id',
-        'is_default',
         'role',
     ];
 
@@ -41,7 +40,6 @@ class Membership extends Model
     protected function casts(): array
     {
         return [
-            'is_default' => 'boolean',
             'role' => TeamRole::class,
         ];
     }

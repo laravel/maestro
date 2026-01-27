@@ -50,8 +50,9 @@ class UserFactory extends Factory
             $team->members()->attach($user, [
                 'model_type' => $user::class,
                 'role' => TeamRole::Owner->value,
-                'is_default' => true,
             ]);
+
+            $user->update(['current_team_id' => $team->id]);
         });
     }
 

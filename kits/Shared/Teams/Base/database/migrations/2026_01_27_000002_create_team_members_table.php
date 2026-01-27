@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('team_id')->constrained()->cascadeOnDelete();
             $table->string('model_type');
             $table->unsignedBigInteger('model_id');
-            $table->boolean('is_default')->default(false);
             $table->string('role');
             $table->timestamps();
 
