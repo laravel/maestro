@@ -54,11 +54,11 @@ class TeamInvitation extends Model
     /**
      * Get the user who sent the invitation.
      *
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<Model, $this>
      */
     public function inviter(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'invited_by');
+        return $this->belongsTo(config('teams.user_model'), 'invited_by');
     }
 
     /**

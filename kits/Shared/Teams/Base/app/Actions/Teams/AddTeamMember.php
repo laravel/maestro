@@ -19,8 +19,7 @@ class AddTeamMember
         Gate::forUser($user)->authorize('addMember', $team);
 
         $membership = $team->memberships()->create([
-            'model_type' => $member::class,
-            'model_id' => $member->id,
+            'user_id' => $member->id,
             'role' => $role,
         ]);
 

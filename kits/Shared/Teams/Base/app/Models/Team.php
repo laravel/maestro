@@ -48,12 +48,11 @@ class Team extends Model
     /**
      * Get all members of this team.
      *
-     * @return BelongsToMany<User, $this>
+     * @return BelongsToMany<\Illuminate\Database\Eloquent\Model, $this>
      */
     public function members(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'team_members', 'team_id', 'model_id')
-            ->wherePivot('model_type', User::class)
+        return $this->belongsToMany(config('teams.user_model'), 'team_members', 'team_id', 'user_id')
             ->withPivot(['role'])
             ->withTimestamps();
     }
@@ -71,7 +70,7 @@ class Team extends Model
     /**
      * Get the team owner.
      */
-    public function owner(): ?User
+    public function owner(): ?Model
     {
         return $this->members()
             ->wherePivot('role', TeamRole::Owner->value)

@@ -6,7 +6,6 @@ use App\Enums\TeamRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Membership extends Model
 {
@@ -27,8 +26,7 @@ class Membership extends Model
      */
     protected $fillable = [
         'team_id',
-        'model_type',
-        'model_id',
+        'user_id',
         'role',
     ];
 
@@ -55,12 +53,12 @@ class Membership extends Model
     }
 
     /**
-     * Get the member (polymorphic).
+     * Get the user that belongs to this membership.
      *
-     * @return MorphTo<Model, $this>
+     * @return BelongsTo<Model, $this>
      */
-    public function member(): MorphTo
+    public function user(): BelongsTo
     {
-        return $this->morphTo(__FUNCTION__, 'model_type', 'model_id');
+        return $this->belongsTo(config('teams.user_model'));
     }
 }

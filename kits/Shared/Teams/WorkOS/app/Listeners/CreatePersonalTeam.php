@@ -2,13 +2,14 @@
 
 namespace App\Listeners;
 
-use App\Enums\TeamRole;
-use App\Models\Team;
+use App\Actions\Teams\CreateTeam;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 
 class CreatePersonalTeam
 {
+    public function __construct(private CreateTeam $createTeam) {}
+
     /**
      * Handle the event.
      */
@@ -17,16 +18,6 @@ class CreatePersonalTeam
         /** @var User $user */
         $user = $event->user;
 
-        $team = Team::create([
-            'name' => $user->name."'s Team",
-            'is_personal' => true,
-        ]);
-
-        $team->members()->attach($user, [
-            'model_type' => $user::class,
-            'role' => TeamRole::Owner->value,
-        ]);
-
-        $user->update(['current_team_id' => $team->id]);
+        $this->createTeam->handle($user, $user->name."'s Team", isPersonal: true);
     }
 }

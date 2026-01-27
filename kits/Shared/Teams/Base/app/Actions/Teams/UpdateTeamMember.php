@@ -19,8 +19,7 @@ class UpdateTeamMember
         Gate::forUser($user)->authorize('updateMember', $team);
 
         $membership = $team->memberships()
-            ->where('model_type', $member::class)
-            ->where('model_id', $member->id)
+            ->where('user_id', $member->id)
             ->firstOrFail();
 
         $oldRole = $membership->role;

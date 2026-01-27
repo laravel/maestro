@@ -4,6 +4,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | User Model
+    |--------------------------------------------------------------------------
+    |
+    | This is the model class that represents users in your application. This
+    | model will be used when associating users with teams and memberships.
+    |
+    */
+
+    'user_model' => App\Models\User::class,
+
+    /*
+    |--------------------------------------------------------------------------
     | Team Invitations
     |--------------------------------------------------------------------------
     |
