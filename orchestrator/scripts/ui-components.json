@@ -58,5 +58,13 @@
         "react": "settings/security",
         "svelte": "settings/Security",
         "vue": "settings/Security"
+    },
+    "teams_index": {
+        "react": "teams/index",
+        "vue": "teams/Index"
+    },
+    "teams_edit": {
+        "react": "teams/edit",
+        "vue": "teams/Edit"
     }
 }
