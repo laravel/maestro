@@ -16,7 +16,6 @@ class DeleteTeam
     {
         Gate::forUser($user)->authorize('delete', $team);
 
-
         User::where('current_team_id', $team->id)->update(['current_team_id' => null]);
         $team->invitations()->delete();
         $team->memberships()->delete();
