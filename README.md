@@ -128,7 +128,7 @@ Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/Auth ->
 
 ### Inertia
 
-Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Vue] -> Shared/Auth -> Inertia/Auth/Base -> Inertia/Auth/[React|Vue] -> Shared/Teams -> Inertia/Teams
+Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Vue] -> Shared/Auth -> Inertia/Auth/Base -> Inertia/Auth/[React|Vue] -> Shared/Teams -> Inertia/Teams/Base -> Inertia/Teams/Auth
 
 Where `Shared/Blank` has the shared files across all variants, and each subsequent layer adds or overrides files.
 
