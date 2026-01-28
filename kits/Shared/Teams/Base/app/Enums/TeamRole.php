@@ -53,4 +53,40 @@ enum TeamRole: string
     {
         return ucfirst($this->value);
     }
+
+    /**
+     * Get the hierarchy level for this role.
+     * Higher numbers indicate higher privileges.
+     */
+    public function level(): int
+    {
+        return match ($this) {
+            self::Owner => 4,
+            self::Admin => 3,
+            self::Member => 2,
+            self::Viewer => 1,
+        };
+    }
+
+    /**
+     * Check if this role is at least as privileged as another role.
+     */
+    public function isAtLeast(TeamRole $role): bool
+    {
+        return $this->level() >= $role->level();
+    }
+
+    /**
+     * Get roles that can be assigned to team members (excludes Owner).
+     *
+     * @return array<array{value: string, label: string}>
+     */
+    public static function assignable(): array
+    {
+        return [
+            ['value' => self::Admin->value, 'label' => self::Admin->label()],
+            ['value' => self::Member->value, 'label' => self::Member->label()],
+            ['value' => self::Viewer->value, 'label' => self::Viewer->label()],
+        ];
+    }
 }

@@ -31,8 +31,8 @@
         "react-blank": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/React"],
         "react": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/React", "Shared/Base", "Inertia/Base", "Inertia/React", "Shared/Fortify", "Inertia/Fortify/Base", "Inertia/Fortify/React"],
         "react-workos": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/React", "Shared/Base", "Inertia/Base", "Inertia/React", "Shared/WorkOS", "Inertia/WorkOS/Base", "Inertia/WorkOS/React"],
-        "react-teams": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/React", "Shared/Base", "Inertia/Base", "Inertia/React", "Shared/Fortify", "Inertia/Fortify/Base", "Inertia/Fortify/React", "Shared/Teams/Base", "Shared/Teams/Fortify", "Inertia/Teams/Base", "Inertia/Teams/Fortify/Base", "Inertia/Teams/Fortify/React"],
-        "react-workos-teams": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/React", "Shared/Base", "Inertia/Base", "Inertia/React", "Shared/WorkOS", "Inertia/WorkOS/Base", "Inertia/WorkOS/React", "Shared/Teams/Base", "Shared/Teams/WorkOS", "Inertia/Teams/Base", "Inertia/Teams/WorkOS/Base", "Inertia/Teams/WorkOS/React"],
+        "react-teams": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/React", "Shared/Base", "Inertia/Base", "Inertia/React", "Shared/Fortify", "Inertia/Fortify/Base", "Inertia/Fortify/React", "Shared/Teams/Base", "Shared/Teams/Fortify", "Inertia/Teams/Base", "Inertia/Teams/React", "Inertia/Teams/Fortify/Base", "Inertia/Teams/Fortify/React"],
+        "react-workos-teams": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/React", "Shared/Base", "Inertia/Base", "Inertia/React", "Shared/WorkOS", "Inertia/WorkOS/Base", "Inertia/WorkOS/React", "Shared/Teams/Base", "Shared/Teams/WorkOS", "Inertia/Teams/Base", "Inertia/Teams/React", "Inertia/Teams/WorkOS/Base", "Inertia/Teams/WorkOS/React"],
 
         "svelte-blank": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/Svelte"],
         "svelte": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/Svelte", "Shared/Base", "Inertia/Base", "Inertia/Svelte", "Shared/Fortify", "Inertia/Fortify/Base", "Inertia/Fortify/Svelte"],
@@ -41,7 +41,7 @@
         "vue-blank": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/Vue"],
         "vue": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/Vue", "Shared/Base", "Inertia/Base", "Inertia/Vue", "Shared/Fortify", "Inertia/Fortify/Base", "Inertia/Fortify/Vue"],
         "vue-workos": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/Vue", "Shared/Base", "Inertia/Base", "Inertia/Vue", "Shared/WorkOS", "Inertia/WorkOS/Base", "Inertia/WorkOS/Vue"],
-        "vue-teams": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/Vue", "Shared/Base", "Inertia/Base", "Inertia/Vue", "Shared/Fortify", "Inertia/Fortify/Base", "Inertia/Fortify/Vue", "Shared/Teams/Base", "Shared/Teams/Fortify", "Inertia/Teams/Base", "Inertia/Teams/Fortify/Base", "Inertia/Teams/Fortify/Vue"],
-        "vue-workos-teams": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/Vue", "Shared/Base", "Inertia/Base", "Inertia/Vue", "Shared/WorkOS", "Inertia/WorkOS/Base", "Inertia/WorkOS/Vue", "Shared/Teams/Base", "Shared/Teams/WorkOS", "Inertia/Teams/Base", "Inertia/Teams/WorkOS/Base", "Inertia/Teams/WorkOS/Vue"]
+        "vue-teams": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/Vue", "Shared/Base", "Inertia/Base", "Inertia/Vue", "Shared/Fortify", "Inertia/Fortify/Base", "Inertia/Fortify/Vue", "Shared/Teams/Base", "Shared/Teams/Fortify", "Inertia/Teams/Base", "Inertia/Teams/Vue", "Inertia/Teams/Fortify/Base", "Inertia/Teams/Fortify/Vue"],
+        "vue-workos-teams": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/Vue", "Shared/Base", "Inertia/Base", "Inertia/Vue", "Shared/WorkOS", "Inertia/WorkOS/Base", "Inertia/WorkOS/Vue", "Shared/Teams/Base", "Shared/Teams/WorkOS", "Inertia/Teams/Base", "Inertia/Teams/Vue", "Inertia/Teams/WorkOS/Base", "Inertia/Teams/WorkOS/Vue"]
     }
 }

@@ -22,6 +22,7 @@ class Team extends Model
      */
     protected $fillable = [
         'name',
+        'slug',
         'is_personal',
     ];
 
@@ -38,11 +39,58 @@ class Team extends Model
     }
 
     /**
-     * Get the slug of the team name.
+     * Bootstrap the model and its traits.
      */
-    public function slug(): string
+    protected static function boot(): void
     {
-        return Str::slug($this->name);
+        parent::boot();
+
+        static::creating(function (Team $team) {
+            if (empty($team->slug)) {
+                $team->slug = static::generateUniqueSlug($team->name);
+            }
+        });
+
+        static::updating(function (Team $team) {
+            if ($team->isDirty('name')) {
+                $team->slug = static::generateUniqueSlug($team->name, $team->id);
+            }
+        });
+    }
+
+    /**
+     * Generate a unique slug for the team.
+     */
+    protected static function generateUniqueSlug(string $name, ?int $excludeId = null): string
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        $query = static::withTrashed()->where('slug', $slug);
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        while ($query->exists()) {
+            $slug = $originalSlug.'-'.$counter;
+            $counter++;
+
+            $query = static::withTrashed()->where('slug', $slug);
+            if ($excludeId) {
+                $query->where('id', '!=', $excludeId);
+            }
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 
     /**
