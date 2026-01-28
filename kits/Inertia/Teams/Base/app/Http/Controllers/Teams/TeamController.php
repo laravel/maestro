@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Teams;
 
 use App\Actions\Teams\CreateTeam;
-use App\Actions\Teams\DeleteTeam;
-use App\Actions\Teams\UpdateTeam;
 use App\Enums\TeamRole;
+use App\Events\Teams\TeamDeleted;
+use App\Events\Teams\TeamUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teams\SaveTeamRequest;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -94,9 +96,12 @@ class TeamController extends Controller
     /**
      * Update the specified team.
      */
-    public function update(SaveTeamRequest $request, Team $team, UpdateTeam $updateTeam): RedirectResponse
+    public function update(SaveTeamRequest $request, Team $team): RedirectResponse
     {
-        $updateTeam->handle($request->user(), $team, $request->validated('name'));
+        Gate::authorize('update', $team);
+
+        $team->update(['name' => $request->validated('name')]);
+        event(new TeamUpdated($team));
 
         return to_route('teams.edit', ['team' => $team->slug]);
     }
@@ -104,11 +109,19 @@ class TeamController extends Controller
     /**
      * Delete the specified team.
      */
-    public function destroy(Request $request, Team $team, DeleteTeam $deleteTeam): RedirectResponse
+    public function destroy(Request $request, Team $team): RedirectResponse
     {
+        Gate::authorize('delete', $team);
+
         $user = $request->user();
 
-        $deleteTeam->handle($user, $team);
+        User::where('current_team_id', $team->id)->update(['current_team_id' => null]);
+        $team->invitations()->delete();
+        $team->memberships()->delete();
+        $team->delete();
+
+        event(new TeamDeleted($team));
+
         $user->refresh();
 
         if ($user->current_team_id === null) {
