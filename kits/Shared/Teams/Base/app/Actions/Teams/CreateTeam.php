@@ -11,11 +11,17 @@ use Illuminate\Support\Facades\DB;
 
 class CreateTeam
 {
+    public function __construct(protected ValidateTeamName $validateTeamName) {}
+
     /**
      * Create a new team and add the user as owner.
      */
     public function handle(User $user, string $name, bool $isPersonal = false): Team
     {
+        if (! $isPersonal) {
+            $this->validateTeamName->handle($name);
+        }
+
         return DB::transaction(function () use ($user, $name, $isPersonal) {
             $team = Team::create([
                 'name' => $name,
