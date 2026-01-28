@@ -491,6 +491,9 @@ class BuildCommand extends Command
             return;
         }
 
+        info('Copying Inertia Teams Base files...');
+        File::copyDirectory($this->kitPath('Inertia/Teams/Base'), $buildPath);
+
         info("Copying Inertia Teams {$authProvider} Base files...");
         File::copyDirectory($this->kitPath("Inertia/Teams/{$authProvider}/Base"), $buildPath);
 
