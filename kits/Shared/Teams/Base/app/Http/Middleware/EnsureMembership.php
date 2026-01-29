@@ -45,7 +45,8 @@ class EnsureMembership
             }
         }
 
-        if ($user->current_team_id !== $team->id) {
+        // Only auto-switch "current_team", not "team" used in management routes
+        if ($request->route('current_team') && $user->current_team_id !== $team->id) {
             $user->update(['current_team_id' => $team->id]);
         }
 
