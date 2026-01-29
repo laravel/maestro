@@ -20,6 +20,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useInitials } from '@/composables/useInitials';
@@ -344,14 +350,22 @@ const deleteTeam = () => {
                                 </div>
                             </div>
 
-                            <Button
-                                v-if="permissions.canCancelInvitation"
-                                variant="ghost"
-                                size="sm"
-                                @click="confirmCancelInvitation(invitation)"
-                            >
-                                <X class="h-4 w-4" />
-                            </Button>
+                            <TooltipProvider v-if="permissions.canCancelInvitation">
+                                <Tooltip>
+                                    <TooltipTrigger as-child>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            @click="confirmCancelInvitation(invitation)"
+                                        >
+                                            <X class="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Cancel invitation</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
                     </div>
                 </div>
