@@ -142,6 +142,6 @@ class TeamController extends Controller
     {
         $request->user()->switchTeam($team);
 
-        return to_route('dashboard', ['current_team' => $team->slug]);
+        return back();
     }
 }

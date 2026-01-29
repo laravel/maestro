@@ -4,10 +4,10 @@ namespace App\Models;
 
 use App\Enums\TeamRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class Membership extends Model
+class Membership extends Pivot
 {
     /** @use HasFactory<\Database\Factories\MembershipFactory> */
     use HasFactory;
@@ -18,6 +18,13 @@ class Membership extends Model
      * @var string
      */
     protected $table = 'team_members';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = true;
 
     /**
      * The attributes that are mass assignable.
@@ -55,7 +62,7 @@ class Membership extends Model
     /**
      * Get the user that belongs to this membership.
      *
-     * @return BelongsTo<Model, $this>
+     * @return BelongsTo<\Illuminate\Database\Eloquent\Model, $this>
      */
     public function user(): BelongsTo
     {

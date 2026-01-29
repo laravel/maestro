@@ -1,18 +1,34 @@
 <?php
 
-namespace App\Support;
+namespace App\Rules;
 
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Routing\Route as RouteElement;
 use Illuminate\Support\Facades\Route;
 
-class ReservedNamesList
+class TeamName implements ValidationRule
 {
+    /**
+     * Run the validation rule.
+     *
+     * @param  \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     */
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        $name = strtolower(trim($value));
+
+        if (in_array($name, $this->reservedNames(), true)) {
+            $fail('This team name is reserved and cannot be used.');
+        }
+    }
+
     /**
      * Get a list of all reserved names.
      */
-    public static function all(): array
+    protected function reservedNames(): array
     {
-        return once(fn () => collect(static::routesPrefixes())
+        return once(fn () => collect($this->routesPrefixes())
             ->merge([
                 '300',
                 '302',
@@ -352,7 +368,7 @@ class ReservedNamesList
     /**
      * Get a list of reserved names from routes's prefixes.
      */
-    protected static function routesPrefixes(): array
+    protected function routesPrefixes(): array
     {
         return collect(Route::getRoutes()->getRoutes())
             ->map(fn (RouteElement $route) => $route->uri)

@@ -22,7 +22,6 @@ const user = page.props.auth.user;
 const { isMobile, state } = useSidebar();
 
 const currentTeam = computed(() => page.props.currentTeam as Team | null);
-const teams = computed(() => page.props.teams as Team[]);
 </script>
 
 <template>
@@ -51,11 +50,7 @@ const teams = computed(() => page.props.teams as Team[]);
                     align="end"
                     :side-offset="4"
                 >
-                    <UserMenuContent
-                        :user="user"
-                        :teams="teams"
-                        :current-team="currentTeam"
-                    />
+                    <UserMenuContent :user="user" />
                 </DropdownMenuContent>
             </DropdownMenu>
         </SidebarMenuItem>
