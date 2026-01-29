@@ -99,13 +99,84 @@ class TeamTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->delete(route('teams.destroy', $team));
+            ->delete(route('teams.destroy', $team), [
+                'name' => $team->name,
+            ]);
 
         $response->assertRedirect();
 
         $this->assertSoftDeleted('teams', [
             'id' => $team->id,
         ]);
+    }
+
+    public function test_team_deletion_requires_name_confirmation()
+    {
+        $user = User::factory()->create();
+        $team = Team::factory()->create();
+        $team->members()->attach($user, ['role' => TeamRole::Owner->value]);
+
+        $response = $this
+            ->actingAs($user)
+            ->delete(route('teams.destroy', $team), [
+                'name' => 'Wrong Name',
+            ]);
+
+        $response->assertSessionHasErrors('name');
+
+        $this->assertDatabaseHas('teams', [
+            'id' => $team->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    public function test_deleting_current_team_requires_new_team_selection()
+    {
+        $user = User::factory()->create();
+        $team = Team::factory()->create();
+        $team->members()->attach($user, ['role' => TeamRole::Owner->value]);
+
+        // Set the team as the current team
+        $user->update(['current_team_id' => $team->id]);
+
+        $response = $this
+            ->actingAs($user)
+            ->delete(route('teams.destroy', $team), [
+                'name' => $team->name,
+            ]);
+
+        $response->assertSessionHasErrors('new_current_team_id');
+
+        $this->assertDatabaseHas('teams', [
+            'id' => $team->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    public function test_deleting_current_team_switches_to_selected_team()
+    {
+        $user = User::factory()->create();
+        $personalTeam = $user->personalTeam();
+        $team = Team::factory()->create();
+        $team->members()->attach($user, ['role' => TeamRole::Owner->value]);
+
+        // Set the team as the current team
+        $user->update(['current_team_id' => $team->id]);
+
+        $response = $this
+            ->actingAs($user)
+            ->delete(route('teams.destroy', $team), [
+                'name' => $team->name,
+                'new_current_team_id' => $personalTeam->id,
+            ]);
+
+        $response->assertRedirect();
+
+        $this->assertSoftDeleted('teams', [
+            'id' => $team->id,
+        ]);
+
+        $this->assertEquals($personalTeam->id, $user->fresh()->current_team_id);
     }
 
     public function test_personal_team_cannot_be_deleted()
@@ -115,7 +186,9 @@ class TeamTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->delete(route('teams.destroy', $personalTeam));
+            ->delete(route('teams.destroy', $personalTeam), [
+                'name' => $personalTeam->name,
+            ]);
 
         $response->assertForbidden();
 
@@ -135,7 +208,9 @@ class TeamTest extends TestCase
 
         $response = $this
             ->actingAs($member)
-            ->delete(route('teams.destroy', $team));
+            ->delete(route('teams.destroy', $team), [
+                'name' => $team->name,
+            ]);
 
         $response->assertForbidden();
     }

@@ -122,8 +122,6 @@ class TeamController extends Controller
      */
     public function destroy(DeleteTeamRequest $request, Team $team): RedirectResponse
     {
-        Gate::authorize('delete', $team);
-
         $user = $request->user();
         $newCurrentTeamId = $request->validated('new_current_team_id');
 
