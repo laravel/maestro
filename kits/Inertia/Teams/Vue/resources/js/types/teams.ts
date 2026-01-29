@@ -1,5 +1,12 @@
 export type TeamRole = 'owner' | 'admin' | 'member' | 'viewer';
 
+export type TeamOption = {
+    id: number;
+    name: string;
+    slug: string;
+    is_personal: boolean;
+};
+
 export type Team = {
     id: number;
     name: string;

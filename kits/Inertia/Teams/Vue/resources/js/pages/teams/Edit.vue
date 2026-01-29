@@ -37,6 +37,7 @@ import type {
     Team,
     TeamInvitation,
     TeamMember,
+    TeamOption,
     TeamPermissions,
 } from '@/types';
 import { Form, Head, router } from '@inertiajs/vue3';
@@ -49,6 +50,8 @@ type Props = {
     invitations: TeamInvitation[];
     permissions: TeamPermissions;
     availableRoles: RoleOption[];
+    isCurrentTeam: boolean;
+    otherTeams: TeamOption[];
 };
 
 const props = defineProps<Props>();
@@ -73,6 +76,20 @@ const memberToRemove = ref<TeamMember | null>(null);
 const cancelInvitationDialogOpen = ref(false);
 const invitationToCancel = ref<TeamInvitation | null>(null);
 const inviteRole = ref('member');
+const confirmationName = ref('');
+const newCurrentTeamId = ref<number | null>(null);
+
+const canDeleteTeam = computed(() => {
+    const nameMatches = confirmationName.value === props.team.name;
+    const hasNewTeamIfNeeded = !props.isCurrentTeam || newCurrentTeamId.value !== null;
+
+    return nameMatches && hasNewTeamIfNeeded;
+});
+
+const resetDeleteDialog = () => {
+    confirmationName.value = '';
+    newCurrentTeamId.value = null;
+};
 
 const inviteRoleLabel = computed(() => {
     const role = props.availableRoles.find((r) => r.value === inviteRole.value);
@@ -122,8 +139,16 @@ const cancelInvitation = () => {
 
 const deleteTeam = () => {
     router.delete(`/teams/${props.team.slug}`, {
+        data: {
+            name: confirmationName.value,
+            new_current_team_id: newCurrentTeamId.value,
+        },
         onSuccess: () => {
             deleteDialogOpen.value = false;
+            resetDeleteDialog();
+        },
+        onError: () => {
+            // Keep the dialog open on validation errors
         },
     });
 };
@@ -386,7 +411,7 @@ const deleteTeam = () => {
                                 Once you delete a team, there is no going back. Please be certain.
                             </p>
                         </div>
-                        <Dialog v-model:open="deleteDialogOpen">
+                        <Dialog v-model:open="deleteDialogOpen" @update:open="(open) => !open && resetDeleteDialog()">
                             <DialogTrigger as-child>
                                 <Button variant="destructive">
                                     <Trash2 class="mr-2 h-4 w-4" />
@@ -402,6 +427,51 @@ const deleteTeam = () => {
                                     </DialogDescription>
                                 </DialogHeader>
 
+                                <div class="space-y-4 py-4">
+                                    <div class="grid gap-2">
+                                        <Label for="confirmation-name">
+                                            Type <strong>{{ team.name }}</strong> to confirm
+                                        </Label>
+                                        <Input
+                                            id="confirmation-name"
+                                            v-model="confirmationName"
+                                            placeholder="Enter team name"
+                                            autocomplete="off"
+                                        />
+                                    </div>
+
+                                    <div v-if="isCurrentTeam && otherTeams.length > 0" class="grid gap-2">
+                                        <Label for="new-current-team">
+                                            Select a new current team
+                                        </Label>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger as-child>
+                                                <Button variant="outline" class="w-full justify-between">
+                                                    {{ otherTeams.find(t => t.id === newCurrentTeamId)?.name || 'Select a team' }}
+                                                    <ChevronDown class="ml-2 h-4 w-4 opacity-50" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent class="w-full">
+                                                <DropdownMenuItem
+                                                    v-for="otherTeam in otherTeams"
+                                                    :key="otherTeam.id"
+                                                    @click="newCurrentTeamId = otherTeam.id"
+                                                >
+                                                    {{ otherTeam.name }}
+                                                    <span v-if="otherTeam.is_personal" class="ml-2 text-muted-foreground">(Personal)</span>
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                        <p class="text-sm text-muted-foreground">
+                                            You are deleting your current team. Please select which team to switch to.
+                                        </p>
+                                    </div>
+
+                                    <div v-else-if="isCurrentTeam && otherTeams.length === 0" class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200">
+                                        You cannot delete your current team because you have no other teams to switch to. Please create or join another team first.
+                                    </div>
+                                </div>
+
                                 <DialogFooter class="gap-2">
                                     <DialogClose as-child>
                                         <Button variant="secondary">
@@ -409,7 +479,11 @@ const deleteTeam = () => {
                                         </Button>
                                     </DialogClose>
 
-                                    <Button variant="destructive" @click="deleteTeam">
+                                    <Button
+                                        variant="destructive"
+                                        :disabled="!canDeleteTeam"
+                                        @click="deleteTeam"
+                                    >
                                         Delete Team
                                     </Button>
                                 </DialogFooter>
