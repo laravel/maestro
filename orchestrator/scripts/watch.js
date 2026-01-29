@@ -202,18 +202,18 @@ function fileNeedsSync(srcPath, destPath, processedContent) {
  * Collect all file paths across the active layer set for the current starter kit.
  * Returns a Set of relative paths (posix-style) that should exist in kits/.
  */
-function collectKitFiles(directories) {
+function collectKitFiles(folders) {
     const files = new Set();
 
-    for (const directory of directories) {
-        const directoryPath = path.join(kitsDir, directory);
+    for (const folder of folders) {
+        const folderPath = path.join(kitsDir, folder);
 
-        if (!fs.existsSync(directoryPath)) {
+        if (!fs.existsSync(folderPath)) {
             continue;
         }
 
-        for (const file of getAllFiles(directoryPath)) {
-            files.add(path.relative(directoryPath, file).replace(/\\/g, '/'));
+        for (const file of getAllFiles(folderPath)) {
+            files.add(path.relative(folderPath, file).replace(/\\/g, '/'));
         }
     }
 
@@ -226,7 +226,7 @@ function collectKitFiles(directories) {
  * When reconcile is true, also removes stale files in kits/ that no longer
  * exist in the built tree.
  */
-function performInitialSync(directories, ig, kitType, uiComponents, starterKit, manifest, reconcile = true) {
+function performInitialSync(folders, ig, kitType, uiComponents, starterKit, manifest, reconcile = true) {
     log('Performing initial sync to catch any missed changes...', 'blue');
 
     const allFiles = getAllFiles(buildDir);
@@ -246,12 +246,12 @@ function performInitialSync(directories, ig, kitType, uiComponents, starterKit, 
         const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
         buildRelPaths.add(destRelativePath);
 
-        const targetDirectory = getTargetDirectory(destRelativePath, directories);
-        const destPath = path.join(kitsDir, targetDirectory, destRelativePath);
-        const processedContent = processFileContent(filePath, relativePath, targetDirectory, kitType, uiComponents, manifest);
+        const targetFolder = getTargetFolder(destRelativePath, folders);
+        const destPath = path.join(kitsDir, targetFolder, destRelativePath);
+        const processedContent = processFileContent(filePath, relativePath, targetFolder, kitType, uiComponents, manifest);
 
         if (isBlockedEmptyTextSync(relativePath, processedContent, destPath)) {
-            log(`Blocked empty file sync: ${relativePath} -> kits/${targetDirectory}`, 'red');
+            log(`Blocked empty file sync: ${relativePath} -> kits/${targetFolder}`, 'red');
             continue;
         }
 
@@ -265,7 +265,7 @@ function performInitialSync(directories, ig, kitType, uiComponents, starterKit, 
             const syncLabel = destRelativePath !== relativePath
                 ? `${relativePath} (remapped to ${destRelativePath})`
                 : relativePath;
-            log(`Synced: ${syncLabel} -> kits/${targetDirectory}`, 'green');
+            log(`Synced: ${syncLabel} -> kits/${targetFolder}`, 'green');
             syncedCount++;
         } catch (error) {
             log(`Error syncing ${relativePath}: ${error.message}`, 'red');
@@ -280,7 +280,7 @@ function performInitialSync(directories, ig, kitType, uiComponents, starterKit, 
 
     // Reconcile stale files that exist in kits/ but not in the build.
     if (reconcile) {
-        reconcileStaleFiles(directories, buildRelPaths, ig);
+        reconcileStaleFiles(folders, buildRelPaths, ig);
     }
 }
 
@@ -288,8 +288,8 @@ function performInitialSync(directories, ig, kitType, uiComponents, starterKit, 
  * Remove files from kits/ that no longer exist in the build output.
  * Only operates within the active layer set for the current starter kit.
  */
-function reconcileStaleFiles(directories, buildRelPaths, ig) {
-    const kitFiles = collectKitFiles(directories);
+function reconcileStaleFiles(folders, buildRelPaths, ig) {
+    const kitFiles = collectKitFiles(folders);
     let removedCount = 0;
 
     for (const relPath of kitFiles) {
@@ -304,8 +304,8 @@ function reconcileStaleFiles(directories, buildRelPaths, ig) {
         }
 
         // Find which layer owns this file and remove it.
-        for (let i = directories.length - 1; i >= 0; i--) {
-            const candidate = path.join(kitsDir, directories[i], relPath);
+        for (let i = folders.length - 1; i >= 0; i--) {
+            const candidate = path.join(kitsDir, folders[i], relPath);
 
             if (!fs.existsSync(candidate)) {
                 continue;
@@ -313,11 +313,11 @@ function reconcileStaleFiles(directories, buildRelPaths, ig) {
 
             try {
                 fs.unlinkSync(candidate);
-                log(`Reconciled (removed stale): kits/${directories[i]}/${relPath}`, 'yellow');
+                log(`Reconciled (removed stale): kits/${folders[i]}/${relPath}`, 'yellow');
                 removedCount++;
 
                 // Clean up empty parent directories.
-                removeEmptyParentDirs(candidate, path.join(kitsDir, directories[i]));
+                removeEmptyParentDirs(candidate, path.join(kitsDir, folders[i]));
             } catch (error) {
                 log(`Error removing stale file ${relPath}: ${error.message}`, 'red');
             }
@@ -441,22 +441,22 @@ function getRelativePath(filePath) {
 }
 
 /**
- * Find the highest-priority kit directory that contains the file.
- * Returns the directory name or null if not found in any directory.
+ * Find the highest-priority kit folder that contains the file.
+ * Returns the folder name or null if not found in any folder.
  */
-function findSourceKitDirectory(relativePath, directories) {
-    for (let i = directories.length - 1; i >= 0; i--) {
-        const kitPath = path.join(kitsDir, directories[i], relativePath);
+function findSourceKitFolder(relativePath, folders) {
+    for (let i = folders.length - 1; i >= 0; i--) {
+        const kitPath = path.join(kitsDir, folders[i], relativePath);
         if (fs.existsSync(kitPath)) {
-            return directories[i];
+            return folders[i];
         }
     }
 
     return null;
 }
 
-function isInertiaKit(targetDirectory) {
-    return targetDirectory.startsWith('Inertia/');
+function isInertiaKit(targetFolder) {
+    return targetFolder.startsWith('Inertia/');
 }
 
 /**
@@ -537,18 +537,18 @@ function remapComponentsPath(relativePath, starterKit, manifest) {
 }
 
 /**
- * Get the target kit directory for a file.
- * Returns the highest-priority directory that contains the file, or the highest-priority directory if not found.
+ * Get the target kit folder for a file.
+ * Returns the highest-priority folder that contains the file, or the highest-priority folder if not found.
  */
-function getTargetDirectory(relativePath, directories) {
-    return findSourceKitDirectory(relativePath, directories) ?? directories[directories.length - 1];
+function getTargetFolder(relativePath, folders) {
+    return findSourceKitFolder(relativePath, folders) ?? folders[folders.length - 1];
 }
 
 /**
  * Process file content, applying placeholder restoration if needed.
  * Returns the processed content for text files, or null for binary files.
  */
-function processFileContent(srcPath, relativePath, targetDirectory, kitType, uiComponents, manifest) {
+function processFileContent(srcPath, relativePath, targetFolder, kitType, uiComponents, manifest) {
     if (!isTextFile(relativePath)) {
         return null;
     }
@@ -561,7 +561,7 @@ function processFileContent(srcPath, relativePath, targetDirectory, kitType, uiC
     }
 
     // Apply variant restoration for composer.json in Inertia kits
-    if (kitType && relativePath === 'composer.json' && isInertiaKit(targetDirectory)) {
+    if (kitType && relativePath === 'composer.json' && isInertiaKit(targetFolder)) {
         content = restoreComposerVariant(content, kitType);
     }
 
@@ -569,7 +569,7 @@ function processFileContent(srcPath, relativePath, targetDirectory, kitType, uiC
 }
 
 /**
- * Write a file to the kit directory.
+ * Write a file to the kit folder.
  * Handles both text files (with processed content) and binary files.
  */
 function writeToKit(srcPath, destPath, processedContent) {
@@ -589,19 +589,19 @@ function writeToKit(srcPath, destPath, processedContent) {
 }
 
 /**
- * Copy a file from build to the appropriate kit directory.
+ * Copy a file from build to the appropriate kit folder.
  * Restores placeholders for files in placeholder paths.
  */
-function copyToKit(srcPath, relativePath, directories, kitType, uiComponents, starterKit, manifest) {
+function copyToKit(srcPath, relativePath, folders, kitType, uiComponents, starterKit, manifest) {
     const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
-    const targetDirectory = getTargetDirectory(destRelativePath, directories);
-    const destPath = path.join(kitsDir, targetDirectory, destRelativePath);
+    const targetFolder = getTargetFolder(destRelativePath, folders);
+    const destPath = path.join(kitsDir, targetFolder, destRelativePath);
 
     try {
-        const processedContent = processFileContent(srcPath, relativePath, targetDirectory, kitType, uiComponents, manifest);
+        const processedContent = processFileContent(srcPath, relativePath, targetFolder, kitType, uiComponents, manifest);
 
         if (isBlockedEmptyTextSync(relativePath, processedContent, destPath)) {
-            log(`Blocked empty file sync: ${relativePath} -> kits/${targetDirectory}`, 'red');
+            log(`Blocked empty file sync: ${relativePath} -> kits/${targetFolder}`, 'red');
 
             return;
         }
@@ -610,33 +610,32 @@ function copyToKit(srcPath, relativePath, directories, kitType, uiComponents, st
         const copyLabel = destRelativePath !== relativePath
             ? `${relativePath} (remapped to ${destRelativePath})`
             : relativePath;
-        log(`Copied: ${copyLabel} -> kits/${targetDirectory}`, 'green');
+        log(`Copied: ${copyLabel} -> kits/${targetFolder}`, 'green');
     } catch (error) {
         log(`Error copying ${relativePath}: ${error.message}`, 'red');
     }
 }
 
 /**
- * Delete a file from the appropriate kit directory.
+ * Delete a file from the appropriate kit folder.
  */
-function deleteFromKit(relativePath, directories, starterKit, manifest) {
+function deleteFromKit(relativePath, folders, starterKit, manifest) {
     const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
 
-    // Find the highest-priority directory that has this file
-    const targetDirectory = findSourceKitDirectory(destRelativePath, directories);
+    // Find the highest-priority folder that has this file
+    const targetFolder = findSourceKitFolder(destRelativePath, folders);
 
-    if (!targetDirectory) {
+    if (!targetFolder) {
         return;
     }
 
-    const targetPath = path.join(kitsDir, targetDirectory, destRelativePath);
-    const kitDirectoryRoot = path.join(kitsDir, targetDirectory);
+    const targetPath = path.join(kitsDir, targetFolder, destRelativePath);
 
     try {
         if (fs.existsSync(targetPath)) {
             fs.unlinkSync(targetPath);
-            log(`Deleted: kits/${targetDirectory}/${destRelativePath}`, 'yellow');
-            removeEmptyParentDirs(targetPath, kitDirectoryRoot);
+            log(`Deleted: kits/${targetFolder}/${destRelativePath}`, 'yellow');
+            removeEmptyParentDirs(targetPath, path.join(kitsDir, targetFolder));
         }
     } catch (error) {
         log(`Error deleting ${destRelativePath}: ${error.message}`, 'red');
@@ -644,13 +643,13 @@ function deleteFromKit(relativePath, directories, starterKit, manifest) {
 }
 
 /**
- * Delete a directory and its contents from the appropriate kit directory(s).
+ * Delete a directory and its contents from the appropriate kit folder(s).
  */
-function deleteDirFromKit(relativePath, directories, starterKit, manifest) {
+function deleteDirFromKit(relativePath, folders, starterKit, manifest) {
     const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
 
-    for (let i = directories.length - 1; i >= 0; i--) {
-        const targetDir = path.join(kitsDir, directories[i], destRelativePath);
+    for (let i = folders.length - 1; i >= 0; i--) {
+        const targetDir = path.join(kitsDir, folders[i], destRelativePath);
 
         if (!fs.existsSync(targetDir)) {
             continue;
@@ -658,9 +657,9 @@ function deleteDirFromKit(relativePath, directories, starterKit, manifest) {
 
         try {
             fs.rmSync(targetDir, { recursive: true, force: true });
-            log(`Deleted directory: kits/${directories[i]}/${destRelativePath}`, 'yellow');
+            log(`Deleted directory: kits/${folders[i]}/${destRelativePath}`, 'yellow');
 
-            removeEmptyParentDirs(targetDir, path.join(kitsDir, directories[i]));
+            removeEmptyParentDirs(targetDir, path.join(kitsDir, folders[i]));
         } catch (error) {
             log(`Error deleting directory ${destRelativePath}: ${error.message}`, 'red');
         }
@@ -670,7 +669,7 @@ function deleteDirFromKit(relativePath, directories, starterKit, manifest) {
 /**
  * Handle file change events from the build directory.
  */
-function handleFileChange(eventType, filePath, directories, ig, kitType, uiComponents, starterKit, manifest) {
+function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponents, starterKit, manifest) {
     const relativePath = getRelativePath(filePath);
 
     // Skip files that match .gitignore patterns
@@ -679,18 +678,18 @@ function handleFileChange(eventType, filePath, directories, ig, kitType, uiCompo
     }
 
     if (eventType === 'unlink') {
-        deleteFromKit(relativePath, directories, starterKit, manifest);
+        deleteFromKit(relativePath, folders, starterKit, manifest);
 
         return;
     }
 
     if (eventType === 'unlinkDir') {
-        deleteDirFromKit(relativePath, directories, starterKit, manifest);
+        deleteDirFromKit(relativePath, folders, starterKit, manifest);
 
         return;
     }
 
-    copyToKit(filePath, relativePath, directories, kitType, uiComponents, starterKit, manifest);
+    copyToKit(filePath, relativePath, folders, kitType, uiComponents, starterKit, manifest);
 }
 
 function startWatching() {
@@ -702,9 +701,9 @@ function startWatching() {
     }
 
     const manifest = loadManifest();
-    const directories = manifest.kitFolderMap[starterKit];
+    const folders = manifest.kitFolderMap[starterKit];
 
-    if (!directories) {
+    if (!folders) {
         log(`Unknown starter kit: ${starterKit}`, 'red');
         process.exit(1);
     }
@@ -719,7 +718,7 @@ function startWatching() {
 
     log(`Watching build directory for ${starterKit} kit`, 'blue');
     log(`Changes will be copied to:`, 'blue');
-    directories.forEach(directory => log(`  - kits/${directory}`, 'blue'));
+    folders.forEach(folder => log(`  - kits/${folder}`, 'blue'));
 
     if (kitType) {
         log(`Placeholder restoration enabled for ${kitType} kit`, 'blue');
@@ -728,7 +727,7 @@ function startWatching() {
     const ig = loadGitignores();
 
     // Perform initial sync to catch any changes that occurred while watcher wasn't running
-    performInitialSync(directories, ig, kitType, uiComponents, starterKit, manifest);
+    performInitialSync(folders, ig, kitType, uiComponents, starterKit, manifest);
 
     if (initialSyncOnly) {
         log('Initial sync only mode enabled. Exiting without starting watcher.', 'blue');
@@ -743,10 +742,10 @@ function startWatching() {
     });
 
     watcher
-        .on('add', filePath => handleFileChange('add', filePath, directories, ig, kitType, uiComponents, starterKit, manifest))
-        .on('change', filePath => handleFileChange('change', filePath, directories, ig, kitType, uiComponents, starterKit, manifest))
-        .on('unlink', filePath => handleFileChange('unlink', filePath, directories, ig, kitType, uiComponents, starterKit, manifest))
-        .on('unlinkDir', filePath => handleFileChange('unlinkDir', filePath, directories, ig, kitType, uiComponents, starterKit, manifest))
+        .on('add', filePath => handleFileChange('add', filePath, folders, ig, kitType, uiComponents, starterKit, manifest))
+        .on('change', filePath => handleFileChange('change', filePath, folders, ig, kitType, uiComponents, starterKit, manifest))
+        .on('unlink', filePath => handleFileChange('unlink', filePath, folders, ig, kitType, uiComponents, starterKit, manifest))
+        .on('unlinkDir', filePath => handleFileChange('unlinkDir', filePath, folders, ig, kitType, uiComponents, starterKit, manifest))
         .on('ready', () => {
             log('Watcher ready. Waiting for changes in build directory...', 'green');
         })
