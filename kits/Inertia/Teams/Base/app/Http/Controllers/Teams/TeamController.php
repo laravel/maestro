@@ -7,6 +7,7 @@ use App\Enums\TeamRole;
 use App\Events\Teams\TeamDeleted;
 use App\Events\Teams\TeamUpdated;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Teams\DeleteTeamRequest;
 use App\Http\Requests\Teams\SaveTeamRequest;
 use App\Models\Team;
 use App\Models\User;
@@ -90,6 +91,16 @@ class TeamController extends Controller
                 'canCancelInvitation' => $user->hasTeamPermission($team, 'invitation:cancel'),
             ],
             'availableRoles' => TeamRole::assignable(),
+            'isCurrentTeam' => $user->current_team_id === $team->id,
+            'otherTeams' => $user->teams()
+                ->where('teams.id', '!=', $team->id)
+                ->get()
+                ->map(fn (Team $t) => [
+                    'id' => $t->id,
+                    'name' => $t->name,
+                    'slug' => $t->slug,
+                    'is_personal' => $t->is_personal,
+                ]),
         ]);
     }
 
@@ -109,27 +120,24 @@ class TeamController extends Controller
     /**
      * Delete the specified team.
      */
-    public function destroy(Request $request, Team $team): RedirectResponse
+    public function destroy(DeleteTeamRequest $request, Team $team): RedirectResponse
     {
         Gate::authorize('delete', $team);
 
         $user = $request->user();
+        $newCurrentTeamId = $request->validated('new_current_team_id');
 
+        // Clear current_team_id for all users who had this team as current
         User::where('current_team_id', $team->id)->update(['current_team_id' => null]);
+
         $team->invitations()->delete();
         $team->memberships()->delete();
         $team->delete();
 
         event(new TeamDeleted($team));
 
-        $user->refresh();
-
-        if ($user->current_team_id === null) {
-            $personalTeam = $user->personalTeam();
-
-            if ($personalTeam) {
-                return to_route('dashboard', ['current_team' => $personalTeam->slug]);
-            }
+        if ($newCurrentTeamId) {
+            $user->update(['current_team_id' => $newCurrentTeamId]);
         }
 
         return to_route('teams.index');
