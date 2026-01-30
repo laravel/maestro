@@ -90,7 +90,7 @@ class TeamMemberTest extends TestCase
     public function test_removed_member_current_team_is_set_to_personal_team()
     {
         $owner = User::factory()->create();
-        $member = User::factory()->withPersonalTeam()->create();
+        $member = User::factory()->create();
         $personalTeam = $member->personalTeam();
         $team = Team::factory()->create();
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
