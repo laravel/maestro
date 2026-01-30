@@ -48,7 +48,7 @@ class TeamMemberController extends Controller
             ->where('user_id', $user->id)
             ->delete();
 
-        if ($user->current_team_id === $team->id) {
+        if ($user->isCurrentTeam($team)) {
             $user->switchTeam($user->personalTeam());
         }
 
