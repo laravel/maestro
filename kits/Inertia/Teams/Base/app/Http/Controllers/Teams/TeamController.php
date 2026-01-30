@@ -125,8 +125,13 @@ class TeamController extends Controller
         $user = $request->user();
         $newCurrentTeamId = $request->validated('new_current_team_id');
 
-        // Clear current_team_id for all users who had this team as current
-        User::where('current_team_id', $team->id)->update(['current_team_id' => null]);
+        // For other users who had this team as current, set their personal team as current
+        User::where('current_team_id', $team->id)
+            ->where('id', '!=', $user->id)
+            ->each(function (User $affectedUser) {
+                $personalTeam = $affectedUser->personalTeam();
+                $affectedUser->update(['current_team_id' => $personalTeam?->id]);
+            });
 
         $team->invitations()->delete();
         $team->memberships()->delete();

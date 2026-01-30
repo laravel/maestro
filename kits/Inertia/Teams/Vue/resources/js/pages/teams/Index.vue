@@ -94,24 +94,7 @@ const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
                                     </TooltipContent>
                                 </Tooltip>
 
-                                <Tooltip v-if="team.role === 'owner' || team.role === 'admin' || team.role === 'member'">
-                                    <TooltipTrigger as-child>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            as-child
-                                        >
-                                            <Link :href="`/teams/${team.slug}`">
-                                                <Edit class="h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Edit team</p>
-                                    </TooltipContent>
-                                </Tooltip>
-
-                                <Tooltip v-else>
+                                <Tooltip v-if="team.role === 'member'">
                                     <TooltipTrigger as-child>
                                         <Button
                                             variant="ghost"
@@ -125,6 +108,23 @@ const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>View team</p>
+                                    </TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip v-else>
+                                    <TooltipTrigger as-child>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            as-child
+                                        >
+                                            <Link :href="`/teams/${team.slug}`">
+                                                <Edit class="h-4 w-4" />
+                                            </Link>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Edit team</p>
                                     </TooltipContent>
                                 </Tooltip>
                             </div>
