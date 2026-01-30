@@ -2,11 +2,15 @@
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import CreateTeamModal from '@/components/CreateTeamModal.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -33,9 +37,9 @@ import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
 import { toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import type { BreadcrumbItem, NavItem, SharedData } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
+import type { BreadcrumbItem, NavItem, SharedData, Team } from '@/types';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { BookOpen, Check, ChevronsUpDown, Folder, LayoutGrid, Menu, Plus, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 type Props = {
@@ -48,11 +52,15 @@ const props = withDefaults(defineProps<Props>(), {
 
 const page = usePage<SharedData>();
 const auth = computed(() => page.props.auth);
+const currentTeam = computed(() => page.props.currentTeam);
+const teams = computed(() => page.props.teams ?? []);
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 
 const dashboardUrl = computed(() =>
     page.props.currentTeam ? dashboard(page.props.currentTeam.slug).url : '/'
 );
+
+const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
 
 const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
@@ -267,6 +275,45 @@ const rightNavItems: NavItem[] = [
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" class="w-56">
                             <UserMenuContent :user="auth.user" />
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <!-- Team Switcher -->
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <Button variant="ghost" class="h-8 gap-1 px-2">
+                                <span class="max-w-[120px] truncate font-medium">
+                                    {{ currentTeam?.name ?? 'Select Team' }}
+                                </span>
+                                <ChevronsUpDown class="size-4 opacity-50" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" class="w-56">
+                            <DropdownMenuLabel class="text-xs text-muted-foreground">
+                                Teams
+                            </DropdownMenuLabel>
+                            <DropdownMenuItem
+                                v-for="team in teams"
+                                :key="team.id"
+                                class="cursor-pointer gap-2"
+                                @click="switchTeam(team)"
+                            >
+                                {{ team.name }}
+                                <Check
+                                    v-if="currentTeam?.id === team.id"
+                                    class="ml-auto size-4"
+                                />
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <CreateTeamModal>
+                                <DropdownMenuItem
+                                    class="cursor-pointer gap-2"
+                                    @select.prevent
+                                >
+                                    <Plus class="size-4" />
+                                    <span class="text-muted-foreground">Create Team</span>
+                                </DropdownMenuItem>
+                            </CreateTeamModal>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
