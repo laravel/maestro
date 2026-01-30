@@ -75,7 +75,7 @@ class TeamController extends Controller
                 ->whereNull('accepted_at')
                 ->get()
                 ->map(fn ($invitation) => [
-                    'id' => $invitation->id,
+                    'code' => $invitation->code,
                     'email' => $invitation->email,
                     'role' => $invitation->role->value,
                     'role_label' => $invitation->role->label(),
