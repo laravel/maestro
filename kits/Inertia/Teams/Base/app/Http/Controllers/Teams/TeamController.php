@@ -34,7 +34,7 @@ class TeamController extends Controller
                 'is_personal' => $team->is_personal,
                 'role' => ($role = $user->teamRole($team))?->value,
                 'role_label' => $role?->label(),
-                'is_current' => $user->current_team_id === $team->id,
+                'is_current' => $user->isCurrentTeam($team),
             ]),
         ]);
     }
@@ -91,7 +91,7 @@ class TeamController extends Controller
                 'canCancelInvitation' => $user->hasTeamPermission($team, 'invitation:cancel'),
             ],
             'availableRoles' => TeamRole::assignable(),
-            'isCurrentTeam' => $user->current_team_id === $team->id,
+            'isCurrentTeam' => $user->isCurrentTeam($team),
             'otherTeams' => $user->teams()
                 ->where('teams.id', '!=', $team->id)
                 ->get()

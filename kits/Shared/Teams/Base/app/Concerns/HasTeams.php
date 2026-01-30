@@ -94,6 +94,14 @@ trait HasTeams
     }
 
     /**
+     * Determine if the given team is the user's current team.
+     */
+    public function isCurrentTeam(Team $team): bool
+    {
+        return $this->current_team_id === $team->id;
+    }
+
+    /**
      * Get the user's role on the given team.
      */
     public function teamRole(Team $team): ?TeamRole
