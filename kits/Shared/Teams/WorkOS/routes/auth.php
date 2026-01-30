@@ -16,7 +16,7 @@ Route::get('authenticate', function (AuthKitAuthenticationRequest $request) {
     $currentTeam = $user->currentTeam ?? $user->personalTeam();
 
     if ($currentTeam && ! $user->current_team_id) {
-        $user->update(['current_team_id' => $currentTeam->id]);
+        $user->switchTeam($currentTeam);
     }
 
     return redirect()->intended(route('dashboard', ['current_team' => $currentTeam?->slug]));

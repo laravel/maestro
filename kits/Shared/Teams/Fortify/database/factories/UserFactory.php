@@ -51,7 +51,7 @@ class UserFactory extends Factory
                 'role' => TeamRole::Owner->value,
             ]);
 
-            $user->update(['current_team_id' => $team->id]);
+            $user->switchTeam($team);
         });
     }
 

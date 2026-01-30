@@ -128,10 +128,7 @@ class TeamController extends Controller
         // For other users who had this team as current, set their personal team as current
         User::where('current_team_id', $team->id)
             ->where('id', '!=', $user->id)
-            ->each(function (User $affectedUser) {
-                $personalTeam = $affectedUser->personalTeam();
-                $affectedUser->update(['current_team_id' => $personalTeam?->id]);
-            });
+            ->each(fn (User $affectedUser) => $affectedUser->switchTeam($affectedUser->personalTeam()));
 
         $team->invitations()->delete();
         $team->memberships()->delete();
@@ -140,7 +137,7 @@ class TeamController extends Controller
         event(new TeamDeleted($team));
 
         if ($newCurrentTeamId) {
-            $user->update(['current_team_id' => $newCurrentTeamId]);
+            $user->switchTeam(Team::findOrFail($newCurrentTeamId));
         }
 
         return to_route('teams.index');
