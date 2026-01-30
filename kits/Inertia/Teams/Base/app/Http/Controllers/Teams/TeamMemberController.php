@@ -49,7 +49,7 @@ class TeamMemberController extends Controller
             ->delete();
 
         if ($user->current_team_id === $team->id) {
-            $user->update(['current_team_id' => null]);
+            $user->switchTeam($user->personalTeam());
         }
 
         event(new TeamMemberRemoved($team, $user));

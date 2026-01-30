@@ -27,7 +27,7 @@ class CreateTeam
                 'role' => TeamRole::Owner,
             ]);
 
-            $user->update(['current_team_id' => $team->id]);
+            $user->switchTeam($team);
 
             event(new TeamCreated($team));
             event(new TeamMemberAdded($team, $user, $membership));

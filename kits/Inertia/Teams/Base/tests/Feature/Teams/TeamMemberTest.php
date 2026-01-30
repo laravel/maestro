@@ -87,10 +87,11 @@ class TeamMemberTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_removed_member_current_team_is_cleared()
+    public function test_removed_member_current_team_is_set_to_personal_team()
     {
         $owner = User::factory()->create();
-        $member = User::factory()->create();
+        $member = User::factory()->withPersonalTeam()->create();
+        $personalTeam = $member->personalTeam();
         $team = Team::factory()->create();
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
@@ -100,6 +101,6 @@ class TeamMemberTest extends TestCase
             ->actingAs($owner)
             ->delete(route('teams.members.destroy', [$team, $member]));
 
-        $this->assertNull($member->fresh()->current_team_id);
+        $this->assertEquals($personalTeam->id, $member->fresh()->current_team_id);
     }
 }
