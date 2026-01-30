@@ -48,13 +48,4 @@ class MembershipFactory extends Factory
         ]);
     }
 
-    /**
-     * Indicate that the member is a viewer.
-     */
-    public function viewer(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'role' => TeamRole::Viewer,
-        ]);
-    }
 }

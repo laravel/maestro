@@ -47,7 +47,7 @@ class TeamMemberTest extends TestCase
         $response = $this
             ->actingAs($admin)
             ->patch(route('teams.members.update', [$team, $member]), [
-                'role' => TeamRole::Viewer->value,
+                'role' => TeamRole::Admin->value,
             ]);
 
         $response->assertForbidden();

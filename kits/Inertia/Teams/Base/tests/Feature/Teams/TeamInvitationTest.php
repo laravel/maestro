@@ -58,16 +58,16 @@ class TeamInvitationTest extends TestCase
         $response->assertRedirect(route('teams.edit', $team));
     }
 
-    public function test_team_invitation_cannot_be_created_by_viewer()
+    public function test_team_invitation_cannot_be_created_by_member()
     {
         $owner = User::factory()->create();
-        $viewer = User::factory()->create();
+        $member = User::factory()->create();
         $team = Team::factory()->create();
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
-        $team->members()->attach($viewer, ['role' => TeamRole::Viewer->value]);
+        $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
         $response = $this
-            ->actingAs($viewer)
+            ->actingAs($member)
             ->post(route('teams.invitations.store', $team), [
                 'email' => 'invited@example.com',
                 'role' => TeamRole::Member->value,
