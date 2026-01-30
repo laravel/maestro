@@ -44,7 +44,7 @@ class DeleteTeamRequest extends FormRequest
                     $validator->errors()->add('name', 'The team name does not match.');
                 }
 
-                $isDeletingCurrentTeam = $user->current_team_id === $team->id;
+                $isDeletingCurrentTeam = $user->isCurrentTeam($team);
                 if ($isDeletingCurrentTeam && ! $this->input('new_current_team_id')) {
                     $validator->errors()->add('new_current_team_id', 'You must select a new current team.');
                 }
