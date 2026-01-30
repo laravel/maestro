@@ -163,7 +163,7 @@ const deleteTeam = () => {
         <SettingsLayout>
             <div class="flex flex-col space-y-10">
                 <!-- Team Name Section -->
-                <div class="space-y-6">
+                <div v-if="permissions.canUpdateTeam" class="space-y-6">
                     <Heading
                         variant="small"
                         title="Team Settings"
@@ -182,7 +182,6 @@ const deleteTeam = () => {
                                 id="name"
                                 name="name"
                                 :default-value="team.name"
-                                :disabled="!permissions.canUpdateTeam"
                                 required
                             />
                             <InputError :message="errors.name" />
@@ -191,7 +190,7 @@ const deleteTeam = () => {
                         <div class="flex items-center gap-4">
                             <Button
                                 type="submit"
-                                :disabled="processing || !permissions.canUpdateTeam"
+                                :disabled="processing"
                             >
                                 Save
                             </Button>
@@ -211,6 +210,14 @@ const deleteTeam = () => {
                             </Transition>
                         </div>
                     </Form>
+                </div>
+
+                <div v-else class="space-y-6">
+                    <Heading
+                        variant="small"
+                        title="Team Name"
+                    />
+                    <p class="text-foreground">{{ team.name }}</p>
                 </div>
 
                 <!-- Members Section -->
