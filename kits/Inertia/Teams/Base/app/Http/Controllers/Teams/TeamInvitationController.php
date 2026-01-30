@@ -75,7 +75,7 @@ class TeamInvitationController extends Controller
             ]);
 
             $invitation->update(['accepted_at' => now()]);
-            $user->update(['current_team_id' => $team->id]);
+            $user->switchTeam($team);
 
             event(new TeamInvitationAccepted($invitation, $user));
             event(new TeamMemberAdded($team, $user, $membership));
