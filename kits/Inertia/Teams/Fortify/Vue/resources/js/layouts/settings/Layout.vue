@@ -25,12 +25,12 @@ const sidebarNavItems: NavItem[] = [
         href: show(),
     },
     {
-        title: 'Appearance',
-        href: editAppearance(),
-    },
-    {
         title: 'Teams',
         href: '/teams',
+    },
+    {
+        title: 'Appearance',
+        href: editAppearance(),
     },
 ];
 

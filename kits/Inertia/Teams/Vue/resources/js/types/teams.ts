@@ -27,7 +27,7 @@ export type TeamMember = {
 };
 
 export type TeamInvitation = {
-    id: string;
+    code: string;
     email: string;
     role: TeamRole;
     role_label: string;

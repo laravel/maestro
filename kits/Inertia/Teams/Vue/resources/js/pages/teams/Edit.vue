@@ -128,7 +128,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
 
 const cancelInvitation = () => {
     if (invitationToCancel.value) {
-        router.delete(`/teams/${props.team.slug}/invitations/${invitationToCancel.value.id}`, {
+        router.delete(`/teams/${props.team.slug}/invitations/${invitationToCancel.value.code}`, {
             onSuccess: () => {
                 cancelInvitationDialogOpen.value = false;
                 invitationToCancel.value = null;
@@ -336,14 +336,22 @@ const deleteTeam = () => {
                                     {{ member.role_label }}
                                 </Badge>
 
-                                <Button
-                                    v-if="member.role !== 'owner' && permissions.canRemoveMember"
-                                    variant="ghost"
-                                    size="sm"
-                                    @click="confirmRemoveMember(member)"
-                                >
-                                    <X class="h-4 w-4" />
-                                </Button>
+                                <TooltipProvider v-if="member.role !== 'owner' && permissions.canRemoveMember">
+                                    <Tooltip>
+                                        <TooltipTrigger as-child>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                @click="confirmRemoveMember(member)"
+                                            >
+                                                <X class="h-4 w-4" />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Remove member</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                             </div>
                         </div>
                     </div>
@@ -360,7 +368,7 @@ const deleteTeam = () => {
                     <div class="space-y-3">
                         <div
                             v-for="invitation in invitations"
-                            :key="invitation.id"
+                            :key="invitation.code"
                             class="flex items-center justify-between rounded-lg border p-4"
                         >
                             <div class="flex items-center gap-4">

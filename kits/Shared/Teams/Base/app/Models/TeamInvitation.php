@@ -3,15 +3,30 @@
 namespace App\Models;
 
 use App\Enums\TeamRole;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class TeamInvitation extends Model
 {
     /** @use HasFactory<\Database\Factories\TeamInvitationFactory> */
-    use HasFactory, HasUuids;
+    use HasFactory;
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::creating(function (TeamInvitation $invitation) {
+            if (empty($invitation->code)) {
+                $invitation->code = Str::random(128);
+            }
+        });
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'code';
+    }
 
     /**
      * The attributes that are mass assignable.
