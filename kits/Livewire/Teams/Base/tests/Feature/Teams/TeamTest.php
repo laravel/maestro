@@ -41,6 +41,27 @@ class TeamTest extends TestCase
         ]);
     }
 
+    public function test_team_slug_uses_next_available_suffix(): void
+    {
+        $user = User::factory()->create();
+
+        Team::factory()->create(['name' => 'Acme', 'slug' => 'acme']);
+        Team::factory()->create(['name' => 'Acme One', 'slug' => 'acme-1']);
+        Team::factory()->create(['name' => 'Acme Ten', 'slug' => 'acme-10']);
+
+        $this->actingAs($user);
+
+        Livewire::test('pages::teams.index')
+            ->set('name', 'Acme')
+            ->call('createTeam')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('teams', [
+            'name' => 'Acme',
+            'slug' => 'acme-11',
+        ]);
+    }
+
     public function test_team_edit_page_can_be_displayed(): void
     {
         $user = User::factory()->create();

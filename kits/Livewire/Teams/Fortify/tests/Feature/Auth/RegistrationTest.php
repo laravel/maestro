@@ -29,9 +29,7 @@ class RegistrationTest extends TestCase
         $user = User::where('email', 'test@example.com')->first();
 
         $response->assertSessionHasNoErrors()
-            ->assertRedirect(route('dashboard', [
-                'current_team' => $user->currentTeam->slug,
-            ], absolute: false));
+            ->assertRedirect(route('dashboard', absolute: false));
 
         $this->assertAuthenticated();
     }
