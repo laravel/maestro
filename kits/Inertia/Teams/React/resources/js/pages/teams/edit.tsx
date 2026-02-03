@@ -248,7 +248,7 @@ export default function TeamEdit({
                             <Heading
                                 variant="small"
                                 title="Team Members"
-                                description="Manage who has access to this team"
+                                description={permissions.canCreateInvitation ? 'Manage who has access to this team' : ''}
                             />
 
                             {permissions.canCreateInvitation ? (

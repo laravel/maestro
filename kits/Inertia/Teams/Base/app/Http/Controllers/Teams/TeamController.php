@@ -13,6 +13,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -81,15 +82,7 @@ class TeamController extends Controller
                     'role_label' => $invitation->role->label(),
                     'created_at' => $invitation->created_at->toISOString(),
                 ]),
-            'permissions' => [
-                'canUpdateTeam' => $user->hasTeamPermission($team, 'team:update'),
-                'canDeleteTeam' => $user->hasTeamPermission($team, 'team:delete'),
-                'canAddMember' => $user->hasTeamPermission($team, 'member:add'),
-                'canUpdateMember' => $user->hasTeamPermission($team, 'member:update'),
-                'canRemoveMember' => $user->hasTeamPermission($team, 'member:remove'),
-                'canCreateInvitation' => $user->hasTeamPermission($team, 'invitation:create'),
-                'canCancelInvitation' => $user->hasTeamPermission($team, 'invitation:cancel'),
-            ],
+            'permissions' => $user->teamPermissions($team),
             'availableRoles' => TeamRole::assignable(),
             'isCurrentTeam' => $user->isCurrentTeam($team),
             'otherTeams' => $user->teams()
@@ -125,14 +118,15 @@ class TeamController extends Controller
         $user = $request->user();
         $newCurrentTeamId = $request->validated('new_current_team_id');
 
-        // For other users who had this team as current, set their personal team as current
-        User::where('current_team_id', $team->id)
-            ->where('id', '!=', $user->id)
-            ->each(fn (User $affectedUser) => $affectedUser->switchTeam($affectedUser->personalTeam()));
+        DB::transaction(function () use ($user, $team) {
+            User::where('current_team_id', $team->id)
+                ->where('id', '!=', $user->id)
+                ->each(fn (User $affectedUser) => $affectedUser->switchTeam($affectedUser->personalTeam()));
 
-        $team->invitations()->delete();
-        $team->memberships()->delete();
-        $team->delete();
+            $team->invitations()->delete();
+            $team->memberships()->delete();
+            $team->delete();
+        });
 
         event(new TeamDeleted($team));
 
