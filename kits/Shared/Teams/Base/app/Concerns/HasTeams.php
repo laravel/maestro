@@ -72,7 +72,6 @@ trait HasTeams
         }
 
         $this->update(['current_team_id' => $team->id]);
-
         $this->setRelation('currentTeam', $team);
 
         URL::defaults(['current_team' => $team->slug]);
@@ -116,6 +115,24 @@ trait HasTeams
             ->first();
 
         return $membership?->role;
+    }
+
+    /**
+     * Get the standard permissions array for a team.
+     *
+     * @return array<string, bool>
+     */
+    public function teamPermissions(Team $team): array
+    {
+        return [
+            'canUpdateTeam' => $this->hasTeamPermission($team, 'team:update'),
+            'canDeleteTeam' => $this->hasTeamPermission($team, 'team:delete'),
+            'canAddMember' => $this->hasTeamPermission($team, 'member:add'),
+            'canUpdateMember' => $this->hasTeamPermission($team, 'member:update'),
+            'canRemoveMember' => $this->hasTeamPermission($team, 'member:remove'),
+            'canCreateInvitation' => $this->hasTeamPermission($team, 'invitation:create'),
+            'canCancelInvitation' => $this->hasTeamPermission($team, 'invitation:cancel'),
+        ];
     }
 
     /**

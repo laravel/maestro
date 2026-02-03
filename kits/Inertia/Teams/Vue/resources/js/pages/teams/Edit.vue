@@ -226,7 +226,7 @@ const deleteTeam = () => {
                         <Heading
                             variant="small"
                             title="Team Members"
-                            description="Manage who has access to this team"
+                            :description="permissions.canCreateInvitation ? 'Manage who has access to this team' : ''"
                         />
 
                         <Dialog v-model:open="inviteDialogOpen" v-if="permissions.canCreateInvitation">

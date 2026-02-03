@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class TeamInvitationController extends Controller
@@ -49,6 +50,8 @@ class TeamInvitationController extends Controller
      */
     public function destroy(Request $request, Team $team, TeamInvitation $invitation): RedirectResponse
     {
+        abort_unless($invitation->team_id === $team->id, 404);
+
         Gate::authorize('cancelInvitation', $invitation->team);
 
         $invitation->delete();
@@ -63,25 +66,29 @@ class TeamInvitationController extends Controller
     public function accept(Request $request, TeamInvitation $invitation): RedirectResponse
     {
         $user = $request->user();
-
         $this->validateInvitation($user, $invitation);
 
         DB::transaction(function () use ($user, $invitation) {
             $team = $invitation->team;
 
-            $membership = $team->memberships()->create([
-                'user_id' => $user->id,
-                'role' => $invitation->role,
-            ]);
+            $membership = $team->memberships()->firstOrCreate(
+                ['user_id' => $user->id],
+                ['role' => $invitation->role]
+            );
+
+            $wasRecentlyCreated = $membership->wasRecentlyCreated;
 
             $invitation->update(['accepted_at' => now()]);
             $user->switchTeam($team);
 
             event(new TeamInvitationAccepted($invitation, $user));
-            event(new TeamMemberAdded($team, $user, $membership));
 
-            if (config()->boolean('teams.invitations.notify_on_join')) {
-                $team->owner()?->notify(new InvitationAccepted($team, $user));
+            if ($wasRecentlyCreated) {
+                event(new TeamMemberAdded($team, $user, $membership));
+
+                if (config()->boolean('teams.invitations.notify_on_join')) {
+                    $team->owner()?->notify(new InvitationAccepted($team, $user));
+                }
             }
         });
 
@@ -107,7 +114,7 @@ class TeamInvitationController extends Controller
             ]);
         }
 
-        if ($invitation->email !== $user->email) {
+        if (Str::lower($invitation->email) !== Str::lower($user->email)) {
             throw ValidationException::withMessages([
                 'invitation' => [__('This invitation was sent to a different email address.')],
             ]);
