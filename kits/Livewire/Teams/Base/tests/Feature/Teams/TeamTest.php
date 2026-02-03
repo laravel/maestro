@@ -139,7 +139,7 @@ class TeamTest extends TestCase
         Livewire::test('pages::teams.edit', ['team' => $team])
             ->set('deleteName', $team->name)
             ->call('deleteTeam')
-            ->assertHasErrors(['new_current_team_id']);
+            ->assertHasErrors(['newCurrentTeamId']);
 
         $this->assertDatabaseHas('teams', [
             'id' => $team->id,
@@ -160,7 +160,7 @@ class TeamTest extends TestCase
 
         Livewire::test('pages::teams.edit', ['team' => $team])
             ->set('deleteName', $team->name)
-            ->set('new_current_team_id', $personalTeam->id)
+            ->set('newCurrentTeamId', $personalTeam->id)
             ->call('deleteTeam')
             ->assertHasNoErrors();
 
