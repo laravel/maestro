@@ -63,26 +63,41 @@ class Team extends Model
      */
     protected static function generateUniqueSlug(string $name, ?int $excludeId = null): string
     {
-        $slug = Str::slug($name);
-        $originalSlug = $slug;
-        $counter = 1;
+        $baseSlug = Str::slug($name);
 
-        $query = static::withTrashed()->where('slug', $slug);
+        $query = static::withTrashed()
+            ->where(function ($query) use ($baseSlug) {
+                $query->where('slug', $baseSlug)
+                    ->orWhere('slug', 'like', $baseSlug.'-%');
+            });
+
         if ($excludeId) {
             $query->where('id', '!=', $excludeId);
         }
 
-        while ($query->exists()) {
-            $slug = $originalSlug.'-'.$counter;
-            $counter++;
+        $existingSlugs = $query->pluck('slug');
+        if ($existingSlugs->isEmpty()) {
+            return $baseSlug;
+        }
 
-            $query = static::withTrashed()->where('slug', $slug);
-            if ($excludeId) {
-                $query->where('id', '!=', $excludeId);
+        $maxSuffix = 0;
+        foreach ($existingSlugs as $existingSlug) {
+            if ($existingSlug === $baseSlug) {
+                $maxSuffix = max($maxSuffix, 0);
+                continue;
+            }
+
+            if (!Str::startsWith($existingSlug, $baseSlug.'-')) {
+                continue;
+            }
+
+            $suffix = substr($existingSlug, strlen($baseSlug) + 1);
+            if ($suffix !== '' && ctype_digit($suffix)) {
+                $maxSuffix = max($maxSuffix, (int) $suffix);
             }
         }
 
-        return $slug;
+        return $baseSlug.'-'.($maxSuffix + 1);
     }
 
     /**
