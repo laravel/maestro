@@ -25,8 +25,8 @@
         "livewire": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/Fortify", "Livewire/Fortify"],
         "livewire-components": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/Fortify", "Livewire/Fortify", "Livewire/Components"],
         "livewire-workos": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/WorkOS", "Livewire/WorkOS"],
-        "livewire-teams": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/Fortify", "Livewire/Fortify", "Shared/Teams/Base", "Shared/Teams/Fortify", "Livewire/Teams/Fortify"],
-        "livewire-workos-teams": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/WorkOS", "Livewire/WorkOS", "Shared/Teams/Base", "Shared/Teams/WorkOS", "Livewire/Teams/WorkOS"],
+        "livewire-teams": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/Fortify", "Livewire/Fortify", "Shared/Teams/Base", "Shared/Teams/Fortify", "Livewire/Teams/Base", "Livewire/Teams/Fortify"],
+        "livewire-workos-teams": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/WorkOS", "Livewire/WorkOS", "Shared/Teams/Base", "Shared/Teams/WorkOS", "Livewire/Teams/Base", "Livewire/Teams/WorkOS"],
 
         "react-blank": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/React"],
         "react": ["Shared/Blank", "Inertia/Blank/Base", "Inertia/Blank/React", "Shared/Base", "Inertia/Base", "Inertia/React", "Shared/Fortify", "Inertia/Fortify/Base", "Inertia/Fortify/React"],
