@@ -1,0 +1,130 @@
+<?php
+
+use App\Actions\Teams\CreateTeam;
+use App\Models\Team;
+use App\Rules\TeamName;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
+
+new class extends Component {
+    public string $name = '';
+
+    public function getTeamsProperty()
+    {
+        $user = Auth::user();
+
+        return $user->teams()->get()->map(fn (Team $team) => [
+            'id' => $team->id,
+            'name' => $team->name,
+            'slug' => $team->slug,
+            'is_personal' => $team->is_personal,
+            'role' => ($role = $user->teamRole($team))?->value,
+            'role_label' => $role?->label(),
+            'is_current' => $user->isCurrentTeam($team),
+        ]);
+    }
+
+    public function createTeam(CreateTeam $createTeam): void
+    {
+        $validated = $this->validate([
+            'name' => ['required', 'string', 'max:255', new TeamName],
+        ]);
+
+        $team = $createTeam->handle(Auth::user(), $validated['name']);
+
+        $this->dispatch('close-modal', name: 'create-team');
+        $this->reset('name');
+
+        $this->redirectRoute('teams.edit', ['team' => $team->slug], navigate: true);
+    }
+
+    public function switchTeam(string $team): void
+    {
+        $team = Team::where('slug', $team)->firstOrFail();
+
+        abort_unless(Auth::user()->belongsToTeam($team), 403);
+        Auth::user()->switchTeam($team);
+
+        $this->redirectRoute('teams.index', navigate: true);
+    }
+}; ?>
+
+<section class="w-full">
+    @include('partials.settings-heading')
+
+    <flux:heading class="sr-only">{{ __('Teams') }}</flux:heading>
+
+    <x-pages::settings.layout :heading="__('Teams')" :subheading="__('Manage your teams and team memberships')">
+        <div class="flex items-center justify-end">
+            <flux:modal.trigger name="create-team">
+                <flux:button variant="primary" x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-team')">
+                    {{ __('Create Team') }}
+                </flux:button>
+            </flux:modal.trigger>
+        </div>
+
+        <div class="mt-6 space-y-3">
+            @forelse ($this->teams as $team)
+                <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div class="flex items-center gap-4">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium">{{ $team['name'] }}</span>
+                                @if ($team['is_current'])
+                                    <flux:badge color="green">{{ __('Current') }}</flux:badge>
+                                @endif
+                                @if ($team['is_personal'])
+                                    <flux:badge color="zinc">{{ __('Personal') }}</flux:badge>
+                                @endif
+                            </div>
+                            <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ $team['role_label'] }}</flux:text>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                        @if (! $team['is_current'])
+                            <flux:tooltip :content="__('Set as current team')">
+                                <flux:button variant="ghost" size="sm" icon="star" wire:click="switchTeam('{{ $team['slug'] }}')" />
+                            </flux:tooltip>
+                        @endif
+
+                        <flux:tooltip :content="$team['role'] === 'member' ? __('View team') : __('Edit team')">
+                            <flux:button
+                                variant="ghost"
+                                size="sm"
+                                :icon="$team['role'] === 'member' ? 'eye' : 'pencil'"
+                                :href="route('teams.edit', $team['slug'])"
+                                wire:navigate
+                            />
+                        </flux:tooltip>
+                    </div>
+                </div>
+            @empty
+                <flux:text class="py-8 text-center text-zinc-500 dark:text-zinc-400">
+                    {{ __('You don\'t belong to any teams yet.') }}
+                </flux:text>
+            @endforelse
+        </div>
+    </x-pages::settings.layout>
+
+    <flux:modal name="create-team" :show="$errors->isNotEmpty()" focusable class="max-w-lg">
+        <form wire:submit="createTeam" class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('Create a new team') }}</flux:heading>
+                <flux:subheading>{{ __('Give your team a name to get started.') }}</flux:subheading>
+            </div>
+
+            <flux:input wire:model="name" :label="__('Team name')" type="text" required autofocus />
+
+            <div class="flex justify-end space-x-2 rtl:space-x-reverse">
+                <flux:modal.close>
+                    <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
+                </flux:modal.close>
+
+                <flux:button variant="primary" type="submit">
+                    {{ __('Create team') }}
+                </flux:button>
+            </div>
+        </form>
+    </flux:modal>
+</section>

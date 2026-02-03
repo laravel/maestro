@@ -85,7 +85,7 @@ class TeamInvitationController extends Controller
             }
         });
 
-        return to_route('dashboard', ['current_team' => $invitation->team->slug]);
+        return to_route('dashboard');
     }
 
     /**

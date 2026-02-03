@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Laravel\WorkOS\Http\Requests\AuthKitAuthenticationRequest;
 use Laravel\WorkOS\Http\Requests\AuthKitLoginRequest;
 use Laravel\WorkOS\Http\Requests\AuthKitLogoutRequest;
@@ -19,7 +20,11 @@ Route::get('authenticate', function (AuthKitAuthenticationRequest $request) {
         $user->switchTeam($currentTeam);
     }
 
-    return redirect()->intended(route('dashboard', ['current_team' => $currentTeam?->slug]));
+    if ($currentTeam) {
+        URL::defaults(['current_team' => $currentTeam->slug]);
+    }
+
+    return redirect()->intended(route('dashboard'));
 })->middleware(['guest']);
 
 Route::post('logout', function (AuthKitLogoutRequest $request) {

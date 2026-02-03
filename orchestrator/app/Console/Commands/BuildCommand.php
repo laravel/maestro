@@ -485,6 +485,9 @@ class BuildCommand extends Command
         File::copyDirectory($this->sharedPath("Teams/{$authProvider}"), $buildPath);
 
         if ($kit === 'Livewire') {
+            info('Copying Livewire Teams Base files...');
+            File::copyDirectory($this->kitPath('Livewire/Teams/Base'), $buildPath);
+
             info("Copying Livewire Teams {$authProvider} files...");
             File::copyDirectory($this->kitPath("Livewire/Teams/{$authProvider}"), $buildPath);
 

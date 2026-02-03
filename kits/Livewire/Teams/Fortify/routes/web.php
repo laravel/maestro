@@ -1,0 +1,18 @@
+<?php
+
+use App\Http\Middleware\EnsureMembership;
+use Illuminate\Support\Facades\Route;
+use Laravel\Fortify\Features;
+
+Route::get('/', function () {
+    return view('welcome', [
+        'canRegister' => Features::enabled(Features::registration()),
+    ]);
+})->name('home');
+
+Route::get('{current_team}/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified', EnsureMembership::class])->name('dashboard');
+
+require __DIR__.'/settings.php';
+require __DIR__.'/teams.php';

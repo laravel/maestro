@@ -121,10 +121,11 @@ The `kits/Shared` folder contains files that are 100% identical between Livewire
 - **Shared/Teams/Base:** Common Teams files (models, actions, events, migrations)
 - **Shared/Teams/Fortify:** Teams files specific to Fortify (CreateNewUser action, UserFactory)
 - **Shared/Teams/WorkOS:** Teams files specific to WorkOS (CreatePersonalTeam listener, UserFactory)
+- **Livewire/Teams/Base:** Livewire Teams files shared between Fortify and WorkOS (layouts, components, team pages)
 
 ### Livewire
 
-Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/Auth -> Livewire/Auth [Components (Fortify only)] -> Shared/Teams -> Livewire/Teams
+Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/Auth -> Livewire/Auth [Components (Fortify only)] -> Shared/Teams/Base -> Shared/Teams/Auth -> Livewire/Teams/Base -> Livewire/Teams/Auth
 
 ### Inertia
 
