@@ -12,7 +12,9 @@ use App\Models\User;
 use App\Notifications\Teams\RemovedFromTeam;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
 use App\Rules\TeamName;
+use App\Rules\UniqueTeamInvitation;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
@@ -86,15 +88,7 @@ new class extends Component {
                 'created_at' => $invitation->created_at->toISOString(),
             ])->toArray();
 
-        $this->permissions = [
-            'canUpdateTeam' => $user->hasTeamPermission($team, 'team:update'),
-            'canDeleteTeam' => $user->hasTeamPermission($team, 'team:delete'),
-            'canAddMember' => $user->hasTeamPermission($team, 'member:add'),
-            'canUpdateMember' => $user->hasTeamPermission($team, 'member:update'),
-            'canRemoveMember' => $user->hasTeamPermission($team, 'member:remove'),
-            'canCreateInvitation' => $user->hasTeamPermission($team, 'invitation:create'),
-            'canCancelInvitation' => $user->hasTeamPermission($team, 'invitation:cancel'),
-        ];
+        $this->permissions = $user->teamPermissions($team);
 
         $this->availableRoles = TeamRole::assignable();
         $this->isCurrentTeam = $user->isCurrentTeam($team);
@@ -173,7 +167,7 @@ new class extends Component {
         Gate::authorize('inviteMember', $this->teamModel);
 
         $validated = $this->validate([
-            'inviteEmail' => ['required', 'string', 'email', 'max:255'],
+            'inviteEmail' => ['required', 'string', 'email', 'max:255', new UniqueTeamInvitation($this->teamModel)],
             'inviteRole' => ['required', 'string', Rule::enum(TeamRole::class)],
         ]);
 
@@ -245,13 +239,15 @@ new class extends Component {
             }
         }
 
-        User::where('current_team_id', $this->teamModel->id)
-            ->where('id', '!=', $user->id)
-            ->each(fn (User $affectedUser) => $affectedUser->switchTeam($affectedUser->personalTeam()));
+        DB::transaction(function () use ($user) {
+            User::where('current_team_id', $this->teamModel->id)
+                ->where('id', '!=', $user->id)
+                ->each(fn (User $affectedUser) => $affectedUser->switchTeam($affectedUser->personalTeam()));
 
-        $this->teamModel->invitations()->delete();
-        $this->teamModel->memberships()->delete();
-        $this->teamModel->delete();
+            $this->teamModel->invitations()->delete();
+            $this->teamModel->memberships()->delete();
+            $this->teamModel->delete();
+        });
 
         event(new TeamDeleted($this->teamModel));
 
@@ -266,10 +262,10 @@ new class extends Component {
 <section class="w-full">
     @include('partials.settings-heading')
 
-        <flux:heading class="sr-only">{{ __('Teams') }}</flux:heading>
+    <flux:heading class="sr-only">{{ __('Teams') }}</flux:heading>
 
-        <x-pages::settings.layout :heading="__('Teams')" :subheading="__('Manage your team settings')">
-            <div class="space-y-10">
+    <x-pages::settings.layout :heading="__('Teams')" :subheading="__('Manage your team settings')">
+        <div class="space-y-10">
             <div class="space-y-6">
                 @if ($permissions['canUpdateTeam'])
                     <div class="space-y-4">
@@ -446,7 +442,7 @@ new class extends Component {
                 </div>
             @endif
         </div>
-        </x-pages::settings.layout>
+    </x-pages::settings.layout>
 
     @if ($permissions['canCreateInvitation'])
         <flux:modal name="invite-member" focusable class="max-w-lg">

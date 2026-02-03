@@ -6,6 +6,7 @@ use App\Models\TeamInvitation;
 use App\Notifications\Teams\InvitationAccepted;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
@@ -27,19 +28,24 @@ new class extends Component {
         DB::transaction(function () use ($user) {
             $team = $this->invitation->team;
 
-            $membership = $team->memberships()->create([
-                'user_id' => $user->id,
-                'role' => $this->invitation->role,
-            ]);
+            $membership = $team->memberships()->firstOrCreate(
+                ['user_id' => $user->id],
+                ['role' => $this->invitation->role]
+            );
+
+            $wasRecentlyCreated = $membership->wasRecentlyCreated;
 
             $this->invitation->update(['accepted_at' => now()]);
             $user->switchTeam($team);
 
             event(new TeamInvitationAccepted($this->invitation, $user));
-            event(new TeamMemberAdded($team, $user, $membership));
 
-            if (config()->boolean('teams.invitations.notify_on_join')) {
-                $team->owner()?->notify(new InvitationAccepted($team, $user));
+            if ($wasRecentlyCreated) {
+                event(new TeamMemberAdded($team, $user, $membership));
+
+                if (config()->boolean('teams.invitations.notify_on_join')) {
+                    $team->owner()?->notify(new InvitationAccepted($team, $user));
+                }
             }
         });
 
@@ -60,7 +66,7 @@ new class extends Component {
             ]);
         }
 
-        if ($invitation->email !== $user->email) {
+        if (Str::lower($invitation->email) !== Str::lower($user->email)) {
             throw ValidationException::withMessages([
                 'invitation' => [__('This invitation was sent to a different email address.')],
             ]);
