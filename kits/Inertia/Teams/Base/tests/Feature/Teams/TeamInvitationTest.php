@@ -114,7 +114,7 @@ class TeamInvitationTest extends TestCase
             ->actingAs($invitedUser)
             ->get(route('invitations.accept', $invitation));
 
-        $response->assertRedirect(route('dashboard', ['current_team' => $team->slug]));
+        $response->assertRedirect(route('dashboard'));
 
         $this->assertTrue($invitedUser->fresh()->belongsToTeam($team));
         $this->assertNotNull($invitation->fresh()->accepted_at);

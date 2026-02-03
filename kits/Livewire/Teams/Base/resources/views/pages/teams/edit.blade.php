@@ -111,8 +111,15 @@ new class extends Component {
             'teamName' => ['required', 'string', 'max:255', new TeamName],
         ]);
 
-        $this->teamModel->update(['name' => $validated['teamName']]);
-        event(new TeamUpdated($this->teamModel));
+        $team = DB::transaction(function () use ($validated) {
+            $lockedTeam = Team::whereKey($this->teamModel->id)->lockForUpdate()->firstOrFail();
+            $lockedTeam->update(['name' => $validated['teamName']]);
+            event(new TeamUpdated($lockedTeam));
+
+            return $lockedTeam;
+        });
+
+        $this->teamModel = $team;
         $this->setTeamData();
 
         $this->redirectRoute('teams.edit', ['team' => $this->teamModel->fresh()->slug], navigate: true);

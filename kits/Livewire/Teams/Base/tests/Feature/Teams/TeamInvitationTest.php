@@ -112,7 +112,7 @@ class TeamInvitationTest extends TestCase
 
         $response = Livewire::test('pages::teams.accept-invitation', ['invitation' => $invitation]);
 
-        $response->assertRedirect(route('dashboard', ['current_team' => $team->slug]));
+        $response->assertRedirect(route('dashboard'));
 
         $this->assertTrue($invitedUser->fresh()->belongsToTeam($team));
         $this->assertNotNull($invitation->fresh()->accepted_at);

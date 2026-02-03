@@ -104,8 +104,13 @@ class TeamController extends Controller
     {
         Gate::authorize('update', $team);
 
-        $team->update(['name' => $request->validated('name')]);
-        event(new TeamUpdated($team));
+        $team = DB::transaction(function () use ($request, $team) {
+            $lockedTeam = Team::whereKey($team->id)->lockForUpdate()->firstOrFail();
+            $lockedTeam->update(['name' => $request->validated('name')]);
+            event(new TeamUpdated($lockedTeam));
+
+            return $lockedTeam;
+        });
 
         return to_route('teams.edit', ['team' => $team->slug]);
     }
@@ -142,6 +147,7 @@ class TeamController extends Controller
      */
     public function switch(Request $request, Team $team): RedirectResponse
     {
+        abort_unless($request->user()->belongsToTeam($team), 403);
         $request->user()->switchTeam($team);
 
         return back();
