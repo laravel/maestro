@@ -3,10 +3,11 @@
 namespace App\Http\Responses;
 
 use Illuminate\Http\JsonResponse;
-use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
+use Illuminate\Support\Facades\URL;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Symfony\Component\HttpFoundation\Response;
 
-class RegisterResponse implements RegisterResponseContract
+class LoginResponse implements LoginResponseContract
 {
     public function toResponse($request): Response
     {
@@ -17,8 +18,10 @@ class RegisterResponse implements RegisterResponseContract
             abort(403);
         }
 
+        URL::defaults(['current_team' => $team->slug]);
+
         return $request->wantsJson()
-            ? new JsonResponse(['two_factor' => false], 201)
-            : redirect()->intended("/{$team->slug}/dashboard");
+            ? new JsonResponse(['two_factor' => false], 200)
+            : redirect()->intended(route('dashboard'));
     }
 }
