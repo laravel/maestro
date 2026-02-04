@@ -1,3 +1,8 @@
 .idea/
 build/
 browser_tests/tests/Browser/Screenshots/
+
+# Generated files
+**/resources/js/actions/
+**/resources/js/routes/
+**/resources/js/wayfinder/
