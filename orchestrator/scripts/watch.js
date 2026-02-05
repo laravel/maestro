@@ -47,6 +47,11 @@ const kitFolderMap = {
     'react': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/React', 'Shared/Base', 'Inertia/Base', 'Inertia/React', 'Shared/Fortify', 'Inertia/Fortify/Base', 'Inertia/Fortify/React'],
     'react-workos': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/React', 'Shared/Base', 'Inertia/Base', 'Inertia/React', 'Shared/WorkOS', 'Inertia/WorkOS/Base', 'Inertia/WorkOS/React'],
 
+    // Svelte variants
+    'svelte-blank': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Svelte'],
+    'svelte': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Svelte', 'Shared/Base', 'Inertia/Base', 'Inertia/Svelte', 'Shared/Fortify', 'Inertia/Fortify/Base', 'Inertia/Fortify/Svelte'],
+    'svelte-workos': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Svelte', 'Shared/Base', 'Inertia/Base', 'Inertia/Svelte', 'Shared/WorkOS', 'Inertia/WorkOS/Base', 'Inertia/WorkOS/Svelte'],
+
     // Vue variants
     'vue-blank': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Vue'],
     'vue': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Vue', 'Shared/Base', 'Inertia/Base', 'Inertia/Vue', 'Shared/Fortify', 'Inertia/Fortify/Base', 'Inertia/Fortify/Vue'],
@@ -80,6 +85,9 @@ const placeholderPaths = [
 function getKitType(starterKit) {
     if (starterKit.startsWith('react')) {
         return 'react';
+    }
+    if (starterKit.startsWith('svelte')) {
+        return 'svelte';
     }
     if (starterKit.startsWith('vue')) {
         return 'vue';

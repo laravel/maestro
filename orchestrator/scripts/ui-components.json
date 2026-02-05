@@ -1,54 +1,67 @@
 {
     "dashboard": {
         "react": "dashboard",
+        "svelte": "Dashboard",
         "vue": "Dashboard"
     },
     "welcome": {
         "react": "welcome",
+        "svelte": "Welcome",
         "vue": "Welcome"
     },
     "auth_confirm_password": {
         "react": "auth/confirm-password",
+        "svelte": "auth/ConfirmPassword",
         "vue": "auth/ConfirmPassword"
     },
     "auth_forgot_password": {
         "react": "auth/forgot-password",
+        "svelte": "auth/ForgotPassword",
         "vue": "auth/ForgotPassword"
     },
     "auth_login": {
         "react": "auth/login",
+        "svelte": "auth/Login",
         "vue": "auth/Login"
     },
     "auth_register": {
         "react": "auth/register",
+        "svelte": "auth/Register",
         "vue": "auth/Register"
     },
     "auth_reset_password": {
         "react": "auth/reset-password",
+        "svelte": "auth/ResetPassword",
         "vue": "auth/ResetPassword"
     },
     "auth_two_factor_challenge": {
         "react": "auth/two-factor-challenge",
+        "svelte": "auth/TwoFactorChallenge",
         "vue": "auth/TwoFactorChallenge"
     },
     "auth_verify_email": {
         "react": "auth/verify-email",
+        "svelte": "auth/VerifyEmail",
         "vue": "auth/VerifyEmail"
     },
     "appearance_settings": {
         "react": "settings/appearance",
+        "svelte": "settings/Appearance",
         "vue": "settings/Appearance"
     },
     "password_settings": {
         "react": "settings/password",
+        "svelte": "settings/Password",
         "vue": "settings/Password"
     },
     "profile_settings": {
         "react": "settings/profile",
+        "svelte": "settings/Profile",
         "vue": "settings/Profile"
     },
     "two_factor_settings": {
         "react": "settings/two-factor",
+        "svelte": "settings/TwoFactor",
         "vue": "settings/TwoFactor"
     }
 }

@@ -6,6 +6,7 @@ enum StarterKit: string
 {
     case Livewire = 'Livewire';
     case React = 'React';
+    case Svelte = 'Svelte';
     case Vue = 'Vue';
 
     /**

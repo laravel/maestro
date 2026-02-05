@@ -19,7 +19,7 @@ class BuildCommand extends Command
      * @var string
      */
     protected $signature = 'build
-                            {--kit= : The starter kit to build (Livewire, React, or Vue)}
+                            {--kit= : The starter kit to build (Livewire, React, Svelte, or Vue)}
                             {--blank : Build the Blank variant (no authentication)}
                             {--workos : Build the WorkOS variant}
                             {--components : Build the Livewire Components variant}';
