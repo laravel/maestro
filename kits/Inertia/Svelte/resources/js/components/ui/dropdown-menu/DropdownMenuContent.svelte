@@ -1,9 +1,22 @@
 <script lang="ts">
+    import type { Snippet } from 'svelte';
     import { getContext } from 'svelte';
     import { cn } from '@/lib/utils';
     import { DROPDOWN_MENU_CONTEXT, type DropdownMenuContext } from './context';
 
-    let { align = 'start', side = 'bottom', class: className = '' } = $props();
+    let {
+        align = 'start',
+        side = 'bottom',
+        sideOffset = 0,
+        class: className = '',
+        children,
+    }: {
+        align?: 'start' | 'center' | 'end';
+        side?: 'top' | 'right' | 'bottom' | 'left';
+        sideOffset?: number;
+        class?: string;
+        children?: Snippet;
+    } = $props();
 
     const { open, setOpen } = getContext<DropdownMenuContext>(DROPDOWN_MENU_CONTEXT);
 
@@ -14,13 +27,26 @@
     };
 
     const sideClasses: Record<string, string> = {
-        bottom: 'top-full mt-2',
-        top: 'bottom-full mb-2',
-        left: 'right-full mr-2',
-        right: 'left-full ml-2',
+        bottom: 'top-full',
+        top: 'bottom-full',
+        left: 'right-full',
+        right: 'left-full',
     };
 
     const close = () => setOpen(false);
+
+    const offsetStyle = () => {
+        switch (side) {
+            case 'top':
+                return `margin-bottom: ${sideOffset}px;`;
+            case 'left':
+                return `margin-right: ${sideOffset}px;`;
+            case 'right':
+                return `margin-left: ${sideOffset}px;`;
+            default:
+                return `margin-top: ${sideOffset}px;`;
+        }
+    };
 </script>
 
 {#if open()}
@@ -31,9 +57,11 @@
             sideClasses[side] ?? sideClasses.bottom,
             className,
         )}
+        style={offsetStyle()}
         role="menu"
-        on:keydown={(event) => event.key === 'Escape' && close()}
+        tabindex="-1"
+        onkeydown={(event) => event.key === 'Escape' && close()}
     >
-        <slot />
+        {@render children?.()}
     </div>
 {/if}

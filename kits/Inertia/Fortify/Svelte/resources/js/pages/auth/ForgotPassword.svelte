@@ -1,0 +1,64 @@
+<script lang="ts">
+    import { Form } from '@inertiajs/svelte';
+    import InputError from '@/components/InputError.svelte';
+    import TextLink from '@/components/TextLink.svelte';
+    import { Button } from '@/components/ui/button';
+    import { Input } from '@/components/ui/input';
+    import { Label } from '@/components/ui/label';
+    import { Spinner } from '@/components/ui/spinner';
+    import AuthLayout from '@/layouts/AuthLayout.svelte';
+    import { login } from '@/routes';
+    import { email } from '@/routes/password';
+
+    let {
+        status = '',
+    }: {
+        status?: string;
+    } = $props();
+</script>
+
+<svelte:head>
+    <title>Forgot password</title>
+</svelte:head>
+
+<AuthLayout title="Forgot password" description="Enter your email to receive a password reset link">
+    {#if status}
+        <div class="mb-4 text-center text-sm font-medium text-green-600">
+            {status}
+        </div>
+    {/if}
+
+    <div class="space-y-6">
+        <Form {...email.form()}>
+            {#snippet children({ errors, processing })}
+                <div class="grid gap-2">
+                    <Label for="email">Email address</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        name="email"
+                        autocomplete="off"
+                        placeholder="email@example.com"
+                    />
+                    <InputError message={errors.email} />
+                </div>
+
+                <div class="my-6 flex items-center justify-start">
+                    <Button
+                        class="w-full"
+                        disabled={processing}
+                        data-test="email-password-reset-link-button"
+                    >
+                        {#if processing}<Spinner />{/if}
+                        Email password reset link
+                    </Button>
+                </div>
+            {/snippet}
+        </Form>
+
+        <div class="space-x-1 text-center text-sm text-muted-foreground">
+            <span>Or, return to</span>
+            <TextLink href={login()}>log in</TextLink>
+        </div>
+    </div>
+</AuthLayout>

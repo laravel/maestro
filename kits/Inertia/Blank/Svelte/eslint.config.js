@@ -9,7 +9,15 @@ export default ts.config(
     ...ts.configs.recommended,
     ...svelte.configs['flat/recommended'],
     {
-        ignores: ['vendor', 'node_modules', 'public', 'bootstrap/ssr', 'tailwind.config.js', 'vite.config.ts', 'resources/js/components/ui/*'],
+        ignores: [
+            'vendor',
+            'node_modules',
+            'public',
+            'bootstrap/ssr',
+            'tailwind.config.js',
+            'vite.config.ts',
+            'resources/js/components/ui/*',
+        ],
     },
     {
         plugins: {
@@ -24,7 +32,15 @@ export default ts.config(
             },
         },
         rules: {
+            'no-undef': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                },
+            ],
             '@typescript-eslint/consistent-type-imports': [
                 'error',
                 {
@@ -32,11 +48,21 @@ export default ts.config(
                     fixStyle: 'separate-type-imports',
                 },
             ],
-            'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
+            'import/consistent-type-specifier-style': [
+                'error',
+                'prefer-top-level',
+            ],
             'import/order': [
                 'error',
                 {
-                    groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+                    groups: [
+                        'builtin',
+                        'external',
+                        'internal',
+                        'parent',
+                        'sibling',
+                        'index',
+                    ],
                     alphabetize: {
                         order: 'asc',
                         caseInsensitive: true,
@@ -51,6 +77,12 @@ export default ts.config(
             parserOptions: {
                 parser: ts.parser,
             },
+        },
+    },
+    {
+        files: ['**/*.svelte.ts'],
+        languageOptions: {
+            parser: ts.parser,
         },
     },
     prettier,

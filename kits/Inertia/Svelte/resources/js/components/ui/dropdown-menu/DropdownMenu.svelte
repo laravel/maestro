@@ -1,9 +1,19 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { setContext } from 'svelte';
+    import { onMount, setContext } from 'svelte';
+    import { cn } from '@/lib/utils';
     import { DROPDOWN_MENU_CONTEXT, type DropdownMenuContext } from './context';
 
-    let { open = $bindable(false), children }: { open?: boolean; children?: Snippet } = $props();
+    let {
+        open = $bindable(false),
+        class: className = '',
+        children,
+    }: {
+        open?: boolean;
+        class?: string;
+        children?: Snippet;
+    } = $props();
+    let menuElement: HTMLDivElement | null = null;
 
     const context: DropdownMenuContext = {
         open: () => open,
@@ -13,8 +23,25 @@
     };
 
     setContext(DROPDOWN_MENU_CONTEXT, context);
+
+    onMount(() => {
+        const handlePointerDown = (event: PointerEvent) => {
+            if (!open || !menuElement) return;
+
+            const target = event.target as Node | null;
+            if (target && !menuElement.contains(target)) {
+                open = false;
+            }
+        };
+
+        document.addEventListener('pointerdown', handlePointerDown);
+
+        return () => {
+            document.removeEventListener('pointerdown', handlePointerDown);
+        };
+    });
 </script>
 
-<div class="relative inline-flex">
+<div class={cn('relative', className)} bind:this={menuElement}>
     {@render children?.()}
 </div>

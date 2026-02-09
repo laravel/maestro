@@ -14,7 +14,7 @@
         href: LinkComponentBaseProps['href'];
         tabindex?: number;
         method?: Method;
-        as?: string;
+        as?: keyof HTMLElementTagNameMap;
         children?: Snippet;
         [key: string]: unknown;
     } = $props();

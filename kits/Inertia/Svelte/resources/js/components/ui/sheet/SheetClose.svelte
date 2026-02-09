@@ -13,7 +13,7 @@
 {#if asChild}
     {@render children?.({ onClick: handleClick })}
 {:else}
-    <button type="button" on:click={handleClick}>
-        <slot />
+    <button type="button" onclick={handleClick}>
+        {@render children?.({})}
     </button>
 {/if}

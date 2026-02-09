@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Link } from '@inertiajs/svelte';
     import type { Snippet } from 'svelte';
     import Heading from '@/components/Heading.svelte';
     import { Button } from '@/components/ui/button';
@@ -10,7 +11,6 @@
     import { show } from '@/routes/two-factor';
     import { edit as editPassword } from '@/routes/user-password';
     import type { NavItem } from '@/types';
-    import { Link } from '@inertiajs/svelte';
 
     let {
         children,

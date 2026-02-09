@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { page } from '@inertiajs/svelte';
+    import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
     import {
         DropdownMenu,
         DropdownMenuContent,
@@ -12,29 +14,32 @@
     } from '@/components/ui/sidebar';
     import UserInfo from '@/components/UserInfo.svelte';
     import UserMenuContent from '@/components/UserMenuContent.svelte';
-    import { page } from '@inertiajs/svelte';
-    import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
 
     const user = $derived($page.props.auth.user);
-    const { isMobile, state } = useSidebar();
+    const { isMobile, state: sidebarState } = useSidebar();
 </script>
 
 <SidebarMenu>
     <SidebarMenuItem>
-        <DropdownMenu>
-            <DropdownMenuTrigger>
-                <SidebarMenuButton
-                    size="lg"
-                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                    data-test="sidebar-menu-button"
-                >
-                    <UserInfo {user} />
-                    <ChevronsUpDown class="ml-auto size-4" />
-                </SidebarMenuButton>
+        <DropdownMenu class="w-full">
+            <DropdownMenuTrigger asChild>
+                {#snippet children(props)}
+                    <SidebarMenuButton
+                        size="lg"
+                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                        data-test="sidebar-menu-button"
+                        onclick={props.onclick}
+                        aria-expanded={props['aria-expanded']}
+                        data-state={props['data-state']}
+                    >
+                        <UserInfo {user} />
+                        <ChevronsUpDown class="ml-auto size-4" />
+                    </SidebarMenuButton>
+                {/snippet}
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                side={$isMobile ? 'bottom' : $state === 'collapsed' ? 'left' : 'bottom'}
+                class="w-full min-w-0 rounded-lg"
+                side={$sidebarState === 'collapsed' && !$isMobile ? 'left' : 'top'}
                 align="end"
                 sideOffset={4}
             >

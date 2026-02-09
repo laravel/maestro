@@ -16,12 +16,12 @@
     variant="ghost"
     size="icon"
     class={cn('h-7 w-7', className)}
-    onClick={toggleSidebar}
+    onclick={toggleSidebar}
 >
     {#if $isMobile || $state === 'collapsed'}
-        <PanelLeftOpen />
+        <PanelLeftOpen class="size-4" />
     {:else}
-        <PanelLeftClose />
+        <PanelLeftClose class="size-4" />
     {/if}
     <span class="sr-only">Toggle Sidebar</span>
 </Button>

@@ -1,9 +1,22 @@
 <script lang="ts">
+    import type { Snippet } from 'svelte';
     import { getContext } from 'svelte';
     import { cn } from '@/lib/utils';
     import { TOOLTIP_CONTEXT, type TooltipContext } from './context';
 
-    let { side = 'top', align = 'center', hidden = false, class: className = '' } = $props();
+    let {
+        side = 'top',
+        align = 'center',
+        hidden = false,
+        class: className = '',
+        children,
+    }: {
+        side?: 'top' | 'right' | 'bottom' | 'left';
+        align?: 'start' | 'center' | 'end';
+        hidden?: boolean;
+        class?: string;
+        children?: Snippet;
+    } = $props();
 
     const { open } = getContext<TooltipContext>(TOOLTIP_CONTEXT);
 
@@ -30,6 +43,6 @@
             className,
         )}
     >
-        <slot />
+        {@render children?.()}
     </div>
 {/if}

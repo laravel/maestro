@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Form } from '@inertiajs/svelte';
+    import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';
@@ -13,23 +15,7 @@
     } from '@/components/ui/dialog';
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
-    import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-    import { Form } from '@inertiajs/svelte';
 
-    let passwordInput: HTMLInputElement;
-    let formRef: HTMLFormElement;
-
-    function handleError() {
-        passwordInput?.focus();
-    }
-
-    function handleFinish() {
-        formRef?.reset();
-    }
-
-    function handleCancel() {
-        formRef?.reset();
-    }
 </script>
 
 <div class="space-y-6">
@@ -45,13 +31,10 @@
             </DialogTrigger>
             <DialogContent>
                 <Form
-                    action={ProfileController.destroy.url}
+                    action={ProfileController.destroy.url()}
                     method="delete"
                     class="space-y-6"
                     options={{ preserveScroll: true }}
-                    onerror={handleError}
-                    onfinish={handleFinish}
-                    bind:this={formRef}
                 >
                     {#snippet children({ errors, processing })}
                         <div class="space-y-3">
@@ -69,14 +52,13 @@
                                 type="password"
                                 name="password"
                                 placeholder="Password"
-                                bind:this={passwordInput}
                             />
                             <InputError message={errors.password} />
                         </div>
 
                         <DialogFooter class="gap-2">
                             <DialogClose>
-                                <Button variant="secondary" onclick={handleCancel}>
+                                <Button variant="secondary">
                                     Cancel
                                 </Button>
                             </DialogClose>

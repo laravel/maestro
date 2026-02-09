@@ -1,0 +1,114 @@
+<script lang="ts">
+    import { Form } from '@inertiajs/svelte';
+    import ShieldBan from 'lucide-svelte/icons/shield-ban';
+    import ShieldCheck from 'lucide-svelte/icons/shield-check';
+    import { onDestroy } from 'svelte';
+    import Heading from '@/components/Heading.svelte';
+    import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.svelte';
+    import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.svelte';
+    import { Badge } from '@/components/ui/badge';
+    import { Button } from '@/components/ui/button';
+    import AppLayout from '@/layouts/AppLayout.svelte';
+    import SettingsLayout from '@/layouts/settings/Layout.svelte';
+    import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
+    import { disable, enable, show } from '@/routes/two-factor';
+    import type { BreadcrumbItem } from '@/types';
+
+    let {
+        requiresConfirmation = false,
+        twoFactorEnabled = false,
+    }: {
+        requiresConfirmation?: boolean;
+        twoFactorEnabled?: boolean;
+    } = $props();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Two-Factor Authentication',
+            href: show.url(),
+        },
+    ];
+
+    const twoFactorAuth = twoFactorAuthState();
+    let showSetupModal = $state(false);
+
+    onDestroy(() => {
+        twoFactorAuth.clearTwoFactorAuthData();
+    });
+</script>
+
+<svelte:head>
+    <title>Two-Factor Authentication</title>
+</svelte:head>
+
+<AppLayout breadcrumbs={breadcrumbs}>
+    <h1 class="sr-only">Two-Factor Authentication Settings</h1>
+
+    <SettingsLayout>
+        <div class="space-y-6">
+            <Heading
+                variant="small"
+                title="Two-Factor Authentication"
+                description="Manage your two-factor authentication settings"
+            />
+
+            {#if !twoFactorEnabled}
+                <div class="flex flex-col items-start justify-start space-y-4">
+                    <Badge variant="destructive">Disabled</Badge>
+
+                    <p class="text-muted-foreground">
+                        When you enable two-factor authentication, you will be prompted for a secure pin during login. This
+                        pin can be retrieved from a TOTP-supported application on your phone.
+                    </p>
+
+                    <div>
+                        {#if twoFactorAuth.hasSetupData()}
+                            <Button onclick={() => (showSetupModal = true)}>
+                                <ShieldCheck />Continue Setup
+                            </Button>
+                        {:else}
+                            <Form
+                                {...enable.form()}
+                                onsuccess={() => (showSetupModal = true)}
+                            >
+                                {#snippet children({ processing })}
+                                    <Button type="submit" disabled={processing}>
+                                        <ShieldCheck />Enable 2FA
+                                    </Button>
+                                {/snippet}
+                            </Form>
+                        {/if}
+                    </div>
+                </div>
+            {:else}
+                <div class="flex flex-col items-start justify-start space-y-4">
+                    <Badge variant="default">Enabled</Badge>
+
+                    <p class="text-muted-foreground">
+                        With two-factor authentication enabled, you will be prompted for a secure, random pin during login,
+                        which you can retrieve from the TOTP-supported application on your phone.
+                    </p>
+
+                    <TwoFactorRecoveryCodes />
+
+                    <div class="relative inline">
+                        <Form {...disable.form()}>
+                            {#snippet children({ processing })}
+                                <Button variant="destructive" type="submit" disabled={processing}>
+                                    <ShieldBan />
+                                    Disable 2FA
+                                </Button>
+                            {/snippet}
+                        </Form>
+                    </div>
+                </div>
+            {/if}
+
+            <TwoFactorSetupModal
+                bind:isOpen={showSetupModal}
+                {requiresConfirmation}
+                {twoFactorEnabled}
+            />
+        </div>
+    </SettingsLayout>
+</AppLayout>

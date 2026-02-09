@@ -9,7 +9,10 @@ declare module 'vite/client' {
 
     interface ImportMeta {
         readonly env: ImportMetaEnv;
-        readonly glob: <T>(pattern: string, options?: { eager?: boolean }) => Record<string, T>;
+        readonly glob: <T>(
+            pattern: string,
+            options?: { eager?: boolean },
+        ) => Record<string, T>;
     }
 }
 

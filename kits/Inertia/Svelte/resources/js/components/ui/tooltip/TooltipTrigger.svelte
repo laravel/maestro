@@ -3,7 +3,16 @@
     import { getContext } from 'svelte';
     import { TOOLTIP_CONTEXT, type TooltipContext } from './context';
 
-    let { asChild = false, children }: { asChild?: boolean; children?: Snippet<[Record<string, unknown>]> } = $props();
+    type TriggerProps = {
+        onMouseenter?: () => void;
+        onMouseleave?: () => void;
+        [key: string]: any;
+    };
+
+    let {
+        asChild = false,
+        children,
+    }: { asChild?: boolean; children?: Snippet<[TriggerProps]> } = $props();
 
     const { setOpen } = getContext<TooltipContext>(TOOLTIP_CONTEXT);
 
@@ -14,7 +23,7 @@
 {#if asChild}
     {@render children?.({ onMouseenter: handleEnter, onMouseleave: handleLeave })}
 {:else}
-    <span on:mouseenter={handleEnter} on:mouseleave={handleLeave}>
-        <slot />
-    </span>
+    <button type="button" class="contents" onmouseenter={handleEnter} onmouseleave={handleLeave}>
+        {@render children?.({})}
+    </button>
 {/if}

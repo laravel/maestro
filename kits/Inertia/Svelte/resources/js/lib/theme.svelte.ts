@@ -43,7 +43,9 @@ const applyTheme = (value: Appearance): void => {
 const getStoredAppearance = (): Appearance => {
     if (typeof window === 'undefined') return 'system';
     const stored = localStorage.getItem('appearance');
-    return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
+    return stored === 'light' || stored === 'dark' || stored === 'system'
+        ? stored
+        : 'system';
 };
 
 const handleSystemThemeChange = (): void => {
@@ -52,7 +54,10 @@ const handleSystemThemeChange = (): void => {
 
 const detachThemeChangeListener = (): void => {
     if (!themeChangeMediaQuery) return;
-    themeChangeMediaQuery.removeEventListener('change', handleSystemThemeChange);
+    themeChangeMediaQuery.removeEventListener(
+        'change',
+        handleSystemThemeChange,
+    );
     themeChangeMediaQuery = null;
 };
 

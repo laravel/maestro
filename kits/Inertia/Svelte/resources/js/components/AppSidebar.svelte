@@ -1,9 +1,13 @@
 <script lang="ts">
+    import { Link } from '@inertiajs/svelte';
+    import BookOpen from 'lucide-svelte/icons/book-open';
+    import Folder from 'lucide-svelte/icons/folder';
+    import LayoutGrid from 'lucide-svelte/icons/layout-grid';
     import type { Snippet } from 'svelte';
+    import AppLogo from '@/components/AppLogo.svelte';
     import NavFooter from '@/components/NavFooter.svelte';
     import NavMain from '@/components/NavMain.svelte';
     import NavUser from '@/components/NavUser.svelte';
-    import AppLogo from '@/components/AppLogo.svelte';
     import {
         Sidebar,
         SidebarContent,
@@ -16,10 +20,6 @@
     import { toUrl } from '@/lib/utils';
     import { dashboard } from '@/routes';
     import type { NavItem } from '@/types';
-    import { Link } from '@inertiajs/svelte';
-    import LayoutGrid from 'lucide-svelte/icons/layout-grid';
-    import Folder from 'lucide-svelte/icons/folder';
-    import BookOpen from 'lucide-svelte/icons/book-open';
 
     let {
         children,
@@ -55,7 +55,7 @@
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" asChild>
                         {#snippet children(props)}
-                            <Link href={toUrl(dashboard())} class={props.class}>
+                            <Link {...props} href={toUrl(dashboard())} class={props.class}>
                                 <AppLogo />
                             </Link>
                         {/snippet}

@@ -1,9 +1,10 @@
 <script lang="ts">
+    import type { Snippet } from 'svelte';
     import { getContext } from 'svelte';
     import { cn } from '@/lib/utils';
     import { DIALOG_CONTEXT, type DialogContext } from './context';
 
-    let { class: className = '' } = $props();
+    let { class: className = '', children }: { class?: string; children?: Snippet } = $props();
 
     const { open, setOpen } = getContext<DialogContext>(DIALOG_CONTEXT);
 
@@ -16,7 +17,7 @@
             type="button"
             class="fixed inset-0 bg-black/50"
             aria-label="Close"
-            on:click={close}
+            onclick={close}
         ></button>
         <div
             class={cn(
@@ -26,7 +27,7 @@
             role="dialog"
             aria-modal="true"
         >
-            <slot />
+            {@render children?.()}
         </div>
     </div>
 {/if}

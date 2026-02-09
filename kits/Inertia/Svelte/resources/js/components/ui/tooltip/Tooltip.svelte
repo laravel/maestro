@@ -15,6 +15,6 @@
     setContext(TOOLTIP_CONTEXT, context);
 </script>
 
-<div class="relative inline-flex">
+<div class="relative">
     {@render children?.()}
 </div>

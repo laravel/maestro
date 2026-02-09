@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Link } from '@inertiajs/svelte';
     import {
         SidebarGroup,
         SidebarGroupLabel,
@@ -9,7 +10,6 @@
     import { currentUrlState } from '@/lib/currentUrl';
     import { toUrl } from '@/lib/utils';
     import type { NavItem } from '@/types';
-    import { Link } from '@inertiajs/svelte';
 
     let {
         items = [],
@@ -27,9 +27,9 @@
             <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isCurrentUrl(item.href, $currentUrl)} tooltip={item.title}>
                     {#snippet children(props)}
-                        <Link href={toUrl(item.href)} class={props.class}>
+                        <Link {...props} href={toUrl(item.href)} class={props.class}>
                             {#if item.icon}
-                                <item.icon />
+                                <item.icon class="size-4 shrink-0" />
                             {/if}
                             <span>{item.title}</span>
                         </Link>

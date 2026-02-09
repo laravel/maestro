@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Form, page } from '@inertiajs/svelte';
+    import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
     import DeleteUser from '@/components/DeleteUser.svelte';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
@@ -8,12 +10,10 @@
     import { Label } from '@/components/ui/label';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
-    import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
     import { toUrl } from '@/lib/utils';
     import { edit } from '@/routes/profile';
     import { send } from '@/routes/verification';
     import type { BreadcrumbItem } from '@/types';
-    import { Form, page } from '@inertiajs/svelte';
 
     let {
         mustVerifyEmail,
@@ -45,7 +45,7 @@
             <Heading variant="small" title="Profile information" description="Update your name and email address" />
 
             <Form
-                action={ProfileController.update.url}
+                action={ProfileController.update.url()}
                 method="patch"
                 class="space-y-6"
                 options={{ preserveScroll: true }}

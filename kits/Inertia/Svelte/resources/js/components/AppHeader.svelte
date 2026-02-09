@@ -1,4 +1,10 @@
 <script lang="ts">
+    import { Link, page } from '@inertiajs/svelte';
+    import BookOpen from 'lucide-svelte/icons/book-open';
+    import Folder from 'lucide-svelte/icons/folder';
+    import LayoutGrid from 'lucide-svelte/icons/layout-grid';
+    import Menu from 'lucide-svelte/icons/menu';
+    import Search from 'lucide-svelte/icons/search';
     import AppLogo from '@/components/AppLogo.svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import Breadcrumbs from '@/components/Breadcrumbs.svelte';
@@ -34,12 +40,6 @@
     import { toUrl } from '@/lib/utils';
     import { dashboard } from '@/routes';
     import type { BreadcrumbItem, NavItem } from '@/types';
-    import { Link, page } from '@inertiajs/svelte';
-    import LayoutGrid from 'lucide-svelte/icons/layout-grid';
-    import Folder from 'lucide-svelte/icons/folder';
-    import BookOpen from 'lucide-svelte/icons/book-open';
-    import Menu from 'lucide-svelte/icons/menu';
-    import Search from 'lucide-svelte/icons/search';
 
     let {
         breadcrumbs = [],
@@ -80,10 +80,18 @@
             <!-- Mobile Menu -->
             <div class="lg:hidden">
                 <Sheet>
-                    <SheetTrigger>
-                        <Button variant="ghost" size="icon" class="mr-2 h-9 w-9">
-                            <Menu class="h-5 w-5" />
-                        </Button>
+                    <SheetTrigger asChild>
+                        {#snippet children(props)}
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                class="mr-2 h-9 w-9"
+                                onclick={props.onclick}
+                                aria-expanded={props['aria-expanded']}
+                            >
+                                <Menu class="h-5 w-5" />
+                            </Button>
+                        {/snippet}
                     </SheetTrigger>
                     <SheetContent side="left" class="w-[300px] p-6">
                         <SheetTitle class="sr-only">Navigation Menu</SheetTitle>
@@ -187,21 +195,26 @@
                 </div>
 
                 <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
-                        >
-                            <Avatar class="size-8 overflow-hidden rounded-full">
-                                {#if auth.user.avatar}
-                                    <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
-                                {/if}
-                                <AvatarFallback class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
-                                    {getInitials(auth.user?.name)}
-                                </AvatarFallback>
-                            </Avatar>
-                        </Button>
+                    <DropdownMenuTrigger asChild>
+                        {#snippet children(props)}
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
+                                onclick={props.onclick}
+                                aria-expanded={props['aria-expanded']}
+                                data-state={props['data-state']}
+                            >
+                                <Avatar class="size-8 overflow-hidden rounded-full">
+                                    {#if auth.user.avatar}
+                                        <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
+                                    {/if}
+                                    <AvatarFallback class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
+                                        {getInitials(auth.user?.name)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </Button>
+                        {/snippet}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-56">
                         <UserMenuContent user={auth.user} />

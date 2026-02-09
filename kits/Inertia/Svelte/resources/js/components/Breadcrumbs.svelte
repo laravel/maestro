@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Link } from '@inertiajs/svelte';
     import {
         Breadcrumb,
         BreadcrumbItem,
@@ -8,7 +9,6 @@
         BreadcrumbSeparator,
     } from '@/components/ui/breadcrumb';
     import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
-    import { Link } from '@inertiajs/svelte';
 
     let {
         breadcrumbs = [],

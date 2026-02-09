@@ -3,7 +3,17 @@
     import { getContext } from 'svelte';
     import { DROPDOWN_MENU_CONTEXT, type DropdownMenuContext } from './context';
 
-    let { asChild = false, children }: { asChild?: boolean; children?: Snippet<[Record<string, unknown>]> } = $props();
+    type TriggerProps = {
+        onclick?: (event: MouseEvent) => void;
+        'aria-expanded'?: boolean;
+        'data-state'?: 'open' | 'closed';
+        [key: string]: any;
+    };
+
+    let {
+        asChild = false,
+        children,
+    }: { asChild?: boolean; children?: Snippet<[TriggerProps]> } = $props();
 
     const { open, setOpen } = getContext<DropdownMenuContext>(DROPDOWN_MENU_CONTEXT);
 
@@ -11,9 +21,9 @@
 </script>
 
 {#if asChild}
-    {@render children?.({ onClick: handleClick, 'aria-expanded': open() })}
+    {@render children?.({ onclick: handleClick, 'aria-expanded': open(), 'data-state': open() ? 'open' : 'closed' })}
 {:else}
-    <button type="button" on:click={handleClick} aria-expanded={open()}>
-        <slot />
+    <button type="button" onclick={handleClick} aria-expanded={open()}>
+        {@render children?.({})}
     </button>
 {/if}

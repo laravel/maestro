@@ -1,9 +1,18 @@
 <script lang="ts">
+    import type { Snippet } from 'svelte';
     import { getContext } from 'svelte';
     import { cn } from '@/lib/utils';
     import { SHEET_CONTEXT, type SheetContext } from './context';
 
-    let { side = 'right', class: className = '' } = $props();
+    let {
+        side = 'right',
+        class: className = '',
+        children,
+    }: {
+        side?: 'right' | 'left' | 'top' | 'bottom';
+        class?: string;
+        children?: Snippet;
+    } = $props();
 
     const { open, setOpen } = getContext<SheetContext>(SHEET_CONTEXT);
 
@@ -30,7 +39,7 @@
             type="button"
             class="fixed inset-0 bg-black/50"
             aria-label="Close"
-            on:click={close}
+            onclick={close}
         ></button>
         <div
             class={cn(
@@ -40,7 +49,7 @@
                 className,
             )}
         >
-            <slot />
+            {@render children?.()}
         </div>
     </div>
 {/if}

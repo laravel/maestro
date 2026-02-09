@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Link, router } from '@inertiajs/svelte';
+    import LogOut from 'lucide-svelte/icons/log-out';
+    import Settings from 'lucide-svelte/icons/settings';
     import {
         DropdownMenuGroup,
         DropdownMenuItem,
@@ -7,12 +10,9 @@
     } from '@/components/ui/dropdown-menu';
     import UserInfo from '@/components/UserInfo.svelte';
     import { toUrl } from '@/lib/utils';
-    import { edit } from '@/routes/profile';
     import { logout } from '@/routes';
+    import { edit } from '@/routes/profile';
     import type { User } from '@/types';
-    import { Link, router } from '@inertiajs/svelte';
-    import Settings from 'lucide-svelte/icons/settings';
-    import LogOut from 'lucide-svelte/icons/log-out';
 
     let {
         user,
@@ -49,7 +49,7 @@
     {#snippet children(props)}
         <Link
             class={props.class}
-            href={toUrl(logout())}
+            href={logout()}
             as="button"
             onclick={handleLogout(props.onClick)}
             data-test="logout-button"

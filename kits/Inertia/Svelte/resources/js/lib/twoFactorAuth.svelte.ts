@@ -38,7 +38,8 @@ const state = $state<TwoFactorAuthState>({
     errors: [],
 });
 
-const hasSetupData = (): boolean => state.qrCodeSvg !== null && state.manualSetupKey !== null;
+const hasSetupData = (): boolean =>
+    state.qrCodeSvg !== null && state.manualSetupKey !== null;
 
 export function twoFactorAuthState(): TwoFactorAuthStateApi {
     const fetchQrCode = async (): Promise<void> => {
@@ -86,7 +87,9 @@ export function twoFactorAuthState(): TwoFactorAuthStateApi {
     const fetchRecoveryCodes = async (): Promise<void> => {
         try {
             clearErrors();
-            state.recoveryCodesList = await fetchJson<string[]>(recoveryCodes.url());
+            state.recoveryCodesList = await fetchJson<string[]>(
+                recoveryCodes.url(),
+            );
         } catch {
             state.errors = [...state.errors, 'Failed to fetch recovery codes'];
             state.recoveryCodesList = [];

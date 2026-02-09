@@ -1,12 +1,15 @@
 import type { LinkComponentBaseProps } from '@inertiajs/core';
-import type { Readable } from 'svelte/store';
-import { toUrl } from '@/lib/utils';
 import { page } from '@inertiajs/svelte';
+import type { Readable } from 'svelte/store';
 import { derived } from 'svelte/store';
+import { toUrl } from '@/lib/utils';
 
 export type CurrentUrlState = {
     currentUrl: Readable<string>;
-    isCurrentUrl: (urlToCheck: NonNullable<LinkComponentBaseProps['href']>, currentUrl: string) => boolean;
+    isCurrentUrl: (
+        urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
+        currentUrl: string,
+    ) => boolean;
     whenCurrentUrl: <TIfTrue, TIfFalse = null>(
         urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
         currentUrl: string,
@@ -16,7 +19,10 @@ export type CurrentUrlState = {
 };
 
 const currentUrl = derived(page, ($page) => {
-    const origin = typeof window === 'undefined' ? 'http://localhost' : window.location.origin;
+    const origin =
+        typeof window === 'undefined'
+            ? 'http://localhost'
+            : window.location.origin;
 
     try {
         return new URL($page.url, origin).pathname;
@@ -26,7 +32,10 @@ const currentUrl = derived(page, ($page) => {
 });
 
 export function currentUrlState(): CurrentUrlState {
-    function isCurrentUrl(urlToCheck: NonNullable<LinkComponentBaseProps['href']>, current: string): boolean {
+    function isCurrentUrl(
+        urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
+        current: string,
+    ): boolean {
         const urlString = toUrl(urlToCheck);
 
         if (!urlString.startsWith('http')) {
