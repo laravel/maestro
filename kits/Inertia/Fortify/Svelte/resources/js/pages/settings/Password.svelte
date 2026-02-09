@@ -34,8 +34,7 @@
             />
 
             <Form
-                action={PasswordController.update.url()}
-                method="put"
+                {...PasswordController.update.form()}
                 class="space-y-6"
                 options={{ preserveScroll: true }}
                 resetOnSuccess
@@ -82,7 +81,7 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button disabled={processing} data-test="update-password-button">
+                        <Button type="submit" disabled={processing} data-test="update-password-button">
                             Save password
                         </Button>
 

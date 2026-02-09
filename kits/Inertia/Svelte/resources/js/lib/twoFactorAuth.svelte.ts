@@ -21,14 +21,30 @@ export type TwoFactorAuthStateApi = {
 
 const fetchJson = async <T>(url: string): Promise<T> => {
     const response = await fetch(url, {
-        headers: { Accept: 'application/json' },
+        credentials: 'same-origin',
+        headers: {
+            Accept: 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
     });
 
     if (!response.ok) {
         throw new Error(`Failed to fetch: ${response.status}`);
     }
 
-    return response.json();
+    const contentType = response.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+        return response.json();
+    }
+
+    const text = await response.text();
+
+    try {
+        return JSON.parse(text) as T;
+    } catch {
+        return text as T;
+    }
 };
 
 const state = $state<TwoFactorAuthState>({
@@ -57,9 +73,20 @@ export function twoFactorAuthState(): TwoFactorAuthStateApi {
 
     const fetchSetupKey = async (): Promise<void> => {
         try {
-            const { secretKey: key } = await fetchJson<{ secretKey: string }>(
+            const payload = await fetchJson<
+                { secretKey?: string; secret_key?: string } | string
+            >(
                 secretKey.url(),
             );
+
+            const key =
+                typeof payload === 'string'
+                    ? payload
+                    : payload.secretKey ?? payload.secret_key ?? null;
+
+            if (!key) {
+                throw new Error('Setup key not found in response');
+            }
 
             state.manualSetupKey = key;
         } catch {

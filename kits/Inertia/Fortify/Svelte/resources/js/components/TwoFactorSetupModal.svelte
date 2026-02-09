@@ -121,10 +121,12 @@
                     <ScanLine class="relative z-20 size-6 text-foreground" />
                 </div>
             </div>
-            <DialogTitle>{modalConfig.title}</DialogTitle>
-            <DialogDescription class="text-center">
-                {modalConfig.description}
-            </DialogDescription>
+            <div class="my-3 space-y-1 text-center">
+                <DialogTitle>{modalConfig.title}</DialogTitle>
+                <DialogDescription>
+                    {modalConfig.description}
+                </DialogDescription>
+            </div>
         </div>
 
         <div class="relative flex w-auto flex-col items-center justify-center space-y-5">
@@ -143,16 +145,12 @@
                             {:else}
                                 <div class="relative z-10 overflow-hidden border p-5">
                                     <div
-                                        class="flex aspect-square size-full items-center justify-center"
+                                        class="flex aspect-square size-full items-center justify-center [&>svg]:size-full"
                                         style={resolvedAppearance() === 'dark'
                                             ? 'filter: invert(1) brightness(1.5)'
                                             : undefined}
                                     >
-                                        <img
-                                            src={`data:image/svg+xml;utf8,${encodeURIComponent(twoFactorAuth.state.qrCodeSvg)}`}
-                                            alt="Two-factor authentication QR code"
-                                            class="size-full"
-                                        />
+                                        {@html twoFactorAuth.state.qrCodeSvg}
                                     </div>
                                 </div>
                             {/if}
@@ -201,8 +199,8 @@
                 <Form
                     {...confirm.form()}
                     resetOnError
-                    onfinish={() => (code = '')}
-                    onsuccess={() => (isOpen = false)}
+                    onFinish={() => (code = '')}
+                    onSuccess={() => (isOpen = false)}
                 >
                     {#snippet children({ errors: formErrors, processing })}
                         <input type="hidden" name="code" value={code} />

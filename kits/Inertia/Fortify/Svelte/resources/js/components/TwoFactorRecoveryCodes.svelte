@@ -58,13 +58,12 @@
             {#if isRecoveryCodesVisible && twoFactorAuth.state.recoveryCodesList.length}
                 <Form
                     {...regenerateRecoveryCodes.form()}
-                    method="post"
                     options={{ preserveScroll: true }}
-                    onsuccess={() => twoFactorAuth.fetchRecoveryCodes()}
+                    onSuccess={() => twoFactorAuth.fetchRecoveryCodes()}
                 >
                     {#snippet children({ processing })}
                         <Button variant="secondary" type="submit" disabled={processing}>
-                            <RefreshCw /> Regenerate Codes
+                            <RefreshCw class="size-4" /> Regenerate Codes
                         </Button>
                     {/snippet}
                 </Form>

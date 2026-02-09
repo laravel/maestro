@@ -63,16 +63,16 @@
                     <div>
                         {#if twoFactorAuth.hasSetupData()}
                             <Button onclick={() => (showSetupModal = true)}>
-                                <ShieldCheck />Continue Setup
+                                <ShieldCheck class="size-4" />Continue Setup
                             </Button>
                         {:else}
                             <Form
                                 {...enable.form()}
-                                onsuccess={() => (showSetupModal = true)}
+                                onSuccess={() => (showSetupModal = true)}
                             >
                                 {#snippet children({ processing })}
                                     <Button type="submit" disabled={processing}>
-                                        <ShieldCheck />Enable 2FA
+                                        <ShieldCheck class="size-4" />Enable 2FA
                                     </Button>
                                 {/snippet}
                             </Form>
@@ -94,7 +94,7 @@
                         <Form {...disable.form()}>
                             {#snippet children({ processing })}
                                 <Button variant="destructive" type="submit" disabled={processing}>
-                                    <ShieldBan />
+                                    <ShieldBan class="size-4" />
                                     Disable 2FA
                                 </Button>
                             {/snippet}

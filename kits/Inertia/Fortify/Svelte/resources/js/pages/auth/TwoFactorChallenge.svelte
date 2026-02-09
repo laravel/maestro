@@ -44,7 +44,7 @@
                 {...store.form()}
                 class="space-y-4"
                 resetOnError
-                onerror={() => (code = '')}
+                onError={() => (code = '')}
             >
                 {#snippet children({ errors, processing, clearErrors })}
                     <input type="hidden" name="code" value={code} />
