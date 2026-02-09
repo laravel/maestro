@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import TextLink from '@/components/TextLink.svelte';
     import { Button } from '@/components/ui/button';
@@ -23,9 +24,7 @@
     } = $props();
 </script>
 
-<svelte:head>
-    <title>Log in</title>
-</svelte:head>
+<AppHead title="Log in" />
 
 <AuthBase title="Log in to your account" description="Enter your email and password below to log in">
     {#if status}

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import ShieldBan from 'lucide-svelte/icons/shield-ban';
     import ShieldCheck from 'lucide-svelte/icons/shield-check';
     import { onDestroy } from 'svelte';
@@ -37,9 +38,7 @@
     });
 </script>
 
-<svelte:head>
-    <title>Two-Factor Authentication</title>
-</svelte:head>
+<AppHead title="Two-Factor Authentication" />
 
 <AppLayout breadcrumbs={breadcrumbs}>
     <h1 class="sr-only">Two-Factor Authentication Settings</h1>

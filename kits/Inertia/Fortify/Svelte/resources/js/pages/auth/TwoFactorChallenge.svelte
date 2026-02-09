@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
@@ -34,9 +35,7 @@
     }
 </script>
 
-<svelte:head>
-    <title>Two-Factor Authentication</title>
-</svelte:head>
+<AppHead title="Two-Factor Authentication" />
 
 <AuthLayout title={authConfigContent.title} description={authConfigContent.description}>
     <div class="space-y-6">

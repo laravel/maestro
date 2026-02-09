@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
@@ -19,9 +20,7 @@
     ];
 </script>
 
-<svelte:head>
-    <title>Password settings</title>
-</svelte:head>
+<AppHead title="Password settings" />
 
 <AppLayout breadcrumbs={breadcrumbItems}>
     <h1 class="sr-only">Password Settings</h1>

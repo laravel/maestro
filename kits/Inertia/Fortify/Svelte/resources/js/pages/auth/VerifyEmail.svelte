@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import TextLink from '@/components/TextLink.svelte';
     import { Button } from '@/components/ui/button';
     import { Spinner } from '@/components/ui/spinner';
@@ -14,9 +15,7 @@
     } = $props();
 </script>
 
-<svelte:head>
-    <title>Email verification</title>
-</svelte:head>
+<AppHead title="Email verification" />
 
 <AuthLayout
     title="Verify email"

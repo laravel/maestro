@@ -1,4 +1,5 @@
 <script lang="ts">
+    import AppHead from '@/components/AppHead.svelte';
     import PlaceholderPattern from '@/components/PlaceholderPattern.svelte';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import { dashboard } from '@/routes';
@@ -12,9 +13,7 @@
     ];
 </script>
 
-<svelte:head>
-    <title>Dashboard</title>
-</svelte:head>
+<AppHead title="Dashboard" />
 
 <AppLayout {breadcrumbs}>
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">

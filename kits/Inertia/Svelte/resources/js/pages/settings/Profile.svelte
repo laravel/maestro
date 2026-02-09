@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Form, page } from '@inertiajs/svelte';
     import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+    import AppHead from '@/components/AppHead.svelte';
     import DeleteUser from '@/components/DeleteUser.svelte';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
@@ -10,7 +11,6 @@
     import { Label } from '@/components/ui/label';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
-    import { toUrl } from '@/lib/utils';
     import { edit } from '@/routes/profile';
     import { send } from '@/routes/verification';
     import type { BreadcrumbItem } from '@/types';
@@ -33,9 +33,7 @@
     const user = $derived($page.props.auth.user);
 </script>
 
-<svelte:head>
-    <title>Profile settings</title>
-</svelte:head>
+<AppHead title="Profile settings" />
 
 <AppLayout breadcrumbs={breadcrumbItems}>
     <h1 class="sr-only">Profile Settings</h1>
@@ -45,8 +43,7 @@
             <Heading variant="small" title="Profile information" description="Update your name and email address" />
 
             <Form
-                action={ProfileController.update.url()}
-                method="patch"
+                {...ProfileController.update.form()}
                 class="space-y-6"
                 options={{ preserveScroll: true }}
             >
@@ -84,7 +81,7 @@
                         <div>
                             <p class="-mt-4 text-sm text-muted-foreground">
                                 Your email address is unverified.
-                                <TextLink href={toUrl(send())} as="button">
+                                <TextLink href={send()} as="button">
                                     Click here to resend the verification email.
                                 </TextLink>
                             </p>
@@ -98,7 +95,7 @@
                     {/if}
 
                     <div class="flex items-center gap-4">
-                        <Button disabled={processing} data-test="update-profile-button">Save</Button>
+                        <Button type="submit" disabled={processing} data-test="update-profile-button">Save</Button>
 
                         {#if recentlySuccessful}
                             <p class="text-sm text-neutral-600">Saved.</p>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
@@ -17,9 +18,7 @@
     } = $props();
 </script>
 
-<svelte:head>
-    <title>Reset password</title>
-</svelte:head>
+<AppHead title="Reset password" />
 
 <AuthLayout title="Reset password" description="Please enter your new password below">
     <Form

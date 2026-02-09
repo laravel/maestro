@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import TextLink from '@/components/TextLink.svelte';
     import { Button } from '@/components/ui/button';
@@ -17,9 +18,7 @@
     } = $props();
 </script>
 
-<svelte:head>
-    <title>Forgot password</title>
-</svelte:head>
+<AppHead title="Forgot password" />
 
 <AuthLayout title="Forgot password" description="Enter your email to receive a password reset link">
     {#if status}

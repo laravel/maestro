@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
@@ -9,9 +10,7 @@
     import { store } from '@/routes/password/confirm';
 </script>
 
-<svelte:head>
-    <title>Confirm password</title>
-</svelte:head>
+<AppHead title="Confirm password" />
 
 <AuthLayout
     title="Confirm your password"

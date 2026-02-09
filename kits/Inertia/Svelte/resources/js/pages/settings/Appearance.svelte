@@ -1,4 +1,5 @@
 <script lang="ts">
+    import AppHead from '@/components/AppHead.svelte';
     import AppearanceTabs from '@/components/AppearanceTabs.svelte';
     import Heading from '@/components/Heading.svelte';
     import AppLayout from '@/layouts/AppLayout.svelte';
@@ -14,9 +15,7 @@
     ];
 </script>
 
-<svelte:head>
-    <title>Appearance settings</title>
-</svelte:head>
+<AppHead title="Appearance settings" />
 
 <AppLayout breadcrumbs={breadcrumbItems}>
     <h1 class="sr-only">Appearance Settings</h1>

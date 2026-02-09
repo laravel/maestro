@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import TextLink from '@/components/TextLink.svelte';
     import { Button } from '@/components/ui/button';
@@ -11,9 +12,7 @@
     import { store } from '@/routes/register';
 </script>
 
-<svelte:head>
-    <title>Register</title>
-</svelte:head>
+<AppHead title="Register" />
 
 <AuthBase title="Create an account" description="Enter your details below to create your account">
     <Form
