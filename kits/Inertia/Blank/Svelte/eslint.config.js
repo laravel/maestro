@@ -32,6 +32,7 @@ export default ts.config(
                     fixStyle: 'separate-type-imports',
                 },
             ],
+            'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
             'import/order': [
                 'error',
                 {

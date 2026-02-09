@@ -2,13 +2,14 @@ import type { LinkComponentBaseProps } from '@inertiajs/core';
 import type { Readable } from 'svelte/store';
 import { toUrl } from '@/lib/utils';
 import { page } from '@inertiajs/svelte';
-import { derived, get } from 'svelte/store';
+import { derived } from 'svelte/store';
 
-export type UseCurrentUrlReturn = {
+export type CurrentUrlState = {
     currentUrl: Readable<string>;
-    isCurrentUrl: (urlToCheck: NonNullable<LinkComponentBaseProps['href']>, currentUrl?: string) => boolean;
+    isCurrentUrl: (urlToCheck: NonNullable<LinkComponentBaseProps['href']>, currentUrl: string) => boolean;
     whenCurrentUrl: <TIfTrue, TIfFalse = null>(
         urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
+        currentUrl: string,
         ifTrue: TIfTrue,
         ifFalse?: TIfFalse,
     ) => TIfTrue | TIfFalse;
@@ -24,18 +25,17 @@ const currentUrl = derived(page, ($page) => {
     }
 });
 
-export function useCurrentUrl(): UseCurrentUrlReturn {
-    function isCurrentUrl(urlToCheck: NonNullable<LinkComponentBaseProps['href']>, currentOverride?: string): boolean {
-        const urlToCompare = currentOverride ?? get(currentUrl);
+export function currentUrlState(): CurrentUrlState {
+    function isCurrentUrl(urlToCheck: NonNullable<LinkComponentBaseProps['href']>, current: string): boolean {
         const urlString = toUrl(urlToCheck);
 
         if (!urlString.startsWith('http')) {
-            return urlString === urlToCompare;
+            return urlString === current;
         }
 
         try {
             const absoluteUrl = new URL(urlString);
-            return absoluteUrl.pathname === urlToCompare;
+            return absoluteUrl.pathname === current;
         } catch {
             return false;
         }
@@ -43,10 +43,11 @@ export function useCurrentUrl(): UseCurrentUrlReturn {
 
     function whenCurrentUrl<TIfTrue, TIfFalse = null>(
         urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
+        current: string,
         ifTrue: TIfTrue,
         ifFalse: TIfFalse = null as TIfFalse,
     ): TIfTrue | TIfFalse {
-        return isCurrentUrl(urlToCheck) ? ifTrue : ifFalse;
+        return isCurrentUrl(urlToCheck, current) ? ifTrue : ifFalse;
     }
 
     return {

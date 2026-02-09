@@ -29,8 +29,8 @@
         TooltipTrigger,
     } from '@/components/ui/tooltip';
     import UserMenuContent from '@/components/UserMenuContent.svelte';
-    import { useCurrentUrl } from '@/composables/useCurrentUrl';
-    import { getInitials } from '@/composables/useInitials';
+    import { currentUrlState } from '@/lib/currentUrl';
+    import { getInitials } from '@/lib/initials';
     import { toUrl } from '@/lib/utils';
     import { dashboard } from '@/routes';
     import type { BreadcrumbItem, NavItem } from '@/types';
@@ -48,7 +48,7 @@
     } = $props();
 
     const auth = $derived($page.props.auth);
-    const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
+    const { currentUrl, isCurrentUrl, whenCurrentUrl } = currentUrlState();
 
     const activeItemStyles = 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 
@@ -95,7 +95,7 @@
                                 {#each mainNavItems as item (toUrl(item.href))}
                                     <Link
                                         href={toUrl(item.href)}
-                                        class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent {whenCurrentUrl(item.href, activeItemStyles, '') ?? ''}"
+                                        class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent {whenCurrentUrl(item.href, $currentUrl, activeItemStyles, '') ?? ''}"
                                     >
                                         {#if item.icon}
                                             <item.icon class="h-5 w-5" />
@@ -135,7 +135,7 @@
                         {#each mainNavItems as item (toUrl(item.href))}
                             <NavigationMenuItem class="relative flex h-full items-center">
                                 <Link
-                                    class="{navigationMenuTriggerStyle()} {whenCurrentUrl(item.href, activeItemStyles, '') ?? ''} h-9 cursor-pointer px-3"
+                                    class="{navigationMenuTriggerStyle()} {whenCurrentUrl(item.href, $currentUrl, activeItemStyles, '') ?? ''} h-9 cursor-pointer px-3"
                                     href={toUrl(item.href)}
                                 >
                                     {#if item.icon}
@@ -143,7 +143,7 @@
                                     {/if}
                                     {item.title}
                                 </Link>
-                                {#if isCurrentUrl(item.href)}
+                                {#if isCurrentUrl(item.href, $currentUrl)}
                                     <div class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
                                 {/if}
                             </NavigationMenuItem>

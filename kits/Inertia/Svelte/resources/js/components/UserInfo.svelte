@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-    import { getInitials } from '@/composables/useInitials';
+    import { getInitials } from '@/lib/initials';
     import type { User } from '@/types';
 
     let {

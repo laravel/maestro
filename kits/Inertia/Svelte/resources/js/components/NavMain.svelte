@@ -6,7 +6,7 @@
         SidebarMenuButton,
         SidebarMenuItem,
     } from '@/components/ui/sidebar';
-    import { useCurrentUrl } from '@/composables/useCurrentUrl';
+    import { currentUrlState } from '@/lib/currentUrl';
     import { toUrl } from '@/lib/utils';
     import type { NavItem } from '@/types';
     import { Link } from '@inertiajs/svelte';
@@ -17,7 +17,7 @@
         items: NavItem[];
     } = $props();
 
-    const { isCurrentUrl } = useCurrentUrl();
+    const { currentUrl, isCurrentUrl } = currentUrlState();
 </script>
 
 <SidebarGroup class="px-2 py-0">
@@ -25,7 +25,7 @@
     <SidebarMenu>
         {#each items as item (toUrl(item.href))}
             <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isCurrentUrl(item.href)} tooltip={item.title}>
+                <SidebarMenuButton asChild isActive={isCurrentUrl(item.href, $currentUrl)} tooltip={item.title}>
                     {#snippet children(props)}
                         <Link href={toUrl(item.href)} class={props.class}>
                             {#if item.icon}

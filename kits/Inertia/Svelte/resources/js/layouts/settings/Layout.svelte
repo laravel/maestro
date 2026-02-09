@@ -3,7 +3,7 @@
     import Heading from '@/components/Heading.svelte';
     import { Button } from '@/components/ui/button';
     import { Separator } from '@/components/ui/separator';
-    import { useCurrentUrl } from '@/composables/useCurrentUrl';
+    import { currentUrlState } from '@/lib/currentUrl';
     import { toUrl } from '@/lib/utils';
     import { edit as editAppearance } from '@/routes/appearance';
     import { edit as editProfile } from '@/routes/profile';
@@ -37,7 +37,7 @@
         },
     ];
 
-    const { isCurrentUrl } = useCurrentUrl();
+    const { currentUrl, isCurrentUrl } = currentUrlState();
 </script>
 
 <div class="px-4 py-6">
@@ -49,7 +49,7 @@
                 {#each sidebarNavItems as item (toUrl(item.href))}
                     <Button
                         variant="ghost"
-                        class="w-full justify-start {isCurrentUrl(item.href) ? 'bg-muted' : ''}"
+                        class="w-full justify-start {isCurrentUrl(item.href, $currentUrl) ? 'bg-muted' : ''}"
                         asChild
                     >
                         {#snippet children(props)}

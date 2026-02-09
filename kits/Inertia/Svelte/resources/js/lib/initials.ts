@@ -1,4 +1,4 @@
-export type UseInitialsReturn = {
+export type InitialsApi = {
     getInitials: (fullName?: string) => string;
 };
 
@@ -13,6 +13,6 @@ export function getInitials(fullName?: string): string {
     return `${names[0].charAt(0)}${names[names.length - 1].charAt(0)}`.toUpperCase();
 }
 
-export function useInitials(): UseInitialsReturn {
+export function initialsApi(): InitialsApi {
     return { getInitials };
 }

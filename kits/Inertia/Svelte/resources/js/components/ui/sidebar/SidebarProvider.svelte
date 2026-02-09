@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { derived, readable, writable, get } from 'svelte/store';
+    import { derived, readable, writable } from 'svelte/store';
     import { onMount, setContext } from 'svelte';
     import { cn } from '@/lib/utils';
     import { TooltipProvider } from '@/components/ui/tooltip';
@@ -59,10 +59,10 @@
     };
 
     const toggleSidebar = () => {
-        if (get(isMobile)) {
-            setOpenMobile(!get(openMobile));
+        if ($isMobile) {
+            setOpenMobile(!$openMobile);
         } else {
-            setOpen(!get(open));
+            setOpen(!$open);
         }
     };
 

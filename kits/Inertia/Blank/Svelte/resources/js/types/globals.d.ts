@@ -14,5 +14,5 @@ declare module 'vite/client' {
 }
 
 declare module '@inertiajs/core' {
-    interface PageProps extends AppPageProps {}
+    interface PageProps extends InertiaPageProps, AppPageProps {}
 }

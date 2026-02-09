@@ -1,13 +1,15 @@
-import type { Readable } from 'svelte/store';
-import { derived, writable } from 'svelte/store';
 import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
 
-export type UseTwoFactorAuthReturn = {
-    qrCodeSvg: Readable<string | null>;
-    manualSetupKey: Readable<string | null>;
-    recoveryCodesList: Readable<string[]>;
-    errors: Readable<string[]>;
-    hasSetupData: Readable<boolean>;
+type TwoFactorAuthState = {
+    qrCodeSvg: string | null;
+    manualSetupKey: string | null;
+    recoveryCodesList: string[];
+    errors: string[];
+};
+
+export type TwoFactorAuthStateApi = {
+    state: TwoFactorAuthState;
+    hasSetupData: () => boolean;
     clearSetupData: () => void;
     clearErrors: () => void;
     clearTwoFactorAuthData: () => void;
@@ -29,27 +31,26 @@ const fetchJson = async <T>(url: string): Promise<T> => {
     return response.json();
 };
 
-const qrCodeSvg = writable<string | null>(null);
-const manualSetupKey = writable<string | null>(null);
-const recoveryCodesList = writable<string[]>([]);
-const errors = writable<string[]>([]);
+const state = $state<TwoFactorAuthState>({
+    qrCodeSvg: null,
+    manualSetupKey: null,
+    recoveryCodesList: [],
+    errors: [],
+});
 
-const hasSetupData = derived(
-    [qrCodeSvg, manualSetupKey],
-    ([$qr, $key]) => $qr !== null && $key !== null,
-);
+const hasSetupData = (): boolean => state.qrCodeSvg !== null && state.manualSetupKey !== null;
 
-export function useTwoFactorAuth(): UseTwoFactorAuthReturn {
+export function twoFactorAuthState(): TwoFactorAuthStateApi {
     const fetchQrCode = async (): Promise<void> => {
         try {
             const { svg } = await fetchJson<{ svg: string; url: string }>(
                 qrCode.url(),
             );
 
-            qrCodeSvg.set(svg);
+            state.qrCodeSvg = svg;
         } catch {
-            errors.update((items) => [...items, 'Failed to fetch QR code']);
-            qrCodeSvg.set(null);
+            state.errors = [...state.errors, 'Failed to fetch QR code'];
+            state.qrCodeSvg = null;
         }
     };
 
@@ -59,38 +60,36 @@ export function useTwoFactorAuth(): UseTwoFactorAuthReturn {
                 secretKey.url(),
             );
 
-            manualSetupKey.set(key);
+            state.manualSetupKey = key;
         } catch {
-            errors.update((items) => [...items, 'Failed to fetch a setup key']);
-            manualSetupKey.set(null);
+            state.errors = [...state.errors, 'Failed to fetch a setup key'];
+            state.manualSetupKey = null;
         }
     };
 
     const clearErrors = (): void => {
-        errors.set([]);
+        state.errors = [];
     };
 
     const clearSetupData = (): void => {
-        manualSetupKey.set(null);
-        qrCodeSvg.set(null);
+        state.manualSetupKey = null;
+        state.qrCodeSvg = null;
         clearErrors();
     };
 
     const clearTwoFactorAuthData = (): void => {
         clearSetupData();
-        recoveryCodesList.set([]);
+        state.recoveryCodesList = [];
         clearErrors();
     };
 
     const fetchRecoveryCodes = async (): Promise<void> => {
         try {
             clearErrors();
-            recoveryCodesList.set(
-                await fetchJson<string[]>(recoveryCodes.url()),
-            );
+            state.recoveryCodesList = await fetchJson<string[]>(recoveryCodes.url());
         } catch {
-            errors.update((items) => [...items, 'Failed to fetch recovery codes']);
-            recoveryCodesList.set([]);
+            state.errors = [...state.errors, 'Failed to fetch recovery codes'];
+            state.recoveryCodesList = [];
         }
     };
 
@@ -99,16 +98,13 @@ export function useTwoFactorAuth(): UseTwoFactorAuthReturn {
             clearErrors();
             await Promise.all([fetchQrCode(), fetchSetupKey()]);
         } catch {
-            qrCodeSvg.set(null);
-            manualSetupKey.set(null);
+            state.qrCodeSvg = null;
+            state.manualSetupKey = null;
         }
     };
 
     return {
-        qrCodeSvg,
-        manualSetupKey,
-        recoveryCodesList,
-        errors,
+        state,
         hasSetupData,
         clearSetupData,
         clearErrors,
