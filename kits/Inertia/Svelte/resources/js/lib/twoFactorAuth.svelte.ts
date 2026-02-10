@@ -75,14 +75,12 @@ export function twoFactorAuthState(): TwoFactorAuthStateApi {
         try {
             const payload = await fetchJson<
                 { secretKey?: string; secret_key?: string } | string
-            >(
-                secretKey.url(),
-            );
+            >(secretKey.url());
 
             const key =
                 typeof payload === 'string'
                     ? payload
-                    : payload.secretKey ?? payload.secret_key ?? null;
+                    : (payload.secretKey ?? payload.secret_key ?? null);
 
             if (!key) {
                 throw new Error('Setup key not found in response');

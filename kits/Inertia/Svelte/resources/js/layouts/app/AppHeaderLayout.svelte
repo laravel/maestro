@@ -16,7 +16,7 @@
 
 <AppShell variant="header" class="flex-col">
     <AppHeader {breadcrumbs} />
-    <AppContent>
+    <AppContent variant="header">
         {@render children?.()}
     </AppContent>
 </AppShell>

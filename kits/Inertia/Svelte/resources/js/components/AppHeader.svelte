@@ -98,7 +98,7 @@
                         <SheetHeader class="flex justify-start text-left">
                             <AppLogoIcon class="size-6 fill-current text-black dark:text-white" />
                         </SheetHeader>
-                        <div class="flex h-full flex-1 flex-col justify-between space-y-4 py-6">
+                        <div class="flex h-full flex-1 flex-col justify-between space-y-4 pt-6 pb-10">
                             <nav class="-mx-3 space-y-1">
                                 {#each mainNavItems as item (toUrl(item.href))}
                                     <Link
@@ -143,7 +143,7 @@
                         {#each mainNavItems as item (toUrl(item.href))}
                             <NavigationMenuItem class="relative flex h-full items-center">
                                 <Link
-                                    class="{navigationMenuTriggerStyle()} {whenCurrentUrl(item.href, $currentUrl, activeItemStyles, '') ?? ''} h-9 cursor-pointer px-3"
+                                    class="{navigationMenuTriggerStyle()} {whenCurrentUrl(item.href, $currentUrl, activeItemStyles, '') ?? ''} h-9 cursor-pointer px-4"
                                     href={toUrl(item.href)}
                                 >
                                     {#if item.icon}

@@ -64,6 +64,16 @@
         };
     });
 
+    const qrCodeDataUrl = $derived.by(() => {
+        const qrCodeSvg = twoFactorAuth.state.qrCodeSvg;
+
+        if (!qrCodeSvg) {
+            return '';
+        }
+
+        return `data:image/svg+xml;utf8,${encodeURIComponent(qrCodeSvg)}`;
+    });
+
     async function copyToClipboard(text: string) {
         await navigator.clipboard.writeText(text);
         copied = true;
@@ -150,7 +160,11 @@
                                             ? 'filter: invert(1) brightness(1.5)'
                                             : undefined}
                                     >
-                                        {@html twoFactorAuth.state.qrCodeSvg}
+                                        <img
+                                            src={qrCodeDataUrl}
+                                            alt="Two-factor authentication QR code"
+                                            class="size-full"
+                                        />
                                     </div>
                                 </div>
                             {/if}

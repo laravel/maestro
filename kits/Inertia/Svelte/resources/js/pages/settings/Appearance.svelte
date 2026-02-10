@@ -1,6 +1,6 @@
 <script lang="ts">
-    import AppHead from '@/components/AppHead.svelte';
     import AppearanceTabs from '@/components/AppearanceTabs.svelte';
+    import AppHead from '@/components/AppHead.svelte';
     import Heading from '@/components/Heading.svelte';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
