@@ -110,6 +110,34 @@ jobs:
             pr_branch: maestro-update-workos
             node: true
 
+          # Svelte variants
+          - name: Svelte Kit
+            kit: Svelte
+            build_flags: ''
+            repository: laravel/svelte-starter-kit
+            path: svelte-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: Svelte Kit (Blank)
+            kit: Svelte
+            build_flags: '--blank'
+            repository: laravel/blank-svelte-starter-kit
+            path: blank-svelte-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: Svelte Kit (WorkOS)
+            kit: Svelte
+            build_flags: '--workos'
+            repository: laravel/svelte-starter-kit
+            path: svelte-starter-kit
+            branch: workos
+            pr_branch: maestro-update-workos
+            node: true
+
     steps:
       - name: Checkout Maestro
         uses: actions/checkout@v6

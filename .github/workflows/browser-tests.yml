@@ -27,6 +27,9 @@ jobs:
           - name: Vue Kit
             kit: Vue
 
+          - name: Svelte Kit
+            kit: Svelte
+
     steps:
       - name: Checkout Maestro
         uses: actions/checkout@v6
