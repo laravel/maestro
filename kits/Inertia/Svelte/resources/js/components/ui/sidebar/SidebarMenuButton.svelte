@@ -45,32 +45,36 @@
 </script>
 
 {#if tooltip}
-    <Tooltip>
-        <TooltipTrigger asChild>
-            {#if asChild}
-                {@render children?.({
-                    class: classes(),
-                    'data-slot': 'sidebar-menu-button',
-                    'data-sidebar': 'menu-button',
-                    'data-size': size,
-                    'data-active': isActive,
-                    ...rest,
-                })}
-            {:else}
-                <button
-                    class={classes()}
-                    type="button"
-                    data-slot="sidebar-menu-button"
-                    data-sidebar="menu-button"
-                    data-size={size}
-                    data-active={isActive}
-                    {...rest}
-                >
-                    {@render children?.({})}
-                </button>
-            {/if}
+    <Tooltip disabled={$state !== 'collapsed' || $isMobile}>
+        <TooltipTrigger>
+            {#snippet child({ props: triggerProps })}
+                {#if asChild}
+                    {@render children?.({
+                        class: classes(),
+                        'data-slot': 'sidebar-menu-button',
+                        'data-sidebar': 'menu-button',
+                        'data-size': size,
+                        'data-active': isActive,
+                        ...rest,
+                        ...triggerProps,
+                    })}
+                {:else}
+                    <button
+                        class={classes()}
+                        type="button"
+                        data-slot="sidebar-menu-button"
+                        data-sidebar="menu-button"
+                        data-size={size}
+                        data-active={isActive}
+                        {...rest}
+                        {...triggerProps}
+                    >
+                        {@render children?.({})}
+                    </button>
+                {/if}
+            {/snippet}
         </TooltipTrigger>
-        <TooltipContent side="right" align="center" hidden={$state !== 'collapsed' || $isMobile}>
+        <TooltipContent side="right" align="center">
             {tooltip}
         </TooltipContent>
     </Tooltip>

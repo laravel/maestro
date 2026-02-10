@@ -171,19 +171,18 @@
                             <TooltipProvider delayDuration={0}>
                                 <Tooltip>
                                     <TooltipTrigger>
-                                        <Button variant="ghost" size="icon" asChild class="group h-9 w-9 cursor-pointer">
-                                            {#snippet children(props)}
-                                                <a
-                                                    href={toUrl(item.href)}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    class={props.class}
-                                                >
-                                                    <span class="sr-only">{item.title}</span>
-                                                    <item.icon class="size-5 opacity-80 group-hover:opacity-100" />
-                                                </a>
-                                            {/snippet}
-                                        </Button>
+                                        {#snippet child({ props })}
+                                            <a
+                                                href={toUrl(item.href)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                {...props}
+                                                class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-9 w-9 group cursor-pointer"
+                                            >
+                                                <span class="sr-only">{item.title}</span>
+                                                <item.icon class="size-5 opacity-80 group-hover:opacity-100" />
+                                            </a>
+                                        {/snippet}
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>{item.title}</p>

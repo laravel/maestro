@@ -1,48 +1,31 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { getContext } from 'svelte';
+    import { Tooltip } from 'bits-ui';
     import { cn } from '@/lib/utils';
-    import { TOOLTIP_CONTEXT, type TooltipContext } from './context';
 
     let {
-        side = 'top',
-        align = 'center',
-        hidden = false,
-        class: className = '',
+        class: className,
+        sideOffset = 4,
         children,
+        ...restProps
     }: {
-        side?: 'top' | 'right' | 'bottom' | 'left';
-        align?: 'start' | 'center' | 'end';
-        hidden?: boolean;
         class?: string;
+        sideOffset?: number;
         children?: Snippet;
+        [key: string]: unknown;
     } = $props();
-
-    const { open } = getContext<TooltipContext>(TOOLTIP_CONTEXT);
-
-    const sideClasses: Record<string, string> = {
-        top: 'bottom-full mb-2',
-        bottom: 'top-full mt-2',
-        left: 'right-full mr-2',
-        right: 'left-full ml-2',
-    };
-
-    const alignClasses: Record<string, string> = {
-        start: 'left-0',
-        center: 'left-1/2 -translate-x-1/2',
-        end: 'right-0',
-    };
 </script>
 
-{#if open() && !hidden}
-    <div
+<Tooltip.Portal>
+    <Tooltip.Content
+        {sideOffset}
         class={cn(
-            'absolute z-50 rounded-md bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md',
-            sideClasses[side] ?? sideClasses.top,
-            alignClasses[align] ?? alignClasses.center,
+            'bg-foreground text-background animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-fit rounded-md px-3 py-1.5 text-xs text-balance',
             className,
         )}
+        {...restProps}
     >
         {@render children?.()}
-    </div>
-{/if}
+        <Tooltip.Arrow class="fill-foreground" />
+    </Tooltip.Content>
+</Tooltip.Portal>
