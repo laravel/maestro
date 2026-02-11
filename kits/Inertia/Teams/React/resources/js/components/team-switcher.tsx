@@ -15,10 +15,10 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar';
-import type { SharedData, Team } from '@/types';
+import type { Team } from '@/types';
 
 export function TeamSwitcher() {
-    const page = usePage<SharedData>();
+    const page = usePage();
     const { isMobile } = useSidebar();
     const currentTeam = page.props.currentTeam;
     const teams = page.props.teams ?? [];

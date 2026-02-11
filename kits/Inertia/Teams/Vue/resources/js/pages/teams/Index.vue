@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Head, Link, router } from '@inertiajs/vue3';
+import { Edit, Eye, Plus, Star } from 'lucide-vue-next';
 import CreateTeamModal from '@/components/CreateTeamModal.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
@@ -12,8 +14,6 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import type { BreadcrumbItem, Team } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { Edit, Eye, Plus, Star } from 'lucide-vue-next';
 
 type Props = {
     teams: Team[];
@@ -63,11 +63,19 @@ const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
                         <div class="flex items-center gap-4">
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <span class="font-medium">{{ team.name }}</span>
-                                    <Badge v-if="team.is_current" class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                    <span class="font-medium">{{
+                                        team.name
+                                    }}</span>
+                                    <Badge
+                                        v-if="team.is_current"
+                                        class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                                    >
                                         Current
                                     </Badge>
-                                    <Badge v-if="team.is_personal" class="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300">
+                                    <Badge
+                                        v-if="team.is_personal"
+                                        class="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300"
+                                    >
                                         Personal
                                     </Badge>
                                 </div>
@@ -131,7 +139,10 @@ const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
                         </TooltipProvider>
                     </div>
 
-                    <p v-if="teams.length === 0" class="text-center text-muted-foreground py-8">
+                    <p
+                        v-if="teams.length === 0"
+                        class="py-8 text-center text-muted-foreground"
+                    >
                         You don't belong to any teams yet.
                     </p>
                 </div>
