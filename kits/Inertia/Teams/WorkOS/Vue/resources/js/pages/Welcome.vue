@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { dashboard, login } from '@/routes';
-import type { SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -13,7 +12,7 @@ withDefaults(
     },
 );
 
-const page = usePage<SharedData>();
+const page = usePage();
 const dashboardUrl = computed(() =>
     page.props.currentTeam ? dashboard(page.props.currentTeam.slug).url : '/'
 );

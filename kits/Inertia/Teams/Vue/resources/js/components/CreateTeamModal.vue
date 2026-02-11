@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Form } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,8 +15,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Form } from '@inertiajs/vue3';
-import { ref } from 'vue';
 
 const open = ref(false);
 </script>
@@ -52,9 +52,7 @@ const open = ref(false);
 
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
-                        <Button variant="secondary">
-                            Cancel
-                        </Button>
+                        <Button variant="secondary"> Cancel </Button>
                     </DialogClose>
 
                     <Button type="submit" :disabled="processing">
