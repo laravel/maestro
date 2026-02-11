@@ -1,3 +1,5 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { Edit, Eye, Plus, Star } from 'lucide-react';
 import CreateTeamModal from '@/components/create-team-modal';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
@@ -11,8 +13,6 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import type { BreadcrumbItem, Team } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { Edit, Eye, Plus, Star } from 'lucide-react';
 
 type Props = {
     teams: Team[];

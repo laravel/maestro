@@ -1,3 +1,14 @@
+import { Link, router, usePage } from '@inertiajs/react';
+import {
+    BookOpen,
+    Check,
+    ChevronsUpDown,
+    Folder,
+    LayoutGrid,
+    Menu,
+    Plus,
+    Search,
+} from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import CreateTeamModal from '@/components/create-team-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -35,8 +46,6 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn, toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem, SharedData, Team } from '@/types';
-import { Link, router, usePage } from '@inertiajs/react';
-import { BookOpen, Check, ChevronsUpDown, Folder, LayoutGrid, Menu, Plus, Search } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
@@ -67,7 +76,8 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
     const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
     const dashboardUrl = currentTeam ? dashboard(currentTeam.slug) : '/';
 
-    const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
+    const switchTeam = (team: Team) =>
+        router.post(`/teams/${team.slug}/switch`);
 
     const mainNavItems: NavItem[] = [
         {
@@ -193,7 +203,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                             >
                                 <Search className="!size-5 opacity-80 group-hover:opacity-100" />
                             </Button>
-                            <div className="hidden lg:flex gap-1 ml-1">
+                            <div className="ml-1 hidden gap-1 lg:flex">
                                 {rightNavItems.map((item) => (
                                     <TooltipProvider
                                         key={item.title}
