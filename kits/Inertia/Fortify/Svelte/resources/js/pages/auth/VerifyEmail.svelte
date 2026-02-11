@@ -29,7 +29,7 @@
 
     <Form {...send.form()} class="space-y-6 text-center">
         {#snippet children({ processing })}
-            <Button disabled={processing} variant="secondary">
+            <Button type="submit" disabled={processing} variant="secondary">
                 {#if processing}<Spinner />{/if}
                 Resend verification email
             </Button>

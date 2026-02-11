@@ -34,6 +34,7 @@
 
                 <div class="flex items-center">
                     <Button
+                        type="submit"
                         class="w-full"
                         disabled={processing}
                         data-test="confirm-password-button"
