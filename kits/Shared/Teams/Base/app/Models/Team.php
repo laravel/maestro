@@ -84,10 +84,11 @@ class Team extends Model
         foreach ($existingSlugs as $existingSlug) {
             if ($existingSlug === $baseSlug) {
                 $maxSuffix = max($maxSuffix, 0);
+
                 continue;
             }
 
-            if (!Str::startsWith($existingSlug, $baseSlug.'-')) {
+            if (! Str::startsWith($existingSlug, $baseSlug.'-')) {
                 continue;
             }
 

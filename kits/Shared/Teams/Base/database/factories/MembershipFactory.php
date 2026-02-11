@@ -47,5 +47,4 @@ class MembershipFactory extends Factory
             'role' => TeamRole::Admin,
         ]);
     }
-
 }
