@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { dashboard, login } from '@/routes';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { dashboard, login } from '@/routes';
 
 withDefaults(
     defineProps<{
@@ -14,7 +14,7 @@ withDefaults(
 
 const page = usePage();
 const dashboardUrl = computed(() =>
-    page.props.currentTeam ? dashboard(page.props.currentTeam.slug).url : '/'
+    page.props.currentTeam ? dashboard(page.props.currentTeam.slug).url : '/',
 );
 </script>
 
