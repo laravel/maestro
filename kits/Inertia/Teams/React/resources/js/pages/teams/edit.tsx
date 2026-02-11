@@ -1,3 +1,7 @@
+import { Transition } from '@headlessui/react';
+import { Form, Head, router } from '@inertiajs/react';
+import { ChevronDown, Mail, Trash2, UserPlus, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -19,14 +23,14 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useInitials } from '@/hooks/use-initials';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
@@ -39,10 +43,6 @@ import type {
     TeamOption,
     TeamPermissions,
 } from '@/types';
-import { Form, Head, router } from '@inertiajs/react';
-import { Transition } from '@headlessui/react';
-import { ChevronDown, Mail, Trash2, UserPlus, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
 
 type Props = {
     team: Team;
@@ -80,10 +80,10 @@ export default function TeamEdit({
 
     const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [removeMemberDialogOpen, setRemoveMemberDialogOpen] =
-        useState(false);
-    const [memberToRemove, setMemberToRemove] =
-        useState<TeamMember | null>(null);
+    const [removeMemberDialogOpen, setRemoveMemberDialogOpen] = useState(false);
+    const [memberToRemove, setMemberToRemove] = useState<TeamMember | null>(
+        null,
+    );
     const [cancelInvitationDialogOpen, setCancelInvitationDialogOpen] =
         useState(false);
     const [invitationToCancel, setInvitationToCancel] =
@@ -191,7 +191,11 @@ export default function TeamEdit({
                                     method="patch"
                                     className="space-y-6"
                                 >
-                                    {({ errors, processing, recentlySuccessful }) => (
+                                    {({
+                                        errors,
+                                        processing,
+                                        recentlySuccessful,
+                                    }) => (
                                         <>
                                             <div className="grid gap-2">
                                                 <Label htmlFor="name">
@@ -234,10 +238,7 @@ export default function TeamEdit({
                             </>
                         ) : (
                             <>
-                                <Heading
-                                    variant="small"
-                                    title="Team Name"
-                                />
+                                <Heading variant="small" title="Team Name" />
                                 <p className="text-foreground">{team.name}</p>
                             </>
                         )}
@@ -248,7 +249,11 @@ export default function TeamEdit({
                             <Heading
                                 variant="small"
                                 title="Team Members"
-                                description={permissions.canCreateInvitation ? 'Manage who has access to this team' : ''}
+                                description={
+                                    permissions.canCreateInvitation
+                                        ? 'Manage who has access to this team'
+                                        : ''
+                                }
                             />
 
                             {permissions.canCreateInvitation ? (
@@ -278,8 +283,8 @@ export default function TeamEdit({
                                                             Invite a team member
                                                         </DialogTitle>
                                                         <DialogDescription>
-                                                            Send an invitation to
-                                                            join this team.
+                                                            Send an invitation
+                                                            to join this team.
                                                         </DialogDescription>
                                                     </DialogHeader>
 
@@ -322,7 +327,9 @@ export default function TeamEdit({
                                                                 </DropdownMenuTrigger>
                                                                 <DropdownMenuContent className="w-full">
                                                                     {availableRoles.map(
-                                                                        (role) => (
+                                                                        (
+                                                                            role,
+                                                                        ) => (
                                                                             <DropdownMenuItem
                                                                                 key={
                                                                                     role.value
@@ -333,7 +340,9 @@ export default function TeamEdit({
                                                                                     )
                                                                                 }
                                                                             >
-                                                                                {role.label}
+                                                                                {
+                                                                                    role.label
+                                                                                }
                                                                             </DropdownMenuItem>
                                                                         ),
                                                                     )}
@@ -342,7 +351,9 @@ export default function TeamEdit({
                                                             <input
                                                                 type="hidden"
                                                                 name="role"
-                                                                value={inviteRole}
+                                                                value={
+                                                                    inviteRole
+                                                                }
                                                             />
                                                             <InputError
                                                                 message={
@@ -361,7 +372,9 @@ export default function TeamEdit({
 
                                                         <Button
                                                             type="submit"
-                                                            disabled={processing}
+                                                            disabled={
+                                                                processing
+                                                            }
                                                         >
                                                             Send Invitation
                                                         </Button>
@@ -416,19 +429,21 @@ export default function TeamEdit({
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent>
-                                                    {availableRoles.map((role) => (
-                                                        <DropdownMenuItem
-                                                            key={role.value}
-                                                            onSelect={() =>
-                                                                updateMemberRole(
-                                                                    member,
-                                                                    role.value,
-                                                                )
-                                                            }
-                                                        >
-                                                            {role.label}
-                                                        </DropdownMenuItem>
-                                                    ))}
+                                                    {availableRoles.map(
+                                                        (role) => (
+                                                            <DropdownMenuItem
+                                                                key={role.value}
+                                                                onSelect={() =>
+                                                                    updateMemberRole(
+                                                                        member,
+                                                                        role.value,
+                                                                    )
+                                                                }
+                                                            >
+                                                                {role.label}
+                                                            </DropdownMenuItem>
+                                                        ),
+                                                    )}
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         ) : (
@@ -562,8 +577,9 @@ export default function TeamEdit({
                                             <DialogDescription>
                                                 This action cannot be undone.
                                                 This will permanently delete the
-                                                team <strong>{team.name}</strong>{' '}
-                                                and remove all of its members.
+                                                team{' '}
+                                                <strong>{team.name}</strong> and
+                                                remove all of its members.
                                             </DialogDescription>
                                         </DialogHeader>
 
@@ -591,7 +607,8 @@ export default function TeamEdit({
                                             otherTeams.length > 0 ? (
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="new-current-team">
-                                                        Select a new current team
+                                                        Select a new current
+                                                        team
                                                     </Label>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger
@@ -602,7 +619,9 @@ export default function TeamEdit({
                                                                 className="w-full justify-between"
                                                             >
                                                                 {otherTeams.find(
-                                                                    (otherTeam) =>
+                                                                    (
+                                                                        otherTeam,
+                                                                    ) =>
                                                                         otherTeam.id ===
                                                                         newCurrentTeamId,
                                                                 )?.name ??
@@ -649,10 +668,10 @@ export default function TeamEdit({
                                             otherTeams.length === 0 ? (
                                                 <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200">
                                                     You cannot delete your
-                                                    current team because you have
-                                                    no other teams to switch to.
-                                                    Please create or join another
-                                                    team first.
+                                                    current team because you
+                                                    have no other teams to
+                                                    switch to. Please create or
+                                                    join another team first.
                                                 </div>
                                             ) : null}
                                         </div>
@@ -698,7 +717,10 @@ export default function TeamEdit({
                                 <Button variant="secondary">Cancel</Button>
                             </DialogClose>
 
-                            <Button variant="destructive" onClick={removeMember}>
+                            <Button
+                                variant="destructive"
+                                onClick={removeMember}
+                            >
                                 Remove Member
                             </Button>
                         </DialogFooter>
@@ -714,8 +736,8 @@ export default function TeamEdit({
                             <DialogTitle>Cancel invitation</DialogTitle>
                             <DialogDescription>
                                 Are you sure you want to cancel the invitation
-                                for{' '}
-                                <strong>{invitationToCancel?.email}</strong>?
+                                for <strong>{invitationToCancel?.email}</strong>
+                                ?
                             </DialogDescription>
                         </DialogHeader>
 

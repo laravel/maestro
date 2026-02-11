@@ -1,3 +1,6 @@
+import { Form } from '@inertiajs/react';
+import type { PropsWithChildren } from 'react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,9 +15,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Form } from '@inertiajs/react';
-import type { PropsWithChildren } from 'react';
-import { useState } from 'react';
 
 export default function CreateTeamModal({ children }: PropsWithChildren) {
     const [open, setOpen] = useState(false);
@@ -34,7 +34,8 @@ export default function CreateTeamModal({ children }: PropsWithChildren) {
                             <DialogHeader>
                                 <DialogTitle>Create a new team</DialogTitle>
                                 <DialogDescription>
-                                    Create a new team to collaborate with others.
+                                    Create a new team to collaborate with
+                                    others.
                                 </DialogDescription>
                             </DialogHeader>
 

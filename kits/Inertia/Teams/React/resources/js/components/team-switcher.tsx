@@ -1,3 +1,5 @@
+import { router, usePage } from '@inertiajs/react';
+import { Check, ChevronsUpDown, Plus } from 'lucide-react';
 import CreateTeamModal from '@/components/create-team-modal';
 import {
     DropdownMenu,
@@ -14,8 +16,6 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import type { SharedData, Team } from '@/types';
-import { router, usePage } from '@inertiajs/react';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
 
 export function TeamSwitcher() {
     const page = usePage<SharedData>();
@@ -23,7 +23,8 @@ export function TeamSwitcher() {
     const currentTeam = page.props.currentTeam;
     const teams = page.props.teams ?? [];
 
-    const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
+    const switchTeam = (team: Team) =>
+        router.post(`/teams/${team.slug}/switch`);
 
     return (
         <SidebarMenu>
