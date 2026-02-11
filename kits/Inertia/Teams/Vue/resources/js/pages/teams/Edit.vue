@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { Form, Head, router } from '@inertiajs/vue3';
+import { ChevronDown, Mail, Trash2, UserPlus, X } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -20,14 +23,14 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useInitials } from '@/composables/useInitials';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
@@ -40,9 +43,6 @@ import type {
     TeamOption,
     TeamPermissions,
 } from '@/types';
-import { Form, Head, router } from '@inertiajs/vue3';
-import { ChevronDown, Mail, Trash2, UserPlus, X } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
 
 type Props = {
     team: Team;
@@ -81,7 +81,8 @@ const newCurrentTeamId = ref<number | null>(null);
 
 const canDeleteTeam = computed(() => {
     const nameMatches = confirmationName.value === props.team.name;
-    const hasNewTeamIfNeeded = !props.isCurrentTeam || newCurrentTeamId.value !== null;
+    const hasNewTeamIfNeeded =
+        !props.isCurrentTeam || newCurrentTeamId.value !== null;
 
     return nameMatches && hasNewTeamIfNeeded;
 });
@@ -128,12 +129,15 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
 
 const cancelInvitation = () => {
     if (invitationToCancel.value) {
-        router.delete(`/teams/${props.team.slug}/invitations/${invitationToCancel.value.code}`, {
-            onSuccess: () => {
-                cancelInvitationDialogOpen.value = false;
-                invitationToCancel.value = null;
+        router.delete(
+            `/teams/${props.team.slug}/invitations/${invitationToCancel.value.code}`,
+            {
+                onSuccess: () => {
+                    cancelInvitationDialogOpen.value = false;
+                    invitationToCancel.value = null;
+                },
             },
-        });
+        );
     }
 };
 
@@ -188,10 +192,7 @@ const deleteTeam = () => {
                         </div>
 
                         <div class="flex items-center gap-4">
-                            <Button
-                                type="submit"
-                                :disabled="processing"
-                            >
+                            <Button type="submit" :disabled="processing">
                                 Save
                             </Button>
 
@@ -213,10 +214,7 @@ const deleteTeam = () => {
                 </div>
 
                 <div v-else class="space-y-6">
-                    <Heading
-                        variant="small"
-                        title="Team Name"
-                    />
+                    <Heading variant="small" title="Team Name" />
                     <p class="text-foreground">{{ team.name }}</p>
                 </div>
 
@@ -226,10 +224,17 @@ const deleteTeam = () => {
                         <Heading
                             variant="small"
                             title="Team Members"
-                            :description="permissions.canCreateInvitation ? 'Manage who has access to this team' : ''"
+                            :description="
+                                permissions.canCreateInvitation
+                                    ? 'Manage who has access to this team'
+                                    : ''
+                            "
                         />
 
-                        <Dialog v-model:open="inviteDialogOpen" v-if="permissions.canCreateInvitation">
+                        <Dialog
+                            v-model:open="inviteDialogOpen"
+                            v-if="permissions.canCreateInvitation"
+                        >
                             <DialogTrigger as-child>
                                 <Button>
                                     <UserPlus class="mr-2 h-4 w-4" />
@@ -245,15 +250,20 @@ const deleteTeam = () => {
                                     @success="inviteDialogOpen = false"
                                 >
                                     <DialogHeader>
-                                        <DialogTitle>Invite a team member</DialogTitle>
+                                        <DialogTitle
+                                            >Invite a team member</DialogTitle
+                                        >
                                         <DialogDescription>
-                                            Send an invitation to join this team.
+                                            Send an invitation to join this
+                                            team.
                                         </DialogDescription>
                                     </DialogHeader>
 
                                     <div class="grid gap-4">
                                         <div class="grid gap-2">
-                                            <Label for="email">Email Address</Label>
+                                            <Label for="email"
+                                                >Email Address</Label
+                                            >
                                             <Input
                                                 id="email"
                                                 name="email"
@@ -261,30 +271,48 @@ const deleteTeam = () => {
                                                 placeholder="colleague@example.com"
                                                 required
                                             />
-                                            <InputError :message="errors.email" />
+                                            <InputError
+                                                :message="errors.email"
+                                            />
                                         </div>
 
                                         <div class="grid gap-2">
                                             <Label for="role">Role</Label>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger as-child>
-                                                    <Button variant="outline" class="w-full justify-between">
+                                                    <Button
+                                                        variant="outline"
+                                                        class="w-full justify-between"
+                                                    >
                                                         {{ inviteRoleLabel }}
-                                                        <ChevronDown class="ml-2 h-4 w-4 opacity-50" />
+                                                        <ChevronDown
+                                                            class="ml-2 h-4 w-4 opacity-50"
+                                                        />
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent class="w-full">
+                                                <DropdownMenuContent
+                                                    class="w-full"
+                                                >
                                                     <DropdownMenuItem
                                                         v-for="role in availableRoles"
                                                         :key="role.value"
-                                                        @click="inviteRole = role.value"
+                                                        @click="
+                                                            inviteRole =
+                                                                role.value
+                                                        "
                                                     >
                                                         {{ role.label }}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
-                                            <input type="hidden" name="role" :value="inviteRole" />
-                                            <InputError :message="errors.role" />
+                                            <input
+                                                type="hidden"
+                                                name="role"
+                                                :value="inviteRole"
+                                            />
+                                            <InputError
+                                                :message="errors.role"
+                                            />
                                         </div>
                                     </div>
 
@@ -295,7 +323,10 @@ const deleteTeam = () => {
                                             </Button>
                                         </DialogClose>
 
-                                        <Button type="submit" :disabled="processing">
+                                        <Button
+                                            type="submit"
+                                            :disabled="processing"
+                                        >
                                             Send Invitation
                                         </Button>
                                     </DialogFooter>
@@ -312,28 +343,50 @@ const deleteTeam = () => {
                         >
                             <div class="flex items-center gap-4">
                                 <Avatar class="h-10 w-10">
-                                    <AvatarImage v-if="member.avatar" :src="member.avatar" :alt="member.name" />
-                                    <AvatarFallback>{{ getInitials(member.name) }}</AvatarFallback>
+                                    <AvatarImage
+                                        v-if="member.avatar"
+                                        :src="member.avatar"
+                                        :alt="member.name"
+                                    />
+                                    <AvatarFallback>{{
+                                        getInitials(member.name)
+                                    }}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <div class="font-medium">{{ member.name }}</div>
-                                    <div class="text-sm text-muted-foreground">{{ member.email }}</div>
+                                    <div class="font-medium">
+                                        {{ member.name }}
+                                    </div>
+                                    <div class="text-sm text-muted-foreground">
+                                        {{ member.email }}
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <DropdownMenu v-if="member.role !== 'owner' && permissions.canUpdateMember">
+                                <DropdownMenu
+                                    v-if="
+                                        member.role !== 'owner' &&
+                                        permissions.canUpdateMember
+                                    "
+                                >
                                     <DropdownMenuTrigger as-child>
                                         <Button variant="outline" size="sm">
                                             {{ member.role_label }}
-                                            <ChevronDown class="ml-2 h-4 w-4 opacity-50" />
+                                            <ChevronDown
+                                                class="ml-2 h-4 w-4 opacity-50"
+                                            />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
                                         <DropdownMenuItem
                                             v-for="role in availableRoles"
                                             :key="role.value"
-                                            @click="updateMemberRole(member, role.value)"
+                                            @click="
+                                                updateMemberRole(
+                                                    member,
+                                                    role.value,
+                                                )
+                                            "
                                         >
                                             {{ role.label }}
                                         </DropdownMenuItem>
@@ -343,13 +396,20 @@ const deleteTeam = () => {
                                     {{ member.role_label }}
                                 </Badge>
 
-                                <TooltipProvider v-if="member.role !== 'owner' && permissions.canRemoveMember">
+                                <TooltipProvider
+                                    v-if="
+                                        member.role !== 'owner' &&
+                                        permissions.canRemoveMember
+                                    "
+                                >
                                     <Tooltip>
                                         <TooltipTrigger as-child>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                @click="confirmRemoveMember(member)"
+                                                @click="
+                                                    confirmRemoveMember(member)
+                                                "
                                             >
                                                 <X class="h-4 w-4" />
                                             </Button>
@@ -379,24 +439,36 @@ const deleteTeam = () => {
                             class="flex items-center justify-between rounded-lg border p-4"
                         >
                             <div class="flex items-center gap-4">
-                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                                    <Mail class="h-5 w-5 text-muted-foreground" />
+                                <div
+                                    class="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
+                                >
+                                    <Mail
+                                        class="h-5 w-5 text-muted-foreground"
+                                    />
                                 </div>
                                 <div>
-                                    <div class="font-medium">{{ invitation.email }}</div>
+                                    <div class="font-medium">
+                                        {{ invitation.email }}
+                                    </div>
                                     <div class="text-sm text-muted-foreground">
                                         {{ invitation.role_label }}
                                     </div>
                                 </div>
                             </div>
 
-                            <TooltipProvider v-if="permissions.canCancelInvitation">
+                            <TooltipProvider
+                                v-if="permissions.canCancelInvitation"
+                            >
                                 <Tooltip>
                                     <TooltipTrigger as-child>
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            @click="confirmCancelInvitation(invitation)"
+                                            @click="
+                                                confirmCancelInvitation(
+                                                    invitation,
+                                                )
+                                            "
                                         >
                                             <X class="h-4 w-4" />
                                         </Button>
@@ -411,7 +483,10 @@ const deleteTeam = () => {
                 </div>
 
                 <!-- Danger Zone -->
-                <div v-if="permissions.canDeleteTeam && !team.is_personal" class="space-y-6">
+                <div
+                    v-if="permissions.canDeleteTeam && !team.is_personal"
+                    class="space-y-6"
+                >
                     <Heading
                         variant="small"
                         title="Danger Zone"
@@ -420,13 +495,21 @@ const deleteTeam = () => {
                     <div
                         class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
                     >
-                        <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
+                        <div
+                            class="relative space-y-0.5 text-red-600 dark:text-red-100"
+                        >
                             <p class="font-medium">Delete this team</p>
                             <p class="text-sm">
-                                Once you delete a team, there is no going back. Please be certain.
+                                Once you delete a team, there is no going back.
+                                Please be certain.
                             </p>
                         </div>
-                        <Dialog v-model:open="deleteDialogOpen" @update:open="(open) => !open && resetDeleteDialog()">
+                        <Dialog
+                            v-model:open="deleteDialogOpen"
+                            @update:open="
+                                (open) => !open && resetDeleteDialog()
+                            "
+                        >
                             <DialogTrigger as-child>
                                 <Button variant="destructive">
                                     <Trash2 class="mr-2 h-4 w-4" />
@@ -437,15 +520,19 @@ const deleteTeam = () => {
                                 <DialogHeader>
                                     <DialogTitle>Are you sure?</DialogTitle>
                                     <DialogDescription>
-                                        This action cannot be undone. This will permanently delete the
-                                        team <strong>{{ team.name }}</strong> and remove all of its members.
+                                        This action cannot be undone. This will
+                                        permanently delete the team
+                                        <strong>{{ team.name }}</strong> and
+                                        remove all of its members.
                                     </DialogDescription>
                                 </DialogHeader>
 
                                 <div class="space-y-4 py-4">
                                     <div class="grid gap-2">
                                         <Label for="confirmation-name">
-                                            Type <strong>{{ team.name }}</strong> to confirm
+                                            Type
+                                            <strong>{{ team.name }}</strong> to
+                                            confirm
                                         </Label>
                                         <Input
                                             id="confirmation-name"
@@ -455,35 +542,75 @@ const deleteTeam = () => {
                                         />
                                     </div>
 
-                                    <div v-if="isCurrentTeam && otherTeams.length > 0" class="grid gap-2">
+                                    <div
+                                        v-if="
+                                            isCurrentTeam &&
+                                            otherTeams.length > 0
+                                        "
+                                        class="grid gap-2"
+                                    >
                                         <Label for="new-current-team">
                                             Select a new current team
                                         </Label>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger as-child>
-                                                <Button variant="outline" class="w-full justify-between">
-                                                    {{ otherTeams.find(t => t.id === newCurrentTeamId)?.name || 'Select a team' }}
-                                                    <ChevronDown class="ml-2 h-4 w-4 opacity-50" />
+                                                <Button
+                                                    variant="outline"
+                                                    class="w-full justify-between"
+                                                >
+                                                    {{
+                                                        otherTeams.find(
+                                                            (t) =>
+                                                                t.id ===
+                                                                newCurrentTeamId,
+                                                        )?.name ||
+                                                        'Select a team'
+                                                    }}
+                                                    <ChevronDown
+                                                        class="ml-2 h-4 w-4 opacity-50"
+                                                    />
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent class="w-full">
                                                 <DropdownMenuItem
                                                     v-for="otherTeam in otherTeams"
                                                     :key="otherTeam.id"
-                                                    @click="newCurrentTeamId = otherTeam.id"
+                                                    @click="
+                                                        newCurrentTeamId =
+                                                            otherTeam.id
+                                                    "
                                                 >
                                                     {{ otherTeam.name }}
-                                                    <span v-if="otherTeam.is_personal" class="ml-2 text-muted-foreground">(Personal)</span>
+                                                    <span
+                                                        v-if="
+                                                            otherTeam.is_personal
+                                                        "
+                                                        class="ml-2 text-muted-foreground"
+                                                        >(Personal)</span
+                                                    >
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
-                                        <p class="text-sm text-muted-foreground">
-                                            You are deleting your current team. Please select which team to switch to.
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
+                                            You are deleting your current team.
+                                            Please select which team to switch
+                                            to.
                                         </p>
                                     </div>
 
-                                    <div v-else-if="isCurrentTeam && otherTeams.length === 0" class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200">
-                                        You cannot delete your current team because you have no other teams to switch to. Please create or join another team first.
+                                    <div
+                                        v-else-if="
+                                            isCurrentTeam &&
+                                            otherTeams.length === 0
+                                        "
+                                        class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200"
+                                    >
+                                        You cannot delete your current team
+                                        because you have no other teams to
+                                        switch to. Please create or join another
+                                        team first.
                                     </div>
                                 </div>
 
@@ -515,15 +642,14 @@ const deleteTeam = () => {
                         <DialogTitle>Remove team member</DialogTitle>
                         <DialogDescription>
                             Are you sure you want to remove
-                            <strong>{{ memberToRemove?.name }}</strong> from this team?
+                            <strong>{{ memberToRemove?.name }}</strong> from
+                            this team?
                         </DialogDescription>
                     </DialogHeader>
 
                     <DialogFooter class="gap-2">
                         <DialogClose as-child>
-                            <Button variant="secondary">
-                                Cancel
-                            </Button>
+                            <Button variant="secondary"> Cancel </Button>
                         </DialogClose>
 
                         <Button variant="destructive" @click="removeMember">
@@ -540,7 +666,8 @@ const deleteTeam = () => {
                         <DialogTitle>Cancel invitation</DialogTitle>
                         <DialogDescription>
                             Are you sure you want to cancel the invitation for
-                            <strong>{{ invitationToCancel?.email }}</strong>?
+                            <strong>{{ invitationToCancel?.email }}</strong
+                            >?
                         </DialogDescription>
                     </DialogHeader>
 

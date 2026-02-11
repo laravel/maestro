@@ -1,9 +1,8 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { dashboard, login } from '@/routes';
-import type { SharedData } from '@/types';
 
 export default function Welcome() {
-    const { auth, currentTeam } = usePage<SharedData>().props;
+    const { auth, currentTeam } = usePage().props;
     const dashboardUrl = currentTeam ? dashboard(currentTeam.slug) : '/';
 
     return (

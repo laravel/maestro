@@ -1,4 +1,16 @@
 <script setup lang="ts">
+import { Link, router, usePage } from '@inertiajs/vue3';
+import {
+    BookOpen,
+    Check,
+    ChevronsUpDown,
+    Folder,
+    LayoutGrid,
+    Menu,
+    Plus,
+    Search,
+} from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
@@ -37,10 +49,7 @@ import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
 import { toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import type { BreadcrumbItem, NavItem, SharedData, Team } from '@/types';
-import { Link, router, usePage } from '@inertiajs/vue3';
-import { BookOpen, Check, ChevronsUpDown, Folder, LayoutGrid, Menu, Plus, Search } from 'lucide-vue-next';
-import { computed } from 'vue';
+import type { BreadcrumbItem, NavItem, Team } from '@/types';
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
@@ -50,14 +59,14 @@ const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
 
-const page = usePage<SharedData>();
+const page = usePage();
 const auth = computed(() => page.props.auth);
 const currentTeam = computed(() => page.props.currentTeam);
 const teams = computed(() => page.props.teams ?? []);
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 
 const dashboardUrl = computed(() =>
-    page.props.currentTeam ? dashboard(page.props.currentTeam.slug).url : '/'
+    page.props.currentTeam ? dashboard(page.props.currentTeam.slug).url : '/',
 );
 
 const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
@@ -282,14 +291,18 @@ const rightNavItems: NavItem[] = [
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <Button variant="ghost" class="h-8 gap-1 px-2">
-                                <span class="max-w-[120px] truncate font-medium">
+                                <span
+                                    class="max-w-[120px] truncate font-medium"
+                                >
                                     {{ currentTeam?.name ?? 'Select Team' }}
                                 </span>
                                 <ChevronsUpDown class="size-4 opacity-50" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" class="w-56">
-                            <DropdownMenuLabel class="text-xs text-muted-foreground">
+                            <DropdownMenuLabel
+                                class="text-xs text-muted-foreground"
+                            >
                                 Teams
                             </DropdownMenuLabel>
                             <DropdownMenuItem
@@ -311,7 +324,9 @@ const rightNavItems: NavItem[] = [
                                     @select.prevent
                                 >
                                     <Plus class="size-4" />
-                                    <span class="text-muted-foreground">Create Team</span>
+                                    <span class="text-muted-foreground"
+                                        >Create Team</span
+                                    >
                                 </DropdownMenuItem>
                             </CreateTeamModal>
                         </DropdownMenuContent>

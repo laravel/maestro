@@ -14,11 +14,11 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import type { NavItem, SharedData } from '@/types';
+import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
-    const page = usePage<SharedData>();
+    const page = usePage();
     const dashboardUrl = page.props.currentTeam
         ? dashboard(page.props.currentTeam.slug)
         : '/';
