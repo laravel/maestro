@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useId } from 'vue'
+import { useId } from 'vue';
 
-const patternId = `pattern-${useId()}`
+const patternId = `pattern-${useId()}`;
 </script>
 
 <template>
