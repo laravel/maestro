@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Link, page } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import { toUrl } from '@/lib/utils';
     import { dashboard, login, register } from '@/routes';
+    import { Link, page } from '@inertiajs/svelte';
 
     let {
         canRegister = true,
@@ -48,7 +48,7 @@
     </header>
     <div class="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
         <main class="flex w-full max-w-[335px] flex-col-reverse overflow-hidden rounded-lg lg:max-w-4xl lg:flex-row">
-            <div class="flex-1 rounded-br-lg rounded-bl-lg bg-white p-6 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
+            <div class="flex-1 rounded-br-lg rounded-bl-lg bg-white p-6 pb-12 text-[13px] leading-5 shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
                 <h1 class="mb-1 font-medium">Let's get started</h1>
                 <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">
                     Laravel has an incredibly rich ecosystem. <br />We suggest starting with the following.
@@ -124,7 +124,7 @@
                 </svg>
                 <!-- Light mode illustration -->
                 <svg
-                    class="relative -mt-[4.9rem] -ml-8 w-[448px] max-w-none lg:-mt-[6.6rem] lg:ml-0 dark:hidden"
+                    class="relative -mt-[4.9rem] -ml-8 w-md max-w-none lg:-mt-[6.6rem] lg:ml-0 dark:hidden"
                     viewBox="0 0 440 376"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -197,7 +197,7 @@
                 </svg>
                 <!-- Dark mode illustration -->
                 <svg
-                    class="relative -mt-[4.9rem] -ml-8 hidden w-[448px] max-w-none lg:-mt-[6.6rem] lg:ml-0 dark:block"
+                    class="relative -mt-[4.9rem] -ml-8 hidden w-md max-w-none lg:-mt-[6.6rem] lg:ml-0 dark:block"
                     viewBox="0 0 440 376"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
