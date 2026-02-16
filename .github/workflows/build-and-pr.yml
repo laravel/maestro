@@ -65,7 +65,7 @@ jobs:
 
           - name: Livewire Kit (WorkOS Teams)
             kit: Livewire
-            build_flags: '--workos --teams'
+            build_flags: '--teams --workos'
             repository: laravel/livewire-starter-kit
             path: livewire-starter-kit-workos-teams
             branch: workos-teams
@@ -111,7 +111,7 @@ jobs:
 
           - name: React Kit (WorkOS Teams)
             kit: React
-            build_flags: '--workos --teams'
+            build_flags: '--teams --workos'
             repository: laravel/react-starter-kit
             path: react-starter-kit-workos-teams
             branch: workos-teams
@@ -157,7 +157,7 @@ jobs:
 
           - name: Svelte Kit (WorkOS Teams)
             kit: Svelte
-            build_flags: '--workos --teams'
+            build_flags: '--teams --workos'
             repository: laravel/svelte-starter-kit
             path: svelte-starter-kit-workos-teams
             branch: workos-teams
