@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { usePage, router } from '@inertiajs/vue3';
 import { Check, ChevronsUpDown, Plus } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import CreateTeamModal from '@/components/CreateTeamModal.vue';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,77 +12,139 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
-} from '@/components/ui/sidebar';
 import type { Team } from '@/types';
 
+const props = withDefaults(
+    defineProps<{
+        inHeader?: boolean;
+    }>(),
+    {
+        inHeader: false,
+    },
+);
+
 const page = usePage();
-const { isMobile } = useSidebar();
+const isMobile = ref(false);
+let mediaQuery: MediaQueryList | null = null;
+const updateIsMobile = () => {
+    if (mediaQuery) {
+        isMobile.value = mediaQuery.matches;
+    }
+};
 
 const currentTeam = computed(() => page.props.currentTeam);
 const teams = computed(() => page.props.teams ?? []);
+const menuContentClass = computed(() =>
+    props.inHeader
+        ? 'w-56'
+        : 'w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg',
+);
+const teamItemClass = computed(() =>
+    props.inHeader ? 'cursor-pointer gap-2' : 'cursor-pointer gap-2 p-2',
+);
+const checkIconClass = computed(() =>
+    props.inHeader ? 'ml-auto size-4' : 'ml-auto h-4 w-4',
+);
+const plusIconClass = computed(() => (props.inHeader ? 'size-4' : 'h-4 w-4'));
 
-const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
+const switchTeam = (team: Team) => {
+    const previousTeamSlug = currentTeam.value?.slug;
+
+    router.post(
+        `/teams/${team.slug}/switch`,
+        {},
+        {
+            onFinish: () => {
+                if (!previousTeamSlug || typeof window === 'undefined') {
+                    router.reload();
+
+                    return;
+                }
+
+                const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+                const segment = `/${previousTeamSlug}`;
+
+                if (currentUrl.includes(segment)) {
+                    router.visit(currentUrl.replace(segment, `/${team.slug}`), {
+                        replace: true,
+                    });
+
+                    return;
+                }
+
+                router.reload();
+            },
+        },
+    );
+};
+
+onMounted(() => {
+    mediaQuery = window.matchMedia('(max-width: 767px)');
+    updateIsMobile();
+    mediaQuery.addEventListener('change', updateIsMobile);
+});
+
+onUnmounted(() => {
+    mediaQuery?.removeEventListener('change', updateIsMobile);
+});
 </script>
 
 <template>
-    <SidebarMenu>
-        <SidebarMenuItem>
-            <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                    <SidebarMenuButton
-                        size="lg"
-                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+    <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+            <Button
+                variant="ghost"
+                :class="
+                    props.inHeader
+                        ? 'h-8 gap-1 px-2'
+                        : 'h-12 w-full justify-start px-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+                "
+            >
+                <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span
+                        :class="
+                            props.inHeader
+                                ? 'max-w-[120px] truncate font-medium'
+                                : 'truncate font-semibold'
+                        "
                     >
-                        <div
-                            class="grid flex-1 text-left text-sm leading-tight"
-                        >
-                            <span class="truncate font-semibold">{{
-                                currentTeam?.name ?? 'Select Team'
-                            }}</span>
-                        </div>
-                        <ChevronsUpDown class="ml-auto" />
-                    </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                    class="w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                    :side="isMobile ? 'bottom' : 'right'"
-                    align="start"
-                    :side-offset="4"
-                >
-                    <DropdownMenuLabel class="text-xs text-muted-foreground">
-                        Teams
-                    </DropdownMenuLabel>
-                    <DropdownMenuItem
-                        v-for="team in teams"
-                        :key="team.id"
-                        class="cursor-pointer gap-2 p-2"
-                        @click="switchTeam(team)"
-                    >
-                        {{ team.name }}
-                        <Check
-                            v-if="currentTeam?.id === team.id"
-                            class="ml-auto h-4 w-4"
-                        />
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <CreateTeamModal>
-                        <DropdownMenuItem
-                            class="cursor-pointer gap-2 p-2"
-                            @select.prevent
-                        >
-                            <Plus class="h-4 w-4" />
-                            <span class="text-muted-foreground"
-                                >Create Team</span
-                            >
-                        </DropdownMenuItem>
-                    </CreateTeamModal>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </SidebarMenuItem>
-    </SidebarMenu>
+                        {{ currentTeam?.name ?? 'Select Team' }}
+                    </span>
+                </div>
+                <ChevronsUpDown
+                    :class="props.inHeader ? 'size-4 opacity-50' : 'ml-auto'"
+                />
+            </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+            :class="menuContentClass"
+            :side="props.inHeader ? undefined : isMobile ? 'bottom' : 'right'"
+            :align="props.inHeader ? 'end' : 'start'"
+            :side-offset="props.inHeader ? undefined : 4"
+        >
+            <DropdownMenuLabel class="text-xs text-muted-foreground">
+                Teams
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+                v-for="team in teams"
+                :key="team.id"
+                :class="teamItemClass"
+                @click="switchTeam(team)"
+            >
+                {{ team.name }}
+                <Check
+                    v-if="currentTeam?.id === team.id"
+                    :class="checkIconClass"
+                />
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <CreateTeamModal>
+                <DropdownMenuItem :class="teamItemClass" @select.prevent>
+                    <Plus :class="plusIconClass" />
+                    <span class="text-muted-foreground">Create Team</span>
+                </DropdownMenuItem>
+            </CreateTeamModal>
+        </DropdownMenuContent>
+    </DropdownMenu>
 </template>
