@@ -25,10 +25,12 @@ All commands below run from the `orchestrator/` directory unless noted otherwise
 | `php artisan build --kit=vue`                        | Build Vue Fortify kit directly.                                            |
 | `php artisan build --kit=svelte --blank`             | Build Blank Svelte kit.                                                    |
 | `php artisan build --kit=livewire --workos`          | Build Livewire WorkOS kit.                                                 |
+| `php artisan build --kit=react --teams`              | Build React Fortify kit with Teams.                                        |
+| `php artisan build --kit=vue --workos --teams`       | Build Vue WorkOS kit with Teams.                                           |
 | `composer kit:run`                                   | Start dev server + file watcher (syncs `build/` back to `kits/`).          |
 | `composer kits:pint`                                 | Run Pint on `kits/` and `browser_tests/`.                                  |
 | `composer kits:lint`                                 | Run `kits:pint`, then lint/format Inertia variants and sync back.          |
-| `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 13 kit variants sequentially. |
+| `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 19 kit variants sequentially. |
 | `composer kits:browser-tests`                        | Build and run browser tests for all 4 Fortify kit variants (Livewire, React, Svelte, Vue). |
 | `npm run watch:kits`                                 | Run only the file watcher (no dev server).                                 |
 | `composer setup && composer ci:check`                | Run inside `build/` — installs deps, builds frontend, runs checks (see below). |
@@ -61,7 +63,7 @@ Every starter kit has a `ci:check` composer script that validates the kit withou
 
 **Livewire kits** run: `@test` (pint + PHPUnit) only.
 
-## Starter Kit Variants (13 total)
+## Starter Kit Variants (19 total)
 
 These are the full starter kit identifiers written to `orchestrator/storage/app/private/starter_kit` and used by `orchestrator/scripts/watch.js` for layer syncing.
 
@@ -71,15 +73,21 @@ These are the full starter kit identifiers written to `orchestrator/storage/app/
 | Livewire  | `livewire`               | Fortify                   |
 | Livewire  | `livewire-components`    | Fortify + Components      |
 | Livewire  | `livewire-workos`        | WorkOS                    |
+| Livewire  | `livewire-teams`         | Fortify + Teams           |
+| Livewire  | `livewire-workos-teams`  | WorkOS + Teams            |
 | React     | `react-blank`            | Blank (no auth)           |
 | React     | `react`                  | Fortify                   |
 | React     | `react-workos`           | WorkOS                    |
+| React     | `react-teams`            | Fortify + Teams           |
+| React     | `react-workos-teams`     | WorkOS + Teams            |
 | Svelte    | `svelte-blank`           | Blank (no auth)           |
 | Svelte    | `svelte`                 | Fortify                   |
 | Svelte    | `svelte-workos`          | WorkOS                    |
 | Vue       | `vue-blank`              | Blank (no auth)           |
 | Vue       | `vue`                    | Fortify                   |
 | Vue       | `vue-workos`             | WorkOS                    |
+| Vue       | `vue-teams`              | Fortify + Teams           |
+| Vue       | `vue-workos-teams`       | WorkOS + Teams            |
 
 ## Kit Inheritance Hierarchy
 
@@ -104,6 +112,14 @@ For WorkOS variant, add:
             → Shared/WorkOS
               → Inertia/WorkOS/Base
                 → Inertia/WorkOS/{React|Svelte|Vue}
+
+For Teams (on top of Fortify or WorkOS), add:
+                  → Shared/Teams/Base
+                    → Shared/Teams/{Fortify|WorkOS}
+                      → Inertia/Teams/Base
+                        → Inertia/Teams/{React|Svelte|Vue}
+                          → Inertia/Teams/{Fortify|WorkOS}/Base
+                            → Inertia/Teams/{Fortify|WorkOS}/{React|Svelte|Vue}
 ```
 
 ### Livewire
@@ -115,6 +131,12 @@ Shared/Blank
       → Livewire/Base
         → Shared/Fortify → Livewire/Fortify [→ Livewire/Components]
         OR Shared/WorkOS → Livewire/WorkOS
+
+For Teams (on top of Fortify or WorkOS), add:
+          → Shared/Teams/Base
+            → Shared/Teams/{Fortify|WorkOS}
+              → Livewire/Teams/Base
+                → Livewire/Teams/{Fortify|WorkOS}
 ```
 
 ### What This Means for Editing
@@ -133,6 +155,10 @@ kits/
 │   ├── Base/        # Factories, bootstrap, gitignore
 │   ├── Fortify/     # Auth Actions, Concerns, Providers, config/fortify.php
 │   ├── WorkOS/      # WorkOS routes, migrations, config
+│   └── Teams/
+│       ├── Base/        # Core teams: models, trait, actions, events, middleware, policies, rules, notifications, migrations, factories, config
+│       ├── Fortify/     # Fortify-specific: CreateNewUser (creates personal team), LoginResponse, RegisterResponse, UserFactory
+│       └── WorkOS/      # WorkOS-specific: CreatePersonalTeam listener, auth routes, UserFactory
 │
 ├── Inertia/
 │   ├── Blank/
@@ -154,6 +180,21 @@ kits/
 │   │   ├── React/         # React WorkOS pages
 │   │   ├── Svelte/        # Svelte WorkOS pages
 │   │   └── Vue/           # Vue WorkOS pages
+│   └── Teams/
+│       ├── Base/              # Inertia teams backend: controllers, requests, routes, middleware, tests
+│       ├── React/             # React teams UI: components (TeamSwitcher, AppHeader, etc.), pages, types
+│       ├── Svelte/            # Svelte teams UI: components (TeamSwitcher, AppHeader, etc.), pages, types
+│       ├── Vue/               # Vue teams UI: components (TeamSwitcher, AppHeader, etc.), pages, types
+│       ├── Fortify/
+│       │   ├── Base/          # Fortify teams backend: User model, FortifyServiceProvider, routes, auth tests
+│       │   ├── React/         # React Fortify teams: welcome page, settings layout
+│       │   ├── Svete/         # Svelte Fortify teams: welcome page, settings layout
+│       │   └── Vue/           # Vue Fortify teams: welcome page, settings layout
+│       └── WorkOS/
+│           ├── Base/          # WorkOS teams backend: User model, routes
+│           ├── React/         # React WorkOS teams: welcome page, settings layout
+│           ├── Svelte/        # Svelte WorkOS teams: welcome page, settings layout
+│           └── Vue/           # Vue WorkOS teams: welcome page, settings layout
 │
 └── Livewire/
     ├── Blank/
@@ -161,6 +202,10 @@ kits/
     ├── Fortify/
     ├── Components/        # Multi-file Blade components variant
     ├── WorkOS/
+    └── Teams/
+        ├── Base/              # Livewire teams: Blade views (header, sidebar, team-switcher, team pages), tests
+        ├── Fortify/           # Livewire Fortify teams: User model, FortifyServiceProvider, settings layout, routes, auth tests
+        └── WorkOS/            # Livewire WorkOS teams: User model, settings layout, routes
 ```
 
 ## Placeholder System
@@ -169,8 +214,73 @@ The build process replaces `{{placeholder}}` tokens in files with framework-spec
 
 - `{{dashboard}}` → `Dashboard` (Svelte/Vue) or `dashboard` (React)
 - `{{auth_login}}` → `auth/Login` (Svelte/Vue) or `auth/login` (React)
+- `{{teams_index}}` → `teams/Index` (Vue) or `teams/index` (React)
+- `{{teams_edit}}` → `teams/Edit` (Vue) or `teams/edit` (React)
 
 Svelte and Vue use PascalCase page names. React uses kebab-case.
+
+## Teams Feature
+
+Teams is an additive layer that can be enabled on top of Fortify or WorkOS auth variants. It is **not** available with `--blank` or `--components` variants.
+
+### Build Flag
+
+Use `--teams` with any kit + auth variant combination:
+
+```bash
+php artisan build --kit=react --teams           # React + Fortify + Teams
+php artisan build --kit=vue --workos --teams     # Vue + WorkOS + Teams
+php artisan build --kit=livewire --teams         # Livewire + Fortify + Teams
+```
+
+In interactive mode, you'll be prompted "Would you like to enable the Teams feature?" after selecting an auth variant (unless Blank is selected).
+
+### Supported Variants
+
+| Stack       | Fortify + Teams  | WorkOS + Teams          |
+|-------------|------------------|-------------------------|
+| React       | `react-teams`    | `react-workos-teams`    |
+| Vue         | `vue-teams`      | `vue-workos-teams`      |
+| Livewire    | `livewire-teams` | `livewire-workos-teams` |
+| Svelte      | `svelte-teams`   | `svelte-workos-teams`   |
+
+These identifiers are written to `orchestrator/storage/app/private/starter_kit` and used by the watch script to determine which kit layers to sync.
+
+### Architecture Overview
+
+**Core (Shared/Teams/Base):** Models (`Team`, `Membership`, `TeamInvitation`), `HasTeams` trait (added to User model), `TeamRole` enum (Owner/Admin/Member with permission-based access), `CreateTeam` action, 9 domain events, 3 notifications (invitation, acceptance, removal), `TeamPolicy`, `EnsureMembership` and `SetTeamUrlDefaults` middleware, validation rules, migrations, factories, and `config/teams.php`.
+
+**Auth variant overrides:**
+- **Fortify** (`Shared/Teams/Fortify`): Overrides `CreateNewUser` to create a personal team on registration. Custom `LoginResponse`/`RegisterResponse`/`TwoFactorLoginResponse` that resolve the current team and set URL defaults before redirecting.
+- **WorkOS** (`Shared/Teams/WorkOS`): Uses a `CreatePersonalTeam` event listener on Laravel's `Registered` event. Overrides auth routes to include team context after authentication.
+
+**Inertia controllers** (`Inertia/Teams/Base`): `TeamController` (CRUD + switch), `TeamMemberController` (role update, removal), `TeamInvitationController` (create, cancel, accept). Routes defined in `routes/teams.php` with `EnsureMembership` middleware.
+
+**Frontend components** (per framework in `Inertia/Teams/{React|Svelte|Vue}`): TeamSwitcher, CreateTeamModal, AppHeader, AppSidebar, NavUser, UserInfo, Dashboard, teams/index page, teams/edit page, TypeScript types.
+
+**Livewire views** (`Livewire/Teams/Base`): Blade components for team-switcher, header, sidebar, desktop-user-menu. Team pages: index, edit, accept-invitation.
+
+### Roles and Permissions
+
+| Role   | Level | Permissions                                                                                              |
+|--------|-------|----------------------------------------------------------------------------------------------------------|
+| Owner  | 3     | team:update, team:delete, member:add, member:update, member:remove, invitation:create, invitation:cancel |
+| Admin  | 2     | team:update, invitation:create, invitation:cancel                                                        |
+| Member | 1     | (none)                                                                                                   |
+
+Only Admin and Member roles are assignable. Owner is automatically set on team creation.
+
+### Key Team Files
+
+| File                                                      | Purpose                                                |
+|-----------------------------------------------------------|--------------------------------------------------------|
+| `kits/Shared/Teams/Base/app/Concerns/HasTeams.php`        | User trait: team relationships, switching, permissions |
+| `kits/Shared/Teams/Base/app/Models/Team.php`              | Team model with slug routing, soft deletes             |
+| `kits/Shared/Teams/Base/app/Enums/TeamRole.php`           | Role enum with hierarchical permissions                |
+| `kits/Shared/Teams/Base/app/Actions/Teams/CreateTeam.php` | Team creation action (transaction, events)             |
+| `kits/Shared/Teams/Base/config/teams.php`                 | Team config: user model, invitation settings           |
+| `kits/Inertia/Teams/Base/app/Http/Controllers/Teams/`     | Team, member, and invitation controllers               |
+| `kits/Inertia/Teams/Base/routes/teams.php`                | Team routes with EnsureMembership middleware           |
 
 ## Workflow
 
@@ -276,7 +386,8 @@ Kit names are case-sensitive here because the workflow matrix uses `Livewire`, `
 
 1. **Edit in `build/`, commit in `kits/`**: Never edit `kits/` directly during development. The watcher handles syncing.
 2. **Follow sibling patterns**: When creating a Svelte file, check the React and Vue equivalents for expected structure and behavior and vice-versa.
-3. **Layer awareness**: Know which layer a file belongs to. Shared files affect all kits. Framework-specific files only affect that framework.
+3. **Layer awareness**: Know which layer a file belongs to. Shared files affect all kits. Framework-specific files only affect that framework. Teams layers sit on top of auth layers — place team-specific code in the appropriate `Teams/` directory.
 4. **Placeholder awareness**: Files in `kits/` contain `{{placeholders}}`. Files in `build/` have resolved values. The watcher handles conversion.
 5. **Lint changes**: Run `composer lint` in `orchestrator` for orchestrator PHP linting. Run `composer kits:pint` for fast PHP formatting of `kits/` and `browser_tests/`. Run `composer kits:lint` to run Pint then lint/format all Inertia variants and sync changes back to `kits/`.
 6. **Test after changes**: Run `composer setup && composer ci:check` inside `build/` to verify nothing is broken.
+7. **Teams layer placement**: When modifying teams code, choose the correct layer: `Shared/Teams/Base` for cross-stack logic (models, traits, middleware), `Shared/Teams/{Fortify|WorkOS}` for auth-variant-specific overrides, `Inertia/Teams/Base` or `Livewire/Teams/Base` for stack-specific backend, and `Inertia/Teams/{React|Svelte|Vue}` or `Livewire/Teams/{Fortify|WorkOS}` for frontend/variant-specific UI.
