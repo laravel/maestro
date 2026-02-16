@@ -59,7 +59,11 @@ const footerNavItems: NavItem[] = [
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
-            <TeamSwitcher />
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <TeamSwitcher />
+                </SidebarMenuItem>
+            </SidebarMenu>
         </SidebarHeader>
 
         <SidebarContent>
