@@ -61,10 +61,12 @@
     },
     "teams_index": {
         "react": "teams/index",
+        "svelte": "teams/Index",
         "vue": "teams/Index"
     },
     "teams_edit": {
         "react": "teams/edit",
+        "svelte": "teams/Edit",
         "vue": "teams/Edit"
     }
 }
