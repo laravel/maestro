@@ -1,24 +1,12 @@
-import { Link, router, usePage } from '@inertiajs/react';
-import {
-    BookOpen,
-    Check,
-    ChevronsUpDown,
-    Folder,
-    LayoutGrid,
-    Menu,
-    Plus,
-    Search,
-} from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import CreateTeamModal from '@/components/create-team-modal';
+import { TeamSwitcher } from '@/components/team-switcher';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -45,7 +33,7 @@ import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useInitials } from '@/hooks/use-initials';
 import { cn, toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import type { BreadcrumbItem, NavItem, Team } from '@/types';
+import type { BreadcrumbItem, NavItem } from '@/types';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
@@ -71,13 +59,10 @@ const activeItemStyles =
 
 export function AppHeader({ breadcrumbs = [] }: Props) {
     const page = usePage();
-    const { auth, currentTeam, teams } = page.props;
+    const { auth, currentTeam } = page.props;
     const getInitials = useInitials();
     const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
     const dashboardUrl = currentTeam ? dashboard(currentTeam.slug) : '/';
-
-    const switchTeam = (team: Team) =>
-        router.post(`/teams/${team.slug}/switch`);
 
     const mainNavItems: NavItem[] = [
         {
@@ -255,49 +240,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        {/* Team Switcher */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    className="h-8 gap-1 px-2"
-                                >
-                                    <span className="max-w-[120px] truncate font-medium">
-                                        {currentTeam?.name ?? 'Select Team'}
-                                    </span>
-                                    <ChevronsUpDown className="size-4 opacity-50" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuLabel className="text-xs text-muted-foreground">
-                                    Teams
-                                </DropdownMenuLabel>
-                                {teams.map((team) => (
-                                    <DropdownMenuItem
-                                        key={team.id}
-                                        className="cursor-pointer gap-2"
-                                        onSelect={() => switchTeam(team)}
-                                    >
-                                        {team.name}
-                                        {currentTeam?.id === team.id && (
-                                            <Check className="ml-auto size-4" />
-                                        )}
-                                    </DropdownMenuItem>
-                                ))}
-                                <DropdownMenuSeparator />
-                                <CreateTeamModal>
-                                    <DropdownMenuItem
-                                        className="cursor-pointer gap-2"
-                                        onSelect={(e) => e.preventDefault()}
-                                    >
-                                        <Plus className="size-4" />
-                                        <span className="text-muted-foreground">
-                                            Create Team
-                                        </span>
-                                    </DropdownMenuItem>
-                                </CreateTeamModal>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <TeamSwitcher inHeader />
                     </div>
                 </div>
             </div>
