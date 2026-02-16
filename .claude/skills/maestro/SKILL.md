@@ -30,7 +30,7 @@ All commands below run from the `orchestrator/` directory unless noted otherwise
 | `composer kit:run`                                   | Start dev server + file watcher (syncs `build/` back to `kits/`).          |
 | `composer kits:pint`                                 | Run Pint on `kits/` and `browser_tests/`.                                  |
 | `composer kits:lint`                                 | Run `kits:pint`, then lint/format Inertia variants and sync back.          |
-| `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 19 kit variants sequentially. |
+| `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 21 kit variants sequentially. |
 | `composer kits:browser-tests`                        | Build and run browser tests for all 4 Fortify kit variants (Livewire, React, Svelte, Vue). |
 | `npm run watch:kits`                                 | Run only the file watcher (no dev server).                                 |
 | `composer setup && composer ci:check`                | Run inside `build/` — installs deps, builds frontend, runs checks (see below). |
@@ -63,7 +63,7 @@ Every starter kit has a `ci:check` composer script that validates the kit withou
 
 **Livewire kits** run: `@test` (pint + PHPUnit) only.
 
-## Starter Kit Variants (19 total)
+## Starter Kit Variants (21 total)
 
 These are the full starter kit identifiers written to `orchestrator/storage/app/private/starter_kit` and used by `orchestrator/scripts/watch.js` for layer syncing.
 
@@ -83,6 +83,8 @@ These are the full starter kit identifiers written to `orchestrator/storage/app/
 | Svelte    | `svelte-blank`           | Blank (no auth)           |
 | Svelte    | `svelte`                 | Fortify                   |
 | Svelte    | `svelte-workos`          | WorkOS                    |
+| Svelte    | `svelte-teams`           | Fortify + Teams           |
+| Svelte    | `svelte-workos-teams`    | WorkOS + Teams            |
 | Vue       | `vue-blank`              | Blank (no auth)           |
 | Vue       | `vue`                    | Fortify                   |
 | Vue       | `vue-workos`             | WorkOS                    |
