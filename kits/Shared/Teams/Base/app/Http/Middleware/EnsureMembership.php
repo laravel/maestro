@@ -24,25 +24,13 @@ class EnsureMembership
             $team = Team::where('slug', $team)->first();
         }
 
-        if (! $user || ! $team) {
-            abort(403);
-        }
-
-        if (! $user->belongsToTeam($team)) {
-            abort(403);
-        }
+        abort_if(! $user || ! $team || ! $user->belongsToTeam($team), 403);
 
         if ($minimumRole !== null) {
             $userRole = $user->teamRole($team);
             $requiredRole = TeamRole::tryFrom($minimumRole);
 
-            if ($requiredRole === null || $userRole === null) {
-                abort(403);
-            }
-
-            if (! $userRole->isAtLeast($requiredRole)) {
-                abort(403);
-            }
+            abort_if($requiredRole === null || $userRole === null || ! $userRole->isAtLeast($requiredRole), 403);
         }
 
         // Only auto-switch "current_team", not "team" used in management routes
