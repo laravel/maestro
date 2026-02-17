@@ -81,6 +81,7 @@ class Team extends Model
         }
 
         $maxSuffix = 0;
+
         foreach ($existingSlugs as $existingSlug) {
             if ($existingSlug === $baseSlug) {
                 $maxSuffix = max($maxSuffix, 0);
@@ -93,6 +94,7 @@ class Team extends Model
             }
 
             $suffix = substr($existingSlug, strlen($baseSlug) + 1);
+
             if ($suffix !== '' && ctype_digit($suffix)) {
                 $maxSuffix = max($maxSuffix, (int) $suffix);
             }
