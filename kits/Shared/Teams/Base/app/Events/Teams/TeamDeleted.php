@@ -14,7 +14,8 @@ class TeamDeleted
     /**
      * Create a new event instance.
      */
-    public function __construct(
-        public Team $team,
-    ) {}
+    public function __construct(public Team $team)
+    {
+        //
+    }
 }
