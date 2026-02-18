@@ -14,7 +14,10 @@ class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules, ProfileValidationRules;
 
-    public function __construct(private CreateTeam $createTeam) {}
+    public function __construct(private CreateTeam $createTeam)
+    {
+        //
+    }
 
     /**
      * Validate and create a newly registered user.
