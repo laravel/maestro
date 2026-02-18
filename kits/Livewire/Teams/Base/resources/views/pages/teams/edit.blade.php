@@ -144,8 +144,6 @@ new class extends Component {
 
         event(new TeamMemberRoleChanged($this->teamModel, $membership->user, $oldRole, $newRole));
         $this->setTeamData();
-
-        $this->redirectRoute('teams.edit', ['team' => $this->teamModel->slug], navigate: true);
     }
 
     public function removeMember(int $userId): void

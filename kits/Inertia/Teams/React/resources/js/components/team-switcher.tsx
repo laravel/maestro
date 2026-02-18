@@ -1,5 +1,5 @@
 import { router, usePage } from '@inertiajs/react';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Check, ChevronsUpDown, Plus, Users } from 'lucide-react';
 import CreateTeamModal from '@/components/create-team-modal';
 import { Button } from '@/components/ui/button';
 import {
@@ -68,7 +68,20 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
                             : 'h-12 w-full justify-start px-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                     }
                 >
-                    <div className="grid flex-1 text-left text-sm leading-tight">
+                    <Users
+                        className={
+                            inHeader
+                                ? 'hidden'
+                                : 'hidden size-4 shrink-0 group-data-[collapsible=icon]:block'
+                        }
+                    />
+                    <div
+                        className={
+                            inHeader
+                                ? 'grid flex-1 text-left text-sm leading-tight'
+                                : 'grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden'
+                        }
+                    >
                         <span
                             className={
                                 inHeader
@@ -80,7 +93,11 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
                         </span>
                     </div>
                     <ChevronsUpDown
-                        className={inHeader ? 'size-4 opacity-50' : 'ml-auto'}
+                        className={
+                            inHeader
+                                ? 'size-4 opacity-50'
+                                : 'ml-auto group-data-[collapsible=icon]:hidden'
+                        }
                     />
                 </Button>
             </DropdownMenuTrigger>

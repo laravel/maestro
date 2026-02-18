@@ -3,6 +3,7 @@
     import Check from 'lucide-svelte/icons/check';
     import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
     import Plus from 'lucide-svelte/icons/plus';
+    import Users from 'lucide-svelte/icons/users';
     import { onMount } from 'svelte';
     import CreateTeamModal from '@/components/CreateTeamModal.svelte';
     import { Button } from '@/components/ui/button';
@@ -78,12 +79,17 @@
                 aria-expanded={props['aria-expanded']}
                 data-state={props['data-state']}
             >
-                <div class="grid flex-1 text-left text-sm leading-tight">
+                <Users class={inHeader ? 'hidden' : 'hidden size-4 shrink-0 group-data-[collapsible=icon]:block'} />
+                <div class={inHeader
+                    ? 'grid flex-1 text-left text-sm leading-tight'
+                    : 'grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden'}>
                     <span class={inHeader ? 'max-w-[120px] truncate font-medium' : 'truncate font-semibold'}>
                         {currentTeam?.name ?? 'Select Team'}
                     </span>
                 </div>
-                <ChevronsUpDown class={inHeader ? 'size-4 opacity-50' : 'ml-auto size-4'} />
+                <ChevronsUpDown
+                    class={inHeader ? 'size-4 opacity-50' : 'ml-auto size-4 group-data-[collapsible=icon]:hidden'}
+                />
             </Button>
         {/snippet}
     </DropdownMenuTrigger>

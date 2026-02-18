@@ -29,6 +29,12 @@
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
     import {
+        Select,
+        SelectContent,
+        SelectItem,
+        SelectTrigger,
+    } from '@/components/ui/select';
+    import {
         Tooltip,
         TooltipContent,
         TooltipProvider,
@@ -84,27 +90,31 @@
     let invitationToCancel = $state<TeamInvitation | null>(null);
     let inviteRole = $state<RoleOption['value']>('member');
     let confirmationName = $state('');
-    let newCurrentTeamId = $state<number | null>(null);
+    let newCurrentTeamId = $state('');
 
     const canDeleteTeam = $derived(
-        confirmationName === team.name && (!isCurrentTeam || newCurrentTeamId !== null),
+        confirmationName === team.name && (!isCurrentTeam || newCurrentTeamId !== ''),
     );
 
     const inviteRoleLabel = $derived(
-        availableRoles.find((role) => role.value === inviteRole)?.label ?? inviteRole,
+        availableRoles.find((role) => role.value === inviteRole)?.label ?? 'Select a role',
     );
 
     const selectedNewCurrentTeam = $derived(
-        otherTeams.find((otherTeam) => otherTeam.id === newCurrentTeamId),
+        otherTeams.find((otherTeam) => String(otherTeam.id) === newCurrentTeamId),
     );
 
     const resetDeleteDialog = () => {
         confirmationName = '';
-        newCurrentTeamId = null;
+        newCurrentTeamId = '';
     };
 
     const updateMemberRole = (member: TeamMember, newRole: string) => {
-        router.patch(`/teams/${team.slug}/members/${member.id}`, { role: newRole });
+        router.patch(
+            `/teams/${team.slug}/members/${member.id}`,
+            { role: newRole },
+            { preserveScroll: true },
+        );
     };
 
     const confirmRemoveMember = (member: TeamMember) => {
@@ -153,7 +163,7 @@
         router.delete(`/teams/${team.slug}`, {
             data: {
                 name: confirmationName,
-                new_current_team_id: newCurrentTeamId,
+                new_current_team_id: newCurrentTeamId === '' ? null : Number(newCurrentTeamId),
             },
             onSuccess: () => {
                 deleteDialogOpen = false;
@@ -251,40 +261,18 @@
 
                                             <div class="grid gap-2">
                                                 <Label for="role">Role</Label>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        {#snippet children(props)}
-                                                            <Button
-                                                                variant="outline"
-                                                                class="w-full justify-between"
-                                                                onclick={props.onclick}
-                                                                aria-expanded={props['aria-expanded']}
-                                                                data-state={props['data-state']}
-                                                            >
-                                                                {inviteRoleLabel}
-                                                                <ChevronDown class="ml-2 h-4 w-4 opacity-50" />
-                                                            </Button>
-                                                        {/snippet}
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent class="w-full">
+                                                <Select bind:value={inviteRole}>
+                                                    <SelectTrigger class="w-full">
+                                                        {inviteRoleLabel}
+                                                    </SelectTrigger>
+                                                    <SelectContent>
                                                         {#each availableRoles as role (role.value)}
-                                                            <DropdownMenuItem asChild>
-                                                                {#snippet children(props)}
-                                                                    <button
-                                                                        type="button"
-                                                                        class={props.class}
-                                                                        onclick={(event) => {
-                                                                            props.onClick?.(event);
-                                                                            inviteRole = role.value;
-                                                                        }}
-                                                                    >
-                                                                        {role.label}
-                                                                    </button>
-                                                                {/snippet}
-                                                            </DropdownMenuItem>
+                                                            <SelectItem value={role.value} label={role.label}>
+                                                                {role.label}
+                                                            </SelectItem>
                                                         {/each}
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                    </SelectContent>
+                                                </Select>
 
                                                 <input type="hidden" name="role" value={inviteRole} />
                                                 <InputError message={errors.role} />
@@ -497,43 +485,24 @@
                                         <div class="grid gap-2">
                                             <Label for="new-current-team">Select a new current team</Label>
 
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    {#snippet children(props)}
-                                                        <Button
-                                                            variant="outline"
-                                                            class="w-full justify-between"
-                                                            onclick={props.onclick}
-                                                            aria-expanded={props['aria-expanded']}
-                                                            data-state={props['data-state']}
-                                                        >
-                                                            {selectedNewCurrentTeam?.name ?? 'Select a team'}
-                                                            <ChevronDown class="ml-2 h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    {/snippet}
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent class="w-full">
+                                            <Select bind:value={newCurrentTeamId}>
+                                                <SelectTrigger class="w-full">
+                                                    {selectedNewCurrentTeam?.name ?? 'Select a team'}
+                                                </SelectTrigger>
+                                                <SelectContent>
                                                     {#each otherTeams as otherTeam (otherTeam.id)}
-                                                        <DropdownMenuItem asChild>
-                                                            {#snippet children(props)}
-                                                                <button
-                                                                    type="button"
-                                                                    class={props.class}
-                                                                    onclick={(event) => {
-                                                                        props.onClick?.(event);
-                                                                        newCurrentTeamId = otherTeam.id;
-                                                                    }}
-                                                                >
-                                                                    {otherTeam.name}
-                                                                    {#if otherTeam.is_personal}
-                                                                        <span class="ml-2 text-muted-foreground">(Personal)</span>
-                                                                    {/if}
-                                                                </button>
-                                                            {/snippet}
-                                                        </DropdownMenuItem>
+                                                        <SelectItem
+                                                            value={String(otherTeam.id)}
+                                                            label={otherTeam.name}
+                                                        >
+                                                            {otherTeam.name}
+                                                            {#if otherTeam.is_personal}
+                                                                <span class="ml-2 text-muted-foreground">(Personal)</span>
+                                                            {/if}
+                                                        </SelectItem>
                                                     {/each}
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                                </SelectContent>
+                                            </Select>
 
                                             <p class="text-sm text-muted-foreground">
                                                 You are deleting your current team. Please select which team to switch to.

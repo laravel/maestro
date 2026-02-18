@@ -26,6 +26,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
@@ -106,15 +113,16 @@ export default function TeamEdit({
         setNewCurrentTeamId(null);
     };
 
-    const inviteRoleLabel = useMemo(() => {
-        const role = availableRoles.find((item) => item.value === inviteRole);
-        return role?.label ?? inviteRole;
-    }, [availableRoles, inviteRole]);
-
     const updateMemberRole = (member: TeamMember, newRole: string) => {
-        router.patch(`/teams/${team.slug}/members/${member.id}`, {
-            role: newRole,
-        });
+        router.patch(
+            `/teams/${team.slug}/members/${member.id}`,
+            {
+                role: newRole,
+            },
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     const confirmRemoveMember = (member: TeamMember) => {
@@ -311,50 +319,43 @@ export default function TeamEdit({
                                                             <Label htmlFor="role">
                                                                 Role
                                                             </Label>
-                                                            <DropdownMenu>
-                                                                <DropdownMenuTrigger
-                                                                    asChild
-                                                                >
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        className="w-full justify-between"
-                                                                    >
-                                                                        {
-                                                                            inviteRoleLabel
-                                                                        }
-                                                                        <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                                                                    </Button>
-                                                                </DropdownMenuTrigger>
-                                                                <DropdownMenuContent className="w-full">
+                                                            <Select
+                                                                name="role"
+                                                                value={
+                                                                    inviteRole
+                                                                }
+                                                                onValueChange={(
+                                                                    value,
+                                                                ) =>
+                                                                    setInviteRole(
+                                                                        value as RoleOption['value'],
+                                                                    )
+                                                                }
+                                                            >
+                                                                <SelectTrigger className="w-full">
+                                                                    <SelectValue placeholder="Select a role" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
                                                                     {availableRoles.map(
                                                                         (
                                                                             role,
                                                                         ) => (
-                                                                            <DropdownMenuItem
+                                                                            <SelectItem
                                                                                 key={
                                                                                     role.value
                                                                                 }
-                                                                                onSelect={() =>
-                                                                                    setInviteRole(
-                                                                                        role.value,
-                                                                                    )
+                                                                                value={
+                                                                                    role.value
                                                                                 }
                                                                             >
                                                                                 {
                                                                                     role.label
                                                                                 }
-                                                                            </DropdownMenuItem>
+                                                                            </SelectItem>
                                                                         ),
                                                                     )}
-                                                                </DropdownMenuContent>
-                                                            </DropdownMenu>
-                                                            <input
-                                                                type="hidden"
-                                                                name="role"
-                                                                value={
-                                                                    inviteRole
-                                                                }
-                                                            />
+                                                                </SelectContent>
+                                                            </Select>
                                                             <InputError
                                                                 message={
                                                                     errors.role
@@ -610,37 +611,30 @@ export default function TeamEdit({
                                                         Select a new current
                                                         team
                                                     </Label>
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger
-                                                            asChild
-                                                        >
-                                                            <Button
-                                                                variant="outline"
-                                                                className="w-full justify-between"
-                                                            >
-                                                                {otherTeams.find(
-                                                                    (
-                                                                        otherTeam,
-                                                                    ) =>
-                                                                        otherTeam.id ===
-                                                                        newCurrentTeamId,
-                                                                )?.name ??
-                                                                    'Select a team'}
-                                                                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent className="w-full">
+                                                    <Select
+                                                        value={
+                                                            newCurrentTeamId?.toString() ??
+                                                            ''
+                                                        }
+                                                        onValueChange={(
+                                                            value,
+                                                        ) =>
+                                                            setNewCurrentTeamId(
+                                                                Number(value),
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select a team" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
                                                             {otherTeams.map(
                                                                 (otherTeam) => (
-                                                                    <DropdownMenuItem
+                                                                    <SelectItem
                                                                         key={
                                                                             otherTeam.id
                                                                         }
-                                                                        onSelect={() =>
-                                                                            setNewCurrentTeamId(
-                                                                                otherTeam.id,
-                                                                            )
-                                                                        }
+                                                                        value={otherTeam.id.toString()}
                                                                     >
                                                                         {
                                                                             otherTeam.name
@@ -650,11 +644,11 @@ export default function TeamEdit({
                                                                                 (Personal)
                                                                             </span>
                                                                         ) : null}
-                                                                    </DropdownMenuItem>
+                                                                    </SelectItem>
                                                                 ),
                                                             )}
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
+                                                        </SelectContent>
+                                                    </Select>
                                                     <p className="text-sm text-muted-foreground">
                                                         You are deleting your
                                                         current team. Please
