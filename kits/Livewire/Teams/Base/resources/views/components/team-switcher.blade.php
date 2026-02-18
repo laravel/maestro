@@ -59,8 +59,14 @@ new class extends Component {
 
 <div>
     <flux:dropdown position="bottom" align="start">
-        <flux:button variant="ghost" class="w-full" icon:trailing="chevrons-up-down">
-            <span class="truncate font-semibold">{{ $this->currentTeam()['name'] ?? __('Select Team') }}</span>
+        <flux:button variant="ghost" class="group w-full justify-start in-data-flux-sidebar-collapsed-desktop:justify-center">
+            <flux:icon name="users" class="hidden size-4 in-data-flux-sidebar-collapsed-desktop:block" />
+            <span class="truncate font-semibold in-data-flux-sidebar-collapsed-desktop:hidden">{{ $this->currentTeam()['name'] ?? __('Select Team') }}</span>
+            <flux:icon
+                name="chevrons-up-down"
+                variant="micro"
+                class="ms-auto size-4 in-data-flux-sidebar-collapsed-desktop:hidden"
+            />
         </flux:button>
 
         <flux:menu class="min-w-56">

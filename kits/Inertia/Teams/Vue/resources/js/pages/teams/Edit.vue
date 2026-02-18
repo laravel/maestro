@@ -26,6 +26,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
@@ -77,30 +84,31 @@ const cancelInvitationDialogOpen = ref(false);
 const invitationToCancel = ref<TeamInvitation | null>(null);
 const inviteRole = ref('member');
 const confirmationName = ref('');
-const newCurrentTeamId = ref<number | null>(null);
+const newCurrentTeamId = ref('');
 
 const canDeleteTeam = computed(() => {
     const nameMatches = confirmationName.value === props.team.name;
     const hasNewTeamIfNeeded =
-        !props.isCurrentTeam || newCurrentTeamId.value !== null;
+        !props.isCurrentTeam || newCurrentTeamId.value !== '';
 
     return nameMatches && hasNewTeamIfNeeded;
 });
 
 const resetDeleteDialog = () => {
     confirmationName.value = '';
-    newCurrentTeamId.value = null;
+    newCurrentTeamId.value = '';
 };
 
-const inviteRoleLabel = computed(() => {
-    const role = props.availableRoles.find((r) => r.value === inviteRole.value);
-    return role?.label ?? inviteRole.value;
-});
-
 const updateMemberRole = (member: TeamMember, newRole: string) => {
-    router.patch(`/teams/${props.team.slug}/members/${member.id}`, {
-        role: newRole,
-    });
+    router.patch(
+        `/teams/${props.team.slug}/members/${member.id}`,
+        {
+            role: newRole,
+        },
+        {
+            preserveScroll: true,
+        },
+    );
 };
 
 const confirmRemoveMember = (member: TeamMember) => {
@@ -145,7 +153,10 @@ const deleteTeam = () => {
     router.delete(`/teams/${props.team.slug}`, {
         data: {
             name: confirmationName.value,
-            new_current_team_id: newCurrentTeamId.value,
+            new_current_team_id:
+                newCurrentTeamId.value === ''
+                    ? null
+                    : Number(newCurrentTeamId.value),
         },
         onSuccess: () => {
             deleteDialogOpen.value = false;
@@ -278,38 +289,25 @@ const deleteTeam = () => {
 
                                         <div class="grid gap-2">
                                             <Label for="role">Role</Label>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger as-child>
-                                                    <Button
-                                                        variant="outline"
-                                                        class="w-full justify-between"
-                                                    >
-                                                        {{ inviteRoleLabel }}
-                                                        <ChevronDown
-                                                            class="ml-2 h-4 w-4 opacity-50"
-                                                        />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent
-                                                    class="w-full"
-                                                >
-                                                    <DropdownMenuItem
+                                            <Select
+                                                v-model="inviteRole"
+                                                name="role"
+                                            >
+                                                <SelectTrigger class="w-full">
+                                                    <SelectValue
+                                                        placeholder="Select a role"
+                                                    />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem
                                                         v-for="role in availableRoles"
                                                         :key="role.value"
-                                                        @click="
-                                                            inviteRole =
-                                                                role.value
-                                                        "
+                                                        :value="role.value"
                                                     >
                                                         {{ role.label }}
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                            <input
-                                                type="hidden"
-                                                name="role"
-                                                :value="inviteRole"
-                                            />
+                                                    </SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                             <InputError
                                                 :message="errors.role"
                                             />
@@ -552,45 +550,27 @@ const deleteTeam = () => {
                                         <Label for="new-current-team">
                                             Select a new current team
                                         </Label>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger as-child>
-                                                <Button
-                                                    variant="outline"
-                                                    class="w-full justify-between"
-                                                >
-                                                    {{
-                                                        otherTeams.find(
-                                                            (t) =>
-                                                                t.id ===
-                                                                newCurrentTeamId,
-                                                        )?.name ||
-                                                        'Select a team'
-                                                    }}
-                                                    <ChevronDown
-                                                        class="ml-2 h-4 w-4 opacity-50"
-                                                    />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent class="w-full">
-                                                <DropdownMenuItem
+                                        <Select v-model="newCurrentTeamId">
+                                            <SelectTrigger class="w-full">
+                                                <SelectValue
+                                                    placeholder="Select a team"
+                                                />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem
                                                     v-for="otherTeam in otherTeams"
                                                     :key="otherTeam.id"
-                                                    @click="
-                                                        newCurrentTeamId =
-                                                            otherTeam.id
-                                                    "
+                                                    :value="String(otherTeam.id)"
                                                 >
                                                     {{ otherTeam.name }}
                                                     <span
-                                                        v-if="
-                                                            otherTeam.is_personal
-                                                        "
+                                                        v-if="otherTeam.is_personal"
                                                         class="ml-2 text-muted-foreground"
                                                         >(Personal)</span
                                                     >
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                         <p
                                             class="text-sm text-muted-foreground"
                                         >

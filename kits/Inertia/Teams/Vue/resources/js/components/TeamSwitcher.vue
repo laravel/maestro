@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePage, router } from '@inertiajs/vue3';
-import { Check, ChevronsUpDown, Plus } from 'lucide-vue-next';
+import { Check, ChevronsUpDown, Plus, Users } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import CreateTeamModal from '@/components/CreateTeamModal.vue';
 import { Button } from '@/components/ui/button';
@@ -100,7 +100,20 @@ onUnmounted(() => {
                         : 'h-12 w-full justify-start px-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                 "
             >
-                <div class="grid flex-1 text-left text-sm leading-tight">
+                <Users
+                    :class="
+                        props.inHeader
+                            ? 'hidden'
+                            : 'hidden size-4 shrink-0 group-data-[collapsible=icon]:block'
+                    "
+                />
+                <div
+                    :class="
+                        props.inHeader
+                            ? 'grid flex-1 text-left text-sm leading-tight'
+                            : 'grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden'
+                    "
+                >
                     <span
                         :class="
                             props.inHeader
@@ -112,7 +125,11 @@ onUnmounted(() => {
                     </span>
                 </div>
                 <ChevronsUpDown
-                    :class="props.inHeader ? 'size-4 opacity-50' : 'ml-auto'"
+                    :class="
+                        props.inHeader
+                            ? 'size-4 opacity-50'
+                            : 'ml-auto group-data-[collapsible=icon]:hidden'
+                    "
                 />
             </Button>
         </DropdownMenuTrigger>
