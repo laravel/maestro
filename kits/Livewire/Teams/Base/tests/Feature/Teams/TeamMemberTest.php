@@ -29,7 +29,7 @@ class TeamMemberTest extends TestCase
 
         $this->assertEquals(
             TeamRole::Admin->value,
-            $team->members()->where('user_id', $member->id)->first()->pivot->role->value
+            $team->members()->where('user_id', $member->id)->first()->pivot->role->value,
         );
     }
 

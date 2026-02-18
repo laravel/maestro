@@ -45,6 +45,7 @@ class DeleteTeamRequest extends FormRequest
                 }
 
                 $isDeletingCurrentTeam = $user->isCurrentTeam($team);
+
                 if ($isDeletingCurrentTeam && ! $this->input('new_current_team_id')) {
                     $validator->errors()->add('new_current_team_id', 'You must select a new current team.');
                 }
