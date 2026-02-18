@@ -14,7 +14,8 @@ class TeamInvitationSent
     /**
      * Create a new event instance.
      */
-    public function __construct(
-        public TeamInvitation $invitation,
-    ) {}
+    public function __construct(public TeamInvitation $invitation)
+    {
+        //
+    }
 }

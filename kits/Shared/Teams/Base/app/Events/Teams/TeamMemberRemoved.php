@@ -18,5 +18,7 @@ class TeamMemberRemoved
     public function __construct(
         public Team $team,
         public User $member,
-    ) {}
+    ) {
+        //
+    }
 }

@@ -8,7 +8,10 @@ use Illuminate\Auth\Events\Registered;
 
 class CreatePersonalTeam
 {
-    public function __construct(private CreateTeam $createTeam) {}
+    public function __construct(private CreateTeam $createTeam)
+    {
+        //
+    }
 
     /**
      * Handle the event.
