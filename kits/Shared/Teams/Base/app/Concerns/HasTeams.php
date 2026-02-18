@@ -38,7 +38,7 @@ trait HasTeams
             'user_id',
             'id',
             'id',
-            'team_id'
+            'team_id',
         )->where('team_members.role', TeamRole::Owner->value);
     }
 

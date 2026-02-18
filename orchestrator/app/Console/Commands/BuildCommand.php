@@ -166,7 +166,7 @@ class BuildCommand extends Command
         bool $workos,
         bool $components,
         bool $blank = false,
-        bool $teams = false
+        bool $teams = false,
     ): string {
         $teamsLabel = $teams ? 'Teams' : '';
 
@@ -221,7 +221,7 @@ class BuildCommand extends Command
         bool $workos,
         bool $components = false,
         bool $blank = false,
-        bool $teams = false
+        bool $teams = false,
     ): int {
         $this->writeStarterKitFile($kit, $workos, $components, $blank, $teams);
         $this->deleteDatabaseFile($buildPath);
@@ -240,7 +240,7 @@ class BuildCommand extends Command
         bool $workos = false,
         bool $components = false,
         bool $blank = false,
-        bool $teams = false
+        bool $teams = false,
     ): int {
         $buildPath = $this->prepareBuildDirectory($this->sharedPath('Blank'));
 
@@ -547,7 +547,7 @@ class BuildCommand extends Command
         bool $workos,
         bool $components = false,
         bool $blank = false,
-        bool $teams = false
+        bool $teams = false,
     ): void {
         $starterKit = strtolower($kit);
         $starterKit .= match (true) {

@@ -17,6 +17,6 @@ class TeamInvitationAccepted
      */
     public function __construct(
         public TeamInvitation $invitation,
-        public User $member
+        public User $member,
     ) {}
 }

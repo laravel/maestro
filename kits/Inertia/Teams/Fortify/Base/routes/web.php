@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureMembership;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -12,7 +13,7 @@ Route::get('/', function () {
 
 Route::get('{current_team}/dashboard', function () {
     return Inertia::render('{{dashboard}}');
-})->middleware(['auth', 'verified', \App\Http\Middleware\EnsureMembership::class])->name('dashboard');
+})->middleware(['auth', 'verified', EnsureMembership::class])->name('dashboard');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/teams.php';

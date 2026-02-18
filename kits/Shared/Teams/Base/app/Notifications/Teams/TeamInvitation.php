@@ -16,7 +16,7 @@ class TeamInvitation extends Notification implements ShouldQueue
      * Create a new notification instance.
      */
     public function __construct(
-        public TeamInvitationModel $invitation
+        public TeamInvitationModel $invitation,
     ) {}
 
     /**

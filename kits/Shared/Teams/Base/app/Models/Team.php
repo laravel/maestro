@@ -76,6 +76,7 @@ class Team extends Model
         }
 
         $existingSlugs = $query->pluck('slug');
+
         if ($existingSlugs->isEmpty()) {
             return $baseSlug;
         }
@@ -114,7 +115,7 @@ class Team extends Model
     /**
      * Get all members of this team.
      *
-     * @return BelongsToMany<\Illuminate\Database\Eloquent\Model, $this>
+     * @return BelongsToMany<Model, $this>
      */
     public function members(): BelongsToMany
     {
