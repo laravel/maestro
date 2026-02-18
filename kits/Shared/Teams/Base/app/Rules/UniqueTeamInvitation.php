@@ -6,6 +6,7 @@ use App\Models\Team;
 use App\Models\TeamInvitation;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Translation\PotentiallyTranslatedString;
 
 class UniqueTeamInvitation implements ValidationRule
 {
@@ -14,7 +15,7 @@ class UniqueTeamInvitation implements ValidationRule
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string, ?string=): PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

@@ -20,6 +20,6 @@ class TeamMemberRoleChanged
         public Team $team,
         public User $member,
         public TeamRole $oldRole,
-        public TeamRole $newRole
+        public TeamRole $newRole,
     ) {}
 }

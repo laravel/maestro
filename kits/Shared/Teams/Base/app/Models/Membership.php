@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\TeamRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -62,7 +63,7 @@ class Membership extends Pivot
     /**
      * Get the user that belongs to this membership.
      *
-     * @return BelongsTo<\Illuminate\Database\Eloquent\Model, $this>
+     * @return BelongsTo<Model, $this>
      */
     public function user(): BelongsTo
     {

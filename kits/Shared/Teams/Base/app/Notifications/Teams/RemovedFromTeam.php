@@ -16,7 +16,7 @@ class RemovedFromTeam extends Notification implements ShouldQueue
      * Create a new notification instance.
      */
     public function __construct(
-        public Team $team
+        public Team $team,
     ) {}
 
     /**

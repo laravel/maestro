@@ -73,7 +73,7 @@ class TeamInvitationController extends Controller
 
             $membership = $team->memberships()->firstOrCreate(
                 ['user_id' => $user->id],
-                ['role' => $invitation->role]
+                ['role' => $invitation->role],
             );
 
             $wasRecentlyCreated = $membership->wasRecentlyCreated;
