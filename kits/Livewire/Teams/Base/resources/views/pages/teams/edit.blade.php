@@ -262,6 +262,17 @@ new class extends Component {
 
         $this->redirectRoute('teams.index', navigate: true);
     }
+
+    public function render()
+    {
+        $teamName = $this->teamData['name'] ?? $this->teamModel->name;
+
+        $title = ($this->permissions['canUpdateTeam'] ?? false)
+            ? "Edit {$teamName}"
+            : "View {$teamName}";
+
+        return $this->view()->title($title);
+    }
 }; ?>
 
 <section class="w-full">
