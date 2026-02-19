@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Head, usePage } from '@inertiajs/vue3';
+import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem, type Team } from '@/types';
-import PlaceholderPattern from '../components/PlaceholderPattern.vue';
+import type { BreadcrumbItem, Team } from '@/types';
 import { dashboard } from '@/routes';
 
 const page = usePage();
