@@ -43,6 +43,15 @@
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
     import { getInitials } from '@/lib/initials';
+    import { destroy, edit, index, update } from '@/routes/teams';
+    import {
+        destroy as destroyInvitation,
+        store as storeInvitation,
+    } from '@/routes/teams/invitations';
+    import {
+        destroy as destroyMember,
+        update as updateMember,
+    } from '@/routes/teams/members';
     import type {
         BreadcrumbItem,
         RoleOption,
@@ -74,11 +83,11 @@
     const breadcrumbs = $derived<BreadcrumbItem[]>([
         {
             title: 'Teams',
-            href: '/teams',
+            href: index().url,
         },
         {
             title: team.name,
-            href: `/teams/${team.slug}`,
+            href: edit(team.slug).url,
         },
     ]);
 
@@ -111,7 +120,7 @@
 
     const updateMemberRole = (member: TeamMember, newRole: string) => {
         router.patch(
-            `/teams/${team.slug}/members/${member.id}`,
+            updateMember([team.slug, member.id]).url,
             { role: newRole },
             { preserveScroll: true },
         );
@@ -127,7 +136,7 @@
             return;
         }
 
-        router.delete(`/teams/${team.slug}/members/${memberToRemove.id}`, {
+        router.delete(destroyMember([team.slug, memberToRemove.id]).url, {
             onSuccess: () => {
                 removeMemberDialogOpen = false;
                 memberToRemove = null;
@@ -151,7 +160,7 @@
             return;
         }
 
-        router.delete(`/teams/${team.slug}/invitations/${invitationToCancel.code}`, {
+        router.delete(destroyInvitation([team.slug, invitationToCancel.code]).url, {
             onSuccess: () => {
                 cancelInvitationDialogOpen = false;
                 invitationToCancel = null;
@@ -160,7 +169,7 @@
     };
 
     const deleteTeam = () => {
-        router.delete(`/teams/${team.slug}`, {
+        router.delete(destroy(team.slug).url, {
             data: {
                 name: confirmationName,
                 new_current_team_id: newCurrentTeamId === '' ? null : Number(newCurrentTeamId),
@@ -188,7 +197,7 @@
                         description="Update your team name and settings"
                     />
 
-                    <Form action={`/teams/${team.slug}`} method="patch" class="space-y-6">
+                    <Form {...update.form(team.slug)} class="space-y-6">
                         {#snippet children({ errors, processing, recentlySuccessful })}
                             <div class="grid gap-2">
                                 <Label for="name">Team Name</Label>
@@ -233,8 +242,7 @@
                             </DialogTrigger>
                             <DialogContent>
                                 <Form
-                                    action={`/teams/${team.slug}/invitations`}
-                                    method="post"
+                                    {...storeInvitation.form(team.slug)}
                                     class="space-y-6"
                                     onSuccess={() => (inviteDialogOpen = false)}
                                 >

@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { store } from '@/routes/teams';
 
 export default function CreateTeamModal({ children }: PropsWithChildren) {
     const [open, setOpen] = useState(false);
@@ -24,8 +25,7 @@ export default function CreateTeamModal({ children }: PropsWithChildren) {
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent>
                 <Form
-                    action="/teams"
-                    method="post"
+                    {...store.form()}
                     className="space-y-6"
                     onSuccess={() => setOpen(false)}
                 >

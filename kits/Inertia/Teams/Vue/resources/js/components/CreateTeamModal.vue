@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { store } from '@/routes/teams';
 
 const open = ref(false);
 </script>
@@ -26,8 +27,7 @@ const open = ref(false);
         </DialogTrigger>
         <DialogContent>
             <Form
-                action="/teams"
-                method="post"
+                v-bind="store.form()"
                 class="space-y-6"
                 v-slot="{ errors, processing }"
                 @success="open = false"

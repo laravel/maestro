@@ -15,6 +15,7 @@
         DropdownMenuSeparator,
         DropdownMenuTrigger,
     } from '@/components/ui/dropdown-menu';
+    import { switchMethod } from '@/routes/teams';
     import type { Team } from '@/types';
 
     let { inHeader = false }: { inHeader?: boolean } = $props();
@@ -42,7 +43,7 @@
     const switchTeam = (team: Team) => {
         const previousTeamSlug = currentTeam?.slug;
 
-        router.post(`/teams/${team.slug}/switch`, {}, {
+        router.post(switchMethod(team.slug).url, {}, {
             onFinish: () => {
                 if (!previousTeamSlug || typeof window === 'undefined') {
                     router.reload();

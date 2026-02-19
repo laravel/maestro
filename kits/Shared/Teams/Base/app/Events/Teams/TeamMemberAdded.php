@@ -19,7 +19,7 @@ class TeamMemberAdded
     public function __construct(
         public Team $team,
         public User $member,
-        public Membership $membership
+        public Membership $membership,
     ) {
         //
     }

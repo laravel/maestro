@@ -12,6 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { switchMethod } from '@/routes/teams';
 import type { Team } from '@/types';
 
 const props = withDefaults(
@@ -51,7 +52,7 @@ const switchTeam = (team: Team) => {
     const previousTeamSlug = currentTeam.value?.slug;
 
     router.post(
-        `/teams/${team.slug}/switch`,
+        switchMethod(team.slug).url,
         {},
         {
             onFinish: () => {
