@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
+import { edit, index, switchMethod } from '@/routes/teams';
 import type { BreadcrumbItem, Team } from '@/types';
 
 type Props = {
@@ -24,11 +25,11 @@ defineProps<Props>();
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Teams',
-        href: '/teams',
+        href: index().url,
     },
 ];
 
-const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
+const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
 </script>
 
 <template>
@@ -109,7 +110,7 @@ const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
                                             size="sm"
                                             as-child
                                         >
-                                            <Link :href="`/teams/${team.slug}`">
+                                            <Link :href="edit(team.slug).url">
                                                 <Eye class="h-4 w-4" />
                                             </Link>
                                         </Button>
@@ -126,7 +127,7 @@ const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
                                             size="sm"
                                             as-child
                                         >
-                                            <Link :href="`/teams/${team.slug}`">
+                                            <Link :href="edit(team.slug).url">
                                                 <Edit class="h-4 w-4" />
                                             </Link>
                                         </Button>

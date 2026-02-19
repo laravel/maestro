@@ -41,6 +41,15 @@ import {
 import { useInitials } from '@/hooks/use-initials';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import { destroy, edit, index, update } from '@/routes/teams';
+import {
+    destroy as destroyInvitation,
+    store as storeInvitation,
+} from '@/routes/teams/invitations';
+import {
+    destroy as destroyMember,
+    update as updateMember,
+} from '@/routes/teams/members';
 import type {
     BreadcrumbItem,
     RoleOption,
@@ -75,11 +84,11 @@ export default function TeamEdit({
         () => [
             {
                 title: 'Teams',
-                href: '/teams',
+                href: index().url,
             },
             {
                 title: team.name,
-                href: `/teams/${team.slug}`,
+                href: edit(team.slug).url,
             },
         ],
         [team.name, team.slug],
@@ -115,7 +124,7 @@ export default function TeamEdit({
 
     const updateMemberRole = (member: TeamMember, newRole: string) => {
         router.patch(
-            `/teams/${team.slug}/members/${member.id}`,
+            updateMember([team.slug, member.id]).url,
             {
                 role: newRole,
             },
@@ -135,7 +144,7 @@ export default function TeamEdit({
             return;
         }
 
-        router.delete(`/teams/${team.slug}/members/${memberToRemove.id}`, {
+        router.delete(destroyMember([team.slug, memberToRemove.id]).url, {
             onSuccess: () => {
                 setRemoveMemberDialogOpen(false);
                 setMemberToRemove(null);
@@ -153,19 +162,16 @@ export default function TeamEdit({
             return;
         }
 
-        router.delete(
-            `/teams/${team.slug}/invitations/${invitationToCancel.code}`,
-            {
-                onSuccess: () => {
-                    setCancelInvitationDialogOpen(false);
-                    setInvitationToCancel(null);
-                },
+        router.delete(destroyInvitation([team.slug, invitationToCancel.code]).url, {
+            onSuccess: () => {
+                setCancelInvitationDialogOpen(false);
+                setInvitationToCancel(null);
             },
-        );
+        });
     };
 
     const deleteTeam = () => {
-        router.delete(`/teams/${team.slug}`, {
+        router.delete(destroy(team.slug).url, {
             data: {
                 name: confirmationName,
                 new_current_team_id: newCurrentTeamId,
@@ -195,8 +201,7 @@ export default function TeamEdit({
                                 />
 
                                 <Form
-                                    action={`/teams/${team.slug}`}
-                                    method="patch"
+                                    {...update.form(team.slug)}
                                     className="space-y-6"
                                 >
                                     {({
@@ -277,8 +282,7 @@ export default function TeamEdit({
                                     </DialogTrigger>
                                     <DialogContent>
                                         <Form
-                                            action={`/teams/${team.slug}/invitations`}
-                                            method="post"
+                                            {...storeInvitation.form(team.slug)}
                                             className="space-y-6"
                                             onSuccess={() =>
                                                 setInviteDialogOpen(false)

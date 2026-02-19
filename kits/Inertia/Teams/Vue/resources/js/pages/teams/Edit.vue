@@ -41,6 +41,15 @@ import {
 import { useInitials } from '@/composables/useInitials';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
+import { destroy, edit, index, update } from '@/routes/teams';
+import {
+    destroy as destroyInvitation,
+    store as storeInvitation,
+} from '@/routes/teams/invitations';
+import {
+    destroy as destroyMember,
+    update as updateMember,
+} from '@/routes/teams/members';
 import type {
     BreadcrumbItem,
     RoleOption,
@@ -68,11 +77,11 @@ const { getInitials } = useInitials();
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
         title: 'Teams',
-        href: '/teams',
+        href: index().url,
     },
     {
         title: props.team.name,
-        href: `/teams/${props.team.slug}`,
+        href: edit(props.team.slug).url,
     },
 ]);
 
@@ -101,7 +110,7 @@ const resetDeleteDialog = () => {
 
 const updateMemberRole = (member: TeamMember, newRole: string) => {
     router.patch(
-        `/teams/${props.team.slug}/members/${member.id}`,
+        updateMember([props.team.slug, member.id]).url,
         {
             role: newRole,
         },
@@ -119,7 +128,7 @@ const confirmRemoveMember = (member: TeamMember) => {
 const removeMember = () => {
     if (memberToRemove.value) {
         router.delete(
-            `/teams/${props.team.slug}/members/${memberToRemove.value.id}`,
+            destroyMember([props.team.slug, memberToRemove.value.id]).url,
             {
                 onSuccess: () => {
                     removeMemberDialogOpen.value = false;
@@ -138,7 +147,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
 const cancelInvitation = () => {
     if (invitationToCancel.value) {
         router.delete(
-            `/teams/${props.team.slug}/invitations/${invitationToCancel.value.code}`,
+            destroyInvitation([props.team.slug, invitationToCancel.value.code]).url,
             {
                 onSuccess: () => {
                     cancelInvitationDialogOpen.value = false;
@@ -150,7 +159,7 @@ const cancelInvitation = () => {
 };
 
 const deleteTeam = () => {
-    router.delete(`/teams/${props.team.slug}`, {
+    router.delete(destroy(props.team.slug).url, {
         data: {
             name: confirmationName.value,
             new_current_team_id:
@@ -186,8 +195,7 @@ const deleteTeam = () => {
                     />
 
                     <Form
-                        :action="`/teams/${team.slug}`"
-                        method="patch"
+                        v-bind="update.form(team.slug)"
                         class="space-y-6"
                         v-slot="{ errors, processing, recentlySuccessful }"
                     >
@@ -254,8 +262,7 @@ const deleteTeam = () => {
                             </DialogTrigger>
                             <DialogContent>
                                 <Form
-                                    :action="`/teams/${team.slug}/invitations`"
-                                    method="post"
+                                    v-bind="storeInvitation.form(team.slug)"
                                     class="space-y-6"
                                     v-slot="{ errors, processing }"
                                     @success="inviteDialogOpen = false"

@@ -1,19 +1,22 @@
 <?php
 
+use App\Http\Controllers\Teams\TeamInvitationController;
 use App\Http\Middleware\EnsureMembership;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('{{welcome}}', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+Route::inertia('/', '{{welcome}}', [
+    'canRegister' => Features::enabled(Features::registration()),
+])->name('home');
 
-Route::get('{current_team}/dashboard', function () {
-    return Inertia::render('{{dashboard}}');
-})->middleware(['auth', 'verified', EnsureMembership::class])->name('dashboard');
+Route::prefix('{current_team}')
+    ->middleware(['auth', 'verified', EnsureMembership::class])
+    ->group(function () {
+        Route::inertia('dashboard', '{{dashboard}}')->name('dashboard');
+    });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('invitations/{invitation}/accept', [TeamInvitationController::class, 'accept'])->name('invitations.accept');
+});
 
 require __DIR__.'/settings.php';
-require __DIR__.'/teams.php';

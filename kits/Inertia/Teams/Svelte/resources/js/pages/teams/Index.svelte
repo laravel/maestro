@@ -17,6 +17,7 @@
     } from '@/components/ui/tooltip';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
+    import { edit, index, switchMethod } from '@/routes/teams';
     import type { BreadcrumbItem, Team } from '@/types';
 
     let {
@@ -28,11 +29,11 @@
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Teams',
-            href: '/teams',
+            href: index().url,
         },
     ];
 
-    const switchTeam = (team: Team) => router.post(`/teams/${team.slug}/switch`);
+    const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
 
     const callClickHandler = (handler: unknown, event: MouseEvent) => {
         if (typeof handler === 'function') {
@@ -127,7 +128,7 @@
                                                     {#snippet children(buttonProps)}
                                                         <Link
                                                             {...buttonProps}
-                                                            href={`/teams/${team.slug}`}
+                                                            href={edit(team.slug).url}
                                                         >
                                                             <Eye class="h-4 w-4" />
                                                         </Link>
@@ -147,7 +148,7 @@
                                                     {#snippet children(buttonProps)}
                                                         <Link
                                                             {...buttonProps}
-                                                            href={`/teams/${team.slug}`}
+                                                            href={edit(team.slug).url}
                                                         >
                                                             <Edit class="h-4 w-4" />
                                                         </Link>

@@ -3,6 +3,7 @@
 use App\Events\Teams\TeamInvitationAccepted;
 use App\Events\Teams\TeamMemberAdded;
 use App\Models\TeamInvitation;
+use App\Models\User;
 use App\Notifications\Teams\InvitationAccepted;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +53,7 @@ new class extends Component {
         $this->redirectRoute('dashboard');
     }
 
-    private function validateInvitation($user, TeamInvitation $invitation): void
+    private function validateInvitation(User $user, TeamInvitation $invitation): void
     {
         if ($invitation->isAccepted()) {
             throw ValidationException::withMessages([

@@ -8,6 +8,7 @@ use App\Events\Teams\TeamInvitationCancelled;
 use App\Events\Teams\TeamInvitationSent;
 use App\Events\Teams\TeamMemberAdded;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Teams\AcceptTeamInvitationRequest;
 use App\Http\Requests\Teams\CreateTeamInvitationRequest;
 use App\Models\Team;
 use App\Models\TeamInvitation;
@@ -18,8 +19,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class TeamInvitationController extends Controller
 {
@@ -63,10 +62,9 @@ class TeamInvitationController extends Controller
     /**
      * Accept the invitation.
      */
-    public function accept(Request $request, TeamInvitation $invitation): RedirectResponse
+    public function accept(AcceptTeamInvitationRequest $request, TeamInvitation $invitation): RedirectResponse
     {
         $user = $request->user();
-        $this->validateInvitation($user, $invitation);
 
         DB::transaction(function () use ($user, $invitation) {
             $team = $invitation->team;
@@ -93,31 +91,5 @@ class TeamInvitationController extends Controller
         });
 
         return to_route('dashboard');
-    }
-
-    /**
-     * Validate the invitation can be accepted by the user.
-     *
-     * @throws ValidationException
-     */
-    private function validateInvitation($user, TeamInvitation $invitation): void
-    {
-        if ($invitation->isAccepted()) {
-            throw ValidationException::withMessages([
-                'invitation' => [__('This invitation has already been accepted.')],
-            ]);
-        }
-
-        if ($invitation->isExpired()) {
-            throw ValidationException::withMessages([
-                'invitation' => [__('This invitation has expired.')],
-            ]);
-        }
-
-        if (Str::lower($invitation->email) !== Str::lower($user->email)) {
-            throw ValidationException::withMessages([
-                'invitation' => [__('This invitation was sent to a different email address.')],
-            ]);
-        }
     }
 }

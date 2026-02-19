@@ -9,6 +9,7 @@ import { edit as editAppearance } from '@/routes/appearance';
 import { edit } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
+import { index as teams } from '@/routes/teams';
 import type { NavItem } from '@/types';
 
 const sidebarNavItems: NavItem[] = [
@@ -29,7 +30,7 @@ const sidebarNavItems: NavItem[] = [
     },
     {
         title: 'Teams',
-        href: '/teams',
+        href: teams(),
         icon: null,
     },
     {
