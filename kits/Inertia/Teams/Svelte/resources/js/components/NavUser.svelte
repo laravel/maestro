@@ -13,8 +13,8 @@
         useSidebar,
     } from '@/components/ui/sidebar';
     import UserInfo from '@/components/UserInfo.svelte';
+    import UserMenuContent from '@/components/UserMenuContent.svelte';
     import type { Team } from '@/types';
-    import UserMenuContent from './UserMenuContent.svelte';
 
     const user = $derived($page.props.auth.user);
     const currentTeam = $derived($page.props.currentTeam as Team | null);
