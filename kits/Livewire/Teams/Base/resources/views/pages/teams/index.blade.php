@@ -4,9 +4,10 @@ use App\Actions\Teams\CreateTeam;
 use App\Models\Team;
 use App\Rules\TeamName;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new class extends Component {
+new #[Title('Teams')] class extends Component {
     public string $name = '';
 
     public function getTeamsProperty()

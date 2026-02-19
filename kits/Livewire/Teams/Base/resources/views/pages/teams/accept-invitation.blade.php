@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new class extends Component {
+new #[Title('Teams')] class extends Component {
     public TeamInvitation $invitation;
 
     public function mount(TeamInvitation $invitation): void
