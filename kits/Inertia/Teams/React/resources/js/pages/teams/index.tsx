@@ -46,8 +46,7 @@ export default function TeamsIndex({ teams }: Props) {
 
                         <CreateTeamModal>
                             <Button>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Create Team
+                                <Plus /> Create Team
                             </Button>
                         </CreateTeamModal>
                     </div>
@@ -70,7 +69,7 @@ export default function TeamsIndex({ teams }: Props) {
                                                 </Badge>
                                             ) : null}
                                             {team.is_personal ? (
-                                                <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300">
+                                                <Badge variant="secondary">
                                                     Personal
                                                 </Badge>
                                             ) : null}

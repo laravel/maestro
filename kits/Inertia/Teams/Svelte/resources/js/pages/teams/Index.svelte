@@ -63,8 +63,7 @@
                 <CreateTeamModal>
                     {#snippet children(props)}
                         <Button onclick={(event) => handleCreateTeamClick(props, event)}>
-                            <Plus class="mr-2 h-4 w-4" />
-                            Create Team
+                            <Plus class="h-4 w-4" /> Create Team
                         </Button>
                     {/snippet}
                 </CreateTeamModal>
@@ -85,7 +84,7 @@
                                     {/if}
 
                                     {#if team.is_personal}
-                                        <Badge class="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300">
+                                        <Badge variant="secondary">
                                             Personal
                                         </Badge>
                                     {/if}

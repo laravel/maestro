@@ -284,8 +284,7 @@ new class extends Component {
                     </div>
                 @else
                     <div>
-                        <flux:heading>{{ __('Team Name') }}</flux:heading>
-                        <flux:text class="text-zinc-600 dark:text-zinc-400">{{ $teamData['name'] }}</flux:text>
+                        <flux:heading>{{ $teamData['name'] }}</flux:heading>
                     </div>
                 @endif
             </div>
@@ -428,19 +427,19 @@ new class extends Component {
             @if ($permissions['canDeleteTeam'] && ! $teamData['is_personal'])
                 <div class="space-y-6">
                     <div>
-                        <flux:heading>{{ __('Danger Zone') }}</flux:heading>
-                        <flux:subheading>{{ __('Irreversible and destructive actions') }}</flux:subheading>
+                        <flux:heading>{{ __('Delete team') }}</flux:heading>
+                        <flux:subheading>{{ __('Delete your team and remove access from all the members to it') }}</flux:subheading>
                     </div>
 
                     <div class="space-y-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-200/10 dark:bg-red-900/20 dark:text-red-100">
                         <div>
-                            <p class="font-medium">{{ __('Delete this team') }}</p>
-                            <p class="text-sm">{{ __('Once you delete a team, there is no going back. Please be certain.') }}</p>
+                            <p class="font-medium">{{ __('Warning') }}</p>
+                            <p class="text-sm">{{ __('Please proceed with caution, this cannot be undone.') }}</p>
                         </div>
 
                         <flux:modal.trigger name="delete-team">
                             <flux:button variant="danger" x-data="" x-on:click.prevent="$wire.set('deleteName', ''); $wire.set('newCurrentTeamId', null); $dispatch('open-modal', 'delete-team')">
-                                {{ __('Delete Team') }}
+                                {{ __('Delete team') }}
                             </flux:button>
                         </flux:modal.trigger>
                     </div>

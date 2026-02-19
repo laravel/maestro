@@ -34,12 +34,42 @@ new class extends Component {
 
     public function switchTeam(string $slug): void
     {
+        $user = Auth::user();
+        $currentTeamSlug = $user->currentTeam?->slug;
         $team = Team::where('slug', $slug)->firstOrFail();
 
-        abort_unless(Auth::user()->belongsToTeam($team), 403);
-        Auth::user()->switchTeam($team);
+        abort_unless($user->belongsToTeam($team), 403);
+        $user->switchTeam($team);
 
-        $this->redirect(request()->header('Referer', route('dashboard')), navigate: true);
+        $referer = request()->header('Referer');
+
+        if (! $referer) {
+            $this->redirectRoute('dashboard', ['current_team' => $team->slug], navigate: true);
+
+            return;
+        }
+
+        if (! $currentTeamSlug) {
+            $this->redirect($referer, navigate: true);
+
+            return;
+        }
+
+        $redirectTo = preg_replace(
+            '#/'.preg_quote($currentTeamSlug, '#').'(?=/|\?|$)#',
+            '/'.$team->slug,
+            $referer,
+            1,
+        );
+
+        $redirectTo = preg_replace(
+            '#([?&]current_team=)'.preg_quote($currentTeamSlug, '#').'(?=&|$)#',
+            '$1'.$team->slug,
+            $redirectTo ?? $referer,
+            1,
+        );
+
+        $this->redirect($redirectTo ?? $referer, navigate: true);
     }
 
     public function createTeam(CreateTeam $createTeam): void

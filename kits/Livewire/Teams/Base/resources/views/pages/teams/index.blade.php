@@ -57,7 +57,7 @@ new class extends Component {
     <x-pages::settings.layout :heading="__('Teams')" :subheading="__('Manage your teams and team memberships')">
         <div class="flex items-center justify-end">
             <flux:modal.trigger name="create-team">
-                <flux:button variant="primary" x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-team')">
+                <flux:button variant="primary" icon="plus" x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-team')">
                     {{ __('Create Team') }}
                 </flux:button>
             </flux:modal.trigger>
