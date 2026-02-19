@@ -29,7 +29,7 @@ const sidebarNavItems: NavItem[] = [
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
-    const { isCurrentUrl } = useCurrentUrl();
+    const { isCurrentOrParentUrl } = useCurrentUrl();
 
     if (typeof window === 'undefined') {
         return null;
@@ -55,7 +55,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {
-                                    'bg-muted': isCurrentUrl(item.href),
+                                    'bg-muted': isCurrentOrParentUrl(item.href),
                                 })}
                             >
                                 <Link href={item.href} prefetch>
