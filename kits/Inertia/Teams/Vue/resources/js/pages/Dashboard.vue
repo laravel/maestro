@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Head, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type Team } from '@/types';
 import PlaceholderPattern from '../components/PlaceholderPattern.vue';
+import { dashboard } from '@/routes';
 
 const page = usePage();
 const currentTeam = page.props.currentTeam as Team | null;

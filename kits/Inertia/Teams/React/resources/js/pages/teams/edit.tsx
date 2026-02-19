@@ -41,15 +41,6 @@ import {
 import { useInitials } from '@/hooks/use-initials';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { destroy, edit, index, update } from '@/routes/teams';
-import {
-    destroy as destroyInvitation,
-    store as storeInvitation,
-} from '@/routes/teams/invitations';
-import {
-    destroy as destroyMember,
-    update as updateMember,
-} from '@/routes/teams/members';
 import type {
     BreadcrumbItem,
     RoleOption,
@@ -59,6 +50,15 @@ import type {
     TeamOption,
     TeamPermissions,
 } from '@/types';
+import { destroy, edit, index, update } from '@/routes/teams';
+import {
+    destroy as destroyInvitation,
+    store as storeInvitation,
+} from '@/routes/teams/invitations';
+import {
+    destroy as destroyMember,
+    update as updateMember,
+} from '@/routes/teams/members';
 
 type Props = {
     team: Team;
@@ -162,12 +162,15 @@ export default function TeamEdit({
             return;
         }
 
-        router.delete(destroyInvitation([team.slug, invitationToCancel.code]).url, {
-            onSuccess: () => {
-                setCancelInvitationDialogOpen(false);
-                setInvitationToCancel(null);
+        router.delete(
+            destroyInvitation([team.slug, invitationToCancel.code]).url,
+            {
+                onSuccess: () => {
+                    setCancelInvitationDialogOpen(false);
+                    setInvitationToCancel(null);
+                },
             },
-        });
+        );
     };
 
     const deleteTeam = () => {

@@ -17,8 +17,8 @@
     } from '@/components/ui/tooltip';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
-    import { edit, index, switchMethod } from '@/routes/teams';
     import type { BreadcrumbItem, Team } from '@/types';
+    import { edit, index, switchMethod } from '@/routes/teams';
 
     let {
         teams,
