@@ -1,20 +1,21 @@
 <?php
 
+use App\Http\Controllers\Teams\TeamInvitationController;
+use App\Http\Middleware\EnsureMembership;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
 
-Route::get('/', fn () => Inertia::render('{{welcome}}'))->name('home');
+Route::inertia('/', '{{welcome}}')->name('home');
 
-Route::middleware([
-    'auth',
-    ValidateSessionWithWorkOS::class,
-])->group(function () {
-    Route::get('{current_team}/dashboard', function () {
-        return Inertia::render('{{dashboard}}');
-    })->name('dashboard');
+Route::prefix('{current_team}')
+    ->middleware(['auth', ValidateSessionWithWorkOS::class, EnsureMembership::class])
+    ->group(function () {
+        Route::inertia('dashboard', '{{dashboard}}')->name('dashboard');
+    });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('invitations/{invitation}/accept', [TeamInvitationController::class, 'accept'])->name('invitations.accept');
 });
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
-require __DIR__.'/teams.php';

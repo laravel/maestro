@@ -8,6 +8,7 @@
     import { toUrl } from '@/lib/utils';
     import { edit as editAppearance } from '@/routes/appearance';
     import { edit as editProfile } from '@/routes/profile';
+    import { index as teams } from '@/routes/teams';
     import type { NavItem } from '@/types';
 
     let {
@@ -23,7 +24,7 @@
         },
         {
             title: 'Teams',
-            href: '/teams',
+            href: teams(),
         },
         {
             title: 'Appearance',

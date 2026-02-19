@@ -6,27 +6,26 @@ use Laravel\WorkOS\Http\Requests\AuthKitAuthenticationRequest;
 use Laravel\WorkOS\Http\Requests\AuthKitLoginRequest;
 use Laravel\WorkOS\Http\Requests\AuthKitLogoutRequest;
 
-Route::get('login', function (AuthKitLoginRequest $request) {
-    return $request->redirect();
-})->middleware(['guest'])->name('login');
+Route::middleware(['guest'])->group(function () {
+    Route::get('login', fn (AuthKitLoginRequest $request) => $request->redirect())->name('login');
 
-Route::get('authenticate', function (AuthKitAuthenticationRequest $request) {
-    $request->authenticate();
+    Route::get('authenticate', function (AuthKitAuthenticationRequest $request) {
+        $request->authenticate();
 
-    $user = auth()->user();
-    $currentTeam = $user->currentTeam ?? $user->personalTeam();
+        $user = auth()->user();
+        $currentTeam = $user->currentTeam ?? $user->personalTeam();
 
-    if ($currentTeam && ! $user->current_team_id) {
-        $user->switchTeam($currentTeam);
-    }
+        if ($currentTeam && ! $user->current_team_id) {
+            $user->switchTeam($currentTeam);
+        }
 
-    if ($currentTeam) {
-        URL::defaults(['current_team' => $currentTeam->slug]);
-    }
+        if ($currentTeam) {
+            URL::defaults(['current_team' => $currentTeam->slug]);
+        }
 
-    return redirect()->intended(route('dashboard'));
-})->middleware(['guest']);
+        return redirect()->intended(route('dashboard'));
+    });
+});
 
-Route::post('logout', function (AuthKitLogoutRequest $request) {
-    return $request->logout();
-})->middleware(['auth'])->name('logout');
+Route::post('logout', fn (AuthKitLogoutRequest $request) => $request->logout())
+    ->middleware(['auth'])->name('logout');

@@ -41,7 +41,7 @@ class InvitationAccepted extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("{$this->member->name} has joined {$this->team->name}")
             ->line("{$this->member->name} has accepted the invitation to join {$this->team->name}.")
-            ->action('View Team', url("/teams/{$this->team->slug}"));
+            ->action('View Team', url("/settings/teams/{$this->team->slug}"));
     }
 
     /**

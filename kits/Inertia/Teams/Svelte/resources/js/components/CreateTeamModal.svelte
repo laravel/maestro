@@ -14,6 +14,7 @@
     } from '@/components/ui/dialog';
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
+    import { store } from '@/routes/teams';
 
     type TriggerProps = {
         onClick?: (event: MouseEvent) => void;
@@ -36,7 +37,7 @@
         {/snippet}
     </DialogTrigger>
     <DialogContent>
-        <Form action="/teams" method="post" class="space-y-6" onSuccess={() => (open = false)}>
+        <Form {...store.form()} class="space-y-6" onSuccess={() => (open = false)}>
             {#snippet children({ errors, processing })}
                 <div class="space-y-3">
                     <DialogTitle>Create a new team</DialogTitle>
