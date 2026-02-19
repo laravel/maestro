@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { edit, index, switchMethod } from '@/routes/teams';
 import type { BreadcrumbItem, Team } from '@/types';
+import { edit, index, switchMethod } from '@/routes/teams';
 
 type Props = {
     teams: Team[];
@@ -110,7 +110,12 @@ export default function TeamsIndex({ teams }: Props) {
                                                         size="sm"
                                                         asChild
                                                     >
-                                                        <Link href={edit(team.slug).url}>
+                                                        <Link
+                                                            href={
+                                                                edit(team.slug)
+                                                                    .url
+                                                            }
+                                                        >
                                                             <Eye className="h-4 w-4" />
                                                         </Link>
                                                     </Button>
@@ -127,7 +132,12 @@ export default function TeamsIndex({ teams }: Props) {
                                                         size="sm"
                                                         asChild
                                                     >
-                                                        <Link href={edit(team.slug).url}>
+                                                        <Link
+                                                            href={
+                                                                edit(team.slug)
+                                                                    .url
+                                                            }
+                                                        >
                                                             <Edit className="h-4 w-4" />
                                                         </Link>
                                                     </Button>

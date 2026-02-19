@@ -43,15 +43,6 @@
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
     import { getInitials } from '@/lib/initials';
-    import { destroy, edit, index, update } from '@/routes/teams';
-    import {
-        destroy as destroyInvitation,
-        store as storeInvitation,
-    } from '@/routes/teams/invitations';
-    import {
-        destroy as destroyMember,
-        update as updateMember,
-    } from '@/routes/teams/members';
     import type {
         BreadcrumbItem,
         RoleOption,
@@ -61,6 +52,15 @@
         TeamOption,
         TeamPermissions,
     } from '@/types';
+    import { destroy, edit, index, update } from '@/routes/teams';
+    import {
+        destroy as destroyInvitation,
+        store as storeInvitation,
+    } from '@/routes/teams/invitations';
+    import {
+        destroy as destroyMember,
+        update as updateMember,
+    } from '@/routes/teams/members';
 
     let {
         team,
