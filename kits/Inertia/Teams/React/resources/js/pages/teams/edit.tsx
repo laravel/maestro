@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { Form, Head, router } from '@inertiajs/react';
-import { ChevronDown, Mail, Trash2, UserPlus, X } from 'lucide-react';
+import { ChevronDown, Mail, UserPlus, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
@@ -117,6 +117,14 @@ export default function TeamEdit({
         return nameMatches && hasNewTeamIfNeeded;
     }, [confirmationName, isCurrentTeam, newCurrentTeamId, team.name]);
 
+    const pageTitle = useMemo(
+        () =>
+            permissions.canUpdateTeam
+                ? `Edit ${team.name}`
+                : `View ${team.name}`,
+        [permissions.canUpdateTeam, team.name],
+    );
+
     const resetDeleteDialog = () => {
         setConfirmationName('');
         setNewCurrentTeamId(null);
@@ -188,9 +196,9 @@ export default function TeamEdit({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Edit ${team.name}`} />
+            <Head title={pageTitle} />
 
-            <h1 className="sr-only">Edit Team: {team.name}</h1>
+            <h1 className="sr-only">{pageTitle}</h1>
 
             <SettingsLayout>
                 <div className="flex flex-col space-y-10">
@@ -254,8 +262,7 @@ export default function TeamEdit({
                             </>
                         ) : (
                             <>
-                                <Heading variant="small" title="Team Name" />
-                                <p className="text-foreground">{team.name}</p>
+                                <Heading variant="small" title={team.name} />
                             </>
                         )}
                     </div>
@@ -279,8 +286,7 @@ export default function TeamEdit({
                                 >
                                     <DialogTrigger asChild>
                                         <Button>
-                                            <UserPlus className="mr-2 h-4 w-4" />
-                                            Invite Member
+                                            <UserPlus /> Invite Member
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent>
@@ -549,17 +555,15 @@ export default function TeamEdit({
                         <div className="space-y-6">
                             <Heading
                                 variant="small"
-                                title="Danger Zone"
-                                description="Irreversible and destructive actions"
+                                title="Delete team"
+                                description="Delete your team and remove access from all the members to it"
                             />
                             <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
                                 <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
-                                    <p className="font-medium">
-                                        Delete this team
-                                    </p>
+                                    <p className="font-medium">Warning</p>
                                     <p className="text-sm">
-                                        Once you delete a team, there is no
-                                        going back. Please be certain.
+                                        Please proceed with caution, this cannot
+                                        be undone.
                                     </p>
                                 </div>
                                 <Dialog
@@ -573,8 +577,7 @@ export default function TeamEdit({
                                 >
                                     <DialogTrigger asChild>
                                         <Button variant="destructive">
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Delete Team
+                                            Delete team
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent>

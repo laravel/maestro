@@ -48,10 +48,7 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                     />
 
                     <CreateTeamModal>
-                        <Button>
-                            <Plus class="mr-2 h-4 w-4" />
-                            Create Team
-                        </Button>
+                        <Button> <Plus /> Create Team </Button>
                     </CreateTeamModal>
                 </div>
 
@@ -75,7 +72,7 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                                     </Badge>
                                     <Badge
                                         v-if="team.is_personal"
-                                        class="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300"
+                                        variant="secondary"
                                     >
                                         Personal
                                     </Badge>

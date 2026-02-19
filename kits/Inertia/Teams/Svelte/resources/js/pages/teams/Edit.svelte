@@ -2,7 +2,6 @@
     import { Form, router } from '@inertiajs/svelte';
     import ChevronDown from 'lucide-svelte/icons/chevron-down';
     import Mail from 'lucide-svelte/icons/mail';
-    import Trash2 from 'lucide-svelte/icons/trash-2';
     import UserPlus from 'lucide-svelte/icons/user-plus';
     import X from 'lucide-svelte/icons/x';
     import AppHead from '@/components/AppHead.svelte';
@@ -105,6 +104,8 @@
         confirmationName === team.name && (!isCurrentTeam || newCurrentTeamId !== ''),
     );
 
+    const pageTitle = $derived(permissions.canUpdateTeam ? `Edit ${team.name}` : `View ${team.name}`);
+
     const inviteRoleLabel = $derived(
         availableRoles.find((role) => role.value === inviteRole)?.label ?? 'Select a role',
     );
@@ -182,10 +183,10 @@
     };
 </script>
 
-<AppHead title={`Edit ${team.name}`} />
+<AppHead title={pageTitle} />
 
 <AppLayout {breadcrumbs}>
-    <h1 class="sr-only">Edit Team: {team.name}</h1>
+    <h1 class="sr-only">{pageTitle}</h1>
 
     <SettingsLayout>
         <div class="flex flex-col space-y-10">
@@ -215,8 +216,7 @@
                         {/snippet}
                     </Form>
                 {:else}
-                    <Heading variant="small" title="Team Name" />
-                    <p class="text-foreground">{team.name}</p>
+                    <Heading variant="small" title={team.name} />
                 {/if}
             </div>
 
@@ -235,8 +235,7 @@
                             <DialogTrigger asChild>
                                 {#snippet children(props)}
                                     <Button onclick={(event) => callClickHandler(props.onClick, event)}>
-                                        <UserPlus class="mr-2 h-4 w-4" />
-                                        Invite Member
+                                        <UserPlus class="h-4 w-4" /> Invite Member
                                     </Button>
                                 {/snippet}
                             </DialogTrigger>
@@ -443,13 +442,13 @@
                 <div class="space-y-6">
                     <Heading
                         variant="small"
-                        title="Danger Zone"
-                        description="Irreversible and destructive actions"
+                        title="Delete team"
+                        description="Delete your team and remove access from all the members to it"
                     />
                     <div class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
                         <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
-                            <p class="font-medium">Delete this team</p>
-                            <p class="text-sm">Once you delete a team, there is no going back. Please be certain.</p>
+                            <p class="font-medium">Warning</p>
+                            <p class="text-sm">Please proceed with caution, this cannot be undone.</p>
                         </div>
 
                         <Dialog bind:open={deleteDialogOpen}>
@@ -459,8 +458,7 @@
                                         variant="destructive"
                                         onclick={(event) => callClickHandler(props.onClick, event)}
                                     >
-                                        <Trash2 class="mr-2 h-4 w-4" />
-                                        Delete Team
+                                        Delete team
                                     </Button>
                                 {/snippet}
                             </DialogTrigger>
