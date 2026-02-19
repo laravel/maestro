@@ -41,15 +41,6 @@ import {
 import { useInitials } from '@/composables/useInitials';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { destroy, edit, index, update } from '@/routes/teams';
-import {
-    destroy as destroyInvitation,
-    store as storeInvitation,
-} from '@/routes/teams/invitations';
-import {
-    destroy as destroyMember,
-    update as updateMember,
-} from '@/routes/teams/members';
 import type {
     BreadcrumbItem,
     RoleOption,
@@ -59,6 +50,15 @@ import type {
     TeamOption,
     TeamPermissions,
 } from '@/types';
+import { destroy, edit, index, update } from '@/routes/teams';
+import {
+    destroy as destroyInvitation,
+    store as storeInvitation,
+} from '@/routes/teams/invitations';
+import {
+    destroy as destroyMember,
+    update as updateMember,
+} from '@/routes/teams/members';
 
 type Props = {
     team: Team;
@@ -147,7 +147,8 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
 const cancelInvitation = () => {
     if (invitationToCancel.value) {
         router.delete(
-            destroyInvitation([props.team.slug, invitationToCancel.value.code]).url,
+            destroyInvitation([props.team.slug, invitationToCancel.value.code])
+                .url,
             {
                 onSuccess: () => {
                     cancelInvitationDialogOpen.value = false;
@@ -567,11 +568,15 @@ const deleteTeam = () => {
                                                 <SelectItem
                                                     v-for="otherTeam in otherTeams"
                                                     :key="otherTeam.id"
-                                                    :value="String(otherTeam.id)"
+                                                    :value="
+                                                        String(otherTeam.id)
+                                                    "
                                                 >
                                                     {{ otherTeam.name }}
                                                     <span
-                                                        v-if="otherTeam.is_personal"
+                                                        v-if="
+                                                            otherTeam.is_personal
+                                                        "
                                                         class="ml-2 text-muted-foreground"
                                                         >(Personal)</span
                                                     >

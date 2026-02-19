@@ -3,8 +3,8 @@
     import AppHead from '@/components/AppHead.svelte';
     import PlaceholderPattern from '@/components/PlaceholderPattern.svelte';
     import AppLayout from '@/layouts/AppLayout.svelte';
-    import { dashboard } from '@/routes';
     import type { BreadcrumbItem, Team } from '@/types';
+    import { dashboard } from '@/routes';
 
     const currentTeam = $derived($page.props.currentTeam as Team | null);
 

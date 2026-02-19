@@ -2,8 +2,8 @@
     import { Link, page } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import { toUrl } from '@/lib/utils';
-    import { dashboard, login, register } from '@/routes';
     import type { Team } from '@/types';
+    import { dashboard, login, register } from '@/routes';
 
     let {
         canRegister = true,
