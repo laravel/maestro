@@ -1,5 +1,5 @@
 import type { Auth } from '@/types/auth';
-import { Team } from './teams';
+import type { Team } from './teams';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
