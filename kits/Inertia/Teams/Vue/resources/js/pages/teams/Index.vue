@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
-import { Edit, Eye, Plus, Star } from 'lucide-vue-next';
 import CreateTeamModal from '@/components/CreateTeamModal.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
@@ -13,8 +11,10 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import type { BreadcrumbItem, Team } from '@/types';
 import { edit, index, switchMethod } from '@/routes/teams';
+import type { BreadcrumbItem, Team } from '@/types';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { CheckCircle, Circle, Eye, Pencil, Plus } from 'lucide-vue-next';
 
 type Props = {
     teams: Team[];
@@ -57,6 +57,9 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                         v-for="team in teams"
                         :key="team.id"
                         class="flex items-center justify-between rounded-lg border p-4"
+                        :class="{
+                            'border-ring/60': team.is_current,
+                        }"
                     >
                         <div class="flex items-center gap-4">
                             <div>
@@ -64,12 +67,6 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                                     <span class="font-medium">{{
                                         team.name
                                     }}</span>
-                                    <Badge
-                                        v-if="team.is_current"
-                                        class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                                    >
-                                        Current
-                                    </Badge>
                                     <Badge
                                         v-if="team.is_personal"
                                         variant="secondary"
@@ -85,6 +82,17 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
 
                         <TooltipProvider>
                             <div class="flex items-center gap-2">
+                                <Tooltip v-if="team.is_current">
+                                    <TooltipTrigger as-child>
+                                        <Button variant="ghost" size="sm">
+                                            <CheckCircle class="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Current team</p>
+                                    </TooltipContent>
+                                </Tooltip>
+
                                 <Tooltip v-if="!team.is_current">
                                     <TooltipTrigger as-child>
                                         <Button
@@ -92,7 +100,9 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                                             size="sm"
                                             @click="switchTeam(team)"
                                         >
-                                            <Star class="h-4 w-4" />
+                                            <Circle
+                                                class="h-4 w-4 text-muted-foreground"
+                                            />
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
@@ -125,7 +135,7 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                                             as-child
                                         >
                                             <Link :href="edit(team.slug).url">
-                                                <Edit class="h-4 w-4" />
+                                                <Pencil class="h-4 w-4" />
                                             </Link>
                                         </Button>
                                     </TooltipTrigger>
