@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { usePage, router } from '@inertiajs/vue3';
-import { Check, ChevronsUpDown, Plus, Users } from 'lucide-vue-next';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-import CreateTeamModal from '@/components/CreateTeamModal.vue';
-import { Button } from '@/components/ui/button';
+import CreateTeamModal from "@/components/CreateTeamModal.vue";
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,9 +8,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import type { Team } from '@/types';
-import { switchMethod } from '@/routes/teams';
+} from "@/components/ui/dropdown-menu";
+import { switchMethod } from "@/routes/teams";
+import type { Team } from "@/types";
+import { router, usePage } from "@inertiajs/vue3";
+import { Check, ChevronsUpDown, Plus, Users } from "lucide-vue-next";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 const props = withDefaults(
     defineProps<{
@@ -37,16 +37,16 @@ const currentTeam = computed(() => page.props.currentTeam);
 const teams = computed(() => page.props.teams ?? []);
 const menuContentClass = computed(() =>
     props.inHeader
-        ? 'w-56'
-        : 'w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg',
+        ? "w-56"
+        : "w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg",
 );
 const teamItemClass = computed(() =>
-    props.inHeader ? 'cursor-pointer gap-2' : 'cursor-pointer gap-2 p-2',
+    props.inHeader ? "cursor-pointer gap-2" : "cursor-pointer gap-2 p-2",
 );
 const checkIconClass = computed(() =>
-    props.inHeader ? 'ml-auto size-4' : 'ml-auto h-4 w-4',
+    props.inHeader ? "ml-auto size-4" : "ml-auto h-4 w-4",
 );
-const plusIconClass = computed(() => (props.inHeader ? 'size-4' : 'h-4 w-4'));
+const plusIconClass = computed(() => (props.inHeader ? "size-4" : "h-4 w-4"));
 
 const switchTeam = (team: Team) => {
     const previousTeamSlug = currentTeam.value?.slug;
@@ -56,7 +56,7 @@ const switchTeam = (team: Team) => {
         {},
         {
             onFinish: () => {
-                if (!previousTeamSlug || typeof window === 'undefined') {
+                if (!previousTeamSlug || typeof window === "undefined") {
                     router.reload();
 
                     return;
@@ -80,13 +80,13 @@ const switchTeam = (team: Team) => {
 };
 
 onMounted(() => {
-    mediaQuery = window.matchMedia('(max-width: 767px)');
+    mediaQuery = window.matchMedia("(max-width: 767px)");
     updateIsMobile();
-    mediaQuery.addEventListener('change', updateIsMobile);
+    mediaQuery.addEventListener("change", updateIsMobile);
 });
 
 onUnmounted(() => {
-    mediaQuery?.removeEventListener('change', updateIsMobile);
+    mediaQuery?.removeEventListener("change", updateIsMobile);
 });
 </script>
 
@@ -98,7 +98,7 @@ onUnmounted(() => {
                 :class="
                     props.inHeader
                         ? 'h-8 gap-1 px-2'
-                        : 'h-12 w-full justify-start px-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+                        : 'has-[>svg]:px-2 w-full justify-start px-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                 "
             >
                 <Users
@@ -122,7 +122,7 @@ onUnmounted(() => {
                                 : 'truncate font-semibold'
                         "
                     >
-                        {{ currentTeam?.name ?? 'Select Team' }}
+                        {{ currentTeam?.name ?? "Select Team" }}
                     </span>
                 </div>
                 <ChevronsUpDown

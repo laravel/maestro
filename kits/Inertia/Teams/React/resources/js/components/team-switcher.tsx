@@ -1,5 +1,3 @@
-import { router, usePage } from '@inertiajs/react';
-import { Check, ChevronsUpDown, Plus, Users } from 'lucide-react';
 import CreateTeamModal from '@/components/create-team-modal';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,8 +9,10 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
-import type { Team } from '@/types';
 import { switchMethod } from '@/routes/teams';
+import type { Team } from '@/types';
+import { router, usePage } from '@inertiajs/react';
+import { Check, ChevronsUpDown, Plus, Users } from 'lucide-react';
 
 type TeamSwitcherProps = {
     inHeader?: boolean;
@@ -66,7 +66,7 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
                     className={
                         inHeader
                             ? 'h-8 gap-1 px-2'
-                            : 'h-12 w-full justify-start px-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+                            : 'w-full justify-start px-2 has-[>svg]:px-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                     }
                 >
                     <Users
