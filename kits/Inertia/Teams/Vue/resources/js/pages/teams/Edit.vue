@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { Form, Head, router } from '@inertiajs/vue3';
-import { ChevronDown, Mail, UserPlus, X } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -41,15 +38,6 @@ import {
 import { useInitials } from '@/composables/useInitials';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import type {
-    BreadcrumbItem,
-    RoleOption,
-    Team,
-    TeamInvitation,
-    TeamMember,
-    TeamOption,
-    TeamPermissions,
-} from '@/types';
 import { destroy, edit, index, update } from '@/routes/teams';
 import {
     destroy as destroyInvitation,
@@ -59,6 +47,18 @@ import {
     destroy as destroyMember,
     update as updateMember,
 } from '@/routes/teams/members';
+import type {
+    BreadcrumbItem,
+    RoleOption,
+    Team,
+    TeamInvitation,
+    TeamMember,
+    TeamOption,
+    TeamPermissions,
+} from '@/types';
+import { Form, Head, router } from '@inertiajs/vue3';
+import { ChevronDown, Mail, UserPlus, X } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 type Props = {
     team: Team;
@@ -498,7 +498,7 @@ const deleteTeam = () => {
                     <Heading
                         variant="small"
                         title="Delete team"
-                        description="Delete your team and remove access from all the members to it"
+                        description="Delete your team and remove all of its members"
                     />
                     <div
                         class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
