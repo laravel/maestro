@@ -75,7 +75,7 @@
                 variant="ghost"
                 class={inHeader
                     ? 'h-8 gap-1 px-2'
-                    : 'h-12 w-full justify-start px-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'}
+                    : 'has-[>svg]:px-2 w-full justify-start px-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'}
                 onclick={props.onclick}
                 aria-expanded={props['aria-expanded']}
                 data-state={props['data-state']}
