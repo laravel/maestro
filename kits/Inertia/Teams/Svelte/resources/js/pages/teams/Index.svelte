@@ -1,9 +1,10 @@
 <script lang="ts">
     import { Link, router } from '@inertiajs/svelte';
-    import Edit from 'lucide-svelte/icons/edit';
+    import CheckCircle from 'lucide-svelte/icons/check-circle';
+    import Circle from 'lucide-svelte/icons/circle';
     import Eye from 'lucide-svelte/icons/eye';
+    import Pencil from 'lucide-svelte/icons/pencil';
     import Plus from 'lucide-svelte/icons/plus';
-    import Star from 'lucide-svelte/icons/star';
     import AppHead from '@/components/AppHead.svelte';
     import CreateTeamModal from '@/components/CreateTeamModal.svelte';
     import Heading from '@/components/Heading.svelte';
@@ -71,17 +72,13 @@
 
             <div class="space-y-3">
                 {#each teams as team (team.id)}
-                    <div class="flex items-center justify-between rounded-lg border p-4">
+                    <div
+                        class="flex items-center justify-between rounded-lg border p-4 {team.is_current ? 'border-ring/60' : ''}"
+                    >
                         <div class="flex items-center gap-4">
                             <div>
                                 <div class="flex items-center gap-2">
                                     <span class="font-medium">{team.name}</span>
-
-                                    {#if team.is_current}
-                                        <Badge class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                                            Current
-                                        </Badge>
-                                    {/if}
 
                                     {#if team.is_personal}
                                         <Badge variant="secondary">
@@ -94,9 +91,22 @@
                             </div>
                         </div>
 
-                        <TooltipProvider delayDuration={0}>
+                        <TooltipProvider>
                             <div class="flex items-center gap-2">
-                                {#if !team.is_current}
+                                {#if team.is_current}
+                                    <Tooltip>
+                                        <TooltipTrigger>
+                                            {#snippet child({ props })}
+                                                <Button variant="ghost" size="sm" {...props}>
+                                                    <CheckCircle class="h-4 w-4" />
+                                                </Button>
+                                            {/snippet}
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Current team</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                {:else}
                                     <Tooltip>
                                         <TooltipTrigger>
                                             {#snippet child({ props })}
@@ -109,7 +119,7 @@
                                                         switchTeam(team);
                                                     }}
                                                 >
-                                                    <Star class="h-4 w-4" />
+                                                    <Circle class="h-4 w-4 text-muted-foreground" />
                                                 </Button>
                                             {/snippet}
                                         </TooltipTrigger>
@@ -149,7 +159,7 @@
                                                             {...buttonProps}
                                                             href={edit(team.slug).url}
                                                         >
-                                                            <Edit class="h-4 w-4" />
+                                                            <Pencil class="h-4 w-4" />
                                                         </Link>
                                                     {/snippet}
                                                 </Button>
