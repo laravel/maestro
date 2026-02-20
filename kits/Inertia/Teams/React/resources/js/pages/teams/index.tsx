@@ -1,5 +1,3 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Edit, Eye, Plus, Star } from 'lucide-react';
 import CreateTeamModal from '@/components/create-team-modal';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
@@ -12,8 +10,10 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import type { BreadcrumbItem, Team } from '@/types';
 import { edit, index, switchMethod } from '@/routes/teams';
+import type { BreadcrumbItem, Team } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
+import { CheckCircle, Circle, Eye, Pencil, Plus } from 'lucide-react';
 
 type Props = {
     teams: Team[];
@@ -55,7 +55,7 @@ export default function TeamsIndex({ teams }: Props) {
                         {teams.map((team) => (
                             <div
                                 key={team.id}
-                                className="flex items-center justify-between rounded-lg border p-4"
+                                className={`flex items-center justify-between rounded-lg border p-4 ${team.is_current ? 'border-ring' : ''}`}
                             >
                                 <div className="flex items-center gap-4">
                                     <div>
@@ -63,11 +63,6 @@ export default function TeamsIndex({ teams }: Props) {
                                             <span className="font-medium">
                                                 {team.name}
                                             </span>
-                                            {team.is_current ? (
-                                                <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                                                    Current
-                                                </Badge>
-                                            ) : null}
                                             {team.is_personal ? (
                                                 <Badge variant="secondary">
                                                     Personal
@@ -82,7 +77,21 @@ export default function TeamsIndex({ teams }: Props) {
 
                                 <TooltipProvider>
                                     <div className="flex items-center gap-2">
-                                        {!team.is_current ? (
+                                        {team.is_current ? (
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                    >
+                                                        <CheckCircle className="h-4 w-4" />
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Current team</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        ) : (
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <Button
@@ -92,14 +101,14 @@ export default function TeamsIndex({ teams }: Props) {
                                                             switchTeam(team)
                                                         }
                                                     >
-                                                        <Star className="h-4 w-4" />
+                                                        <Circle className="h-4 w-4 text-muted-foreground" />
                                                     </Button>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
                                                     <p>Set as current team</p>
                                                 </TooltipContent>
                                             </Tooltip>
-                                        ) : null}
+                                        )}
 
                                         {team.role === 'member' ? (
                                             <Tooltip>
@@ -137,7 +146,7 @@ export default function TeamsIndex({ teams }: Props) {
                                                                     .url
                                                             }
                                                         >
-                                                            <Edit className="h-4 w-4" />
+                                                            <Pencil className="h-4 w-4" />
                                                         </Link>
                                                     </Button>
                                                 </TooltipTrigger>
