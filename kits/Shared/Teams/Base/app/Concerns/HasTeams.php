@@ -5,6 +5,7 @@ namespace App\Concerns;
 use App\Enums\TeamRole;
 use App\Models\Membership;
 use App\Models\Team;
+use App\Support\TeamPermissions;
 use App\Support\UserTeam;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -147,21 +148,19 @@ trait HasTeams
     }
 
     /**
-     * Get the standard permissions array for a team.
-     *
-     * @return array<string, bool>
+     * Get the standard permissions for a team.
      */
-    public function teamPermissions(Team $team): array
+    public function teamPermissions(Team $team): TeamPermissions
     {
-        return [
-            'canUpdateTeam' => $this->hasTeamPermission($team, 'team:update'),
-            'canDeleteTeam' => $this->hasTeamPermission($team, 'team:delete'),
-            'canAddMember' => $this->hasTeamPermission($team, 'member:add'),
-            'canUpdateMember' => $this->hasTeamPermission($team, 'member:update'),
-            'canRemoveMember' => $this->hasTeamPermission($team, 'member:remove'),
-            'canCreateInvitation' => $this->hasTeamPermission($team, 'invitation:create'),
-            'canCancelInvitation' => $this->hasTeamPermission($team, 'invitation:cancel'),
-        ];
+        return new TeamPermissions(
+            canUpdateTeam: $this->hasTeamPermission($team, 'team:update'),
+            canDeleteTeam: $this->hasTeamPermission($team, 'team:delete'),
+            canAddMember: $this->hasTeamPermission($team, 'member:add'),
+            canUpdateMember: $this->hasTeamPermission($team, 'member:update'),
+            canRemoveMember: $this->hasTeamPermission($team, 'member:remove'),
+            canCreateInvitation: $this->hasTeamPermission($team, 'invitation:create'),
+            canCancelInvitation: $this->hasTeamPermission($team, 'invitation:cancel'),
+        );
     }
 
     /**

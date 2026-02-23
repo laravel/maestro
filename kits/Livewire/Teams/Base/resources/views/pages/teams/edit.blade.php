@@ -13,6 +13,7 @@ use App\Notifications\Teams\RemovedFromTeam;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
 use App\Rules\TeamName;
 use App\Rules\UniqueTeamInvitation;
+use App\Support\TeamPermissions;
 use App\Support\UserTeam;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
@@ -31,8 +32,6 @@ new class extends Component {
     public array $members = [];
 
     public array $invitations = [];
-
-    public array $permissions = [];
 
     public array $availableRoles = [];
 
@@ -88,8 +87,6 @@ new class extends Component {
                 'created_at' => $invitation->created_at->toISOString(),
             ])->toArray();
 
-        $this->permissions = $user->teamPermissions($team);
-
         $this->availableRoles = TeamRole::assignable();
         $this->isCurrentTeam = $user->isCurrentTeam($team);
     }
@@ -100,6 +97,11 @@ new class extends Component {
     public function getOtherTeamsProperty(): Collection
     {
         return Auth::user()->userTeams();
+    }
+
+    public function getPermissionsProperty(): TeamPermissions
+    {
+        return Auth::user()->teamPermissions($this->teamModel);
     }
 
     public function updateTeam(): void
@@ -266,7 +268,7 @@ new class extends Component {
     {
         $teamName = $this->teamData['name'] ?? $this->teamModel->name;
 
-        $title = ($this->permissions['canUpdateTeam'] ?? false)
+        $title = $this->permissions->canUpdateTeam
             ? "Edit {$teamName}"
             : "View {$teamName}";
 
@@ -282,7 +284,7 @@ new class extends Component {
     <x-pages::settings.layout :heading="__('Teams')" :subheading="__('Manage your team settings')">
         <div class="space-y-10">
             <div class="space-y-6">
-                @if ($permissions['canUpdateTeam'])
+                @if ($this->permissions->canUpdateTeam)
                     <div class="space-y-4">
                         <form wire:submit="updateTeam" class="space-y-6">
                             <flux:input wire:model="teamName" :label="__('Team name')" required />
@@ -303,12 +305,12 @@ new class extends Component {
                 <div class="flex items-center justify-between">
                     <div>
                         <flux:heading>{{ __('Team Members') }}</flux:heading>
-                        @if ($permissions['canAddMember'] || $permissions['canUpdateMember'] || $permissions['canRemoveMember'])
+                        @if ($this->permissions->canAddMember || $this->permissions->canUpdateMember || $this->permissions->canRemoveMember)
                             <flux:subheading>{{ __('Manage who has access to this team') }}</flux:subheading>
                         @endif
                     </div>
 
-                    @if ($permissions['canCreateInvitation'])
+                    @if ($this->permissions->canCreateInvitation)
                         <flux:modal.trigger name="invite-member">
                             <flux:button variant="primary" icon="user-plus" x-data="" x-on:click.prevent="$dispatch('open-modal', 'invite-member')">
                                 {{ __('Invite Member') }}
@@ -329,7 +331,7 @@ new class extends Component {
                             </div>
 
                             <div class="flex items-center gap-2">
-                                @if ($member['role'] !== 'owner' && $permissions['canUpdateMember'])
+                                @if ($member['role'] !== 'owner' && $this->permissions->canUpdateMember)
                                     <flux:dropdown position="bottom" align="end">
                                         <flux:button variant="outline" size="sm" icon:trailing="chevron-down">
                                             {{ $member['role_label'] }}
@@ -350,7 +352,7 @@ new class extends Component {
                                     <flux:badge color="zinc">{{ $member['role_label'] }}</flux:badge>
                                 @endif
 
-                                @if ($member['role'] !== 'owner' && $permissions['canRemoveMember'])
+                                @if ($member['role'] !== 'owner' && $this->permissions->canRemoveMember)
                                     <flux:modal.trigger name="remove-member-{{ $member['id'] }}">
                                         <flux:tooltip :content="__('Remove member')">
                                             <flux:button variant="ghost" size="sm" icon="x-mark" x-data="" x-on:click.prevent="$dispatch('open-modal', 'remove-member-{{ $member['id'] }}')" />
@@ -360,7 +362,7 @@ new class extends Component {
                             </div>
                         </div>
 
-                        @if ($member['role'] !== 'owner' && $permissions['canRemoveMember'])
+                        @if ($member['role'] !== 'owner' && $this->permissions->canRemoveMember)
                             <flux:modal name="remove-member-{{ $member['id'] }}" focusable class="max-w-lg">
                                 <form wire:submit="removeMember({{ $member['id'] }})" class="space-y-6">
                                     <div>
@@ -402,7 +404,7 @@ new class extends Component {
                                     </div>
                                 </div>
 
-                                @if ($permissions['canCancelInvitation'])
+                                @if ($this->permissions->canCancelInvitation)
                                     <flux:modal.trigger name="cancel-invitation-{{ $invitation['code'] }}">
                                         <flux:tooltip :content="__('Cancel invitation')">
                                             <flux:button variant="ghost" size="sm" icon="x-mark" x-data="" x-on:click.prevent="$dispatch('open-modal', 'cancel-invitation-{{ $invitation['code'] }}')" />
@@ -411,7 +413,7 @@ new class extends Component {
                                 @endif
                             </div>
 
-                            @if ($permissions['canCancelInvitation'])
+                            @if ($this->permissions->canCancelInvitation)
                                 <flux:modal name="cancel-invitation-{{ $invitation['code'] }}" focusable class="max-w-lg">
                                     <form wire:submit="cancelInvitation('{{ $invitation['code'] }}')" class="space-y-6">
                                         <div>
@@ -434,7 +436,7 @@ new class extends Component {
                 </div>
             @endif
 
-            @if ($permissions['canDeleteTeam'] && ! $teamData['is_personal'])
+            @if ($this->permissions->canDeleteTeam && ! $teamData['is_personal'])
                 <div class="space-y-6">
                     <div>
                         <flux:heading>{{ __('Delete team') }}</flux:heading>
@@ -458,7 +460,7 @@ new class extends Component {
         </div>
     </x-pages::settings.layout>
 
-    @if ($permissions['canCreateInvitation'])
+    @if ($this->permissions->canCreateInvitation)
         <flux:modal name="invite-member" focusable class="max-w-lg">
             <form wire:submit="createInvitation" class="space-y-6">
                 <div>
@@ -486,7 +488,7 @@ new class extends Component {
         </flux:modal>
     @endif
 
-    @if ($permissions['canDeleteTeam'] && ! $teamData['is_personal'])
+    @if ($this->permissions->canDeleteTeam && ! $teamData['is_personal'])
         <flux:modal name="delete-team" focusable class="max-w-lg">
             <form wire:submit="deleteTeam" class="space-y-6">
                 <div>
