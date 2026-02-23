@@ -60,8 +60,9 @@ class TeamMemberTest extends TestCase
 
         $this->actingAs($owner);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
-            ->call('removeMember', $member->id)
+        Livewire::test('pages::teams.remove-member-modal', ['team' => $team])
+            ->set('memberId', $member->id)
+            ->call('removeMember')
             ->assertHasNoErrors();
 
         $this->assertFalse($member->fresh()->belongsToTeam($team));
@@ -79,8 +80,9 @@ class TeamMemberTest extends TestCase
 
         $this->actingAs($admin);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
-            ->call('removeMember', $member->id)
+        Livewire::test('pages::teams.remove-member-modal', ['team' => $team])
+            ->set('memberId', $member->id)
+            ->call('removeMember')
             ->assertForbidden();
     }
 
@@ -96,8 +98,9 @@ class TeamMemberTest extends TestCase
 
         $this->actingAs($owner);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
-            ->call('removeMember', $member->id)
+        Livewire::test('pages::teams.remove-member-modal', ['team' => $team])
+            ->set('memberId', $member->id)
+            ->call('removeMember')
             ->assertHasNoErrors();
 
         $this->assertEquals($personalTeam->id, $member->fresh()->current_team_id);

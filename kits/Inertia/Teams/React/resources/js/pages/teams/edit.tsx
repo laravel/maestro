@@ -2,21 +2,15 @@ import { Transition } from '@headlessui/react';
 import { Form, Head, router } from '@inertiajs/react';
 import { ChevronDown, Mail, UserPlus, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import CancelInvitationModal from '@/components/cancel-invitation-modal';
+import DeleteTeamModal from '@/components/delete-team-modal';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import InviteMemberModal from '@/components/invite-member-modal';
+import RemoveMemberModal from '@/components/remove-member-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,13 +19,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import {
     Tooltip,
     TooltipContent,
@@ -49,15 +36,8 @@ import type {
     TeamMember,
     TeamPermissions,
 } from '@/types';
-import { destroy, edit, index, update } from '@/routes/teams';
-import {
-    destroy as destroyInvitation,
-    store as storeInvitation,
-} from '@/routes/teams/invitations';
-import {
-    destroy as destroyMember,
-    update as updateMember,
-} from '@/routes/teams/members';
+import { edit, index, update } from '@/routes/teams';
+import { update as updateMember } from '@/routes/teams/members';
 
 type Props = {
     team: Team;
@@ -103,18 +83,6 @@ export default function TeamEdit({
         useState(false);
     const [invitationToCancel, setInvitationToCancel] =
         useState<TeamInvitation | null>(null);
-    const [inviteRole, setInviteRole] = useState<RoleOption['value']>('member');
-    const [confirmationName, setConfirmationName] = useState('');
-    const [newCurrentTeamId, setNewCurrentTeamId] = useState<number | null>(
-        null,
-    );
-
-    const canDeleteTeam = useMemo(() => {
-        const nameMatches = confirmationName === team.name;
-        const hasNewTeamIfNeeded = !isCurrentTeam || newCurrentTeamId !== null;
-
-        return nameMatches && hasNewTeamIfNeeded;
-    }, [confirmationName, isCurrentTeam, newCurrentTeamId, team.name]);
 
     const pageTitle = useMemo(
         () =>
@@ -123,11 +91,6 @@ export default function TeamEdit({
                 : `View ${team.name}`,
         [permissions.canUpdateTeam, team.name],
     );
-
-    const resetDeleteDialog = () => {
-        setConfirmationName('');
-        setNewCurrentTeamId(null);
-    };
 
     const updateMemberRole = (member: TeamMember, newRole: string) => {
         router.patch(
@@ -146,51 +109,9 @@ export default function TeamEdit({
         setRemoveMemberDialogOpen(true);
     };
 
-    const removeMember = () => {
-        if (!memberToRemove) {
-            return;
-        }
-
-        router.delete(destroyMember([team.slug, memberToRemove.id]).url, {
-            onSuccess: () => {
-                setRemoveMemberDialogOpen(false);
-                setMemberToRemove(null);
-            },
-        });
-    };
-
     const confirmCancelInvitation = (invitation: TeamInvitation) => {
         setInvitationToCancel(invitation);
         setCancelInvitationDialogOpen(true);
-    };
-
-    const cancelInvitation = () => {
-        if (!invitationToCancel) {
-            return;
-        }
-
-        router.delete(
-            destroyInvitation([team.slug, invitationToCancel.code]).url,
-            {
-                onSuccess: () => {
-                    setCancelInvitationDialogOpen(false);
-                    setInvitationToCancel(null);
-                },
-            },
-        );
-    };
-
-    const deleteTeam = () => {
-        router.delete(destroy(team.slug).url, {
-            data: {
-                name: confirmationName,
-                new_current_team_id: newCurrentTeamId,
-            },
-            onSuccess: () => {
-                setDeleteDialogOpen(false);
-                resetDeleteDialog();
-            },
-        });
     };
 
     return (
@@ -279,124 +200,11 @@ export default function TeamEdit({
                             />
 
                             {permissions.canCreateInvitation ? (
-                                <Dialog
-                                    open={inviteDialogOpen}
-                                    onOpenChange={setInviteDialogOpen}
+                                <Button
+                                    onClick={() => setInviteDialogOpen(true)}
                                 >
-                                    <DialogTrigger asChild>
-                                        <Button>
-                                            <UserPlus /> Invite Member
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <Form
-                                            {...storeInvitation.form(team.slug)}
-                                            className="space-y-6"
-                                            onSuccess={() =>
-                                                setInviteDialogOpen(false)
-                                            }
-                                        >
-                                            {({ errors, processing }) => (
-                                                <>
-                                                    <DialogHeader>
-                                                        <DialogTitle>
-                                                            Invite a team member
-                                                        </DialogTitle>
-                                                        <DialogDescription>
-                                                            Send an invitation
-                                                            to join this team.
-                                                        </DialogDescription>
-                                                    </DialogHeader>
-
-                                                    <div className="grid gap-4">
-                                                        <div className="grid gap-2">
-                                                            <Label htmlFor="email">
-                                                                Email Address
-                                                            </Label>
-                                                            <Input
-                                                                id="email"
-                                                                name="email"
-                                                                type="email"
-                                                                placeholder="colleague@example.com"
-                                                                required
-                                                            />
-                                                            <InputError
-                                                                message={
-                                                                    errors.email
-                                                                }
-                                                            />
-                                                        </div>
-
-                                                        <div className="grid gap-2">
-                                                            <Label htmlFor="role">
-                                                                Role
-                                                            </Label>
-                                                            <Select
-                                                                name="role"
-                                                                value={
-                                                                    inviteRole
-                                                                }
-                                                                onValueChange={(
-                                                                    value,
-                                                                ) =>
-                                                                    setInviteRole(
-                                                                        value as RoleOption['value'],
-                                                                    )
-                                                                }
-                                                            >
-                                                                <SelectTrigger className="w-full">
-                                                                    <SelectValue placeholder="Select a role" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {availableRoles.map(
-                                                                        (
-                                                                            role,
-                                                                        ) => (
-                                                                            <SelectItem
-                                                                                key={
-                                                                                    role.value
-                                                                                }
-                                                                                value={
-                                                                                    role.value
-                                                                                }
-                                                                            >
-                                                                                {
-                                                                                    role.label
-                                                                                }
-                                                                            </SelectItem>
-                                                                        ),
-                                                                    )}
-                                                                </SelectContent>
-                                                            </Select>
-                                                            <InputError
-                                                                message={
-                                                                    errors.role
-                                                                }
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <DialogFooter className="gap-2">
-                                                        <DialogClose asChild>
-                                                            <Button variant="secondary">
-                                                                Cancel
-                                                            </Button>
-                                                        </DialogClose>
-
-                                                        <Button
-                                                            type="submit"
-                                                            disabled={
-                                                                processing
-                                                            }
-                                                        >
-                                                            Send Invitation
-                                                        </Button>
-                                                    </DialogFooter>
-                                                </>
-                                            )}
-                                        </Form>
-                                    </DialogContent>
-                                </Dialog>
+                                    <UserPlus /> Invite Member
+                                </Button>
                             ) : null}
                         </div>
 
@@ -565,201 +373,49 @@ export default function TeamEdit({
                                         be undone.
                                     </p>
                                 </div>
-                                <Dialog
-                                    open={deleteDialogOpen}
-                                    onOpenChange={(open) => {
-                                        setDeleteDialogOpen(open);
-                                        if (!open) {
-                                            resetDeleteDialog();
-                                        }
-                                    }}
+                                <Button
+                                    variant="destructive"
+                                    onClick={() => setDeleteDialogOpen(true)}
                                 >
-                                    <DialogTrigger asChild>
-                                        <Button variant="destructive">
-                                            Delete team
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                            <DialogTitle>
-                                                Are you sure?
-                                            </DialogTitle>
-                                            <DialogDescription>
-                                                This action cannot be undone.
-                                                This will permanently delete the
-                                                team{' '}
-                                                <strong>{team.name}</strong> and
-                                                remove all of its members.
-                                            </DialogDescription>
-                                        </DialogHeader>
-
-                                        <div className="space-y-4 py-4">
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="confirmation-name">
-                                                    Type{' '}
-                                                    <strong>{team.name}</strong>{' '}
-                                                    to confirm
-                                                </Label>
-                                                <Input
-                                                    id="confirmation-name"
-                                                    value={confirmationName}
-                                                    onChange={(event) =>
-                                                        setConfirmationName(
-                                                            event.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="Enter team name"
-                                                    autoComplete="off"
-                                                />
-                                            </div>
-
-                                            {isCurrentTeam &&
-                                            otherTeams.length > 0 ? (
-                                                <div className="grid gap-2">
-                                                    <Label htmlFor="new-current-team">
-                                                        Select a new current
-                                                        team
-                                                    </Label>
-                                                    <Select
-                                                        value={
-                                                            newCurrentTeamId?.toString() ??
-                                                            ''
-                                                        }
-                                                        onValueChange={(
-                                                            value,
-                                                        ) =>
-                                                            setNewCurrentTeamId(
-                                                                Number(value),
-                                                            )
-                                                        }
-                                                    >
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select a team" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {otherTeams.map(
-                                                                (otherTeam) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            otherTeam.id
-                                                                        }
-                                                                        value={otherTeam.id.toString()}
-                                                                    >
-                                                                        {
-                                                                            otherTeam.name
-                                                                        }
-                                                                        {otherTeam.isPersonal ? (
-                                                                            <span className="ml-2 text-muted-foreground">
-                                                                                (Personal)
-                                                                            </span>
-                                                                        ) : null}
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        You are deleting your
-                                                        current team. Please
-                                                        select which team to
-                                                        switch to.
-                                                    </p>
-                                                </div>
-                                            ) : null}
-
-                                            {isCurrentTeam &&
-                                            otherTeams.length === 0 ? (
-                                                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200">
-                                                    You cannot delete your
-                                                    current team because you
-                                                    have no other teams to
-                                                    switch to. Please create or
-                                                    join another team first.
-                                                </div>
-                                            ) : null}
-                                        </div>
-
-                                        <DialogFooter className="gap-2">
-                                            <DialogClose asChild>
-                                                <Button variant="secondary">
-                                                    Cancel
-                                                </Button>
-                                            </DialogClose>
-
-                                            <Button
-                                                variant="destructive"
-                                                disabled={!canDeleteTeam}
-                                                onClick={deleteTeam}
-                                            >
-                                                Delete Team
-                                            </Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
+                                    Delete team
+                                </Button>
                             </div>
                         </div>
                     ) : null}
                 </div>
 
-                <Dialog
+                {permissions.canCreateInvitation ? (
+                    <InviteMemberModal
+                        team={team}
+                        availableRoles={availableRoles}
+                        open={inviteDialogOpen}
+                        onOpenChange={setInviteDialogOpen}
+                    />
+                ) : null}
+
+                <RemoveMemberModal
+                    team={team}
+                    member={memberToRemove}
                     open={removeMemberDialogOpen}
                     onOpenChange={setRemoveMemberDialogOpen}
-                >
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Remove team member</DialogTitle>
-                            <DialogDescription>
-                                Are you sure you want to remove{' '}
-                                <strong>{memberToRemove?.name}</strong> from
-                                this team?
-                            </DialogDescription>
-                        </DialogHeader>
+                />
 
-                        <DialogFooter className="gap-2">
-                            <DialogClose asChild>
-                                <Button variant="secondary">Cancel</Button>
-                            </DialogClose>
-
-                            <Button
-                                variant="destructive"
-                                onClick={removeMember}
-                            >
-                                Remove Member
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
-                <Dialog
+                <CancelInvitationModal
+                    team={team}
+                    invitation={invitationToCancel}
                     open={cancelInvitationDialogOpen}
                     onOpenChange={setCancelInvitationDialogOpen}
-                >
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Cancel invitation</DialogTitle>
-                            <DialogDescription>
-                                Are you sure you want to cancel the invitation
-                                for <strong>{invitationToCancel?.email}</strong>
-                                ?
-                            </DialogDescription>
-                        </DialogHeader>
+                />
 
-                        <DialogFooter className="gap-2">
-                            <DialogClose asChild>
-                                <Button variant="secondary">
-                                    Keep Invitation
-                                </Button>
-                            </DialogClose>
-
-                            <Button
-                                variant="destructive"
-                                onClick={cancelInvitation}
-                            >
-                                Cancel Invitation
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                {permissions.canDeleteTeam && !team.isPersonal ? (
+                    <DeleteTeamModal
+                        team={team}
+                        isCurrentTeam={isCurrentTeam}
+                        otherTeams={otherTeams}
+                        open={deleteDialogOpen}
+                        onOpenChange={setDeleteDialogOpen}
+                    />
+                ) : null}
             </SettingsLayout>
         </AppLayout>
     );

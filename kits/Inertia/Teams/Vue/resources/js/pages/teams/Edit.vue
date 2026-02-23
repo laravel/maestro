@@ -2,21 +2,15 @@
 import { Form, Head, router } from '@inertiajs/vue3';
 import { ChevronDown, Mail, UserPlus, X } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import CancelInvitationModal from '@/components/CancelInvitationModal.vue';
+import DeleteTeamModal from '@/components/DeleteTeamModal.vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
+import InviteMemberModal from '@/components/InviteMemberModal.vue';
+import RemoveMemberModal from '@/components/RemoveMemberModal.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,13 +19,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import {
     Tooltip,
     TooltipContent,
@@ -49,15 +36,8 @@ import type {
     TeamMember,
     TeamPermissions,
 } from '@/types';
-import { destroy, edit, index, update } from '@/routes/teams';
-import {
-    destroy as destroyInvitation,
-    store as storeInvitation,
-} from '@/routes/teams/invitations';
-import {
-    destroy as destroyMember,
-    update as updateMember,
-} from '@/routes/teams/members';
+import { edit, index, update } from '@/routes/teams';
+import { update as updateMember } from '@/routes/teams/members';
 
 type Props = {
     team: Team;
@@ -90,28 +70,12 @@ const removeMemberDialogOpen = ref(false);
 const memberToRemove = ref<TeamMember | null>(null);
 const cancelInvitationDialogOpen = ref(false);
 const invitationToCancel = ref<TeamInvitation | null>(null);
-const inviteRole = ref('member');
-const confirmationName = ref('');
-const newCurrentTeamId = ref('');
-
-const canDeleteTeam = computed(() => {
-    const nameMatches = confirmationName.value === props.team.name;
-    const hasNewTeamIfNeeded =
-        !props.isCurrentTeam || newCurrentTeamId.value !== '';
-
-    return nameMatches && hasNewTeamIfNeeded;
-});
 
 const pageTitle = computed(() =>
     props.permissions.canUpdateTeam
         ? `Edit ${props.team.name}`
         : `View ${props.team.name}`,
 );
-
-const resetDeleteDialog = () => {
-    confirmationName.value = '';
-    newCurrentTeamId.value = '';
-};
 
 const updateMemberRole = (member: TeamMember, newRole: string) => {
     router.patch(
@@ -130,57 +94,9 @@ const confirmRemoveMember = (member: TeamMember) => {
     removeMemberDialogOpen.value = true;
 };
 
-const removeMember = () => {
-    if (memberToRemove.value) {
-        router.delete(
-            destroyMember([props.team.slug, memberToRemove.value.id]).url,
-            {
-                onSuccess: () => {
-                    removeMemberDialogOpen.value = false;
-                    memberToRemove.value = null;
-                },
-            },
-        );
-    }
-};
-
 const confirmCancelInvitation = (invitation: TeamInvitation) => {
     invitationToCancel.value = invitation;
     cancelInvitationDialogOpen.value = true;
-};
-
-const cancelInvitation = () => {
-    if (invitationToCancel.value) {
-        router.delete(
-            destroyInvitation([props.team.slug, invitationToCancel.value.code])
-                .url,
-            {
-                onSuccess: () => {
-                    cancelInvitationDialogOpen.value = false;
-                    invitationToCancel.value = null;
-                },
-            },
-        );
-    }
-};
-
-const deleteTeam = () => {
-    router.delete(destroy(props.team.slug).url, {
-        data: {
-            name: confirmationName.value,
-            new_current_team_id:
-                newCurrentTeamId.value === ''
-                    ? null
-                    : Number(newCurrentTeamId.value),
-        },
-        onSuccess: () => {
-            deleteDialogOpen.value = false;
-            resetDeleteDialog();
-        },
-        onError: () => {
-            // Keep the dialog open on validation errors
-        },
-    });
 };
 </script>
 
@@ -255,91 +171,12 @@ const deleteTeam = () => {
                             "
                         />
 
-                        <Dialog
-                            v-model:open="inviteDialogOpen"
+                        <Button
                             v-if="permissions.canCreateInvitation"
+                            @click="inviteDialogOpen = true"
                         >
-                            <DialogTrigger as-child>
-                                <Button> <UserPlus /> Invite Member </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <Form
-                                    v-bind="storeInvitation.form(team.slug)"
-                                    class="space-y-6"
-                                    v-slot="{ errors, processing }"
-                                    @success="inviteDialogOpen = false"
-                                >
-                                    <DialogHeader>
-                                        <DialogTitle
-                                            >Invite a team member</DialogTitle
-                                        >
-                                        <DialogDescription>
-                                            Send an invitation to join this
-                                            team.
-                                        </DialogDescription>
-                                    </DialogHeader>
-
-                                    <div class="grid gap-4">
-                                        <div class="grid gap-2">
-                                            <Label for="email"
-                                                >Email Address</Label
-                                            >
-                                            <Input
-                                                id="email"
-                                                name="email"
-                                                type="email"
-                                                placeholder="colleague@example.com"
-                                                required
-                                            />
-                                            <InputError
-                                                :message="errors.email"
-                                            />
-                                        </div>
-
-                                        <div class="grid gap-2">
-                                            <Label for="role">Role</Label>
-                                            <Select
-                                                v-model="inviteRole"
-                                                name="role"
-                                            >
-                                                <SelectTrigger class="w-full">
-                                                    <SelectValue
-                                                        placeholder="Select a role"
-                                                    />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem
-                                                        v-for="role in availableRoles"
-                                                        :key="role.value"
-                                                        :value="role.value"
-                                                    >
-                                                        {{ role.label }}
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                :message="errors.role"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <DialogFooter class="gap-2">
-                                        <DialogClose as-child>
-                                            <Button variant="secondary">
-                                                Cancel
-                                            </Button>
-                                        </DialogClose>
-
-                                        <Button
-                                            type="submit"
-                                            :disabled="processing"
-                                        >
-                                            Send Invitation
-                                        </Button>
-                                    </DialogFooter>
-                                </Form>
-                            </DialogContent>
-                        </Dialog>
+                            <UserPlus /> Invite Member
+                        </Button>
                     </div>
 
                     <div class="space-y-3">
@@ -511,171 +348,45 @@ const deleteTeam = () => {
                                 undone.
                             </p>
                         </div>
-                        <Dialog
-                            v-model:open="deleteDialogOpen"
-                            @update:open="
-                                (open) => !open && resetDeleteDialog()
-                            "
+                        <Button
+                            variant="destructive"
+                            @click="deleteDialogOpen = true"
+                            >Delete team</Button
                         >
-                            <DialogTrigger as-child>
-                                <Button variant="destructive"
-                                    >Delete team</Button
-                                >
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Are you sure?</DialogTitle>
-                                    <DialogDescription>
-                                        This action cannot be undone. This will
-                                        permanently delete the team
-                                        <strong>{{ team.name }}</strong> and
-                                        remove all of its members.
-                                    </DialogDescription>
-                                </DialogHeader>
-
-                                <div class="space-y-4 py-4">
-                                    <div class="grid gap-2">
-                                        <Label for="confirmation-name">
-                                            Type
-                                            <strong>{{ team.name }}</strong> to
-                                            confirm
-                                        </Label>
-                                        <Input
-                                            id="confirmation-name"
-                                            v-model="confirmationName"
-                                            placeholder="Enter team name"
-                                            autocomplete="off"
-                                        />
-                                    </div>
-
-                                    <div
-                                        v-if="
-                                            isCurrentTeam &&
-                                            otherTeams.length > 0
-                                        "
-                                        class="grid gap-2"
-                                    >
-                                        <Label for="new-current-team">
-                                            Select a new current team
-                                        </Label>
-                                        <Select v-model="newCurrentTeamId">
-                                            <SelectTrigger class="w-full">
-                                                <SelectValue
-                                                    placeholder="Select a team"
-                                                />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem
-                                                    v-for="otherTeam in otherTeams"
-                                                    :key="otherTeam.id"
-                                                    :value="
-                                                        String(otherTeam.id)
-                                                    "
-                                                >
-                                                    {{ otherTeam.name }}
-                                                    <span
-                                                        v-if="
-                                                            otherTeam.isPersonal
-                                                        "
-                                                        class="ml-2 text-muted-foreground"
-                                                        >(Personal)</span
-                                                    >
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <p
-                                            class="text-sm text-muted-foreground"
-                                        >
-                                            You are deleting your current team.
-                                            Please select which team to switch
-                                            to.
-                                        </p>
-                                    </div>
-
-                                    <div
-                                        v-else-if="
-                                            isCurrentTeam &&
-                                            otherTeams.length === 0
-                                        "
-                                        class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200"
-                                    >
-                                        You cannot delete your current team
-                                        because you have no other teams to
-                                        switch to. Please create or join another
-                                        team first.
-                                    </div>
-                                </div>
-
-                                <DialogFooter class="gap-2">
-                                    <DialogClose as-child>
-                                        <Button variant="secondary">
-                                            Cancel
-                                        </Button>
-                                    </DialogClose>
-
-                                    <Button
-                                        variant="destructive"
-                                        :disabled="!canDeleteTeam"
-                                        @click="deleteTeam"
-                                    >
-                                        Delete Team
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
                     </div>
                 </div>
             </div>
 
-            <!-- Remove Member Confirmation Dialog -->
-            <Dialog v-model:open="removeMemberDialogOpen">
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Remove team member</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to remove
-                            <strong>{{ memberToRemove?.name }}</strong> from
-                            this team?
-                        </DialogDescription>
-                    </DialogHeader>
+            <InviteMemberModal
+                v-if="permissions.canCreateInvitation"
+                :team="team"
+                :available-roles="availableRoles"
+                :open="inviteDialogOpen"
+                @update:open="inviteDialogOpen = $event"
+            />
 
-                    <DialogFooter class="gap-2">
-                        <DialogClose as-child>
-                            <Button variant="secondary"> Cancel </Button>
-                        </DialogClose>
+            <RemoveMemberModal
+                :team="team"
+                :member="memberToRemove"
+                :open="removeMemberDialogOpen"
+                @update:open="removeMemberDialogOpen = $event"
+            />
 
-                        <Button variant="destructive" @click="removeMember">
-                            Remove Member
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <CancelInvitationModal
+                :team="team"
+                :invitation="invitationToCancel"
+                :open="cancelInvitationDialogOpen"
+                @update:open="cancelInvitationDialogOpen = $event"
+            />
 
-            <!-- Cancel Invitation Confirmation Dialog -->
-            <Dialog v-model:open="cancelInvitationDialogOpen">
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Cancel invitation</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to cancel the invitation for
-                            <strong>{{ invitationToCancel?.email }}</strong
-                            >?
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <DialogFooter class="gap-2">
-                        <DialogClose as-child>
-                            <Button variant="secondary">
-                                Keep Invitation
-                            </Button>
-                        </DialogClose>
-
-                        <Button variant="destructive" @click="cancelInvitation">
-                            Cancel Invitation
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <DeleteTeamModal
+                v-if="permissions.canDeleteTeam && !team.isPersonal"
+                :team="team"
+                :is-current-team="isCurrentTeam"
+                :other-teams="otherTeams"
+                :open="deleteDialogOpen"
+                @update:open="deleteDialogOpen = $event"
+            />
         </SettingsLayout>
     </AppLayout>
 </template>
