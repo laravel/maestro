@@ -5,10 +5,12 @@ namespace App\Concerns;
 use App\Enums\TeamRole;
 use App\Models\Membership;
 use App\Models\Team;
+use App\Support\UserTeam;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 
 trait HasTeams
@@ -115,6 +117,33 @@ trait HasTeams
             ->first();
 
         return $membership?->role;
+    }
+
+    /**
+     * @return Collection<int, UserTeam>
+     */
+    public function userTeams(bool $includeCurrent = false): Collection
+    {
+        return $this->teams()
+            ->get()
+            ->map(fn (Team $team) => ! $includeCurrent && $this->isCurrentTeam($team) ? null : $this->toUserTeam($team))
+            ->filter()
+            ->values();
+    }
+
+    public function toUserTeam(Team $team): UserTeam
+    {
+        $role = $this->teamRole($team);
+
+        return new UserTeam(
+            id: $team->id,
+            name: $team->name,
+            slug: $team->slug,
+            isPersonal: $team->is_personal,
+            role: $role?->value,
+            roleLabel: $role?->label(),
+            isCurrent: $this->isCurrentTeam($team),
+        );
     }
 
     /**

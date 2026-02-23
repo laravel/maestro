@@ -13,7 +13,9 @@ use App\Notifications\Teams\RemovedFromTeam;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
 use App\Rules\TeamName;
 use App\Rules\UniqueTeamInvitation;
+use App\Support\UserTeam;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
@@ -35,8 +37,6 @@ new class extends Component {
     public array $availableRoles = [];
 
     public bool $isCurrentTeam = false;
-
-    public array $otherTeams = [];
 
     public string $teamName = '';
 
@@ -92,15 +92,14 @@ new class extends Component {
 
         $this->availableRoles = TeamRole::assignable();
         $this->isCurrentTeam = $user->isCurrentTeam($team);
-        $this->otherTeams = $user->teams()
-            ->where('teams.id', '!=', $team->id)
-            ->get()
-            ->map(fn (Team $otherTeam) => [
-                'id' => $otherTeam->id,
-                'name' => $otherTeam->name,
-                'slug' => $otherTeam->slug,
-                'is_personal' => $otherTeam->is_personal,
-            ])->toArray();
+    }
+
+    /**
+     * @return Collection<int, UserTeam>
+     */
+    public function getOtherTeamsProperty(): Collection
+    {
+        return Auth::user()->userTeams();
     }
 
     public function updateTeam(): void
@@ -500,19 +499,19 @@ new class extends Component {
                 <div class="space-y-4">
                     <flux:input wire:model="deleteName" :label="__('Type :name to confirm', ['name' => $teamData['name']])" required />
 
-                    @if ($isCurrentTeam && count($otherTeams) > 0)
+                    @if ($isCurrentTeam && $this->otherTeams->isNotEmpty())
                         <div class="space-y-2">
                             <flux:select wire:model.live="newCurrentTeamId" :label="__('Select a new current team')">
                                 <flux:select.option value="">{{ __('Select a team') }}</flux:select.option>
-                                @foreach ($otherTeams as $otherTeam)
-                                    <flux:select.option value="{{ $otherTeam['id'] }}">{{ $otherTeam['name'] }}@if ($otherTeam['is_personal']) ({{ __('Personal') }})@endif</flux:select.option>
+                                @foreach ($this->otherTeams as $otherTeam)
+                                    <flux:select.option value="{{ $otherTeam->id }}">{{ $otherTeam->name }} @if ($otherTeam->isPersonal)({{ __('Personal') }})@endif</flux:select.option>
                                 @endforeach
                             </flux:select>
                             <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
                                 {{ __('You are deleting your current team. Please select which team to switch to.') }}
                             </flux:text>
                         </div>
-                    @elseif ($isCurrentTeam && count($otherTeams) === 0)
+                    @elseif ($isCurrentTeam && $this->otherTeams->isEmpty())
                         <div class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200">
                             {{ __('You cannot delete your current team because you have no other teams to switch to. Please create or join another team first.') }}
                         </div>
