@@ -28,15 +28,7 @@ class TeamController extends Controller
         $user = $request->user();
 
         return Inertia::render('{{teams_index}}', [
-            'teams' => $user->teams()->get()->map(fn (Team $team) => [
-                'id' => $team->id,
-                'name' => $team->name,
-                'slug' => $team->slug,
-                'is_personal' => $team->is_personal,
-                'role' => ($role = $user->teamRole($team))?->value,
-                'role_label' => $role?->label(),
-                'is_current' => $user->isCurrentTeam($team),
-            ]),
+            'teams' => $user->userTeams(includeCurrent: true),
         ]);
     }
 
@@ -85,15 +77,7 @@ class TeamController extends Controller
             'permissions' => $user->teamPermissions($team),
             'availableRoles' => TeamRole::assignable(),
             'isCurrentTeam' => $user->isCurrentTeam($team),
-            'otherTeams' => $user->teams()
-                ->where('teams.id', '!=', $team->id)
-                ->get()
-                ->map(fn (Team $t) => [
-                    'id' => $t->id,
-                    'name' => $t->name,
-                    'slug' => $t->slug,
-                    'is_personal' => $t->is_personal,
-                ]),
+            'otherTeams' => $user->userTeams(),
         ]);
     }
 
