@@ -1,3 +1,5 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { CheckCircle, Circle, Eye, Pencil, Plus } from 'lucide-react';
 import CreateTeamModal from '@/components/create-team-modal';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
@@ -10,10 +12,8 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { edit, index, switchMethod } from '@/routes/teams';
 import type { BreadcrumbItem, Team } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { CheckCircle, Circle, Eye, Pencil, Plus } from 'lucide-react';
+import { edit, index, switchMethod } from '@/routes/teams';
 
 type Props = {
     teams: Team[];

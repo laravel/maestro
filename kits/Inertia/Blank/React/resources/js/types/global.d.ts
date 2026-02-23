@@ -1,7 +1,7 @@
-import type { Auth } from "@/types/auth";
-import type { Team } from "./teams";
+import type { Auth } from '@/types/auth';
+import type { Team } from '@/types/teams';
 
-declare module "@inertiajs/core" {
+declare module '@inertiajs/core' {
     export interface InertiaConfig {
         sharedPageProps: {
             name: string;

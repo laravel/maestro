@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Head, Link, router } from '@inertiajs/vue3';
+import { CheckCircle, Circle, Eye, Pencil, Plus } from 'lucide-vue-next';
 import CreateTeamModal from '@/components/CreateTeamModal.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
@@ -11,10 +13,8 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit, index, switchMethod } from '@/routes/teams';
 import type { BreadcrumbItem, Team } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { CheckCircle, Circle, Eye, Pencil, Plus } from 'lucide-vue-next';
+import { edit, index, switchMethod } from '@/routes/teams';
 
 type Props = {
     teams: Team[];
