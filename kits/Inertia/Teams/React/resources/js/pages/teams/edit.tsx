@@ -47,7 +47,6 @@ import type {
     Team,
     TeamInvitation,
     TeamMember,
-    TeamOption,
     TeamPermissions,
 } from '@/types';
 import { destroy, edit, index, update } from '@/routes/teams';
@@ -67,7 +66,7 @@ type Props = {
     permissions: TeamPermissions;
     availableRoles: RoleOption[];
     isCurrentTeam: boolean;
-    otherTeams: TeamOption[];
+    otherTeams: Team[];
 };
 
 export default function TeamEdit({
@@ -551,7 +550,7 @@ export default function TeamEdit({
                         </div>
                     ) : null}
 
-                    {permissions.canDeleteTeam && !team.is_personal ? (
+                    {permissions.canDeleteTeam && !team.isPersonal ? (
                         <div className="space-y-6">
                             <Heading
                                 variant="small"
@@ -649,7 +648,7 @@ export default function TeamEdit({
                                                                         {
                                                                             otherTeam.name
                                                                         }
-                                                                        {otherTeam.is_personal ? (
+                                                                        {otherTeam.isPersonal ? (
                                                                             <span className="ml-2 text-muted-foreground">
                                                                                 (Personal)
                                                                             </span>

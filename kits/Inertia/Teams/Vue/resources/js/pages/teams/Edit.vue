@@ -47,7 +47,6 @@ import type {
     Team,
     TeamInvitation,
     TeamMember,
-    TeamOption,
     TeamPermissions,
 } from '@/types';
 import { destroy, edit, index, update } from '@/routes/teams';
@@ -67,7 +66,7 @@ type Props = {
     permissions: TeamPermissions;
     availableRoles: RoleOption[];
     isCurrentTeam: boolean;
-    otherTeams: TeamOption[];
+    otherTeams: Team[];
 };
 
 const props = defineProps<Props>();
@@ -492,7 +491,7 @@ const deleteTeam = () => {
 
                 <!-- Danger Zone -->
                 <div
-                    v-if="permissions.canDeleteTeam && !team.is_personal"
+                    v-if="permissions.canDeleteTeam && !team.isPersonal"
                     class="space-y-6"
                 >
                     <Heading
@@ -576,7 +575,7 @@ const deleteTeam = () => {
                                                     {{ otherTeam.name }}
                                                     <span
                                                         v-if="
-                                                            otherTeam.is_personal
+                                                            otherTeam.isPersonal
                                                         "
                                                         class="ml-2 text-muted-foreground"
                                                         >(Personal)</span

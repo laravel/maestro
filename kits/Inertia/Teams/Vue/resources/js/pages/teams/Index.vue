@@ -58,7 +58,7 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                         :key="team.id"
                         class="flex items-center justify-between rounded-lg border p-4"
                         :class="{
-                            'border-ring/60': team.is_current,
+                            'border-ring/60': team.isCurrent,
                         }"
                     >
                         <div class="flex items-center gap-4">
@@ -68,21 +68,21 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                                         team.name
                                     }}</span>
                                     <Badge
-                                        v-if="team.is_personal"
+                                        v-if="team.isPersonal"
                                         variant="secondary"
                                     >
                                         Personal
                                     </Badge>
                                 </div>
                                 <span class="text-sm text-muted-foreground">
-                                    {{ team.role_label }}
+                                    {{ team.roleLabel }}
                                 </span>
                             </div>
                         </div>
 
                         <TooltipProvider>
                             <div class="flex items-center gap-2">
-                                <Tooltip v-if="team.is_current">
+                                <Tooltip v-if="team.isCurrent">
                                     <TooltipTrigger as-child>
                                         <Button variant="ghost" size="sm">
                                             <CheckCircle class="h-4 w-4" />
@@ -93,7 +93,7 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                                     </TooltipContent>
                                 </Tooltip>
 
-                                <Tooltip v-if="!team.is_current">
+                                <Tooltip v-if="!team.isCurrent">
                                     <TooltipTrigger as-child>
                                         <Button
                                             variant="ghost"

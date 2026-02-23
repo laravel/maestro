@@ -55,7 +55,7 @@ export default function TeamsIndex({ teams }: Props) {
                         {teams.map((team) => (
                             <div
                                 key={team.id}
-                                className={`flex items-center justify-between rounded-lg border p-4 ${team.is_current ? 'border-ring' : ''}`}
+                                className={`flex items-center justify-between rounded-lg border p-4 ${team.isCurrent ? 'border-ring' : ''}`}
                             >
                                 <div className="flex items-center gap-4">
                                     <div>
@@ -63,21 +63,21 @@ export default function TeamsIndex({ teams }: Props) {
                                             <span className="font-medium">
                                                 {team.name}
                                             </span>
-                                            {team.is_personal ? (
+                                            {team.isPersonal ? (
                                                 <Badge variant="secondary">
                                                     Personal
                                                 </Badge>
                                             ) : null}
                                         </div>
                                         <span className="text-sm text-muted-foreground">
-                                            {team.role_label}
+                                            {team.roleLabel}
                                         </span>
                                     </div>
                                 </div>
 
                                 <TooltipProvider>
                                     <div className="flex items-center gap-2">
-                                        {team.is_current ? (
+                                        {team.isCurrent ? (
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <Button

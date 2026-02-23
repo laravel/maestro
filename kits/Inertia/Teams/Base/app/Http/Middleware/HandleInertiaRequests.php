@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Team;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -45,22 +44,8 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'currentTeam' => fn () => $user?->currentTeam ? [
-                'id' => $user->currentTeam->id,
-                'name' => $user->currentTeam->name,
-                'slug' => $user->currentTeam->slug,
-                'is_personal' => $user->currentTeam->is_personal,
-                'role' => ($role = $user->teamRole($user->currentTeam))?->value,
-                'role_label' => $role?->label(),
-            ] : null,
-            'teams' => fn () => $user?->teams()->get()->map(fn (Team $team) => [
-                'id' => $team->id,
-                'name' => $team->name,
-                'slug' => $team->slug,
-                'is_personal' => $team->is_personal,
-                'role' => ($role = $user->teamRole($team))?->value,
-                'role_label' => $role?->label(),
-            ]) ?? [],
+            'currentTeam' => fn () => $user?->currentTeam ? $user->toUserTeam($user->currentTeam) : null,
+            'teams' => fn () => $user?->userTeams(includeCurrent: true) ?? [],
         ];
     }
 }

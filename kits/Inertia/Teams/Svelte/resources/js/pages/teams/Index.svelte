@@ -73,27 +73,27 @@
             <div class="space-y-3">
                 {#each teams as team (team.id)}
                     <div
-                        class="flex items-center justify-between rounded-lg border p-4 {team.is_current ? 'border-ring/60' : ''}"
+                        class="flex items-center justify-between rounded-lg border p-4 {team.isCurrent ? 'border-ring/60' : ''}"
                     >
                         <div class="flex items-center gap-4">
                             <div>
                                 <div class="flex items-center gap-2">
                                     <span class="font-medium">{team.name}</span>
 
-                                    {#if team.is_personal}
+                                    {#if team.isPersonal}
                                         <Badge variant="secondary">
                                             Personal
                                         </Badge>
                                     {/if}
                                 </div>
 
-                                <span class="text-sm text-muted-foreground">{team.role_label}</span>
+                                <span class="text-sm text-muted-foreground">{team.roleLabel}</span>
                             </div>
                         </div>
 
-                        <TooltipProvider>
+                        <TooltipProvider delayDuration={0}>
                             <div class="flex items-center gap-2">
-                                {#if team.is_current}
+                                {#if team.isCurrent}
                                     <Tooltip>
                                         <TooltipTrigger>
                                             {#snippet child({ props })}

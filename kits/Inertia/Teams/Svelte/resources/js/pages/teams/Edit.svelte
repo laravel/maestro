@@ -48,7 +48,6 @@
         Team,
         TeamInvitation,
         TeamMember,
-        TeamOption,
         TeamPermissions,
     } from '@/types';
     import { destroy, edit, index, update } from '@/routes/teams';
@@ -76,7 +75,7 @@
         permissions: TeamPermissions;
         availableRoles: RoleOption[];
         isCurrentTeam: boolean;
-        otherTeams: TeamOption[];
+        otherTeams: Team[];
     } = $props();
 
     const breadcrumbs = $derived<BreadcrumbItem[]>([
@@ -438,7 +437,7 @@
                 </div>
             {/if}
 
-            {#if permissions.canDeleteTeam && !team.is_personal}
+            {#if permissions.canDeleteTeam && !team.isPersonal}
                 <div class="space-y-6">
                     <Heading
                         variant="small"
@@ -502,7 +501,7 @@
                                                             label={otherTeam.name}
                                                         >
                                                             {otherTeam.name}
-                                                            {#if otherTeam.is_personal}
+                                                            {#if otherTeam.isPersonal}
                                                                 <span class="ml-2 text-muted-foreground">(Personal)</span>
                                                             {/if}
                                                         </SelectItem>

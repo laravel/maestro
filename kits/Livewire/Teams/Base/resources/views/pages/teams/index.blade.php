@@ -3,6 +3,8 @@
 use App\Actions\Teams\CreateTeam;
 use App\Models\Team;
 use App\Rules\TeamName;
+use App\Support\UserTeam;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -10,19 +12,14 @@ use Livewire\Component;
 new #[Title('Teams')] class extends Component {
     public string $name = '';
 
+    /**
+     * @return Collection<int, UserTeam>
+     */
     public function getTeamsProperty()
     {
         $user = Auth::user();
 
-        return $user->teams()->get()->map(fn (Team $team) => [
-            'id' => $team->id,
-            'name' => $team->name,
-            'slug' => $team->slug,
-            'is_personal' => $team->is_personal,
-            'role' => ($role = $user->teamRole($team))?->value,
-            'role_label' => $role?->label(),
-            'is_current' => $user->isCurrentTeam($team),
-        ]);
+        return $user->userTeams(includeCurrent: true);
     }
 
     public function createTeam(CreateTeam $createTeam): void
@@ -70,31 +67,31 @@ new #[Title('Teams')] class extends Component {
                     <div class="flex items-center gap-4">
                         <div>
                             <div class="flex items-center gap-2">
-                                <span class="font-medium">{{ $team['name'] }}</span>
-                                @if ($team['is_current'])
+                                <span class="font-medium">{{ $team->name }}</span>
+                                @if ($team->isCurrent)
                                     <flux:badge color="green">{{ __('Current') }}</flux:badge>
                                 @endif
-                                @if ($team['is_personal'])
+                                @if ($team->isPersonal)
                                     <flux:badge color="zinc">{{ __('Personal') }}</flux:badge>
                                 @endif
                             </div>
-                            <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ $team['role_label'] }}</flux:text>
+                            <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ $team->roleLabel }}</flux:text>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-1">
-                        @if (! $team['is_current'])
+                        @if (! $team->isCurrent)
                             <flux:tooltip :content="__('Set as current team')">
-                                <flux:button variant="ghost" size="sm" icon="star" wire:click="switchTeam('{{ $team['slug'] }}')" />
+                                <flux:button variant="ghost" size="sm" icon="star" wire:click="switchTeam('{{ $team->slug }}')" />
                             </flux:tooltip>
                         @endif
 
-                        <flux:tooltip :content="$team['role'] === 'member' ? __('View team') : __('Edit team')">
+                        <flux:tooltip :content="$team->role === 'member' ? __('View team') : __('Edit team')">
                             <flux:button
                                 variant="ghost"
                                 size="sm"
-                                :icon="$team['role'] === 'member' ? 'eye' : 'pencil'"
-                                :href="route('teams.edit', $team['slug'])"
+                                :icon="$team->role === 'member' ? 'eye' : 'pencil'"
+                                :href="route('teams.edit', $team->slug)"
                                 wire:navigate
                             />
                         </flux:tooltip>
