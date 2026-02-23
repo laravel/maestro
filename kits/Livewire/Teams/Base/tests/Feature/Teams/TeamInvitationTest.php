@@ -25,7 +25,7 @@ class TeamInvitationTest extends TestCase
 
         $this->actingAs($owner);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
+        Livewire::test('pages::teams.invite-member-modal', ['team' => $team])
             ->set('inviteEmail', 'invited@example.com')
             ->set('inviteRole', TeamRole::Member->value)
             ->call('createInvitation')
@@ -50,7 +50,7 @@ class TeamInvitationTest extends TestCase
 
         $this->actingAs($admin);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
+        Livewire::test('pages::teams.invite-member-modal', ['team' => $team])
             ->set('inviteEmail', 'invited@example.com')
             ->set('inviteRole', TeamRole::Member->value)
             ->call('createInvitation')
@@ -67,7 +67,7 @@ class TeamInvitationTest extends TestCase
 
         $this->actingAs($member);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
+        Livewire::test('pages::teams.invite-member-modal', ['team' => $team])
             ->set('inviteEmail', 'invited@example.com')
             ->set('inviteRole', TeamRole::Member->value)
             ->call('createInvitation')
@@ -86,8 +86,9 @@ class TeamInvitationTest extends TestCase
 
         $this->actingAs($owner);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
-            ->call('cancelInvitation', $invitation->code)
+        Livewire::test('pages::teams.cancel-invitation-modal', ['team' => $team])
+            ->set('invitationCode', $invitation->code)
+            ->call('cancelInvitation')
             ->assertHasNoErrors();
 
         $this->assertDatabaseMissing('team_invitations', [

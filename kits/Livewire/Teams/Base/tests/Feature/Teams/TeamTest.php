@@ -118,7 +118,7 @@ class TeamTest extends TestCase
 
         $this->actingAs($user);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
+        Livewire::test('pages::teams.delete-team-modal', ['team' => $team, 'isCurrentTeam' => false])
             ->set('deleteName', $team->name)
             ->call('deleteTeam')
             ->assertHasNoErrors();
@@ -136,7 +136,7 @@ class TeamTest extends TestCase
 
         $this->actingAs($user);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
+        Livewire::test('pages::teams.delete-team-modal', ['team' => $team, 'isCurrentTeam' => false])
             ->set('deleteName', 'Wrong Name')
             ->call('deleteTeam')
             ->assertHasErrors(['deleteName']);
@@ -157,7 +157,7 @@ class TeamTest extends TestCase
 
         $this->actingAs($user);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
+        Livewire::test('pages::teams.delete-team-modal', ['team' => $team, 'isCurrentTeam' => true])
             ->set('deleteName', $team->name)
             ->call('deleteTeam')
             ->assertHasErrors(['newCurrentTeamId']);
@@ -179,7 +179,7 @@ class TeamTest extends TestCase
 
         $this->actingAs($user);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
+        Livewire::test('pages::teams.delete-team-modal', ['team' => $team, 'isCurrentTeam' => true])
             ->set('deleteName', $team->name)
             ->set('newCurrentTeamId', $personalTeam->id)
             ->call('deleteTeam')
@@ -199,7 +199,7 @@ class TeamTest extends TestCase
 
         $this->actingAs($user);
 
-        Livewire::test('pages::teams.edit', ['team' => $personalTeam])
+        Livewire::test('pages::teams.delete-team-modal', ['team' => $personalTeam, 'isCurrentTeam' => true])
             ->set('deleteName', $personalTeam->name)
             ->call('deleteTeam')
             ->assertForbidden();
@@ -220,7 +220,7 @@ class TeamTest extends TestCase
 
         $this->actingAs($member);
 
-        Livewire::test('pages::teams.edit', ['team' => $team])
+        Livewire::test('pages::teams.delete-team-modal', ['team' => $team, 'isCurrentTeam' => false])
             ->set('deleteName', $team->name)
             ->call('deleteTeam')
             ->assertForbidden();
