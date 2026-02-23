@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { Form, Head, router } from '@inertiajs/vue3';
+import { ChevronDown, Mail, UserPlus, X } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -38,15 +41,6 @@ import {
 import { useInitials } from '@/composables/useInitials';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { destroy, edit, index, update } from '@/routes/teams';
-import {
-    destroy as destroyInvitation,
-    store as storeInvitation,
-} from '@/routes/teams/invitations';
-import {
-    destroy as destroyMember,
-    update as updateMember,
-} from '@/routes/teams/members';
 import type {
     BreadcrumbItem,
     RoleOption,
@@ -56,9 +50,15 @@ import type {
     TeamOption,
     TeamPermissions,
 } from '@/types';
-import { Form, Head, router } from '@inertiajs/vue3';
-import { ChevronDown, Mail, UserPlus, X } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { destroy, edit, index, update } from '@/routes/teams';
+import {
+    destroy as destroyInvitation,
+    store as storeInvitation,
+} from '@/routes/teams/invitations';
+import {
+    destroy as destroyMember,
+    update as updateMember,
+} from '@/routes/teams/members';
 
 type Props = {
     team: Team;
