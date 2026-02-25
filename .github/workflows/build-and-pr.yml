@@ -40,7 +40,7 @@ jobs:
             kit: Livewire
             build_flags: '--components'
             repository: laravel/livewire-starter-kit
-            path: livewire-starter-kit
+            path: livewire-starter-kit-components
             branch: components
             pr_branch: maestro-update-components
             node: false
@@ -49,7 +49,7 @@ jobs:
             kit: Livewire
             build_flags: '--workos'
             repository: laravel/livewire-starter-kit
-            path: livewire-starter-kit
+            path: livewire-starter-kit-workos
             branch: workos
             pr_branch: maestro-update-workos
             node: false
@@ -77,7 +77,7 @@ jobs:
             kit: React
             build_flags: '--workos'
             repository: laravel/react-starter-kit
-            path: react-starter-kit
+            path: react-starter-kit-workos
             branch: workos
             pr_branch: maestro-update-workos
             node: true
@@ -105,7 +105,7 @@ jobs:
             kit: Svelte
             build_flags: '--workos'
             repository: laravel/svelte-starter-kit
-            path: svelte-starter-kit
+            path: svelte-starter-kit-workos
             branch: workos
             pr_branch: maestro-update-workos
             node: true
@@ -133,15 +133,10 @@ jobs:
             kit: Vue
             build_flags: '--workos'
             repository: laravel/vue-starter-kit
-            path: vue-starter-kit
+            path: vue-starter-kit-workos
             branch: workos
             pr_branch: maestro-update-workos
             node: true
-
-    # Prevent parallel runs for the same repository
-    concurrency:
-      group: ${{ matrix.repository }}
-      cancel-in-progress: false
 
     steps:
       - name: Checkout Maestro
