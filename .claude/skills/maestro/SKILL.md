@@ -19,17 +19,38 @@ maestro/
 
 All commands below run from the `orchestrator/` directory unless noted otherwise.
 
-| Command                                     | Description                                                              |
-|---------------------------------------------|--------------------------------------------------------------------------|
-| `php artisan build`                         | Build a starter kit into `build/`. Interactive or use flags (see below). |
-| `php artisan build --kit=vue`               | Build Vue Fortify kit directly.                                          |
-| `php artisan build --kit=svelte --blank`    | Build Blank Svelte kit.                                                  |
-| `php artisan build --kit=livewire --workos` | Build Livewire WorkOS kit.                                               |
-| `composer kit:run`                          | Start dev server + file watcher (syncs `build/` back to `kits/`).        |
-| `npm run watch:kits`                        | Run only the file watcher (no dev server).                               |
-| `composer setup && php artisan test`        | Run inside `build/` after building to install deps and run tests.        |
+| Command                                              | Description                                                                |
+|------------------------------------------------------|----------------------------------------------------------------------------|
+| `php artisan build`                                  | Build a starter kit into `build/`. Interactive or use flags (see below).   |
+| `php artisan build --kit=vue`                        | Build Vue Fortify kit directly.                                            |
+| `php artisan build --kit=svelte --blank`             | Build Blank Svelte kit.                                                    |
+| `php artisan build --kit=livewire --workos`          | Build Livewire WorkOS kit.                                                 |
+| `composer kit:run`                                   | Start dev server + file watcher (syncs `build/` back to `kits/`).          |
+| `composer lint:kits`                                 | Run Pint for `kits/`, then lint/format all Inertia variants and sync back. |
+| `npm run watch:kits`                                 | Run only the file watcher (no dev server).                                 |
+| `composer setup && php artisan test`                 | Run inside `build/` after building to install deps and run tests.          |
 
 Available `--kit` values defined in `orchestrator/app/Enums/StarterKit.php`.
+
+## Starter Kit Variants (13 total)
+
+These are the full starter kit identifiers written to `orchestrator/storage/app/private/starter_kit` and used by `orchestrator/scripts/watch.js` for layer syncing.
+
+| Stack     | Variant Identifier       | Auth / Feature Set        |
+|-----------|--------------------------|---------------------------|
+| Livewire  | `livewire-blank`         | Blank (no auth)           |
+| Livewire  | `livewire`               | Fortify                   |
+| Livewire  | `livewire-components`    | Fortify + Components      |
+| Livewire  | `livewire-workos`        | WorkOS                    |
+| React     | `react-blank`            | Blank (no auth)           |
+| React     | `react`                  | Fortify                   |
+| React     | `react-workos`           | WorkOS                    |
+| Svelte    | `svelte-blank`           | Blank (no auth)           |
+| Svelte    | `svelte`                 | Fortify                   |
+| Svelte    | `svelte-workos`          | WorkOS                    |
+| Vue       | `vue-blank`              | Blank (no auth)           |
+| Vue       | `vue`                    | Fortify                   |
+| Vue       | `vue-workos`             | WorkOS                    |
 
 ## Kit Inheritance Hierarchy
 
@@ -82,7 +103,7 @@ kits/
 │   ├── Blank/       # Foundation: config, migrations, artisan, phpunit.xml, .env.example
 │   ├── Base/        # Factories, bootstrap, gitignore
 │   ├── Fortify/     # Auth Actions, Concerns, Providers, config/fortify.php
-│   └── WorkOS/      # WorkOS routes, migrations, config
+│   ├── WorkOS/      # WorkOS routes, migrations, config
 │
 ├── Inertia/
 │   ├── Blank/
@@ -99,11 +120,11 @@ kits/
 │   │   ├── React/         # React auth pages
 │   │   ├── Svelte/        # Svelte auth pages
 │   │   └── Vue/           # Vue auth pages
-│   └── WorkOS/
-│       ├── Base/          # WorkOS backend
-│       ├── React/         # React WorkOS pages
-│       ├── Svelte/        # Svelte WorkOS pages
-│       └── Vue/           # Vue WorkOS pages
+│   ├── WorkOS/
+│   │   ├── Base/          # WorkOS backend
+│   │   ├── React/         # React WorkOS pages
+│   │   ├── Svelte/        # Svelte WorkOS pages
+│   │   └── Vue/           # Vue WorkOS pages
 │
 └── Livewire/
     ├── Blank/
@@ -111,7 +132,6 @@ kits/
     ├── Fortify/
     ├── Components/        # Multi-file Blade components variant
     ├── WorkOS/
-    └── Teams/
 ```
 
 ## Placeholder System
@@ -132,6 +152,77 @@ Svelte and Vue use PascalCase page names. React uses kebab-case.
 5. **Commit**: Commit the changes in `kits/` (not `build/`)
 6. **PR**: Create PR; after merge, Maestro auto-creates PRs for affected kit repos
 
+## Browser Tests (Local CI Parity)
+
+To run browser tests locally with the same steps used in `.github/workflows/browser-tests.yml`, run the sequence below for each matrix kit (`Livewire`, `React`, `Svelte`, `Vue`).
+
+### Per-Kit Command Sequence
+
+Run from the repo root unless noted:
+
+```bash
+# 1) Install orchestrator dependencies
+cd orchestrator
+composer install --no-interaction --prefer-dist
+
+# 2) Build the target kit (replace <Kit> with Livewire, React, Svelte, or Vue)
+php artisan build --kit=<Kit>
+cd ..
+
+# 3) Copy shared browser tests into build/
+cp -r browser_tests/* build/
+
+# 4) Install browser testing dependencies in build/
+cd build
+composer remove --dev phpunit/phpunit --no-interaction --no-update
+composer require --dev pestphp/pest pestphp/pest-plugin-browser pestphp/pest-plugin-laravel --no-interaction
+npm install
+npm install playwright
+
+# 5) Install Playwright browsers/deps
+# CI installs browsers when cache miss, otherwise only system deps.
+# For local parity, run browser install directly:
+npx playwright install --with-deps
+
+# 6) Prepare app env and build frontend assets
+cp .env.example .env
+php artisan key:generate
+npm run build
+
+# 7) Run browser tests
+php vendor/bin/pest --parallel
+cd ..
+```
+
+### Run All Matrix Kits Locally
+
+```bash
+for KIT in Livewire React Svelte Vue; do
+  echo "Running browser tests for ${KIT}"
+
+  cd orchestrator
+  composer install --no-interaction --prefer-dist
+  php artisan build --kit="${KIT}"
+  cd ..
+
+  cp -r browser_tests/* build/
+
+  cd build
+  composer remove --dev phpunit/phpunit --no-interaction --no-update
+  composer require --dev pestphp/pest pestphp/pest-plugin-browser pestphp/pest-plugin-laravel --no-interaction
+  npm install
+  npm install playwright
+  npx playwright install --with-deps
+  cp .env.example .env
+  php artisan key:generate
+  npm run build
+  php vendor/bin/pest --parallel
+  cd ..
+done
+```
+
+Kit names are case-sensitive here because the workflow matrix uses `Livewire`, `React`, `Svelte`, and `Vue` values directly for `php artisan build --kit=...`.
+
 ## Key Files Reference
 
 | File                                                 | Purpose                                                         |
@@ -150,5 +241,5 @@ Svelte and Vue use PascalCase page names. React uses kebab-case.
 2. **Follow sibling patterns**: When creating a Svelte file, check the React and Vue equivalents for expected structure and behavior and vice-versa.
 3. **Layer awareness**: Know which layer a file belongs to. Shared files affect all kits. Framework-specific files only affect that framework.
 4. **Placeholder awareness**: Files in `kits/` contain `{{placeholders}}`. Files in `build/` have resolved values. The watcher handles conversion.
-5. **Lint changes**: For all kits run `composer lint`. For Inertia ones, also run `npm run lint` and `npm run format`. For Svelte one also run `npm run check`. All of these should be run inside `build/`
-6. **Test after changes**: Run `php artisan test` inside `build/` to verify nothing is broken.
+5. **Lint changes**: Run `composer lint` in `orchestrator` for orchestrator PHP linting, and run `composer lint:kits` to run Pint on `kits/`, run UI lint/format across all Inertia variants, and sync changes back to `kits/`.
+6. **Test after changes**: Run `composer setup && php artisan test` inside `build/` to verify nothing is broken. For Svelte kits, also run `npm run check` to see if there are no errors/warning for Svelte specific-code.
