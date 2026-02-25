@@ -10,9 +10,11 @@ new class extends Component {}; ?>
         <flux:subheading>{{ __('Delete your account and all of its resources') }}</flux:subheading>
     </div>
 
-    <flux:button variant="danger" x-data="" x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')">
-        {{ __('Delete account') }}
-    </flux:button>
+    <flux:modal.trigger name="confirm-user-deletion">
+        <flux:button variant="danger" data-test="delete-user-button">
+            {{ __('Delete account') }}
+        </flux:button>
+    </flux:modal.trigger>
 
     <livewire:pages::settings.delete-user-modal />
 </section>
