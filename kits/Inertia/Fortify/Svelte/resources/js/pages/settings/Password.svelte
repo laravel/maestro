@@ -38,7 +38,11 @@
                 class="space-y-6"
                 options={{ preserveScroll: true }}
                 resetOnSuccess
-                resetOnError={['password', 'password_confirmation', 'current_password']}
+                resetOnError={[
+                    'password',
+                    'password_confirmation',
+                    'current_password',
+                ]}
             >
                 {#snippet children({ errors, processing, recentlySuccessful })}
                     <div class="grid gap-2">
@@ -68,7 +72,9 @@
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation">Confirm password</Label>
+                        <Label for="password_confirmation"
+                            >Confirm password</Label
+                        >
                         <Input
                             id="password_confirmation"
                             name="password_confirmation"
@@ -81,7 +87,11 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button type="submit" disabled={processing} data-test="update-password-button">
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            data-test="update-password-button"
+                        >
                             Save password
                         </Button>
 

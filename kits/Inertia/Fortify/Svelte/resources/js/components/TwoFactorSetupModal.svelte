@@ -13,7 +13,11 @@
         DialogDescription,
         DialogTitle,
     } from '@/components/ui/dialog';
-    import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+    import {
+        InputOTP,
+        InputOTPGroup,
+        InputOTPSlot,
+    } from '@/components/ui/input-otp';
     import { Spinner } from '@/components/ui/spinner';
     import { themeState } from '@/lib/theme.svelte';
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
@@ -51,7 +55,8 @@
         if (showVerificationStep) {
             return {
                 title: 'Verify Authentication Code',
-                description: 'Enter the 6-digit code from your authenticator app',
+                description:
+                    'Enter the 6-digit code from your authenticator app',
                 buttonText: 'Continue',
             };
         }
@@ -116,16 +121,24 @@
 <Dialog bind:open={isOpen}>
     <DialogContent class="sm:max-w-md">
         <div class="flex flex-col items-center justify-center">
-            <div class="mb-3 w-auto rounded-full border border-border bg-card p-0.5 shadow-sm">
-                <div class="relative overflow-hidden rounded-full border border-border bg-muted p-2.5">
+            <div
+                class="mb-3 w-auto rounded-full border border-border bg-card p-0.5 shadow-sm"
+            >
+                <div
+                    class="relative overflow-hidden rounded-full border border-border bg-muted p-2.5"
+                >
                     <div class="absolute inset-0 grid grid-cols-5 opacity-50">
                         {#each { length: 5 } as _, i (i)}
-                            <div class="border-r border-border last:border-r-0"></div>
+                            <div
+                                class="border-r border-border last:border-r-0"
+                            ></div>
                         {/each}
                     </div>
                     <div class="absolute inset-0 grid grid-rows-5 opacity-50">
                         {#each { length: 5 } as _, i (i)}
-                            <div class="border-b border-border last:border-b-0"></div>
+                            <div
+                                class="border-b border-border last:border-b-0"
+                            ></div>
                         {/each}
                     </div>
                     <ScanLine class="relative z-20 size-6 text-foreground" />
@@ -139,13 +152,19 @@
             </div>
         </div>
 
-        <div class="relative flex w-auto flex-col items-center justify-center space-y-5">
+        <div
+            class="relative flex w-auto flex-col items-center justify-center space-y-5"
+        >
             {#if !showVerificationStep}
                 {#if twoFactorAuth.state.errors.length}
                     <AlertError errors={twoFactorAuth.state.errors} />
                 {:else}
-                    <div class="relative mx-auto flex max-w-md items-center overflow-hidden">
-                        <div class="relative mx-auto aspect-square w-64 overflow-hidden rounded-lg border border-border">
+                    <div
+                        class="relative mx-auto flex max-w-md items-center overflow-hidden"
+                    >
+                        <div
+                            class="relative mx-auto aspect-square w-64 overflow-hidden rounded-lg border border-border"
+                        >
                             {#if !twoFactorAuth.state.qrCodeSvg}
                                 <div
                                     class="absolute inset-0 z-10 flex aspect-square h-auto w-full animate-pulse items-center justify-center bg-background"
@@ -153,7 +172,9 @@
                                     <Spinner class="size-6" />
                                 </div>
                             {:else}
-                                <div class="relative z-10 overflow-hidden border p-5">
+                                <div
+                                    class="relative z-10 overflow-hidden border p-5"
+                                >
                                     <div
                                         class="flex aspect-square size-full items-center justify-center [&>svg]:size-full"
                                         style={resolvedAppearance() === 'dark'
@@ -177,15 +198,27 @@
                         </Button>
                     </div>
 
-                    <div class="relative flex w-full items-center justify-center">
-                        <div class="absolute inset-0 top-1/2 h-px w-full bg-border"></div>
-                        <span class="relative bg-card px-2 py-1">or, enter the code manually</span>
+                    <div
+                        class="relative flex w-full items-center justify-center"
+                    >
+                        <div
+                            class="absolute inset-0 top-1/2 h-px w-full bg-border"
+                        ></div>
+                        <span class="relative bg-card px-2 py-1"
+                            >or, enter the code manually</span
+                        >
                     </div>
 
-                    <div class="flex w-full items-center justify-center space-x-2">
-                        <div class="flex w-full items-stretch overflow-hidden rounded-xl border border-border">
+                    <div
+                        class="flex w-full items-center justify-center space-x-2"
+                    >
+                        <div
+                            class="flex w-full items-stretch overflow-hidden rounded-xl border border-border"
+                        >
                             {#if !twoFactorAuth.state.manualSetupKey}
-                                <div class="flex h-full w-full items-center justify-center bg-muted p-3">
+                                <div
+                                    class="flex h-full w-full items-center justify-center bg-muted p-3"
+                                >
                                     <Spinner />
                                 </div>
                             {:else}
@@ -196,7 +229,11 @@
                                     class="h-full w-full bg-background p-3 text-foreground"
                                 />
                                 <button
-                                    onclick={() => copyToClipboard(twoFactorAuth.state.manualSetupKey || '')}
+                                    onclick={() =>
+                                        copyToClipboard(
+                                            twoFactorAuth.state
+                                                .manualSetupKey || '',
+                                        )}
                                     class="relative block h-auto border-l border-border px-3 hover:bg-muted"
                                 >
                                     {#if copied}
@@ -218,8 +255,13 @@
                 >
                     {#snippet children({ errors: formErrors, processing })}
                         <input type="hidden" name="code" value={code} />
-                        <div bind:this={pinInputContainerRef} class="relative w-full space-y-3">
-                            <div class="flex w-full flex-col items-center justify-center space-y-3 py-2">
+                        <div
+                            bind:this={pinInputContainerRef}
+                            class="relative w-full space-y-3"
+                        >
+                            <div
+                                class="flex w-full flex-col items-center justify-center space-y-3 py-2"
+                            >
                                 <InputOTP
                                     id="otp"
                                     bind:value={code}
@@ -233,7 +275,8 @@
                                     </InputOTPGroup>
                                 </InputOTP>
                                 <InputError
-                                    message={formErrors?.confirmTwoFactorAuthentication?.code}
+                                    message={formErrors
+                                        ?.confirmTwoFactorAuthentication?.code}
                                 />
                             </div>
 
@@ -242,7 +285,8 @@
                                     type="button"
                                     variant="outline"
                                     class="w-auto flex-1"
-                                    onclick={() => (showVerificationStep = false)}
+                                    onclick={() =>
+                                        (showVerificationStep = false)}
                                     disabled={processing}
                                 >
                                     Back

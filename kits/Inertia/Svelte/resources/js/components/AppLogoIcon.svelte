@@ -8,7 +8,12 @@
     } = $props();
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 42" class={className} {...rest}>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 40 42"
+    class={className}
+    {...rest}
+>
     <path
         fill="currentColor"
         fill-rule="evenodd"

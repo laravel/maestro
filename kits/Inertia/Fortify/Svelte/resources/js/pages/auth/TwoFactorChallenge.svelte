@@ -4,7 +4,11 @@
     import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
-    import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+    import {
+        InputOTP,
+        InputOTPGroup,
+        InputOTPSlot,
+    } from '@/components/ui/input-otp';
     import AuthLayout from '@/layouts/AuthLayout.svelte';
     import type { TwoFactorConfigContent } from '@/types';
     import { store } from '@/routes/two-factor/login';
@@ -16,14 +20,16 @@
         if (showRecoveryInput) {
             return {
                 title: 'Recovery Code',
-                description: 'Please confirm access to your account by entering one of your emergency recovery codes.',
+                description:
+                    'Please confirm access to your account by entering one of your emergency recovery codes.',
                 buttonText: 'login using an authentication code',
             };
         }
 
         return {
             title: 'Authentication Code',
-            description: 'Enter the authentication code provided by your authenticator application.',
+            description:
+                'Enter the authentication code provided by your authenticator application.',
             buttonText: 'login using a recovery code',
         };
     });
@@ -37,7 +43,10 @@
 
 <AppHead title="Two-Factor Authentication" />
 
-<AuthLayout title={authConfigContent.title} description={authConfigContent.description}>
+<AuthLayout
+    title={authConfigContent.title}
+    description={authConfigContent.description}
+>
     <div class="space-y-6">
         {#if !showRecoveryInput}
             <Form
@@ -48,7 +57,9 @@
             >
                 {#snippet children({ errors, processing, clearErrors })}
                     <input type="hidden" name="code" value={code} />
-                    <div class="flex flex-col items-center justify-center space-y-3 text-center">
+                    <div
+                        class="flex flex-col items-center justify-center space-y-3 text-center"
+                    >
                         <div class="flex w-full items-center justify-center">
                             <InputOTP
                                 id="otp"
@@ -65,7 +76,9 @@
                         </div>
                         <InputError message={errors.code} />
                     </div>
-                    <Button type="submit" class="w-full" disabled={processing}>Continue</Button>
+                    <Button type="submit" class="w-full" disabled={processing}
+                        >Continue</Button
+                    >
                     <div class="text-center text-sm text-muted-foreground">
                         <span>or you can </span>
                         <button
@@ -79,11 +92,7 @@
                 {/snippet}
             </Form>
         {:else}
-            <Form
-                {...store.form()}
-                class="space-y-4"
-                resetOnError
-            >
+            <Form {...store.form()} class="space-y-4" resetOnError>
                 {#snippet children({ errors, processing, clearErrors })}
                     <Input
                         name="recovery_code"
@@ -92,7 +101,9 @@
                         required
                     />
                     <InputError message={errors.recovery_code} />
-                    <Button type="submit" class="w-full" disabled={processing}>Continue</Button>
+                    <Button type="submit" class="w-full" disabled={processing}
+                        >Continue</Button
+                    >
 
                     <div class="text-center text-sm text-muted-foreground">
                         <span>or you can </span>

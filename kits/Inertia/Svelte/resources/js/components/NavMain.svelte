@@ -25,9 +25,17 @@
     <SidebarMenu>
         {#each items as item (toUrl(item.href))}
             <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isCurrentUrl(item.href, $currentUrl)} tooltip={item.title}>
+                <SidebarMenuButton
+                    asChild
+                    isActive={isCurrentUrl(item.href, $currentUrl)}
+                    tooltip={item.title}
+                >
                     {#snippet children(props)}
-                        <Link {...props} href={toUrl(item.href)} class={props.class}>
+                        <Link
+                            {...props}
+                            href={toUrl(item.href)}
+                            class={props.class}
+                        >
                             {#if item.icon}
                                 <item.icon class="size-4 shrink-0" />
                             {/if}

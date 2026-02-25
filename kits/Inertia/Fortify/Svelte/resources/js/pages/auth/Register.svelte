@@ -14,7 +14,10 @@
 
 <AppHead title="Register" />
 
-<AuthBase title="Create an account" description="Enter your details below to create your account">
+<AuthBase
+    title="Create an account"
+    description="Enter your details below to create your account"
+>
     <Form
         {...store.form()}
         resetOnSuccess={['password', 'password_confirmation']}

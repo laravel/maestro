@@ -40,7 +40,11 @@
 
     <SettingsLayout>
         <div class="flex flex-col space-y-6">
-            <Heading variant="small" title="Profile information" description="Update your name and email address" />
+            <Heading
+                variant="small"
+                title="Profile information"
+                description="Update your name and email address"
+            />
 
             <Form
                 {...ProfileController.update.form()}
@@ -87,15 +91,22 @@
                             </p>
 
                             {#if status === 'verification-link-sent'}
-                                <div class="mt-2 text-sm font-medium text-green-600">
-                                    A new verification link has been sent to your email address.
+                                <div
+                                    class="mt-2 text-sm font-medium text-green-600"
+                                >
+                                    A new verification link has been sent to
+                                    your email address.
                                 </div>
                             {/if}
                         </div>
                     {/if}
 
                     <div class="flex items-center gap-4">
-                        <Button type="submit" disabled={processing} data-test="update-profile-button">Save</Button>
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            data-test="update-profile-button">Save</Button
+                        >
 
                         {#if recentlySuccessful}
                             <p class="text-sm text-neutral-600">Saved.</p>
