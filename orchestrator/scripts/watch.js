@@ -14,6 +14,8 @@ const kitsDir = path.join(rootDir, 'kits');
 const buildDir = path.join(rootDir, 'build');
 const starterKitFile = path.join(orchestratorDir, 'storage', 'app', 'private', 'starter_kit');
 const uiComponentsFile = path.join(__dirname, 'ui-components.json');
+const args = process.argv.slice(2);
+const initialSyncOnly = args.includes('--initial-sync-only');
 
 const colors = {
     reset: '\x1b[0m',
@@ -110,6 +112,7 @@ function shouldRestorePlaceholders(relativePath) {
  * Only replaces values in specific contexts:
  * - Inertia::render('value'
  * - ->component('value')
+ * - Route::inertia('path', 'value')
  */
 function restorePlaceholders(content, kitType, uiComponents) {
     if (!kitType) {
@@ -135,6 +138,12 @@ function restorePlaceholders(content, kitType, uiComponents) {
         // Replace ->component('value') with ->component('{{placeholder}}')
         modified = modified.replace(
             new RegExp(`(->component\\(')${escapeRegExp(replacement)}('\\))`, 'g'),
+            `$1${placeholder}$2`
+        );
+
+        // Replace Route::inertia('path', 'value') with Route::inertia('path', '{{placeholder}}')
+        modified = modified.replace(
+            new RegExp(`(Route::inertia\\(\\s*'[^']*'\\s*,\\s*')${escapeRegExp(replacement)}(')`, 'g'),
             `$1${placeholder}$2`
         );
     }
@@ -570,6 +579,12 @@ function startWatching() {
 
     // Perform initial sync to catch any changes that occurred while watcher wasn't running
     performInitialSync(folders, ig, kitType, uiComponents);
+
+    if (initialSyncOnly) {
+        log('Initial sync only mode enabled. Exiting without starting watcher.', 'blue');
+
+        return;
+    }
 
     const watcher = chokidar.watch(buildDir, {
         ignored: /(^|[\/\\])\../, // ignore dotfiles

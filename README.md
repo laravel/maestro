@@ -43,6 +43,18 @@ This will start both the standard Laravel development server and a file watcher 
 > [!NOTE]
 > While the `build` directory is git ignored, that's where you should make changes to the kits. The file watcher will automatically copy your changes back to the correct location.
 
+### Linting Starter Kits
+
+From the `orchestrator` directory, run:
+
+```bash
+composer lint:kits
+```
+
+This command loops over all Inertia variants, builds each variant, runs frontend linting/formatting in `build` (`npm install`, then lint/format), and then runs `npm run watch:kits -- --initial-sync-only` to perform and verify an initial sync back to `kits`.
+
+`composer lint:kits` also runs Pint on `kits/` before the frontend lint pass.
+
 ### Submitting Changes
 
 After making the changes in `build` and testing that they are working, simply commit your code and create a PR with these changes.

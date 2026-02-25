@@ -1,8 +1,8 @@
 <script lang="ts">
+    import { Link, page } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import { toUrl } from '@/lib/utils';
     import { dashboard, login, register } from '@/routes';
-    import { Link, page } from '@inertiajs/svelte';
 
     let {
         canRegister = true,

@@ -1,5 +1,5 @@
 import js from '@eslint/js';
-import prettier from 'eslint-config-prettier';
+import prettier from 'eslint-config-prettier/flat';
 import importPlugin from 'eslint-plugin-import';
 import svelte from 'eslint-plugin-svelte';
 import ts from 'typescript-eslint';
@@ -9,15 +9,18 @@ export default ts.config(
     ...ts.configs.recommended,
     ...svelte.configs['flat/recommended'],
     {
-        ignores: [
-            'vendor',
-            'node_modules',
-            'public',
-            'bootstrap/ssr',
-            'tailwind.config.js',
-            'vite.config.ts',
-            'resources/js/components/ui/*',
-        ],
+        files: ['**/*.svelte'],
+        languageOptions: {
+            parserOptions: {
+                parser: ts.parser,
+            },
+        },
+    },
+    {
+        files: ['**/*.svelte.ts'],
+        languageOptions: {
+            parser: ts.parser,
+        },
     },
     {
         plugins: {
@@ -29,6 +32,7 @@ export default ts.config(
                     alwaysTryTypes: true,
                     project: './tsconfig.json',
                 },
+                node: true,
             },
         },
         rules: {
@@ -48,42 +52,32 @@ export default ts.config(
                     fixStyle: 'separate-type-imports',
                 },
             ],
-            'import/consistent-type-specifier-style': [
-                'error',
-                'prefer-top-level',
-            ],
             'import/order': [
                 'error',
                 {
-                    groups: [
-                        'builtin',
-                        'external',
-                        'internal',
-                        'parent',
-                        'sibling',
-                        'index',
-                    ],
+                    groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
                     alphabetize: {
                         order: 'asc',
                         caseInsensitive: true,
                     },
                 },
             ],
+            'import/consistent-type-specifier-style': [
+                'error',
+                'prefer-top-level',
+            ],
         },
     },
     {
-        files: ['**/*.svelte'],
-        languageOptions: {
-            parserOptions: {
-                parser: ts.parser,
-            },
-        },
+        ignores: [
+            'vendor',
+            'node_modules',
+            'public',
+            'bootstrap/ssr',
+            'tailwind.config.js',
+            'vite.config.ts',
+            'resources/js/components/ui/*',
+        ],
     },
-    {
-        files: ['**/*.svelte.ts'],
-        languageOptions: {
-            parser: ts.parser,
-        },
-    },
-    prettier,
+    prettier, // Turn off all rules that might conflict with Prettier
 );
