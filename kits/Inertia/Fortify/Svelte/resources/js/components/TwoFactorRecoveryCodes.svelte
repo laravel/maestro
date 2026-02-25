@@ -7,7 +7,13 @@
     import { onMount, tick } from 'svelte';
     import AlertError from '@/components/AlertError.svelte';
     import { Button } from '@/components/ui/button';
-    import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+    import {
+        Card,
+        CardContent,
+        CardDescription,
+        CardHeader,
+        CardTitle,
+    } from '@/components/ui/card';
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
     import { regenerateRecoveryCodes } from '@/routes/two-factor';
 
@@ -16,7 +22,10 @@
     let recoveryCodeSectionRef = $state<HTMLDivElement | undefined>();
 
     async function toggleRecoveryCodesVisibility() {
-        if (!isRecoveryCodesVisible && !twoFactorAuth.state.recoveryCodesList.length) {
+        if (
+            !isRecoveryCodesVisible &&
+            !twoFactorAuth.state.recoveryCodesList.length
+        ) {
             await twoFactorAuth.fetchRecoveryCodes();
         }
 
@@ -41,11 +50,14 @@
             <LockKeyhole class="size-4" />2FA Recovery Codes
         </CardTitle>
         <CardDescription>
-            Recovery codes let you regain access if you lose your 2FA device. Store them in a secure password manager.
+            Recovery codes let you regain access if you lose your 2FA device.
+            Store them in a secure password manager.
         </CardDescription>
     </CardHeader>
     <CardContent>
-        <div class="flex flex-col gap-3 select-none sm:flex-row sm:items-center sm:justify-between">
+        <div
+            class="flex flex-col gap-3 select-none sm:flex-row sm:items-center sm:justify-between"
+        >
             <Button onclick={toggleRecoveryCodesVisibility} class="w-fit">
                 {#if isRecoveryCodesVisible}
                     <EyeOff class="size-4" />
@@ -62,7 +74,11 @@
                     onSuccess={() => twoFactorAuth.fetchRecoveryCodes()}
                 >
                     {#snippet children({ processing })}
-                        <Button variant="secondary" type="submit" disabled={processing}>
+                        <Button
+                            variant="secondary"
+                            type="submit"
+                            disabled={processing}
+                        >
                             <RefreshCw class="size-4" /> Regenerate Codes
                         </Button>
                     {/snippet}
@@ -87,7 +103,9 @@
                         {#if !twoFactorAuth.state.recoveryCodesList.length}
                             <div class="space-y-2">
                                 {#each { length: 8 } as _, n (n)}
-                                    <div class="h-4 animate-pulse rounded bg-muted-foreground/20"></div>
+                                    <div
+                                        class="h-4 animate-pulse rounded bg-muted-foreground/20"
+                                    ></div>
                                 {/each}
                             </div>
                         {:else}
@@ -97,8 +115,9 @@
                         {/if}
                     </div>
                     <p class="text-xs text-muted-foreground select-none">
-                        Each recovery code can be used once to access your account and will be removed after use. If you
-                        need more, click <span class="font-bold">Regenerate Codes</span> above.
+                        Each recovery code can be used once to access your
+                        account and will be removed after use. If you need more,
+                        click <span class="font-bold">Regenerate Codes</span> above.
                     </p>
                 </div>
             {/if}

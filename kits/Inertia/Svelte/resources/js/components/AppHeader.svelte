@@ -8,7 +8,11 @@
     import AppLogo from '@/components/AppLogo.svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import Breadcrumbs from '@/components/Breadcrumbs.svelte';
-    import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+    import {
+        Avatar,
+        AvatarFallback,
+        AvatarImage,
+    } from '@/components/ui/avatar';
     import { Button } from '@/components/ui/button';
     import {
         DropdownMenu,
@@ -50,7 +54,8 @@
     const auth = $derived($page.props.auth);
     const { currentUrl, isCurrentUrl, whenCurrentUrl } = currentUrlState();
 
-    const activeItemStyles = 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
+    const activeItemStyles =
+        'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 
     const mainNavItems: NavItem[] = [
         {
@@ -96,14 +101,23 @@
                     <SheetContent side="left" class="w-[300px] p-6">
                         <SheetTitle class="sr-only">Navigation Menu</SheetTitle>
                         <SheetHeader class="flex justify-start text-left">
-                            <AppLogoIcon class="size-6 fill-current text-black dark:text-white" />
+                            <AppLogoIcon
+                                class="size-6 fill-current text-black dark:text-white"
+                            />
                         </SheetHeader>
-                        <div class="flex h-full flex-1 flex-col justify-between space-y-4 pt-6 pb-10">
+                        <div
+                            class="flex h-full flex-1 flex-col justify-between space-y-4 pt-6 pb-10"
+                        >
                             <nav class="-mx-3 space-y-1">
                                 {#each mainNavItems as item (toUrl(item.href))}
                                     <Link
                                         href={toUrl(item.href)}
-                                        class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent {whenCurrentUrl(item.href, $currentUrl, activeItemStyles, '') ?? ''}"
+                                        class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent {whenCurrentUrl(
+                                            item.href,
+                                            $currentUrl,
+                                            activeItemStyles,
+                                            '',
+                                        ) ?? ''}"
                                     >
                                         {#if item.icon}
                                             <item.icon class="h-5 w-5" />
@@ -139,11 +153,20 @@
             <!-- Desktop Menu -->
             <div class="hidden h-full lg:flex lg:flex-1">
                 <NavigationMenu class="ml-10 flex h-full items-stretch">
-                    <NavigationMenuList class="flex h-full items-stretch space-x-2">
+                    <NavigationMenuList
+                        class="flex h-full items-stretch space-x-2"
+                    >
                         {#each mainNavItems as item (toUrl(item.href))}
-                            <NavigationMenuItem class="relative flex h-full items-center">
+                            <NavigationMenuItem
+                                class="relative flex h-full items-center"
+                            >
                                 <Link
-                                    class="{navigationMenuTriggerStyle()} {whenCurrentUrl(item.href, $currentUrl, activeItemStyles, '') ?? ''} h-9 cursor-pointer px-4"
+                                    class="{navigationMenuTriggerStyle()} {whenCurrentUrl(
+                                        item.href,
+                                        $currentUrl,
+                                        activeItemStyles,
+                                        '',
+                                    ) ?? ''} h-9 cursor-pointer px-4"
                                     href={toUrl(item.href)}
                                 >
                                     {#if item.icon}
@@ -152,7 +175,9 @@
                                     {item.title}
                                 </Link>
                                 {#if isCurrentUrl(item.href, $currentUrl)}
-                                    <div class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
+                                    <div
+                                        class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"
+                                    ></div>
                                 {/if}
                             </NavigationMenuItem>
                         {/each}
@@ -162,8 +187,14 @@
 
             <div class="ml-auto flex items-center space-x-2">
                 <div class="relative flex items-center space-x-1">
-                    <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">
-                        <Search class="size-5 opacity-80 group-hover:opacity-100" />
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        class="group h-9 w-9 cursor-pointer"
+                    >
+                        <Search
+                            class="size-5 opacity-80 group-hover:opacity-100"
+                        />
                     </Button>
 
                     <div class="hidden space-x-1 lg:flex">
@@ -179,8 +210,12 @@
                                                 {...props}
                                                 class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-9 w-9 group cursor-pointer"
                                             >
-                                                <span class="sr-only">{item.title}</span>
-                                                <item.icon class="size-5 opacity-80 group-hover:opacity-100" />
+                                                <span class="sr-only"
+                                                    >{item.title}</span
+                                                >
+                                                <item.icon
+                                                    class="size-5 opacity-80 group-hover:opacity-100"
+                                                />
                                             </a>
                                         {/snippet}
                                     </TooltipTrigger>
@@ -204,11 +239,18 @@
                                 aria-expanded={props['aria-expanded']}
                                 data-state={props['data-state']}
                             >
-                                <Avatar class="size-8 overflow-hidden rounded-full">
+                                <Avatar
+                                    class="size-8 overflow-hidden rounded-full"
+                                >
                                     {#if auth.user.avatar}
-                                        <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
+                                        <AvatarImage
+                                            src={auth.user.avatar}
+                                            alt={auth.user.name}
+                                        />
                                     {/if}
-                                    <AvatarFallback class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
+                                    <AvatarFallback
+                                        class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
+                                    >
                                         {getInitials(auth.user?.name)}
                                     </AvatarFallback>
                                 </Avatar>
@@ -225,7 +267,9 @@
 
     {#if breadcrumbs.length > 1}
         <div class="flex w-full border-b border-sidebar-border/70">
-            <div class="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">
+            <div
+                class="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl"
+            >
                 <Breadcrumbs {breadcrumbs} />
             </div>
         </div>

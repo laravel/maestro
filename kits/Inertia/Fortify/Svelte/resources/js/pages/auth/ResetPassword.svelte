@@ -20,7 +20,10 @@
 
 <AppHead title="Reset password" />
 
-<AuthLayout title="Reset password" description="Please enter your new password below">
+<AuthLayout
+    title="Reset password"
+    description="Please enter your new password below"
+>
     <Form
         {...update.form()}
         transform={(data) => ({ ...data, token, email })}

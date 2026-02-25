@@ -40,7 +40,7 @@
 
 <AppHead title="Two-Factor Authentication" />
 
-<AppLayout breadcrumbs={breadcrumbs}>
+<AppLayout {breadcrumbs}>
     <h1 class="sr-only">Two-Factor Authentication Settings</h1>
 
     <SettingsLayout>
@@ -56,8 +56,10 @@
                     <Badge variant="destructive">Disabled</Badge>
 
                     <p class="text-muted-foreground">
-                        When you enable two-factor authentication, you will be prompted for a secure pin during login. This
-                        pin can be retrieved from a TOTP-supported application on your phone.
+                        When you enable two-factor authentication, you will be
+                        prompted for a secure pin during login. This pin can be
+                        retrieved from a TOTP-supported application on your
+                        phone.
                     </p>
 
                     <div>
@@ -84,8 +86,10 @@
                     <Badge variant="default">Enabled</Badge>
 
                     <p class="text-muted-foreground">
-                        With two-factor authentication enabled, you will be prompted for a secure, random pin during login,
-                        which you can retrieve from the TOTP-supported application on your phone.
+                        With two-factor authentication enabled, you will be
+                        prompted for a secure, random pin during login, which
+                        you can retrieve from the TOTP-supported application on
+                        your phone.
                     </p>
 
                     <TwoFactorRecoveryCodes />
@@ -93,7 +97,11 @@
                     <div class="relative inline">
                         <Form {...disable.form()}>
                             {#snippet children({ processing })}
-                                <Button variant="destructive" type="submit" disabled={processing}>
+                                <Button
+                                    variant="destructive"
+                                    type="submit"
+                                    disabled={processing}
+                                >
                                     <ShieldBan class="size-4" />
                                     Disable 2FA
                                 </Button>

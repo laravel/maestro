@@ -30,7 +30,11 @@
 
     <SettingsLayout>
         <div class="flex flex-col space-y-6">
-            <Heading variant="small" title="Profile information" description="Update your name and email address" />
+            <Heading
+                variant="small"
+                title="Profile information"
+                description="Update your name and email address"
+            />
 
             <Form
                 {...ProfileController.update.form()}
@@ -69,7 +73,11 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button type="submit" disabled={processing} data-test="update-profile-button">Save</Button>
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            data-test="update-profile-button">Save</Button
+                        >
 
                         {#if recentlySuccessful}
                             <p class="text-sm text-neutral-600">Saved.</p>
