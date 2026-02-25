@@ -24,11 +24,11 @@ jobs:
           - name: React Kit
             kit: React
 
-          - name: Vue Kit
-            kit: Vue
-
           - name: Svelte Kit
             kit: Svelte
+
+          - name: Vue Kit
+            kit: Vue
 
     steps:
       - name: Checkout Maestro

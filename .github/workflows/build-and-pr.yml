@@ -18,15 +18,6 @@ jobs:
       matrix:
         include:
           # Livewire variants
-          - name: Livewire Kit
-            kit: Livewire
-            build_flags: ''
-            repository: laravel/livewire-starter-kit
-            path: livewire-starter-kit
-            branch: main
-            pr_branch: maestro-update
-            node: false
-
           - name: Livewire Kit (Blank)
             kit: Livewire
             build_flags: '--blank'
@@ -36,13 +27,13 @@ jobs:
             pr_branch: maestro-update
             node: false
 
-          - name: Livewire Kit (WorkOS)
+          - name: Livewire Kit
             kit: Livewire
-            build_flags: '--workos'
+            build_flags: ''
             repository: laravel/livewire-starter-kit
             path: livewire-starter-kit
-            branch: workos
-            pr_branch: maestro-update-workos
+            branch: main
+            pr_branch: maestro-update
             node: false
 
           - name: Livewire Kit (Components)
@@ -54,21 +45,30 @@ jobs:
             pr_branch: maestro-update-components
             node: false
 
-          # React variants
-          - name: React Kit
-            kit: React
-            build_flags: ''
-            repository: laravel/react-starter-kit
-            path: react-starter-kit
-            branch: main
-            pr_branch: maestro-update
-            node: true
+          - name: Livewire Kit (WorkOS)
+            kit: Livewire
+            build_flags: '--workos'
+            repository: laravel/livewire-starter-kit
+            path: livewire-starter-kit
+            branch: workos
+            pr_branch: maestro-update-workos
+            node: false
 
+          # React variants
           - name: React Kit (Blank)
             kit: React
             build_flags: '--blank'
             repository: laravel/blank-react-starter-kit
             path: blank-react-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: React Kit
+            kit: React
+            build_flags: ''
+            repository: laravel/react-starter-kit
+            path: react-starter-kit
             branch: main
             pr_branch: maestro-update
             node: true
@@ -82,49 +82,21 @@ jobs:
             pr_branch: maestro-update-workos
             node: true
 
-          # Vue variants
-          - name: Vue Kit
-            kit: Vue
-            build_flags: ''
-            repository: laravel/vue-starter-kit
-            path: vue-starter-kit
-            branch: main
-            pr_branch: maestro-update
-            node: true
-
-          - name: Vue Kit (Blank)
-            kit: Vue
-            build_flags: '--blank'
-            repository: laravel/blank-vue-starter-kit
-            path: blank-vue-starter-kit
-            branch: main
-            pr_branch: maestro-update
-            node: true
-
-          - name: Vue Kit (WorkOS)
-            kit: Vue
-            build_flags: '--workos'
-            repository: laravel/vue-starter-kit
-            path: vue-starter-kit
-            branch: workos
-            pr_branch: maestro-update-workos
-            node: true
-
           # Svelte variants
-          - name: Svelte Kit
-            kit: Svelte
-            build_flags: ''
-            repository: laravel/svelte-starter-kit
-            path: svelte-starter-kit
-            branch: main
-            pr_branch: maestro-update
-            node: true
-
           - name: Svelte Kit (Blank)
             kit: Svelte
             build_flags: '--blank'
             repository: laravel/blank-svelte-starter-kit
             path: blank-svelte-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: Svelte Kit
+            kit: Svelte
+            build_flags: ''
+            repository: laravel/svelte-starter-kit
+            path: svelte-starter-kit
             branch: main
             pr_branch: maestro-update
             node: true
@@ -138,6 +110,39 @@ jobs:
             pr_branch: maestro-update-workos
             node: true
 
+          # Vue variants
+          - name: Vue Kit (Blank)
+            kit: Vue
+            build_flags: '--blank'
+            repository: laravel/blank-vue-starter-kit
+            path: blank-vue-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: Vue Kit
+            kit: Vue
+            build_flags: ''
+            repository: laravel/vue-starter-kit
+            path: vue-starter-kit
+            branch: main
+            pr_branch: maestro-update
+            node: true
+
+          - name: Vue Kit (WorkOS)
+            kit: Vue
+            build_flags: '--workos'
+            repository: laravel/vue-starter-kit
+            path: vue-starter-kit
+            branch: workos
+            pr_branch: maestro-update-workos
+            node: true
+
+    # Prevent parallel runs for the same repository
+    concurrency:
+      group: ${{ matrix.repository }}
+      cancel-in-progress: false
+
     steps:
       - name: Checkout Maestro
         uses: actions/checkout@v6
@@ -147,6 +152,12 @@ jobs:
         with:
           php-version: '8.4'
           extensions: mbstring, xml, ctype, json, curl
+
+      - name: Setup Node.js
+        if: matrix.node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Install Composer Dependencies
         working-directory: orchestrator
@@ -181,12 +192,6 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "No changes detected, skipping PR creation."
           fi
-
-      - name: Setup Node.js
-        if: steps.changes.outputs.has_changes == 'true' && matrix.node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
 
       - name: Install and Lint (Composer only)
         if: steps.changes.outputs.has_changes == 'true' && !matrix.node
