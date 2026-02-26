@@ -209,15 +209,15 @@ new class extends Component {
                                 @endif
 
                                 @if ($member['role'] !== 'owner' && $this->permissions->canRemoveMember)
-                                    <flux:tooltip :content="__('Remove member')">
-                                        <flux:modal.trigger name="remove-member-{{ $member['id'] }}">
+                                    <flux:modal.trigger name="remove-member-{{ $member['id'] }}">
+                                        <flux:tooltip :content="__('Remove member')">
                                             <flux:button
                                                 variant="ghost"
                                                 size="sm"
                                                 icon="x-mark"
                                             />
-                                        </flux:modal.trigger>
-                                    </flux:tooltip>
+                                        </flux:tooltip>
+                                    </flux:modal.trigger>
                                 @endif
                             </div>
                         </div>
@@ -256,15 +256,15 @@ new class extends Component {
                                 </div>
 
                                 @if ($this->permissions->canCancelInvitation)
-                                    <flux:tooltip :content="__('Cancel invitation')">
-                                        <flux:modal.trigger name="cancel-invitation-{{ $invitation['code'] }}">
+                                    <flux:modal.trigger name="cancel-invitation-{{ $invitation['code'] }}">
+                                        <flux:tooltip :content="__('Cancel invitation')">
                                             <flux:button
                                                 variant="ghost"
                                                 size="sm"
                                                 icon="x-mark"
                                             />
-                                        </flux:modal.trigger>
-                                    </flux:tooltip>
+                                        </flux:tooltip>
+                                    </flux:modal.trigger>
                                 @endif
                             </div>
                             @if ($this->permissions->canCancelInvitation)
