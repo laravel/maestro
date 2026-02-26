@@ -7,7 +7,7 @@ type NavIcon =
 
 export type BreadcrumbItem = {
     title: string;
-    href?: string;
+    href: NonNullable<LinkComponentBaseProps['href']>;
 };
 
 export type NavItem = {

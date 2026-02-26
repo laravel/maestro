@@ -26,7 +26,7 @@
     const breadcrumbItems: BreadcrumbItem[] = [
         {
             title: 'Profile settings',
-            href: edit().url,
+            href: edit(),
         },
     ];
 
