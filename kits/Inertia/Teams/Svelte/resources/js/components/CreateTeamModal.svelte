@@ -37,7 +37,11 @@
         {/snippet}
     </DialogTrigger>
     <DialogContent>
-        <Form {...store.form()} class="space-y-6" onSuccess={() => (open = false)}>
+        <Form
+            {...store.form()}
+            class="space-y-6"
+            onSuccess={() => (open = false)}
+        >
             {#snippet children({ errors, processing })}
                 <div class="space-y-3">
                     <DialogTitle>Create a new team</DialogTitle>
@@ -48,7 +52,12 @@
 
                 <div class="grid gap-2">
                     <Label for="name">Team Name</Label>
-                    <Input id="name" name="name" placeholder="My Team" required />
+                    <Input
+                        id="name"
+                        name="name"
+                        placeholder="My Team"
+                        required
+                    />
                     <InputError message={errors.name} />
                 </div>
 
@@ -57,7 +66,9 @@
                         <Button variant="secondary">Cancel</Button>
                     </DialogClose>
 
-                    <Button type="submit" disabled={processing}>Create Team</Button>
+                    <Button type="submit" disabled={processing}
+                        >Create Team</Button
+                    >
                 </DialogFooter>
             {/snippet}
         </Form>

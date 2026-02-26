@@ -11,7 +11,11 @@
     import InputError from '@/components/InputError.svelte';
     import InviteMemberModal from '@/components/InviteMemberModal.svelte';
     import RemoveMemberModal from '@/components/RemoveMemberModal.svelte';
-    import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+    import {
+        Avatar,
+        AvatarFallback,
+        AvatarImage,
+    } from '@/components/ui/avatar';
     import { Badge } from '@/components/ui/badge';
     import { Button } from '@/components/ui/button';
     import {
@@ -78,7 +82,9 @@
     let cancelInvitationDialogOpen = $state(false);
     let invitationToCancel = $state<TeamInvitation | null>(null);
 
-    const pageTitle = $derived(permissions.canUpdateTeam ? `Edit ${team.name}` : `View ${team.name}`);
+    const pageTitle = $derived(
+        permissions.canUpdateTeam ? `Edit ${team.name}` : `View ${team.name}`,
+    );
 
     const updateMemberRole = (member: TeamMember, newRole: string) => {
         router.patch(
@@ -121,18 +127,31 @@
                     />
 
                     <Form {...update.form(team.slug)} class="space-y-6">
-                        {#snippet children({ errors, processing, recentlySuccessful })}
+                        {#snippet children({
+                            errors,
+                            processing,
+                            recentlySuccessful,
+                        })}
                             <div class="grid gap-2">
                                 <Label for="name">Team Name</Label>
-                                <Input id="name" name="name" value={team.name} required />
+                                <Input
+                                    id="name"
+                                    name="name"
+                                    value={team.name}
+                                    required
+                                />
                                 <InputError message={errors.name} />
                             </div>
 
                             <div class="flex items-center gap-4">
-                                <Button type="submit" disabled={processing}>Save</Button>
+                                <Button type="submit" disabled={processing}
+                                    >Save</Button
+                                >
 
                                 {#if recentlySuccessful}
-                                    <p class="text-sm text-neutral-600">Saved.</p>
+                                    <p class="text-sm text-neutral-600">
+                                        Saved.
+                                    </p>
                                 {/if}
                             </div>
                         {/snippet}
@@ -161,18 +180,29 @@
 
                 <div class="space-y-3">
                     {#each members as member (member.id)}
-                        <div class="flex items-center justify-between rounded-lg border p-4">
+                        <div
+                            class="flex items-center justify-between rounded-lg border p-4"
+                        >
                             <div class="flex items-center gap-4">
                                 <Avatar class="h-10 w-10">
                                     {#if member.avatar}
-                                        <AvatarImage src={member.avatar} alt={member.name} />
+                                        <AvatarImage
+                                            src={member.avatar}
+                                            alt={member.name}
+                                        />
                                     {/if}
-                                    <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
+                                    <AvatarFallback
+                                        >{getInitials(
+                                            member.name,
+                                        )}</AvatarFallback
+                                    >
                                 </Avatar>
 
                                 <div>
                                     <div class="font-medium">{member.name}</div>
-                                    <div class="text-sm text-muted-foreground">{member.email}</div>
+                                    <div class="text-sm text-muted-foreground">
+                                        {member.email}
+                                    </div>
                                 </div>
                             </div>
 
@@ -185,11 +215,17 @@
                                                     variant="outline"
                                                     size="sm"
                                                     onclick={props.onclick}
-                                                    aria-expanded={props['aria-expanded']}
-                                                    data-state={props['data-state']}
+                                                    aria-expanded={props[
+                                                        'aria-expanded'
+                                                    ]}
+                                                    data-state={props[
+                                                        'data-state'
+                                                    ]}
                                                 >
                                                     {member.role_label}
-                                                    <ChevronDown class="ml-2 h-4 w-4 opacity-50" />
+                                                    <ChevronDown
+                                                        class="ml-2 h-4 w-4 opacity-50"
+                                                    />
                                                 </Button>
                                             {/snippet}
                                         </DropdownMenuTrigger>
@@ -200,9 +236,16 @@
                                                         <button
                                                             type="button"
                                                             class={props.class}
-                                                            onclick={(event) => {
-                                                                props.onClick?.(event);
-                                                                updateMemberRole(member, role.value);
+                                                            onclick={(
+                                                                event,
+                                                            ) => {
+                                                                props.onClick?.(
+                                                                    event,
+                                                                );
+                                                                updateMemberRole(
+                                                                    member,
+                                                                    role.value,
+                                                                );
                                                             }}
                                                         >
                                                             {role.label}
@@ -213,7 +256,9 @@
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 {:else}
-                                    <Badge variant="secondary">{member.role_label}</Badge>
+                                    <Badge variant="secondary"
+                                        >{member.role_label}</Badge
+                                    >
                                 {/if}
 
                                 {#if member.role !== 'owner' && permissions.canRemoveMember}
@@ -226,8 +271,13 @@
                                                         size="sm"
                                                         {...props}
                                                         onclick={(event) => {
-                                                            callClickHandler(props.onClick, event);
-                                                            confirmRemoveMember(member);
+                                                            callClickHandler(
+                                                                props.onClick,
+                                                                event,
+                                                            );
+                                                            confirmRemoveMember(
+                                                                member,
+                                                            );
                                                         }}
                                                     >
                                                         <X class="h-4 w-4" />
@@ -256,14 +306,26 @@
 
                     <div class="space-y-3">
                         {#each invitations as invitation (invitation.code)}
-                            <div class="flex items-center justify-between rounded-lg border p-4">
+                            <div
+                                class="flex items-center justify-between rounded-lg border p-4"
+                            >
                                 <div class="flex items-center gap-4">
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                                        <Mail class="h-5 w-5 text-muted-foreground" />
+                                    <div
+                                        class="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
+                                    >
+                                        <Mail
+                                            class="h-5 w-5 text-muted-foreground"
+                                        />
                                     </div>
                                     <div>
-                                        <div class="font-medium">{invitation.email}</div>
-                                        <div class="text-sm text-muted-foreground">{invitation.role_label}</div>
+                                        <div class="font-medium">
+                                            {invitation.email}
+                                        </div>
+                                        <div
+                                            class="text-sm text-muted-foreground"
+                                        >
+                                            {invitation.role_label}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -277,8 +339,13 @@
                                                         size="sm"
                                                         {...props}
                                                         onclick={(event) => {
-                                                            callClickHandler(props.onClick, event);
-                                                            confirmCancelInvitation(invitation);
+                                                            callClickHandler(
+                                                                props.onClick,
+                                                                event,
+                                                            );
+                                                            confirmCancelInvitation(
+                                                                invitation,
+                                                            );
                                                         }}
                                                     >
                                                         <X class="h-4 w-4" />
@@ -304,10 +371,17 @@
                         title="Delete team"
                         description="Delete your team and remove access from all the members to it"
                     />
-                    <div class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
-                        <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
+                    <div
+                        class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
+                    >
+                        <div
+                            class="relative space-y-0.5 text-red-600 dark:text-red-100"
+                        >
                             <p class="font-medium">Warning</p>
-                            <p class="text-sm">Please proceed with caution, this cannot be undone.</p>
+                            <p class="text-sm">
+                                Please proceed with caution, this cannot be
+                                undone.
+                            </p>
                         </div>
 
                         <Button

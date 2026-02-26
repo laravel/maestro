@@ -40,7 +40,8 @@
         <div class="space-y-3">
             <DialogTitle>Remove team member</DialogTitle>
             <DialogDescription>
-                Are you sure you want to remove <strong>{member?.name}</strong> from this team?
+                Are you sure you want to remove <strong>{member?.name}</strong> from
+                this team?
             </DialogDescription>
         </div>
 
@@ -49,7 +50,9 @@
                 <Button variant="secondary">Cancel</Button>
             </DialogClose>
 
-            <Button variant="destructive" onclick={removeMember}>Remove Member</Button>
+            <Button variant="destructive" onclick={removeMember}
+                >Remove Member</Button
+            >
         </DialogFooter>
     </DialogContent>
 </Dialog>

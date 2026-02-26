@@ -28,7 +28,9 @@
     } = $props();
 
     const currentTeam = $derived($page.props.currentTeam as Team | null);
-    const dashboardUrl = $derived(currentTeam ? dashboard(currentTeam.slug) : '/');
+    const dashboardUrl = $derived(
+        currentTeam ? dashboard(currentTeam.slug) : '/',
+    );
 
     const mainNavItems = $derived<NavItem[]>([
         {
@@ -58,7 +60,11 @@
             <SidebarMenuItem>
                 <SidebarMenuButton size="lg" asChild>
                     {#snippet children(props)}
-                        <Link {...props} href={dashboardUrl} class={props.class}>
+                        <Link
+                            {...props}
+                            href={dashboardUrl}
+                            class={props.class}
+                        >
                             <AppLogo />
                         </Link>
                     {/snippet}

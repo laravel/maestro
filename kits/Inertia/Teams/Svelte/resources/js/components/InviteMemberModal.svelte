@@ -34,7 +34,8 @@
     let inviteRole = $state<RoleOption['value']>('member');
 
     const inviteRoleLabel = $derived(
-        availableRoles.find((role) => role.value === inviteRole)?.label ?? 'Select a role',
+        availableRoles.find((role) => role.value === inviteRole)?.label ??
+            'Select a role',
     );
 </script>
 
@@ -74,7 +75,10 @@
                             </SelectTrigger>
                             <SelectContent>
                                 {#each availableRoles as role (role.value)}
-                                    <SelectItem value={role.value} label={role.label}>
+                                    <SelectItem
+                                        value={role.value}
+                                        label={role.label}
+                                    >
                                         {role.label}
                                     </SelectItem>
                                 {/each}
@@ -91,7 +95,9 @@
                         <Button variant="secondary">Cancel</Button>
                     </DialogClose>
 
-                    <Button type="submit" disabled={processing}>Send Invitation</Button>
+                    <Button type="submit" disabled={processing}
+                        >Send Invitation</Button
+                    >
                 </DialogFooter>
             {/snippet}
         </Form>
