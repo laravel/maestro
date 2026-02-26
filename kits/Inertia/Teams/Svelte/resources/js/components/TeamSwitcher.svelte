@@ -43,28 +43,35 @@
     const switchTeam = (team: Team) => {
         const previousTeamSlug = currentTeam?.slug;
 
-        router.post(switchMethod(team.slug).url, {}, {
-            onFinish: () => {
-                if (!previousTeamSlug || typeof window === 'undefined') {
+        router.post(
+            switchMethod(team.slug).url,
+            {},
+            {
+                onFinish: () => {
+                    if (!previousTeamSlug || typeof window === 'undefined') {
+                        router.reload();
+
+                        return;
+                    }
+
+                    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+                    const segment = `/${previousTeamSlug}`;
+
+                    if (currentUrl.includes(segment)) {
+                        router.visit(
+                            currentUrl.replace(segment, `/${team.slug}`),
+                            {
+                                replace: true,
+                            },
+                        );
+
+                        return;
+                    }
+
                     router.reload();
-
-                    return;
-                }
-
-                const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-                const segment = `/${previousTeamSlug}`;
-
-                if (currentUrl.includes(segment)) {
-                    router.visit(currentUrl.replace(segment, `/${team.slug}`), {
-                        replace: true,
-                    });
-
-                    return;
-                }
-
-                router.reload();
+                },
             },
-        });
+        );
     };
 </script>
 
@@ -80,27 +87,43 @@
                 aria-expanded={props['aria-expanded']}
                 data-state={props['data-state']}
             >
-                <Users class={inHeader ? 'hidden' : 'hidden size-4 shrink-0 group-data-[collapsible=icon]:block'} />
-                <div class={inHeader
-                    ? 'grid flex-1 text-left text-sm leading-tight'
-                    : 'grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden'}>
-                    <span class={inHeader ? 'max-w-[120px] truncate font-medium' : 'truncate font-semibold'}>
+                <Users
+                    class={inHeader
+                        ? 'hidden'
+                        : 'hidden size-4 shrink-0 group-data-[collapsible=icon]:block'}
+                />
+                <div
+                    class={inHeader
+                        ? 'grid flex-1 text-left text-sm leading-tight'
+                        : 'grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden'}
+                >
+                    <span
+                        class={inHeader
+                            ? 'max-w-[120px] truncate font-medium'
+                            : 'truncate font-semibold'}
+                    >
                         {currentTeam?.name ?? 'Select Team'}
                     </span>
                 </div>
                 <ChevronsUpDown
-                    class={inHeader ? 'size-4 opacity-50' : 'ml-auto size-4 group-data-[collapsible=icon]:hidden'}
+                    class={inHeader
+                        ? 'size-4 opacity-50'
+                        : 'ml-auto size-4 group-data-[collapsible=icon]:hidden'}
                 />
             </Button>
         {/snippet}
     </DropdownMenuTrigger>
     <DropdownMenuContent
-        class={inHeader ? 'w-56' : 'w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg'}
+        class={inHeader
+            ? 'w-56'
+            : 'w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg'}
         side={inHeader ? undefined : isMobile ? 'bottom' : 'right'}
         align={inHeader ? 'end' : 'start'}
         sideOffset={inHeader ? undefined : 4}
     >
-        <DropdownMenuLabel class="text-xs text-muted-foreground">Teams</DropdownMenuLabel>
+        <DropdownMenuLabel class="text-xs text-muted-foreground"
+            >Teams</DropdownMenuLabel
+        >
 
         {#each teams as team (team.id)}
             <DropdownMenuItem asChild>
@@ -115,7 +138,11 @@
                     >
                         {team.name}
                         {#if currentTeam?.id === team.id}
-                            <Check class={inHeader ? 'ml-auto size-4' : 'ml-auto h-4 w-4'} />
+                            <Check
+                                class={inHeader
+                                    ? 'ml-auto size-4'
+                                    : 'ml-auto h-4 w-4'}
+                            />
                         {/if}
                     </button>
                 {/snippet}
@@ -136,7 +163,9 @@
                             }}
                         >
                             <Plus class={inHeader ? 'size-4' : 'h-4 w-4'} />
-                            <span class="text-muted-foreground">Create Team</span>
+                            <span class="text-muted-foreground"
+                                >Create Team</span
+                            >
                         </button>
                     {/snippet}
                 </DropdownMenuItem>

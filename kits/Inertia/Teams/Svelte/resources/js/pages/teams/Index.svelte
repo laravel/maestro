@@ -42,7 +42,10 @@
         }
     };
 
-    const handleCreateTeamClick = (props: Record<string, unknown>, event: MouseEvent) => {
+    const handleCreateTeamClick = (
+        props: Record<string, unknown>,
+        event: MouseEvent,
+    ) => {
         callClickHandler(props.onClick, event);
     };
 </script>
@@ -63,7 +66,10 @@
 
                 <CreateTeamModal>
                     {#snippet children(props)}
-                        <Button onclick={(event) => handleCreateTeamClick(props, event)}>
+                        <Button
+                            onclick={(event) =>
+                                handleCreateTeamClick(props, event)}
+                        >
                             <Plus class="h-4 w-4" /> Create Team
                         </Button>
                     {/snippet}
@@ -73,7 +79,9 @@
             <div class="space-y-3">
                 {#each teams as team (team.id)}
                     <div
-                        class="flex items-center justify-between rounded-lg border p-4 {team.isCurrent ? 'border-ring/60' : ''}"
+                        class="flex items-center justify-between rounded-lg border p-4 {team.isCurrent
+                            ? 'border-ring/60'
+                            : ''}"
                     >
                         <div class="flex items-center gap-4">
                             <div>
@@ -87,7 +95,9 @@
                                     {/if}
                                 </div>
 
-                                <span class="text-sm text-muted-foreground">{team.roleLabel}</span>
+                                <span class="text-sm text-muted-foreground"
+                                    >{team.roleLabel}</span
+                                >
                             </div>
                         </div>
 
@@ -97,8 +107,14 @@
                                     <Tooltip>
                                         <TooltipTrigger>
                                             {#snippet child({ props })}
-                                                <Button variant="ghost" size="sm" {...props}>
-                                                    <CheckCircle class="h-4 w-4" />
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    {...props}
+                                                >
+                                                    <CheckCircle
+                                                        class="h-4 w-4"
+                                                    />
                                                 </Button>
                                             {/snippet}
                                         </TooltipTrigger>
@@ -115,11 +131,16 @@
                                                     size="sm"
                                                     {...props}
                                                     onclick={(event) => {
-                                                        callClickHandler(props.onClick, event);
+                                                        callClickHandler(
+                                                            props.onClick,
+                                                            event,
+                                                        );
                                                         switchTeam(team);
                                                     }}
                                                 >
-                                                    <Circle class="h-4 w-4 text-muted-foreground" />
+                                                    <Circle
+                                                        class="h-4 w-4 text-muted-foreground"
+                                                    />
                                                 </Button>
                                             {/snippet}
                                         </TooltipTrigger>
@@ -133,13 +154,24 @@
                                     <Tooltip>
                                         <TooltipTrigger>
                                             {#snippet child({ props })}
-                                                <Button variant="ghost" size="sm" asChild {...props}>
-                                                    {#snippet children(buttonProps)}
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    asChild
+                                                    {...props}
+                                                >
+                                                    {#snippet children(
+                                                        buttonProps,
+                                                    )}
                                                         <Link
                                                             {...buttonProps}
-                                                            href={edit(team.slug).url}
+                                                            href={edit(
+                                                                team.slug,
+                                                            ).url}
                                                         >
-                                                            <Eye class="h-4 w-4" />
+                                                            <Eye
+                                                                class="h-4 w-4"
+                                                            />
                                                         </Link>
                                                     {/snippet}
                                                 </Button>
@@ -153,13 +185,24 @@
                                     <Tooltip>
                                         <TooltipTrigger>
                                             {#snippet child({ props })}
-                                                <Button variant="ghost" size="sm" asChild {...props}>
-                                                    {#snippet children(buttonProps)}
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    asChild
+                                                    {...props}
+                                                >
+                                                    {#snippet children(
+                                                        buttonProps,
+                                                    )}
                                                         <Link
                                                             {...buttonProps}
-                                                            href={edit(team.slug).url}
+                                                            href={edit(
+                                                                team.slug,
+                                                            ).url}
                                                         >
-                                                            <Pencil class="h-4 w-4" />
+                                                            <Pencil
+                                                                class="h-4 w-4"
+                                                            />
                                                         </Link>
                                                     {/snippet}
                                                 </Button>
@@ -176,7 +219,9 @@
                 {/each}
 
                 {#if teams.length === 0}
-                    <p class="py-8 text-center text-muted-foreground">You don't belong to any teams yet.</p>
+                    <p class="py-8 text-center text-muted-foreground">
+                        You don't belong to any teams yet.
+                    </p>
                 {/if}
             </div>
         </div>
