@@ -19,14 +19,14 @@
 
 <Breadcrumb>
     <BreadcrumbList>
-        {#each breadcrumbs as item, index (item.href ?? item.title)}
+        {#each breadcrumbs as item, index (item.href)}
             <BreadcrumbItem>
                 {#if index === breadcrumbs.length - 1}
                     <BreadcrumbPage>{item.title}</BreadcrumbPage>
                 {:else}
                     <BreadcrumbLink asChild>
                         {#snippet children(props)}
-                            <Link href={item.href ?? '#'} class={props.class}>
+                            <Link href={item.href} class={props.class}>
                                 {item.title}
                             </Link>
                         {/snippet}
