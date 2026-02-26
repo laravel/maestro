@@ -36,11 +36,14 @@
     let newCurrentTeamId = $state('');
 
     const canDeleteTeam = $derived(
-        confirmationName === team.name && (!isCurrentTeam || newCurrentTeamId !== ''),
+        confirmationName === team.name &&
+            (!isCurrentTeam || newCurrentTeamId !== ''),
     );
 
     const selectedNewCurrentTeam = $derived(
-        otherTeams.find((otherTeam) => String(otherTeam.id) === newCurrentTeamId),
+        otherTeams.find(
+            (otherTeam) => String(otherTeam.id) === newCurrentTeamId,
+        ),
     );
 
     const resetDialog = () => {
@@ -58,7 +61,8 @@
         router.delete(destroy(team.slug).url, {
             data: {
                 name: confirmationName,
-                new_current_team_id: newCurrentTeamId === '' ? null : Number(newCurrentTeamId),
+                new_current_team_id:
+                    newCurrentTeamId === '' ? null : Number(newCurrentTeamId),
             },
             onSuccess: () => (open = false),
         });
@@ -70,7 +74,8 @@
         <div class="space-y-3">
             <DialogTitle>Are you sure?</DialogTitle>
             <DialogDescription>
-                This action cannot be undone. This will permanently delete the team
+                This action cannot be undone. This will permanently delete the
+                team
                 <strong>{team.name}</strong> and remove all of its members.
             </DialogDescription>
         </div>
@@ -84,7 +89,9 @@
                     id="confirmation-name"
                     value={confirmationName}
                     oninput={(event) =>
-                        (confirmationName = (event.currentTarget as HTMLInputElement).value)}
+                        (confirmationName = (
+                            event.currentTarget as HTMLInputElement
+                        ).value)}
                     placeholder="Enter team name"
                     autocomplete="off"
                 />
@@ -92,7 +99,9 @@
 
             {#if isCurrentTeam && otherTeams.length > 0}
                 <div class="grid gap-2">
-                    <Label for="new-current-team">Select a new current team</Label>
+                    <Label for="new-current-team"
+                        >Select a new current team</Label
+                    >
 
                     <Select bind:value={newCurrentTeamId}>
                         <SelectTrigger class="w-full">
@@ -106,7 +115,9 @@
                                 >
                                     {otherTeam.name}
                                     {#if otherTeam.isPersonal}
-                                        <span class="ml-2 text-muted-foreground">(Personal)</span>
+                                        <span class="ml-2 text-muted-foreground"
+                                            >(Personal)</span
+                                        >
                                     {/if}
                                 </SelectItem>
                             {/each}
@@ -114,22 +125,32 @@
                     </Select>
 
                     <p class="text-sm text-muted-foreground">
-                        You are deleting your current team. Please select which team to switch to.
+                        You are deleting your current team. Please select which
+                        team to switch to.
                     </p>
                 </div>
             {:else if isCurrentTeam && otherTeams.length === 0}
-                <div class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200">
-                    You cannot delete your current team because you have no other teams to switch to. Please create or join another team first.
+                <div
+                    class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200"
+                >
+                    You cannot delete your current team because you have no
+                    other teams to switch to. Please create or join another team
+                    first.
                 </div>
             {/if}
         </div>
 
         <DialogFooter class="gap-2">
             <DialogClose>
-                <Button variant="secondary" onclick={resetDialog}>Cancel</Button>
+                <Button variant="secondary" onclick={resetDialog}>Cancel</Button
+                >
             </DialogClose>
 
-            <Button variant="destructive" disabled={!canDeleteTeam} onclick={deleteTeam}>
+            <Button
+                variant="destructive"
+                disabled={!canDeleteTeam}
+                onclick={deleteTeam}
+            >
                 Delete Team
             </Button>
         </DialogFooter>

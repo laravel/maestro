@@ -40,7 +40,9 @@
         <div class="space-y-3">
             <DialogTitle>Cancel invitation</DialogTitle>
             <DialogDescription class="mb-3">
-                Are you sure you want to cancel the invitation for <strong>{invitation?.email}</strong>?
+                Are you sure you want to cancel the invitation for <strong
+                    >{invitation?.email}</strong
+                >?
             </DialogDescription>
         </div>
 
@@ -49,7 +51,9 @@
                 <Button variant="secondary">Keep Invitation</Button>
             </DialogClose>
 
-            <Button variant="destructive" onclick={cancelInvitation}>Cancel Invitation</Button>
+            <Button variant="destructive" onclick={cancelInvitation}
+                >Cancel Invitation</Button
+            >
         </DialogFooter>
     </DialogContent>
 </Dialog>
