@@ -60,6 +60,10 @@
         "test:lint": [
             "pint --parallel --test"
         ],
+        "ci:check": [
+            "Composer\\Config::disableProcessTimeout",
+            "@test"
+        ],
         "test": [
             "@php artisan config:clear --ansi",
             "@test:lint",

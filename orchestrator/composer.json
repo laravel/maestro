@@ -62,6 +62,10 @@
             "pint --parallel ../kits",
             "node scripts/lint-kits.js"
         ],
+        "kits:check": [
+            "Composer\\Config::disableProcessTimeout",
+            "node scripts/check-kits.js"
+        ],
         "kit:run": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd\" \"node scripts/run.js\" \"npm run watch:kits\" --names=dev,watch --kill-others"

@@ -188,23 +188,6 @@ jobs:
             echo "No changes detected, skipping PR creation."
           fi
 
-      - name: Install and Lint (Composer only)
-        if: steps.changes.outputs.has_changes == 'true' && !matrix.node
-        working-directory: ${{ matrix.path }}
-        run: |
-          composer install --no-interaction --prefer-dist
-          composer lint
-
-      - name: Install and Lint (Composer + Node)
-        if: steps.changes.outputs.has_changes == 'true' && matrix.node
-        working-directory: ${{ matrix.path }}
-        run: |
-          composer install --no-interaction --prefer-dist
-          composer lint
-          npm install
-          npm run format
-          npm run lint
-
       - name: Remove Lock Files
         if: steps.changes.outputs.has_changes == 'true'
         working-directory: ${{ matrix.path }}

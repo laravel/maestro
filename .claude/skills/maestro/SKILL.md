@@ -27,10 +27,19 @@ All commands below run from the `orchestrator/` directory unless noted otherwise
 | `php artisan build --kit=livewire --workos`          | Build Livewire WorkOS kit.                                                 |
 | `composer kit:run`                                   | Start dev server + file watcher (syncs `build/` back to `kits/`).          |
 | `composer lint:kits`                                 | Run Pint for `kits/`, then lint/format all Inertia variants and sync back. |
+| `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 13 kit variants sequentially. |
 | `npm run watch:kits`                                 | Run only the file watcher (no dev server).                                 |
-| `composer setup && php artisan test`                 | Run inside `build/` after building to install deps and run tests.          |
+| `composer setup && composer ci:check`                | Run inside `build/` — installs deps, builds frontend, runs checks (see below). |
 
 Available `--kit` values defined in `orchestrator/app/Enums/StarterKit.php`.
+
+### CI Checks (`composer ci:check`)
+
+Every starter kit has a `ci:check` composer script that validates the kit without auto-fixing. Run `composer setup` first to install dependencies and build the frontend (`composer setup` runs `composer install`, `npm install`, and `npm run build`, which generates the Wayfinder types needed by eslint and the type checker).
+
+**Inertia kits** run: `eslint .`, `prettier --check .`, `tsc --noEmit` / `vue-tsc --noEmit` / `svelte-check`, then `@test` (pint + PHPUnit).
+
+**Livewire kits** run: `@test` (pint + PHPUnit) only.
 
 ## Starter Kit Variants (13 total)
 
@@ -148,7 +157,7 @@ Svelte and Vue use PascalCase page names. React uses kebab-case.
 1. **Build**: `cd orchestrator && php artisan build --kit=svelte`
 2. **Develop**: `composer kit:run` (starts dev server at localhost:8000 + watcher)
 3. **Edit**: Make changes in `build/` — the watcher syncs them to `kits/`
-4. **Test**: Inside `build/`, run `composer setup && php artisan test`
+4. **Test**: Inside `build/`, run `composer setup && composer ci:check`
 5. **Commit**: Commit the changes in `kits/` (not `build/`)
 6. **PR**: Create PR; after merge, Maestro auto-creates PRs for affected kit repos
 
@@ -242,4 +251,4 @@ Kit names are case-sensitive here because the workflow matrix uses `Livewire`, `
 3. **Layer awareness**: Know which layer a file belongs to. Shared files affect all kits. Framework-specific files only affect that framework.
 4. **Placeholder awareness**: Files in `kits/` contain `{{placeholders}}`. Files in `build/` have resolved values. The watcher handles conversion.
 5. **Lint changes**: Run `composer lint` in `orchestrator` for orchestrator PHP linting, and run `composer lint:kits` to run Pint on `kits/`, run UI lint/format across all Inertia variants, and sync changes back to `kits/`.
-6. **Test after changes**: Run `composer setup && php artisan test` inside `build/` to verify nothing is broken. For Svelte kits, also run `npm run check` to see if there are no errors/warning for Svelte specific-code.
+6. **Test after changes**: Run `composer setup && composer ci:check` inside `build/` to verify nothing is broken.

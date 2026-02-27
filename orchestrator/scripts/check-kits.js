@@ -57,6 +57,26 @@ const variants = [
         display: 'Vue WorkOS',
         buildArgs: ['build', '--no-interaction', '--kit=Vue', '--workos'],
     },
+    {
+        key: 'livewire-blank',
+        display: 'Livewire Blank',
+        buildArgs: ['build', '--no-interaction', '--kit=Livewire', '--blank'],
+    },
+    {
+        key: 'livewire',
+        display: 'Livewire Fortify',
+        buildArgs: ['build', '--no-interaction', '--kit=Livewire'],
+    },
+    {
+        key: 'livewire-components',
+        display: 'Livewire Components',
+        buildArgs: ['build', '--no-interaction', '--kit=Livewire', '--components'],
+    },
+    {
+        key: 'livewire-workos',
+        display: 'Livewire WorkOS',
+        buildArgs: ['build', '--no-interaction', '--kit=Livewire', '--workos'],
+    },
 ];
 
 const colors = {
@@ -102,23 +122,12 @@ function removeBuildDirectory() {
     fs.rmSync(buildDir, { recursive: true, force: true });
 }
 
-async function lintCurrentBuild() {
-    await runCommand('composer', ['install'], { cwd: buildDir });
-    await runCommand('npm', ['install'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'build'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'lint'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'format'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'lint'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'format'], { cwd: buildDir });
+async function checkCurrentBuild() {
+    await runCommand('composer', ['setup'], { cwd: buildDir });
+    await runCommand('composer', ['ci:check'], { cwd: buildDir });
 }
 
-function runWatcherInitialSync() {
-    return runCommand('node', ['scripts/watch.js', '--initial-sync-only'], {
-        cwd: orchestratorDir,
-    });
-}
-
-async function lintVariant(variant, index, total) {
+async function checkVariant(variant, index, total) {
     log(`\n[${index}/${total}] ${variant.display} (${variant.key})`, 'blue');
 
     removeBuildDirectory();
@@ -126,26 +135,23 @@ async function lintVariant(variant, index, total) {
     log('Building variant...', 'blue');
     await runCommand('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
 
-    log('Running frontend lint and format commands...', 'blue');
-    await lintCurrentBuild();
+    log('Running CI checks...', 'blue');
+    await checkCurrentBuild();
 
-    log('Running watcher initial sync...', 'blue');
-    await runWatcherInitialSync();
-
-    log(`Finished ${variant.key}`, 'green');
+    log(`Passed ${variant.key}`, 'green');
 }
 
 async function main() {
     const total = variants.length;
 
     for (let index = 0; index < total; index++) {
-        await lintVariant(variants[index], index + 1, total);
+        await checkVariant(variants[index], index + 1, total);
     }
 
-    log('\nAll Inertia kit variants linted successfully.', 'green');
+    log('\nAll starter kit variants passed CI checks.', 'green');
 }
 
 main().catch(error => {
-    log(`\nLint kits failed: ${error.message}`, 'red');
+    log(`\nCheck kits failed: ${error.message}`, 'red');
     process.exit(1);
 });

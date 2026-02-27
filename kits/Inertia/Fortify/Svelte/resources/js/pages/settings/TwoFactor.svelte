@@ -12,8 +12,8 @@
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
-    import type { BreadcrumbItem } from '@/types';
     import { disable, enable, show } from '@/routes/two-factor';
+    import type { BreadcrumbItem } from '@/types';
 
     let {
         requiresConfirmation = false,

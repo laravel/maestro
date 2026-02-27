@@ -1,0 +1,137 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Livewire variants
+          - name: Livewire Kit (Blank)
+            kit: Livewire
+            build_flags: '--blank'
+            path: blank-livewire-starter-kit
+            node: false
+
+          - name: Livewire Kit
+            kit: Livewire
+            build_flags: ''
+            path: livewire-starter-kit
+            node: false
+
+          - name: Livewire Kit (Components)
+            kit: Livewire
+            build_flags: '--components'
+            path: livewire-starter-kit-components
+            node: false
+
+          - name: Livewire Kit (WorkOS)
+            kit: Livewire
+            build_flags: '--workos'
+            path: livewire-starter-kit-workos
+            node: false
+
+          # React variants
+          - name: React Kit (Blank)
+            kit: React
+            build_flags: '--blank'
+            path: blank-react-starter-kit
+            node: true
+
+          - name: React Kit
+            kit: React
+            build_flags: ''
+            path: react-starter-kit
+            node: true
+
+          - name: React Kit (WorkOS)
+            kit: React
+            build_flags: '--workos'
+            path: react-starter-kit-workos
+            node: true
+
+          # Svelte variants
+          - name: Svelte Kit (Blank)
+            kit: Svelte
+            build_flags: '--blank'
+            path: blank-svelte-starter-kit
+            node: true
+
+          - name: Svelte Kit
+            kit: Svelte
+            build_flags: ''
+            path: svelte-starter-kit
+            node: true
+
+          - name: Svelte Kit (WorkOS)
+            kit: Svelte
+            build_flags: '--workos'
+            path: svelte-starter-kit-workos
+            node: true
+
+          # Vue variants
+          - name: Vue Kit (Blank)
+            kit: Vue
+            build_flags: '--blank'
+            path: blank-vue-starter-kit
+            node: true
+
+          - name: Vue Kit
+            kit: Vue
+            build_flags: ''
+            path: vue-starter-kit
+            node: true
+
+          - name: Vue Kit (WorkOS)
+            kit: Vue
+            build_flags: '--workos'
+            path: vue-starter-kit-workos
+            node: true
+
+    steps:
+      - name: Checkout Maestro
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Setup Node.js
+        if: matrix.node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Composer Dependencies
+        working-directory: orchestrator
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Build ${{ matrix.name }}
+        working-directory: orchestrator
+        run: php artisan build --kit=${{ matrix.kit }} ${{ matrix.build_flags }}
+
+      - name: Rename Build
+        run: mv build ${{ matrix.path }}
+
+      - name: Setup Kit
+        working-directory: ${{ matrix.path }}
+        run: composer setup
+
+      - name: Run CI Checks
+        working-directory: ${{ matrix.path }}
+        run: composer ci:check
