@@ -40,11 +40,11 @@ const open = ref(false);
                 </DialogHeader>
 
                 <div class="grid gap-2">
-                    <Label for="name">Team Name</Label>
+                    <Label for="name">Team name</Label>
                     <Input
                         id="name"
                         name="name"
-                        placeholder="My Team"
+                        placeholder="My team"
                         required
                     />
                     <InputError :message="errors.name" />
@@ -56,7 +56,7 @@ const open = ref(false);
                     </DialogClose>
 
                     <Button type="submit" :disabled="processing">
-                        Create Team
+                        Create team
                     </Button>
                 </DialogFooter>
             </Form>

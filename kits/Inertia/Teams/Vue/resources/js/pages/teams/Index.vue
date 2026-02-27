@@ -48,7 +48,7 @@ const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
                     />
 
                     <CreateTeamModal>
-                        <Button> <Plus /> Create Team </Button>
+                        <Button> <Plus /> Create team </Button>
                     </CreateTeamModal>
                 </div>
 

@@ -37,7 +37,7 @@
                     class="w-full cursor-pointer"
                     data-test="logout-button"
                 >
-                    {{ __('Log Out') }}
+                    {{ __('Log out') }}
                 </flux:menu.item>
             </form>
         </flux:menu.radio.group>

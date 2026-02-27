@@ -52,7 +52,7 @@ export default function RemoveMemberModal({
                     </DialogClose>
 
                     <Button variant="destructive" onClick={removeMember}>
-                        Remove Member
+                        Remove member
                     </Button>
                 </DialogFooter>
             </DialogContent>

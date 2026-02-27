@@ -56,7 +56,7 @@ const inviteRole = ref('member');
 
                 <div class="grid gap-4">
                     <div class="grid gap-2">
-                        <Label for="email">Email Address</Label>
+                        <Label for="email">Email address</Label>
                         <Input
                             id="email"
                             name="email"
@@ -93,7 +93,7 @@ const inviteRole = ref('member');
                     </DialogClose>
 
                     <Button type="submit" :disabled="processing">
-                        Send Invitation
+                        Send invitation
                     </Button>
                 </DialogFooter>
             </Form>

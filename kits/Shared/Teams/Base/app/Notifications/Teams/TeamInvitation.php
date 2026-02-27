@@ -42,7 +42,7 @@ class TeamInvitation extends Notification implements ShouldQueue
             ->subject("You've been invited to join {$team->name}")
             ->line("{$inviter->name} has invited you to join their team: {$team->name}.")
             ->line("You've been invited as a {$this->invitation->role->label()}.")
-            ->action('Accept Invitation', url("/invitations/{$this->invitation->code}/accept"));
+            ->action('Accept invitation', url("/invitations/{$this->invitation->code}/accept"));
     }
 
     /**

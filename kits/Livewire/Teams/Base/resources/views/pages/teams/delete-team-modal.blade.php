@@ -126,7 +126,7 @@ new class extends Component {
                 <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
             </flux:modal.close>
             <flux:button variant="danger" type="submit">
-                {{ __('Delete Team') }}
+                {{ __('Delete team') }}
             </flux:button>
         </div>
     </form>
