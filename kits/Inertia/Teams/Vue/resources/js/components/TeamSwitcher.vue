@@ -12,8 +12,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { Team } from '@/types';
 import { switchMethod } from '@/routes/teams';
+import type { Team } from '@/types';
 
 const props = withDefaults(
     defineProps<{

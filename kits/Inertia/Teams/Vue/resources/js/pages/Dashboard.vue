@@ -2,8 +2,8 @@
 import { Head, usePage } from '@inertiajs/vue3';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Team } from '@/types';
 import { dashboard } from '@/routes';
+import type { BreadcrumbItem, Team } from '@/types';
 
 const page = usePage();
 const currentTeam = page.props.currentTeam as Team | null;

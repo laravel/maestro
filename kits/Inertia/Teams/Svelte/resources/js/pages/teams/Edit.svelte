@@ -35,6 +35,8 @@
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
     import { getInitials } from '@/lib/initials';
+    import { edit, index, update } from '@/routes/teams';
+    import { update as updateMember } from '@/routes/teams/members';
     import type {
         BreadcrumbItem,
         RoleOption,
@@ -43,8 +45,6 @@
         TeamMember,
         TeamPermissions,
     } from '@/types';
-    import { edit, index, update } from '@/routes/teams';
-    import { update as updateMember } from '@/routes/teams/members';
 
     let {
         team,
