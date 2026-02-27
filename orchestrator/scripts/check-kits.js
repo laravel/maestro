@@ -22,6 +22,16 @@ const variants = [
         buildArgs: ['build', '--no-interaction', '--kit=React', '--workos'],
     },
     {
+        key: 'react-teams',
+        display: 'React Teams (Fortify)',
+        buildArgs: ['build', '--no-interaction', '--kit=React', '--teams'],
+    },
+    {
+        key: 'react-workos-teams',
+        display: 'React Teams (WorkOS)',
+        buildArgs: ['build', '--no-interaction', '--kit=React', '--workos', '--teams'],
+    },
+    {
         key: 'svelte-blank',
         display: 'Svelte Blank',
         framework: 'svelte',
@@ -40,6 +50,16 @@ const variants = [
         buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--workos'],
     },
     {
+        key: 'svelte-teams',
+        display: 'Svelte Teams (Fortify)',
+        buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--teams'],
+    },
+    {
+        key: 'svelte-workos-teams',
+        display: 'Svelte Teams (WorkOS)',
+        buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--workos', '--teams'],
+    },
+    {
         key: 'vue-blank',
         display: 'Vue Blank',
         framework: 'vue',
@@ -56,6 +76,16 @@ const variants = [
         display: 'Vue WorkOS',
         framework: 'vue',
         buildArgs: ['build', '--no-interaction', '--kit=Vue', '--workos'],
+    },
+    {
+        key: 'vue-teams',
+        display: 'Vue Teams (Fortify)',
+        buildArgs: ['build', '--no-interaction', '--kit=Vue', '--teams'],
+    },
+    {
+        key: 'vue-workos-teams',
+        display: 'Vue Teams (WorkOS)',
+        buildArgs: ['build', '--no-interaction', '--kit=Vue', '--workos', '--teams'],
     },
     {
         key: 'livewire-blank',
@@ -80,6 +110,16 @@ const variants = [
         display: 'Livewire WorkOS',
         framework: 'livewire',
         buildArgs: ['build', '--no-interaction', '--kit=Livewire', '--workos'],
+    },
+    {
+        key: 'livewire-teams',
+        display: 'Livewire Teams (Fortify)',
+        buildArgs: ['build', '--no-interaction', '--kit=Livewire', '--teams'],
+    },
+    {
+        key: 'livewire-workos-teams',
+        display: 'Livewire Teams (WorkOS)',
+        buildArgs: ['build', '--no-interaction', '--kit=Livewire', '--workos', '--teams'],
     },
 ];
 
