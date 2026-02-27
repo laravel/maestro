@@ -154,7 +154,7 @@ const deleteTeam = () => {
                     :disabled="!canDeleteTeam"
                     @click="deleteTeam"
                 >
-                    Delete Team
+                    Delete team
                 </Button>
             </DialogFooter>
         </DialogContent>

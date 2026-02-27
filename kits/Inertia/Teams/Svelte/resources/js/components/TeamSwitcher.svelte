@@ -102,7 +102,7 @@
                             ? 'max-w-[120px] truncate font-medium'
                             : 'truncate font-semibold'}
                     >
-                        {currentTeam?.name ?? 'Select Team'}
+                        {currentTeam?.name ?? 'Select team'}
                     </span>
                 </div>
                 <ChevronsUpDown
@@ -164,7 +164,7 @@
                         >
                             <Plus class={inHeader ? 'size-4' : 'h-4 w-4'} />
                             <span class="text-muted-foreground"
-                                >Create Team</span
+                                >Create team</span
                             >
                         </button>
                     {/snippet}

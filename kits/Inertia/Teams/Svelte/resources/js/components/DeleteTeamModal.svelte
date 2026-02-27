@@ -151,7 +151,7 @@
                 disabled={!canDeleteTeam}
                 onclick={deleteTeam}
             >
-                Delete Team
+                Delete team
             </Button>
         </DialogFooter>
     </DialogContent>

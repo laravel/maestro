@@ -40,11 +40,11 @@ export default function CreateTeamModal({ children }: PropsWithChildren) {
                             </DialogHeader>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Team Name</Label>
+                                <Label htmlFor="name">Team name</Label>
                                 <Input
                                     id="name"
                                     name="name"
-                                    placeholder="My Team"
+                                    placeholder="My team"
                                     required
                                 />
                                 <InputError message={errors.name} />
@@ -56,7 +56,7 @@ export default function CreateTeamModal({ children }: PropsWithChildren) {
                                 </DialogClose>
 
                                 <Button type="submit" disabled={processing}>
-                                    Create Team
+                                    Create team
                                 </Button>
                             </DialogFooter>
                         </>

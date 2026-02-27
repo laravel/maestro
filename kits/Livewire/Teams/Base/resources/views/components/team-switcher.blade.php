@@ -91,7 +91,7 @@ new class extends Component {
     <flux:dropdown position="bottom" align="start">
         <flux:button variant="ghost" class="group w-full justify-start in-data-flux-sidebar-collapsed-desktop:justify-center">
             <flux:icon name="users" class="hidden size-4 in-data-flux-sidebar-collapsed-desktop:block" />
-            <span class="truncate font-semibold in-data-flux-sidebar-collapsed-desktop:hidden">{{ $this->currentTeam()['name'] ?? __('Select Team') }}</span>
+            <span class="truncate font-semibold in-data-flux-sidebar-collapsed-desktop:hidden">{{ $this->currentTeam()['name'] ?? __('Select team') }}</span>
             <flux:icon
                 name="chevrons-up-down"
                 variant="micro"
@@ -120,7 +120,7 @@ new class extends Component {
 
             <flux:modal.trigger name="create-team-switcher">
                 <flux:menu.item icon="plus" class="cursor-pointer">
-                    {{ __('Create Team') }}
+                    {{ __('Create team') }}
                 </flux:menu.item>
             </flux:modal.trigger>
         </flux:menu>

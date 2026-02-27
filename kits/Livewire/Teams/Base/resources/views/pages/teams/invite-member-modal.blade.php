@@ -77,7 +77,7 @@ new class extends Component {
             <flux:modal.close>
                 <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
             </flux:modal.close>
-            <flux:button variant="primary" type="submit">{{ __('Send Invitation') }}</flux:button>
+            <flux:button variant="primary" type="submit">{{ __('Send invitation') }}</flux:button>
         </div>
     </form>
 </flux:modal>

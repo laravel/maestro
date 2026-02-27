@@ -56,7 +56,7 @@
 
                 <div class="grid gap-4">
                     <div class="grid gap-2">
-                        <Label for="email">Email Address</Label>
+                        <Label for="email">Email address</Label>
                         <Input
                             id="email"
                             name="email"
@@ -96,7 +96,7 @@
                     </DialogClose>
 
                     <Button type="submit" disabled={processing}
-                        >Send Invitation</Button
+                        >Send invitation</Button
                     >
                 </DialogFooter>
             {/snippet}

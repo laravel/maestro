@@ -127,7 +127,7 @@ export default function TeamEdit({
                             <>
                                 <Heading
                                     variant="small"
-                                    title="Team Settings"
+                                    title="Team settings"
                                     description="Update your team name and settings"
                                 />
 
@@ -143,7 +143,7 @@ export default function TeamEdit({
                                         <>
                                             <div className="grid gap-2">
                                                 <Label htmlFor="name">
-                                                    Team Name
+                                                    Team name
                                                 </Label>
                                                 <Input
                                                     id="name"
@@ -191,7 +191,7 @@ export default function TeamEdit({
                         <div className="flex items-center justify-between">
                             <Heading
                                 variant="small"
-                                title="Team Members"
+                                title="Team members"
                                 description={
                                     permissions.canCreateInvitation
                                         ? 'Manage who has access to this team'
@@ -203,7 +203,7 @@ export default function TeamEdit({
                                 <Button
                                     onClick={() => setInviteDialogOpen(true)}
                                 >
-                                    <UserPlus /> Invite Member
+                                    <UserPlus /> Invite member
                                 </Button>
                             ) : null}
                         </div>
@@ -306,7 +306,7 @@ export default function TeamEdit({
                         <div className="space-y-6">
                             <Heading
                                 variant="small"
-                                title="Pending Invitations"
+                                title="Pending invitations"
                                 description="Invitations that haven't been accepted yet"
                             />
 

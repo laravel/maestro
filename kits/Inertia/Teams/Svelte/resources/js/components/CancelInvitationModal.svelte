@@ -48,11 +48,11 @@
 
         <DialogFooter class="gap-2">
             <DialogClose>
-                <Button variant="secondary">Keep Invitation</Button>
+                <Button variant="secondary">Keep invitation</Button>
             </DialogClose>
 
             <Button variant="destructive" onclick={cancelInvitation}
-                >Cancel Invitation</Button
+                >Cancel invitation</Button
             >
         </DialogFooter>
     </DialogContent>

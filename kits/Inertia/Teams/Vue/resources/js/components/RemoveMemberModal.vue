@@ -52,7 +52,7 @@ const removeMember = () => {
                 </DialogClose>
 
                 <Button variant="destructive" @click="removeMember">
-                    Remove Member
+                    Remove member
                 </Button>
             </DialogFooter>
         </DialogContent>
