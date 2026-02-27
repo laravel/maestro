@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import type { BreadcrumbItem, Team } from '@/types';
 import { edit, index, switchMethod } from '@/routes/teams';
+import type { BreadcrumbItem, Team } from '@/types';
 
 type Props = {
     teams: Team[];

@@ -21,8 +21,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import type { RoleOption, Team } from '@/types';
 import { store as storeInvitation } from '@/routes/teams/invitations';
+import type { RoleOption, Team } from '@/types';
 
 type Props = {
     team: Team;

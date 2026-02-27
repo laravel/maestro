@@ -2,8 +2,8 @@
     import { Link, page } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import { toUrl } from '@/lib/utils';
-    import type { Team } from '@/types';
     import { dashboard, login } from '@/routes';
+    import type { Team } from '@/types';
 
     const auth = $derived($page.props.auth);
     const currentTeam = $derived($page.props.currentTeam as Team | null);

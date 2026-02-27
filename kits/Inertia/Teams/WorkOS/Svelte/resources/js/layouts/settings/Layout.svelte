@@ -6,10 +6,10 @@
     import { Separator } from '@/components/ui/separator';
     import { currentUrlState } from '@/lib/currentUrl';
     import { toUrl } from '@/lib/utils';
-    import type { NavItem } from '@/types';
     import { edit as editAppearance } from '@/routes/appearance';
     import { edit as editProfile } from '@/routes/profile';
     import { index as teams } from '@/routes/teams';
+    import type { NavItem } from '@/types';
 
     let {
         children,

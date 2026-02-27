@@ -28,6 +28,8 @@ import {
 import { useInitials } from '@/hooks/use-initials';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import { edit, index, update } from '@/routes/teams';
+import { update as updateMember } from '@/routes/teams/members';
 import type {
     BreadcrumbItem,
     RoleOption,
@@ -36,8 +38,6 @@ import type {
     TeamMember,
     TeamPermissions,
 } from '@/types';
-import { edit, index, update } from '@/routes/teams';
-import { update as updateMember } from '@/routes/teams/members';
 
 type Props = {
     team: Team;
