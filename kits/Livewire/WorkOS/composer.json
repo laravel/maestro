@@ -54,7 +54,7 @@
         "lint": [
             "pint --parallel"
         ],
-        "test:lint": [
+        "lint:check": [
             "pint --parallel --test"
         ],
         "ci:check": [
@@ -63,7 +63,7 @@
         ],
         "test": [
             "@php artisan config:clear --ansi",
-            "@test:lint",
+            "@lint:check",
             "@php artisan test"
         ],
         "post-autoload-dump": [
