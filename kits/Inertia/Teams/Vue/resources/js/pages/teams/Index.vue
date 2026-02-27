@@ -13,8 +13,8 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import type { BreadcrumbItem, Team } from '@/types';
 import { edit, index, switchMethod } from '@/routes/teams';
+import type { BreadcrumbItem, Team } from '@/types';
 
 type Props = {
     teams: Team[];

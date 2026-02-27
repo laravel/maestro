@@ -20,8 +20,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import type { Team } from '@/types';
 import { destroy } from '@/routes/teams';
+import type { Team } from '@/types';
 
 type Props = {
     team: Team;

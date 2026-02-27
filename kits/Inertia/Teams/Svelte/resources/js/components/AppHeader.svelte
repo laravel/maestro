@@ -43,8 +43,8 @@
     import { currentUrlState } from '@/lib/currentUrl';
     import { getInitials } from '@/lib/initials';
     import { toUrl } from '@/lib/utils';
-    import type { BreadcrumbItem, NavItem, Team } from '@/types';
     import { dashboard } from '@/routes';
+    import type { BreadcrumbItem, NavItem, Team } from '@/types';
 
     let {
         breadcrumbs = [],

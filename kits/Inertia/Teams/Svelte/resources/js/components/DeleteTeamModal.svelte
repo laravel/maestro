@@ -17,8 +17,8 @@
         SelectItem,
         SelectTrigger,
     } from '@/components/ui/select';
-    import type { Team } from '@/types';
     import { destroy } from '@/routes/teams';
+    import type { Team } from '@/types';
 
     let {
         team,
