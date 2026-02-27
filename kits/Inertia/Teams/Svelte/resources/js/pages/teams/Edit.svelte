@@ -122,7 +122,7 @@
                 {#if permissions.canUpdateTeam}
                     <Heading
                         variant="small"
-                        title="Team Settings"
+                        title="Team settings"
                         description="Update your team name and settings"
                     />
 
@@ -133,7 +133,7 @@
                             recentlySuccessful,
                         })}
                             <div class="grid gap-2">
-                                <Label for="name">Team Name</Label>
+                                <Label for="name">Team name</Label>
                                 <Input
                                     id="name"
                                     name="name"
@@ -165,7 +165,7 @@
                 <div class="flex items-center justify-between">
                     <Heading
                         variant="small"
-                        title="Team Members"
+                        title="Team members"
                         description={permissions.canCreateInvitation
                             ? 'Manage who has access to this team'
                             : ''}
@@ -173,7 +173,7 @@
 
                     {#if permissions.canCreateInvitation}
                         <Button onclick={() => (inviteDialogOpen = true)}>
-                            <UserPlus class="h-4 w-4" /> Invite Member
+                            <UserPlus class="h-4 w-4" /> Invite member
                         </Button>
                     {/if}
                 </div>
@@ -300,7 +300,7 @@
                 <div class="space-y-6">
                     <Heading
                         variant="small"
-                        title="Pending Invitations"
+                        title="Pending invitations"
                         description="Invitations that haven't been accepted yet"
                     />
 

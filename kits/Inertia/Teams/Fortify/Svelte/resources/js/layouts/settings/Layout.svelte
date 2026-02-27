@@ -29,7 +29,7 @@
             href: editPassword(),
         },
         {
-            title: 'Two-Factor Auth',
+            title: 'Two-factor auth',
             href: show(),
         },
         {

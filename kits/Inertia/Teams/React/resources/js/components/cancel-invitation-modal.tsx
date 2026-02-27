@@ -48,11 +48,11 @@ export default function CancelInvitationModal({
 
                 <DialogFooter className="gap-2">
                     <DialogClose asChild>
-                        <Button variant="secondary">Keep Invitation</Button>
+                        <Button variant="secondary">Keep invitation</Button>
                     </DialogClose>
 
                     <Button variant="destructive" onClick={cancelInvitation}>
-                        Cancel Invitation
+                        Cancel invitation
                     </Button>
                 </DialogFooter>
             </DialogContent>

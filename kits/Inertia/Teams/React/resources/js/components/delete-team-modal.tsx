@@ -155,7 +155,7 @@ export default function DeleteTeamModal({
                         disabled={!canDeleteTeam}
                         onClick={deleteTeam}
                     >
-                        Delete Team
+                        Delete team
                     </Button>
                 </DialogFooter>
             </DialogContent>

@@ -57,7 +57,7 @@ export default function InviteMemberModal({
 
                             <div className="grid gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email Address</Label>
+                                    <Label htmlFor="email">Email address</Label>
                                     <Input
                                         id="email"
                                         name="email"
@@ -103,7 +103,7 @@ export default function InviteMemberModal({
                                 </DialogClose>
 
                                 <Button type="submit" disabled={processing}>
-                                    Send Invitation
+                                    Send invitation
                                 </Button>
                             </DialogFooter>
                         </>

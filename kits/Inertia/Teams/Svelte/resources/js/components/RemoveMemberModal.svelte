@@ -51,7 +51,7 @@
             </DialogClose>
 
             <Button variant="destructive" onclick={removeMember}
-                >Remove Member</Button
+                >Remove member</Button
             >
         </DialogFooter>
     </DialogContent>

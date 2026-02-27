@@ -160,7 +160,7 @@ new class extends Component {
             <div class="space-y-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <flux:heading>{{ __('Team Members') }}</flux:heading>
+                        <flux:heading>{{ __('Team members') }}</flux:heading>
                         @if ($this->permissions->canAddMember || $this->permissions->canUpdateMember || $this->permissions->canRemoveMember)
                             <flux:subheading>{{ __('Manage who has access to this team') }}</flux:subheading>
                         @endif
@@ -169,7 +169,7 @@ new class extends Component {
                     @if ($this->permissions->canCreateInvitation)
                         <flux:modal.trigger name="invite-member">
                             <flux:button variant="primary" icon="user-plus">
-                                {{ __('Invite Member') }}
+                                {{ __('Invite member') }}
                             </flux:button>
                         </flux:modal.trigger>
                     @endif
@@ -238,7 +238,7 @@ new class extends Component {
             @if (count($invitations) > 0)
                 <div class="space-y-6">
                     <div>
-                        <flux:heading>{{ __('Pending Invitations') }}</flux:heading>
+                        <flux:heading>{{ __('Pending invitations') }}</flux:heading>
                         <flux:subheading>{{ __('Invitations that have not been accepted yet') }}</flux:subheading>
                     </div>
 

@@ -90,7 +90,7 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
                                     : 'truncate font-semibold'
                             }
                         >
-                            {currentTeam?.name ?? 'Select Team'}
+                            {currentTeam?.name ?? 'Select team'}
                         </span>
                     </div>
                     <ChevronsUpDown
@@ -149,7 +149,7 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
                     >
                         <Plus className={inHeader ? 'size-4' : 'h-4 w-4'} />
                         <span className="text-muted-foreground">
-                            Create Team
+                            Create team
                         </span>
                     </DropdownMenuItem>
                 </CreateTeamModal>

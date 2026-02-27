@@ -112,7 +112,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                 <div v-if="permissions.canUpdateTeam" class="space-y-6">
                     <Heading
                         variant="small"
-                        title="Team Settings"
+                        title="Team settings"
                         description="Update your team name and settings"
                     />
 
@@ -122,7 +122,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                         v-slot="{ errors, processing, recentlySuccessful }"
                     >
                         <div class="grid gap-2">
-                            <Label for="name">Team Name</Label>
+                            <Label for="name">Team name</Label>
                             <Input
                                 id="name"
                                 name="name"
@@ -163,7 +163,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                     <div class="flex items-center justify-between">
                         <Heading
                             variant="small"
-                            title="Team Members"
+                            title="Team members"
                             :description="
                                 permissions.canCreateInvitation
                                     ? 'Manage who has access to this team'
@@ -175,7 +175,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                             v-if="permissions.canCreateInvitation"
                             @click="inviteDialogOpen = true"
                         >
-                            <UserPlus /> Invite Member
+                            <UserPlus /> Invite member
                         </Button>
                     </div>
 
@@ -272,7 +272,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                 <div v-if="invitations.length > 0" class="space-y-6">
                     <Heading
                         variant="small"
-                        title="Pending Invitations"
+                        title="Pending invitations"
                         description="Invitations that haven't been accepted yet"
                     />
 
