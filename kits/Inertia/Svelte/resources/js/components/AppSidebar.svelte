@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
     import BookOpen from 'lucide-svelte/icons/book-open';
-    import Folder from 'lucide-svelte/icons/folder';
+    import FolderGit2 from 'lucide-svelte/icons/folder-git-2';
     import LayoutGrid from 'lucide-svelte/icons/layout-grid';
     import type { Snippet } from 'svelte';
     import AppLogo from '@/components/AppLogo.svelte';
@@ -37,9 +37,9 @@
 
     const footerNavItems: NavItem[] = [
         {
-            title: 'Github Repo',
+            title: 'Repository',
             href: 'https://github.com/laravel/svelte-starter-kit',
-            icon: Folder,
+            icon: FolderGit2,
         },
         {
             title: 'Documentation',

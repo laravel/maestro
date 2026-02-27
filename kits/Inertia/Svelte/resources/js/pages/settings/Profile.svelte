@@ -36,7 +36,7 @@
 <AppHead title="Profile settings" />
 
 <AppLayout breadcrumbs={breadcrumbItems}>
-    <h1 class="sr-only">Profile Settings</h1>
+    <h1 class="sr-only">Profile settings</h1>
 
     <SettingsLayout>
         <div class="flex flex-col space-y-6">

@@ -19,7 +19,7 @@
     const authConfigContent: TwoFactorConfigContent = $derived.by(() => {
         if (showRecoveryInput) {
             return {
-                title: 'Recovery Code',
+                title: 'Recovery code',
                 description:
                     'Please confirm access to your account by entering one of your emergency recovery codes.',
                 buttonText: 'login using an authentication code',
@@ -27,7 +27,7 @@
         }
 
         return {
-            title: 'Authentication Code',
+            title: 'Authentication code',
             description:
                 'Enter the authentication code provided by your authenticator application.',
             buttonText: 'login using a recovery code',
@@ -41,7 +41,7 @@
     }
 </script>
 
-<AppHead title="Two-Factor Authentication" />
+<AppHead title="Two-factor authentication" />
 
 <AuthLayout
     title={authConfigContent.title}

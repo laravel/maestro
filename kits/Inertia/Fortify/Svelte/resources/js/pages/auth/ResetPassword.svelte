@@ -59,7 +59,7 @@
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirm Password</Label>
+                    <Label for="password_confirmation">Confirm password</Label>
                     <Input
                         id="password_confirmation"
                         type="password"

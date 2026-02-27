@@ -40,7 +40,7 @@
                         data-test="confirm-password-button"
                     >
                         {#if processing}<Spinner />{/if}
-                        Confirm Password
+                        Confirm password
                     </Button>
                 </div>
             </div>

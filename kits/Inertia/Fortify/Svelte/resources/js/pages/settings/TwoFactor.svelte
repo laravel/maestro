@@ -25,7 +25,7 @@
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Two-Factor Authentication',
+            title: 'Two-factor authentication',
             href: show(),
         },
     ];
@@ -38,16 +38,16 @@
     });
 </script>
 
-<AppHead title="Two-Factor Authentication" />
+<AppHead title="Two-factor authentication" />
 
 <AppLayout {breadcrumbs}>
-    <h1 class="sr-only">Two-Factor Authentication Settings</h1>
+    <h1 class="sr-only">Two-factor authentication settings</h1>
 
     <SettingsLayout>
         <div class="space-y-6">
             <Heading
                 variant="small"
-                title="Two-Factor Authentication"
+                title="Two-factor authentication"
                 description="Manage your two-factor authentication settings"
             />
 
@@ -65,7 +65,7 @@
                     <div>
                         {#if twoFactorAuth.hasSetupData()}
                             <Button onclick={() => (showSetupModal = true)}>
-                                <ShieldCheck class="size-4" />Continue Setup
+                                <ShieldCheck class="size-4" />Continue setup
                             </Button>
                         {:else}
                             <Form

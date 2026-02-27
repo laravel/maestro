@@ -23,7 +23,7 @@
 <AppHead title="Password settings" />
 
 <AppLayout breadcrumbs={breadcrumbItems}>
-    <h1 class="sr-only">Password Settings</h1>
+    <h1 class="sr-only">Password settings</h1>
 
     <SettingsLayout>
         <div class="space-y-6">
