@@ -37,5 +37,3 @@ test('user can switch theme to light mode', function () {
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });
-
-

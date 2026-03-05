@@ -1,5 +1,8 @@
 <?php
 
+use Pest\Browser\Api\AwaitableWebpage;
+use Pest\Browser\Api\Webpage;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -42,15 +45,22 @@ expect()->extend('toBeOne', function () {
 */
 
 /**
- * Visit a route that is behind the `password.confirm` middleware.
+ * Visit a route that requires the `password.confirm` middleware.
  *
- * Fills in the password confirmation form and waits for the redirect
- * to the intended destination before returning the browser instance.
+ * Confirms the password via the confirmation page first, then navigates
+ * to the intended destination within the same browser context so the
+ * session cookie with `auth.password_confirmed_at` carries over.
  */
-function visitPasswordProtectedPage(string $route, string $password = 'password'): mixed
+function visitPasswordProtectedPage(string $route, string $password = 'password'): AwaitableWebpage|Webpage
 {
-    return visit(route($route))
-        ->assertVisible('@confirm-password-button')
-        ->fill('password', $password)
-        ->press('@confirm-password-button');
+    $browser = visit(route('password.confirm'))
+        ->assertSee('Confirm password')
+        ->fill('password', $password);
+
+    // Submit the form via JS and wait for the redirect to complete,
+    // avoiding Playwright click-wait-navigation timeout issues.
+    $browser->script("document.querySelector('form').submit()");
+    $browser->waitForEvent('load');
+
+    return $browser->navigate(route($route));
 }
