@@ -48,12 +48,12 @@ This will start both the standard Laravel development server and a file watcher 
 From the `orchestrator` directory, run:
 
 ```bash
-composer lint:kits
+composer kits:lint
 ```
 
 This command loops over all Inertia variants, builds each variant, runs frontend linting/formatting in `build` (`npm install`, then lint/format), and then runs `npm run watch:kits -- --initial-sync-only` to perform and verify an initial sync back to `kits`.
 
-`composer lint:kits` also runs Pint on `kits/` before the frontend lint pass.
+`composer kits:lint` also runs Pint on `kits/` before the frontend lint pass.
 
 ### Submitting Changes
 

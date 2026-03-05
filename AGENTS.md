@@ -10,5 +10,6 @@ Maestro is the monorepo orchestrator for the official Laravel starter kits. Use 
 - Dev: `composer kit:run` (from `orchestrator/`)
 - Test: `composer setup && composer ci:check` (from `build/`)
 - Test all kits: `composer kits:check` (from `orchestrator/`) — builds and runs CI checks for all 13 variants
-- Lint: `composer lint:kits` (from `orchestrator/`)
+- Lint: `composer kits:lint` (from `orchestrator/`)
+- Browser tests (all kits): `composer kits:browser-tests` (from `orchestrator/`)
 - Edit in `build/` (when available), commit in `kits/`

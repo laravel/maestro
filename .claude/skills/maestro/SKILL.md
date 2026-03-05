@@ -26,8 +26,9 @@ All commands below run from the `orchestrator/` directory unless noted otherwise
 | `php artisan build --kit=svelte --blank`             | Build Blank Svelte kit.                                                    |
 | `php artisan build --kit=livewire --workos`          | Build Livewire WorkOS kit.                                                 |
 | `composer kit:run`                                   | Start dev server + file watcher (syncs `build/` back to `kits/`).          |
-| `composer lint:kits`                                 | Run Pint for `kits/`, then lint/format all Inertia variants and sync back. |
+| `composer kits:lint`                                 | Run Pint for `kits/`, then lint/format all Inertia variants and sync back. |
 | `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 13 kit variants sequentially. |
+| `composer kits:browser-tests`                        | Build and run browser tests for all 4 Fortify kit variants (Livewire, React, Svelte, Vue). |
 | `npm run watch:kits`                                 | Run only the file watcher (no dev server).                                 |
 | `composer setup && composer ci:check`                | Run inside `build/` — installs deps, builds frontend, runs checks (see below). |
 
@@ -163,7 +164,15 @@ Svelte and Vue use PascalCase page names. React uses kebab-case.
 
 ## Browser Tests (Local CI Parity)
 
-To run browser tests locally with the same steps used in `.github/workflows/browser-tests.yml`, run the sequence below for each matrix kit (`Livewire`, `React`, `Svelte`, `Vue`).
+To run browser tests for all kits locally, run from the `orchestrator/` directory:
+
+```bash
+composer kits:browser-tests
+```
+
+This builds each Fortify variant (Livewire, React, Svelte, Vue), copies the shared browser tests, installs dependencies, and runs the tests — matching the steps in `.github/workflows/browser-tests.yml`.
+
+To run the steps manually for a single kit, use the sequence below.
 
 ### Per-Kit Command Sequence
 
@@ -250,5 +259,5 @@ Kit names are case-sensitive here because the workflow matrix uses `Livewire`, `
 2. **Follow sibling patterns**: When creating a Svelte file, check the React and Vue equivalents for expected structure and behavior and vice-versa.
 3. **Layer awareness**: Know which layer a file belongs to. Shared files affect all kits. Framework-specific files only affect that framework.
 4. **Placeholder awareness**: Files in `kits/` contain `{{placeholders}}`. Files in `build/` have resolved values. The watcher handles conversion.
-5. **Lint changes**: Run `composer lint` in `orchestrator` for orchestrator PHP linting, and run `composer lint:kits` to run Pint on `kits/`, run UI lint/format across all Inertia variants, and sync changes back to `kits/`.
+5. **Lint changes**: Run `composer lint` in `orchestrator` for orchestrator PHP linting, and run `composer kits:lint` to run Pint on `kits/`, run UI lint/format across all Inertia variants, and sync changes back to `kits/`.
 6. **Test after changes**: Run `composer setup && composer ci:check` inside `build/` to verify nothing is broken.
