@@ -2,6 +2,7 @@
     import { Form } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
+    import PasskeyVerify from '@/components/PasskeyVerify.svelte';
     import TextLink from '@/components/TextLink.svelte';
     import { Button } from '@/components/ui/button';
     import { Checkbox } from '@/components/ui/checkbox';
@@ -30,6 +31,8 @@
     title="Log in to your account"
     description="Enter your email and password below to log in"
 >
+    <PasskeyVerify />
+
     {#if status}
         <div class="mb-4 text-center text-sm font-medium text-green-600">
             {status}
@@ -50,7 +53,7 @@
                         type="email"
                         name="email"
                         required
-                        autocomplete="email"
+                        autocomplete="email webauthn"
                         placeholder="email@example.com"
                     />
                     <InputError message={errors.email} />
