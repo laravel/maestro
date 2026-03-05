@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
+import { index as confirmOptions, store as confirmStore } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyConfirmationController';
 import InputError from '@/components/InputError.vue';
+import PasskeyVerify from '@/components/PasskeyVerify.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,6 +18,16 @@ import { store } from '@/routes/password/confirm';
     >
         <Head title="Confirm password" />
 
+        <PasskeyVerify
+            :routes="{
+                options: confirmOptions.url(),
+                submit: confirmStore.url(),
+            }"
+            label="Confirm with passkey"
+            loading-label="Confirming..."
+            separator="Or confirm with password"
+        />
+
         <Form
             v-bind="store.form()"
             reset-on-success
@@ -23,7 +35,7 @@ import { store } from '@/routes/password/confirm';
         >
             <div class="space-y-6">
                 <div class="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label for="password">Password</Label>
                     <Input
                         id="password"
                         type="password"
