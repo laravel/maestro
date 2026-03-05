@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\User;
+
+use function Pest\Laravel\actingAs;
+
 test('welcome screen can be rendered', function () {
     visit('/')
         ->assertNoConsoleLogs()
@@ -27,4 +31,15 @@ test('guests can browse to login page from welcome page', function () {
         ->assertNoJavaScriptErrors()
         ->assertSee('Log in to your account')
         ->assertSee('Enter your email and password below to log in');
+});
+
+test('authenticated users see dashboard link on welcome page', function () {
+    actingAs(User::factory()->create());
+
+    visit(route('home'))
+        ->assertSeeLink('Dashboard')
+        ->click('Dashboard')
+        ->assertUrlIs(route('dashboard'))
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
 });

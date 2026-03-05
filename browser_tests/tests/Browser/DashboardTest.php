@@ -21,3 +21,15 @@ test('authenticated users can visit the dashboard', function () {
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });
+
+test('authenticated users can toggle the sidebar on mobile', function () {
+    actingAs(User::factory()->create());
+
+    visit(route('dashboard'))->on()->mobile()
+        ->click('[data-sidebar="trigger"], [data-flux-sidebar-toggle]')
+        ->assertVisible('[data-sidebar="sidebar"][data-mobile="true"], [data-flux-sidebar]:not([data-flux-sidebar-collapsed-mobile])')
+        ->click('[data-slot="sheet-overlay"], [data-flux-sidebar-backdrop], button[aria-label="Close"]')
+        ->wait(0.5)
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});

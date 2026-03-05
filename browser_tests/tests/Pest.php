@@ -41,7 +41,16 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Visit a route that is behind the `password.confirm` middleware.
+ *
+ * Fills in the password confirmation form and waits for the redirect
+ * to the intended destination before returning the browser instance.
+ */
+function visitPasswordProtectedPage(string $route, string $password = 'password'): mixed
 {
-    // ..
+    return visit(route($route))
+        ->assertVisible('@confirm-password-button')
+        ->fill('password', $password)
+        ->press('@confirm-password-button');
 }
