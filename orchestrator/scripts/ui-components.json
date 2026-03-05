@@ -63,5 +63,10 @@
         "react": "settings/two-factor",
         "svelte": "settings/TwoFactor",
         "vue": "settings/TwoFactor"
+    },
+    "passkey_settings": {
+        "react": "settings/passkeys",
+        "svelte": "settings/Passkeys",
+        "vue": "settings/Passkeys"
     }
 }

@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.2",
         "inertiajs/inertia-laravel": "^2.0",
-        "laravel/fortify": "^1.30",
+        "laravel/fortify": "dev-add-passkey-support#242c342",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9"
@@ -106,6 +106,16 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/benbjurstrom/fortify"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/laravel/passkeys-server"
+        }
+    ]
 }
