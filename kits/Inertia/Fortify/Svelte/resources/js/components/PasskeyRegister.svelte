@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Passkeys } from '@laravel/passkeys';
+    import { usePasskeyRegister } from '@laravel/passkeys/svelte';
     import Plus from 'lucide-svelte/icons/plus';
     import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';
@@ -14,32 +14,13 @@
 
     let name = $state('');
     let showForm = $state(false);
-    let isLoading = $state(false);
-    let error = $state('');
-
-    const isSupported =
-        typeof window !== 'undefined' && Passkeys.isSupported();
-
-    async function registerPasskey() {
-        isLoading = true;
-        error = '';
-
-        try {
-            await Passkeys.register({
-                name: name.trim(),
-            });
+    const { register, isLoading, error, isSupported } = usePasskeyRegister({
+        onSuccess: () => {
             name = '';
             showForm = false;
             onSuccess?.();
-        } catch (err) {
-            error =
-                err instanceof Error
-                    ? err.message
-                    : 'Unable to register passkey.';
-        } finally {
-            isLoading = false;
-        }
-    }
+        },
+    });
 
     async function handleSubmit(event: SubmitEvent) {
         event.preventDefault();
@@ -48,7 +29,7 @@
             return;
         }
 
-        await registerPasskey();
+        await register(name.trim());
     }
 
     function handleCancel() {
@@ -85,11 +66,11 @@
             </p>
         </div>
 
-        <InputError message={error} />
+        <InputError message={$error ?? ''} />
 
         <div class="flex gap-2">
-            <Button type="submit" disabled={isLoading || !name.trim()}>
-                {isLoading ? 'Registering...' : 'Register passkey'}
+            <Button type="submit" disabled={$isLoading || !name.trim()}>
+                {$isLoading ? 'Registering...' : 'Register passkey'}
             </Button>
             <Button type="button" variant="ghost" onclick={handleCancel}>
                 Cancel
