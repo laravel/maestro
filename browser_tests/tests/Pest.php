@@ -44,23 +44,13 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-/**
- * Visit a route that requires the `password.confirm` middleware.
- *
- * Confirms the password via the confirmation page first, then navigates
- * to the intended destination within the same browser context so the
- * session cookie with `auth.password_confirmed_at` carries over.
- */
 function visitPasswordProtectedPage(string $route, string $password = 'password'): AwaitableWebpage|Webpage
 {
-    $browser = visit(route('password.confirm'))
+    $destinationUrl = route($route);
+
+    return visit($destinationUrl)
         ->assertSee('Confirm password')
-        ->fill('password', $password);
-
-    // Submit the form via JS and wait for the redirect to complete,
-    // avoiding Playwright click-wait-navigation timeout issues.
-    $browser->script("document.querySelector('form').submit()");
-    $browser->waitForEvent('load');
-
-    return $browser->navigate(route($route));
+        ->fill('password', $password)
+        ->press('@confirm-password-button')
+        ->assertUrlIs($destinationUrl);
 }
