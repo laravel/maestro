@@ -23,4 +23,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ),
         )
         ->name('two-factor.show');
+
+    Route::livewire('settings/passkeys', 'pages::settings.passkeys')
+        ->middleware(
+            when(
+                Features::optionEnabled(Features::passkeys(), 'confirmPassword'),
+                ['password.confirm'],
+                [],
+            ),
+        )
+        ->name('passkeys.show');
 });

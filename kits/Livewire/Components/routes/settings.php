@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Settings\Appearance;
+use App\Livewire\Settings\Passkeys;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
@@ -27,4 +28,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ),
         )
         ->name('two-factor.show');
+
+    Route::livewire('settings/passkeys', Passkeys::class)
+        ->middleware(
+            when(
+                Features::optionEnabled(Features::passkeys(), 'confirmPassword'),
+                ['password.confirm'],
+                [],
+            ),
+        )
+        ->name('passkeys.show');
 });
