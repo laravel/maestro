@@ -2,14 +2,14 @@
     import { page } from '@inertiajs/svelte';
     import type { Snippet } from 'svelte';
     import { SidebarProvider } from '@/components/ui/sidebar';
-    import type { AppShellVariant } from '@/types';
+    import type { AppVariant } from '@/types';
 
     let {
         variant = 'sidebar',
         class: className = '',
         children,
     }: {
-        variant?: AppShellVariant;
+        variant?: AppVariant;
         class?: string;
         children?: Snippet;
     } = $props();

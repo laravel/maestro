@@ -14,7 +14,7 @@
     } = $props();
 </script>
 
-<AppShell variant="header" class="flex-col">
+<AppShell variant="header">
     <AppHeader {breadcrumbs} />
     <AppContent variant="header">
         {@render children?.()}

@@ -2,13 +2,14 @@
     import type { Snippet } from 'svelte';
     import { SidebarInset } from '@/components/ui/sidebar';
     import { cn } from '@/lib/utils';
+    import type { AppVariant } from '@/types';
 
     let {
         variant = 'sidebar',
         class: className = '',
         children,
     }: {
-        variant?: 'header' | 'sidebar';
+        variant?: AppVariant;
         class?: string;
         children?: Snippet;
     } = $props();
