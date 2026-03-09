@@ -78,9 +78,9 @@ enum TeamRole: string
      */
     public static function assignable(): array
     {
-        return [
-            ['value' => self::Admin->value, 'label' => self::Admin->label()],
-            ['value' => self::Member->value, 'label' => self::Member->label()],
-        ];
+        return collect(self::cases())
+            ->filter(fn(self $role) => $role !== self::Owner)
+            ->map(fn(self $role) => ['value' => $role->value, 'label' => $role->label()])
+            ->toArray();
     }
 }
