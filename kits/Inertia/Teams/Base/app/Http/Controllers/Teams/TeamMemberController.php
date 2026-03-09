@@ -11,7 +11,6 @@ use App\Models\Team;
 use App\Models\User;
 use App\Notifications\Teams\RemovedFromTeam;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class TeamMemberController extends Controller
