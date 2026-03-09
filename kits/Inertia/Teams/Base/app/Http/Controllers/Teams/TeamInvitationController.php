@@ -39,6 +39,7 @@ class TeamInvitationController extends Controller
         ]);
 
         event(new TeamInvitationSent($invitation));
+
         Notification::route('mail', $invitation->email)->notify(new TeamInvitationNotification($invitation));
 
         return to_route('teams.edit', ['team' => $team->slug]);
@@ -54,6 +55,7 @@ class TeamInvitationController extends Controller
         Gate::authorize('cancelInvitation', $invitation->team);
 
         $invitation->delete();
+
         event(new TeamInvitationCancelled($invitation));
 
         return to_route('teams.edit', ['team' => $team->slug]);
