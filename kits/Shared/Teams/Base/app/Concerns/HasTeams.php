@@ -182,8 +182,6 @@ trait HasTeams
      */
     public function hasTeamPermission(Team $team, string $permission): bool
     {
-        $role = $this->teamRole($team);
-
-        return $role?->hasPermission($permission) ?? false;
+        return $this->teamRole($team)?->hasPermission($permission) ?? false;
     }
 }
