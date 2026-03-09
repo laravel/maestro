@@ -28,7 +28,7 @@ class TeamController extends Controller
         $user = $request->user();
 
         return Inertia::render('{{teams_index}}', [
-            'teams' => $user->userTeams(includeCurrent: true),
+            'teams' => $user->toUserTeams(includeCurrent: true),
         ]);
     }
 
@@ -74,10 +74,10 @@ class TeamController extends Controller
                     'role_label' => $invitation->role->label(),
                     'created_at' => $invitation->created_at->toISOString(),
                 ]),
-            'permissions' => $user->teamPermissions($team),
+            'permissions' => $user->toTeamPermissions($team),
             'availableRoles' => TeamRole::assignable(),
             'isCurrentTeam' => $user->isCurrentTeam($team),
-            'otherTeams' => $user->userTeams(),
+            'otherTeams' => $user->toUserTeams(),
         ]);
     }
 
