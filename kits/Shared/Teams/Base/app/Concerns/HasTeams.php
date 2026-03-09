@@ -50,7 +50,7 @@ trait HasTeams
      *
      * @return HasMany<Membership, $this>
      */
-    public function memberships(): HasMany
+    public function teamMemberships(): HasMany
     {
         return $this->hasMany(Membership::class, 'user_id');
     }
@@ -113,17 +113,18 @@ trait HasTeams
      */
     public function teamRole(Team $team): ?TeamRole
     {
-        $membership = $this->memberships()
+        return $this->teamMemberships()
             ->where('team_id', $team->id)
-            ->first();
-
-        return $membership?->role;
+            ->first()
+            ?->role;
     }
 
     /**
+     * Get the user's teams as a collection of UserTeam objects.
+     *
      * @return Collection<int, UserTeam>
      */
-    public function userTeams(bool $includeCurrent = false): Collection
+    public function toUserTeams(bool $includeCurrent = false): Collection
     {
         return $this->teams()
             ->get()
@@ -132,6 +133,9 @@ trait HasTeams
             ->values();
     }
 
+    /**
+     * Get the user's team as a UserTeam object.
+     */
     public function toUserTeam(Team $team): UserTeam
     {
         $role = $this->teamRole($team);
@@ -148,18 +152,20 @@ trait HasTeams
     }
 
     /**
-     * Get the standard permissions for a team.
+     * Get the standard permissions for a team as a TeamPermissions object.
      */
-    public function teamPermissions(Team $team): TeamPermissions
+    public function toTeamPermissions(Team $team): TeamPermissions
     {
+        $role = $this->teamRole($team);
+
         return new TeamPermissions(
-            canUpdateTeam: $this->hasTeamPermission($team, 'team:update'),
-            canDeleteTeam: $this->hasTeamPermission($team, 'team:delete'),
-            canAddMember: $this->hasTeamPermission($team, 'member:add'),
-            canUpdateMember: $this->hasTeamPermission($team, 'member:update'),
-            canRemoveMember: $this->hasTeamPermission($team, 'member:remove'),
-            canCreateInvitation: $this->hasTeamPermission($team, 'invitation:create'),
-            canCancelInvitation: $this->hasTeamPermission($team, 'invitation:cancel'),
+            canUpdateTeam: $role?->hasPermission('team:update') ?? false,
+            canDeleteTeam: $role?->hasPermission('team:delete') ?? false,
+            canAddMember: $role?->hasPermission('member:add') ?? false,
+            canUpdateMember: $role?->hasPermission('member:update') ?? false,
+            canRemoveMember: $role?->hasPermission('member:remove') ?? false,
+            canCreateInvitation: $role?->hasPermission('invitation:create') ?? false,
+            canCancelInvitation: $role?->hasPermission('invitation:cancel') ?? false,
         );
     }
 
