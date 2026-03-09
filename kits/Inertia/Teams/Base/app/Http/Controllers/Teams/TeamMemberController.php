@@ -40,7 +40,7 @@ class TeamMemberController extends Controller
     /**
      * Remove the specified team member.
      */
-    public function destroy(Request $request, Team $team, User $user): RedirectResponse
+    public function destroy(Team $team, User $user): RedirectResponse
     {
         Gate::authorize('removeMember', $team);
 
