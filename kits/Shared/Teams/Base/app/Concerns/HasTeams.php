@@ -172,7 +172,7 @@ trait HasTeams
     /**
      * Determine if the user is the owner of the given team.
      */
-    public function isOwnerOf(Team $team): bool
+    public function isOwnerOfTeam(Team $team): bool
     {
         return $this->teamRole($team) === TeamRole::Owner;
     }
