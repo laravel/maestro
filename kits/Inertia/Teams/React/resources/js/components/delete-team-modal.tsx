@@ -56,6 +56,7 @@ export default function DeleteTeamModal({
 
     const handleOpenChange = (nextOpen: boolean) => {
         onOpenChange(nextOpen);
+
         if (!nextOpen) {
             resetDialog();
         }
