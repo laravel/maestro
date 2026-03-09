@@ -132,6 +132,7 @@ class TeamController extends Controller
     public function switch(Request $request, Team $team): RedirectResponse
     {
         abort_unless($request->user()->belongsToTeam($team), 403);
+
         $request->user()->switchTeam($team);
 
         return back();
