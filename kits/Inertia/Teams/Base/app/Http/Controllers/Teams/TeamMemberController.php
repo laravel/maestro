@@ -52,6 +52,7 @@ class TeamMemberController extends Controller
         }
 
         event(new TeamMemberRemoved($team, $user));
+
         $user->notify(new RemovedFromTeam($team));
 
         return to_route('teams.edit', ['team' => $team->slug]);
