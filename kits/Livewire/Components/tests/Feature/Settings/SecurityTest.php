@@ -2,13 +2,15 @@
 
 namespace Tests\Feature\Settings;
 
+use App\Livewire\Settings\Security;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\Features;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-class TwoFactorAuthenticationTest extends TestCase
+class SecurityTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -24,29 +26,29 @@ class TwoFactorAuthenticationTest extends TestCase
         ]);
     }
 
-    public function test_two_factor_settings_page_can_be_rendered(): void
+    public function test_security_settings_page_can_be_rendered(): void
     {
         $user = User::factory()->create();
 
         $this->actingAs($user)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->get(route('two-factor.show'))
+            ->get(route('security.edit'))
             ->assertOk()
             ->assertSee('Two-factor authentication')
             ->assertSee('Disabled');
     }
 
-    public function test_two_factor_settings_page_requires_password_confirmation_when_enabled(): void
+    public function test_security_settings_page_requires_password_confirmation_when_enabled(): void
     {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->get(route('two-factor.show'));
+            ->get(route('security.edit'));
 
         $response->assertRedirect(route('password.confirm'));
     }
 
-    public function test_two_factor_settings_page_returns_forbidden_response_when_two_factor_is_disabled(): void
+    public function test_security_settings_page_returns_forbidden_response_when_two_factor_is_disabled(): void
     {
         config(['fortify.features' => []]);
 
@@ -54,7 +56,7 @@ class TwoFactorAuthenticationTest extends TestCase
 
         $response = $this->actingAs($user)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->get(route('two-factor.show'));
+            ->get(route('security.edit'));
 
         $response->assertForbidden();
     }
@@ -71,7 +73,7 @@ class TwoFactorAuthenticationTest extends TestCase
 
         $this->actingAs($user);
 
-        $component = Livewire::test('settings.two-factor');
+        $component = Livewire::test(Security::class);
 
         $component->assertSet('twoFactorEnabled', false);
 
@@ -80,5 +82,41 @@ class TwoFactorAuthenticationTest extends TestCase
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
         ]);
+    }
+
+    public function test_password_can_be_updated(): void
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('password'),
+        ]);
+
+        $this->actingAs($user);
+
+        $response = Livewire::test(Security::class)
+            ->set('current_password', 'password')
+            ->set('password', 'new-password')
+            ->set('password_confirmation', 'new-password')
+            ->call('updatePassword');
+
+        $response->assertHasNoErrors();
+
+        $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
+    }
+
+    public function test_correct_password_must_be_provided_to_update_password(): void
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('password'),
+        ]);
+
+        $this->actingAs($user);
+
+        $response = Livewire::test(Security::class)
+            ->set('current_password', 'wrong-password')
+            ->set('password', 'new-password')
+            ->set('password_confirmation', 'new-password')
+            ->call('updatePassword');
+
+        $response->assertHasErrors(['current_password']);
     }
 }

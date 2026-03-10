@@ -10,10 +10,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::livewire('settings/password', 'pages::settings.password')->name('user-password.edit');
     Route::livewire('settings/appearance', 'pages::settings.appearance')->name('appearance.edit');
 
-    Route::livewire('settings/two-factor', 'pages::settings.two-factor')
+    Route::livewire('settings/security', 'pages::settings.security')
         ->middleware(
             when(
                 Features::canManageTwoFactorAuthentication()
@@ -22,5 +21,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 [],
             ),
         )
-        ->name('two-factor.show');
+        ->name('security.edit');
 });

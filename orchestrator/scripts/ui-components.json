@@ -49,19 +49,14 @@
         "svelte": "settings/Appearance",
         "vue": "settings/Appearance"
     },
-    "password_settings": {
-        "react": "settings/password",
-        "svelte": "settings/Password",
-        "vue": "settings/Password"
-    },
     "profile_settings": {
         "react": "settings/profile",
         "svelte": "settings/Profile",
         "vue": "settings/Profile"
     },
-    "two_factor_settings": {
-        "react": "settings/two-factor",
-        "svelte": "settings/TwoFactor",
-        "vue": "settings/TwoFactor"
+    "security_settings": {
+        "react": "settings/security",
+        "svelte": "settings/Security",
+        "vue": "settings/Security"
     }
 }
