@@ -41,7 +41,6 @@ export default function DeleteTeamModal({
     const [newCurrentTeamId, setNewCurrentTeamId] = useState<number | null>(
         null,
     );
-    const [processing, setProcessing] = useState(false);
 
     const canDeleteTeam = useMemo(() => {
         const nameMatches = confirmationName === team.name;
@@ -53,7 +52,6 @@ export default function DeleteTeamModal({
     const resetDialog = () => {
         setConfirmationName('');
         setNewCurrentTeamId(null);
-        setProcessing(false);
     };
 
     const handleOpenChange = (nextOpen: boolean) => {
@@ -65,13 +63,11 @@ export default function DeleteTeamModal({
     };
 
     const deleteTeam = () => {
-        router.delete(destroy(team.slug).url, {
+        router.visit(destroy(team.slug), {
             data: {
                 name: confirmationName,
                 new_current_team_id: newCurrentTeamId,
             },
-            onStart: () => setProcessing(true),
-            onFinish: () => setProcessing(false),
             onSuccess: () => handleOpenChange(false),
         });
     };
@@ -157,7 +153,7 @@ export default function DeleteTeamModal({
 
                     <Button
                         variant="destructive"
-                        disabled={!canDeleteTeam || processing}
+                        disabled={!canDeleteTeam}
                         onClick={deleteTeam}
                     >
                         Delete team

@@ -51,32 +51,28 @@ const plusIconClass = computed(() => (props.inHeader ? 'size-4' : 'h-4 w-4'));
 const switchTeam = (team: Team) => {
     const previousTeamSlug = currentTeam.value?.slug;
 
-    router.post(
-        switchMethod(team.slug).url,
-        {},
-        {
-            onFinish: () => {
-                if (!previousTeamSlug || typeof window === 'undefined') {
-                    router.reload();
-
-                    return;
-                }
-
-                const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-                const segment = `/${previousTeamSlug}`;
-
-                if (currentUrl.includes(segment)) {
-                    router.visit(currentUrl.replace(segment, `/${team.slug}`), {
-                        replace: true,
-                    });
-
-                    return;
-                }
-
+    router.visit(switchMethod(team.slug), {
+        onFinish: () => {
+            if (!previousTeamSlug || typeof window === 'undefined') {
                 router.reload();
-            },
+
+                return;
+            }
+
+            const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+            const segment = `/${previousTeamSlug}`;
+
+            if (currentUrl.includes(segment)) {
+                router.visit(currentUrl.replace(segment, `/${team.slug}`), {
+                    replace: true,
+                });
+
+                return;
+            }
+
+            router.reload();
         },
-    );
+    });
 };
 
 onMounted(() => {

@@ -60,7 +60,7 @@
     });
 
     const deleteTeam = () => {
-        router.delete(destroy(team.slug).url, {
+        router.visit(destroy(team.slug), {
             data: {
                 name: confirmationName,
                 new_current_team_id:
