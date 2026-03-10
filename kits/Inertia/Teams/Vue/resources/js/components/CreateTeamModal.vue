@@ -18,15 +18,25 @@ import { Label } from '@/components/ui/label';
 import { store } from '@/routes/teams';
 
 const open = ref(false);
+const formKey = ref(0);
+
+function handleOpenChange(value: boolean) {
+    open.value = value;
+
+    if (!value) {
+        formKey.value++;
+    }
+}
 </script>
 
 <template>
-    <Dialog v-model:open="open">
+    <Dialog :open="open" @update:open="handleOpenChange">
         <DialogTrigger as-child>
             <slot />
         </DialogTrigger>
         <DialogContent>
             <Form
+                :key="formKey"
                 v-bind="store.form()"
                 class="space-y-6"
                 v-slot="{ errors, processing }"

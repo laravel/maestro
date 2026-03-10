@@ -38,10 +38,19 @@ export default function InviteMemberModal({
 }: Props) {
     const [inviteRole, setInviteRole] = useState<RoleOption['value']>('member');
 
+    const handleOpenChange = (nextOpen: boolean) => {
+        onOpenChange(nextOpen);
+
+        if (!nextOpen) {
+            setInviteRole('member');
+        }
+    };
+
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent>
                 <Form
+                    key={String(open)}
                     {...storeInvitation.form(team.slug)}
                     className="space-y-6"
                     onSuccess={() => onOpenChange(false)}
