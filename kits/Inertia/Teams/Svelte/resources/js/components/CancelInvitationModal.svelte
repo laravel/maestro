@@ -22,12 +22,16 @@
         open: boolean;
     } = $props();
 
+    let processing = $state(false);
+
     const cancelInvitation = () => {
         if (!invitation) {
             return;
         }
 
         router.delete(destroyInvitation([team.slug, invitation.code]).url, {
+            onStart: () => (processing = true),
+            onFinish: () => (processing = false),
             onSuccess: () => {
                 open = false;
             },
@@ -51,7 +55,7 @@
                 <Button variant="secondary">Keep invitation</Button>
             </DialogClose>
 
-            <Button variant="destructive" onclick={cancelInvitation}
+            <Button variant="destructive" disabled={processing} onclick={cancelInvitation}
                 >Cancel invitation</Button
             >
         </DialogFooter>
