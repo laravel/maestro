@@ -58,6 +58,50 @@ class TeamInvitationTest extends TestCase
         $response->assertRedirect(route('teams.edit', $team));
     }
 
+    public function test_existing_team_member_cannot_be_invited()
+    {
+        Notification::fake();
+
+        $owner = User::factory()->create();
+        $member = User::factory()->create(['email' => 'member@example.com']);
+        $team = Team::factory()->create();
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+        $team->members()->attach($member, ['role' => TeamRole::Member->value]);
+
+        $response = $this
+            ->actingAs($owner)
+            ->post(route('teams.invitations.store', $team), [
+                'email' => 'member@example.com',
+                'role' => TeamRole::Member->value,
+            ]);
+
+        $response->assertSessionHasErrors('email');
+    }
+
+    public function test_duplicate_invitation_cannot_be_created()
+    {
+        Notification::fake();
+
+        $owner = User::factory()->create();
+        $team = Team::factory()->create();
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+        TeamInvitation::factory()->create([
+            'team_id' => $team->id,
+            'email' => 'invited@example.com',
+            'invited_by' => $owner->id,
+        ]);
+
+        $response = $this
+            ->actingAs($owner)
+            ->post(route('teams.invitations.store', $team), [
+                'email' => 'invited@example.com',
+                'role' => TeamRole::Member->value,
+            ]);
+
+        $response->assertSessionHasErrors('email');
+    }
+
     public function test_team_invitation_cannot_be_created_by_member()
     {
         $owner = User::factory()->create();

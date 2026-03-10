@@ -87,6 +87,43 @@ class TeamMemberTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_team_owner_cannot_be_removed()
+    {
+        $owner = User::factory()->create();
+        $team = Team::factory()->create();
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+        $response = $this
+            ->actingAs($owner)
+            ->delete(route('teams.members.destroy', [$team, $owner]));
+
+        $response->assertForbidden();
+
+        $this->assertTrue($owner->fresh()->belongsToTeam($team));
+    }
+
+    public function test_team_member_role_cannot_be_set_to_owner()
+    {
+        $owner = User::factory()->create();
+        $member = User::factory()->create();
+        $team = Team::factory()->create();
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+        $team->members()->attach($member, ['role' => TeamRole::Member->value]);
+
+        $response = $this
+            ->actingAs($owner)
+            ->patch(route('teams.members.update', [$team, $member]), [
+                'role' => TeamRole::Owner->value,
+            ]);
+
+        $response->assertSessionHasErrors('role');
+
+        $this->assertEquals(
+            TeamRole::Member->value,
+            $team->members()->where('user_id', $member->id)->first()->pivot->role->value,
+        );
+    }
+
     public function test_removed_member_current_team_is_set_to_personal_team()
     {
         $owner = User::factory()->create();
