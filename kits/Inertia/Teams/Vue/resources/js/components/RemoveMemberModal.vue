@@ -32,7 +32,7 @@ const removeMember = () => {
         return;
     }
 
-    router.delete(destroyMember([props.team.slug, props.member.id]).url, {
+    router.visit(destroyMember([props.team.slug, props.member.id]), {
         onStart: () => (processing.value = true),
         onFinish: () => (processing.value = false),
         onSuccess: () => emit('update:open', false),

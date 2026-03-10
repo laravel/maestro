@@ -27,35 +27,31 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
     const switchTeam = (team: Team) => {
         const previousTeamSlug = currentTeam?.slug;
 
-        router.post(
-            switchMethod(team.slug).url,
-            {},
-            {
-                onFinish: () => {
-                    if (!previousTeamSlug || typeof window === 'undefined') {
-                        router.reload();
-
-                        return;
-                    }
-
-                    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-                    const segment = `/${previousTeamSlug}`;
-
-                    if (currentUrl.includes(segment)) {
-                        router.visit(
-                            currentUrl.replace(segment, `/${team.slug}`),
-                            {
-                                replace: true,
-                            },
-                        );
-
-                        return;
-                    }
-
+        router.visit(switchMethod(team.slug), {
+            onFinish: () => {
+                if (!previousTeamSlug || typeof window === 'undefined') {
                     router.reload();
-                },
+
+                    return;
+                }
+
+                const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+                const segment = `/${previousTeamSlug}`;
+
+                if (currentUrl.includes(segment)) {
+                    router.visit(
+                        currentUrl.replace(segment, `/${team.slug}`),
+                        {
+                            replace: true,
+                        },
+                    );
+
+                    return;
+                }
+
+                router.reload();
             },
-        );
+        });
     };
 
     return (

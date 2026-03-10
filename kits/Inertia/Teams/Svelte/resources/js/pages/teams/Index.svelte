@@ -34,7 +34,7 @@
         },
     ];
 
-    const switchTeam = (team: Team) => router.post(switchMethod(team.slug).url);
+    const switchTeam = (team: Team) => router.visit(switchMethod(team.slug));
 
     const callClickHandler = (handler: unknown, event: MouseEvent) => {
         if (typeof handler === 'function') {

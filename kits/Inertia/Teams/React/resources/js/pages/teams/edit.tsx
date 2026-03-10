@@ -93,15 +93,10 @@ export default function TeamEdit({
     );
 
     const updateMemberRole = (member: TeamMember, newRole: string) => {
-        router.patch(
-            updateMember([team.slug, member.id]).url,
-            {
-                role: newRole,
-            },
-            {
-                preserveScroll: true,
-            },
-        );
+        router.visit(updateMember([team.slug, member.id]), {
+            data: { role: newRole },
+            preserveScroll: true,
+        });
     };
 
     const confirmRemoveMember = (member: TeamMember) => {

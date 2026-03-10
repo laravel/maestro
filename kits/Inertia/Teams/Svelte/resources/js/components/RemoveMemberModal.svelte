@@ -29,7 +29,7 @@
             return;
         }
 
-        router.delete(destroyMember([team.slug, member.id]).url, {
+        router.visit(destroyMember([team.slug, member.id]), {
             onStart: () => (processing = true),
             onFinish: () => (processing = false),
             onSuccess: () => {

@@ -78,15 +78,10 @@ const pageTitle = computed(() =>
 );
 
 const updateMemberRole = (member: TeamMember, newRole: string) => {
-    router.patch(
-        updateMember([props.team.slug, member.id]).url,
-        {
-            role: newRole,
-        },
-        {
-            preserveScroll: true,
-        },
-    );
+    router.visit(updateMember([props.team.slug, member.id]), {
+        data: { role: newRole },
+        preserveScroll: true,
+    });
 };
 
 const confirmRemoveMember = (member: TeamMember) => {

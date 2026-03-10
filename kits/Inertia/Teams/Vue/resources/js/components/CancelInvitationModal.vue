@@ -32,14 +32,11 @@ const cancelInvitation = () => {
         return;
     }
 
-    router.delete(
-        destroyInvitation([props.team.slug, props.invitation.code]).url,
-        {
-            onStart: () => (processing.value = true),
-            onFinish: () => (processing.value = false),
-            onSuccess: () => emit('update:open', false),
-        },
-    );
+    router.visit(destroyInvitation([props.team.slug, props.invitation.code]), {
+        onStart: () => (processing.value = true),
+        onFinish: () => (processing.value = false),
+        onSuccess: () => emit('update:open', false),
+    });
 };
 </script>
 

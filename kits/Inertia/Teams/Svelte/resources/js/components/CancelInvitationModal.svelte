@@ -29,7 +29,7 @@
             return;
         }
 
-        router.delete(destroyInvitation([team.slug, invitation.code]).url, {
+        router.visit(destroyInvitation([team.slug, invitation.code]), {
             onStart: () => (processing = true),
             onFinish: () => (processing = false),
             onSuccess: () => {
