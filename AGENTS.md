@@ -10,6 +10,20 @@ Maestro is the monorepo orchestrator for the official Laravel starter kits. Use 
 - Dev: `composer kit:run` (from `orchestrator/`)
 - Test: `composer setup && composer ci:check` (from `build/`)
 - Test all kits: `composer kits:check` (from `orchestrator/`) — builds and runs CI checks for all 13 variants
-- Lint: `composer kits:lint` (from `orchestrator/`)
+- Pint only: `composer kits:pint` (from `orchestrator/`) — runs Pint on `kits/` and `browser_tests/`
+- Lint: `composer kits:lint` (from `orchestrator/`) — runs `kits:pint`, then frontend lint/format for Inertia variants
 - Browser tests (all kits): `composer kits:browser-tests` (from `orchestrator/`)
 - Edit in `build/` (when available), commit in `kits/`
+
+### Selective Framework Execution
+
+Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks:
+
+```bash
+composer kits:check -- --react --svelte
+composer kits:lint -- --vue
+composer kits:lint -- --livewire        # runs only the shared Pint step (no frontend lint phase)
+composer kits:browser-tests -- --vue
+```
+
+No flags runs the full default matrix for each command.

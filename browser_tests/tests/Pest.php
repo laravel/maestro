@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Pest\Browser\Api\AwaitableWebpage;
 use Pest\Browser\Api\Webpage;
+use Tests\TestCase;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +16,8 @@ use Pest\Browser\Api\Webpage;
 |
 */
 
-pest()->extend(Tests\TestCase::class)
-    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
     ->in('Browser');
 
 /*

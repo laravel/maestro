@@ -99,7 +99,7 @@ test('two-factor authentication recovery codes can be viewed', function () {
 function fillOTPCode(AwaitableWebpage $browser, string $code): AwaitableWebpage
 {
     $isInertia = $browser->script(
-        "!!document.getElementById('otp')"
+        "!!document.getElementById('otp')",
     );
 
     if ($isInertia) {

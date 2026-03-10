@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-import { spawn, execSync } from 'child_process';
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { colors, filterVariants, log, parseFrameworkFlags, printSummary, runInherit, runQuiet } from './kit-helpers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,70 +17,39 @@ const variants = [
     {
         key: 'livewire',
         display: 'Livewire',
+        framework: 'livewire',
         buildArgs: ['build', '--no-interaction', '--kit=Livewire'],
     },
     {
         key: 'react',
         display: 'React',
+        framework: 'react',
         buildArgs: ['build', '--no-interaction', '--kit=React'],
     },
     {
         key: 'svelte',
         display: 'Svelte',
+        framework: 'svelte',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte'],
     },
     {
         key: 'vue',
         display: 'Vue',
+        framework: 'vue',
         buildArgs: ['build', '--no-interaction', '--kit=Vue'],
     },
 ];
-
-const colors = {
-    reset: '\x1b[0m',
-    blue: '\x1b[34m',
-    green: '\x1b[32m',
-    yellow: '\x1b[33m',
-    red: '\x1b[31m',
-};
-
-function log(message, color = 'reset') {
-    console.log(`${colors[color]}${message}${colors.reset}`);
-}
-
-function runCommand(command, args, options = {}) {
-    return new Promise((resolve, reject) => {
-        const child = spawn(command, args, {
-            stdio: 'inherit',
-            shell: true,
-            ...options,
-        });
-
-        child.on('close', code => {
-            if (code === 0) {
-                resolve();
-
-                return;
-            }
-
-            reject(new Error(`Command failed: ${command} ${args.join(' ')}`));
-        });
-
-        child.on('error', reject);
-    });
-}
 
 function removeBuildDirectory() {
     if (!fs.existsSync(buildDir)) {
         return;
     }
 
-    log('Removing existing build directory...', 'yellow');
     fs.rmSync(buildDir, { recursive: true, force: true });
 }
 
 function copyBrowserTests() {
-    log('Copying browser tests into build...', 'blue');
+    log('  Copying browser tests into build...', 'dim');
     fs.cpSync(browserTestsDir, buildDir, { recursive: true });
 }
 
@@ -102,51 +72,100 @@ function playwrightBrowsersInstalled() {
 
 async function ensurePlaywrightBrowsers() {
     if (playwrightBrowsersInstalled()) {
-        log('Playwright browsers already installed, skipping...', 'green');
+        log('  Playwright browsers already installed, skipping...', 'dim');
 
         return;
     }
 
-    log('Installing Playwright browsers...', 'blue');
-    await runCommand('npx', ['playwright', 'install', '--with-deps'], { cwd: buildDir });
+    log('  Installing Playwright browsers...', 'blue');
+    await runInherit('npx', ['playwright', 'install', '--with-deps'], { cwd: buildDir });
 }
 
 async function runBrowserTestsForCurrentBuild() {
-    await runCommand('composer', ['remove', '--dev', 'phpunit/phpunit', '--no-interaction', '--no-update'], { cwd: buildDir });
-    await runCommand('composer', ['require', '--dev', 'pestphp/pest', 'pestphp/pest-plugin-browser', 'pestphp/pest-plugin-laravel', '--no-interaction'], { cwd: buildDir });
-    await runCommand('npm', ['install'], { cwd: buildDir });
-    await runCommand('npm', ['install', 'playwright'], { cwd: buildDir });
+    log('  Configuring Pest + Playwright deps...', 'dim');
+    await runQuiet('composer', ['remove', '--dev', 'phpunit/phpunit', '--no-interaction', '--no-update'], { cwd: buildDir });
+    await runQuiet('composer', ['require', '--dev', 'pestphp/pest', 'pestphp/pest-plugin-browser', 'pestphp/pest-plugin-laravel', '--no-interaction'], { cwd: buildDir });
+
+    log('  Installing npm deps...', 'dim');
+    await runQuiet('npm', ['install'], { cwd: buildDir });
+    await runQuiet('npm', ['install', 'playwright'], { cwd: buildDir });
+
     await ensurePlaywrightBrowsers();
-    await runCommand('cp', ['.env.example', '.env'], { cwd: buildDir });
-    await runCommand('php', ['artisan', 'key:generate'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'build'], { cwd: buildDir });
-    await runCommand('php', ['vendor/bin/pest', '--parallel'], { cwd: buildDir });
+
+    log('  Preparing environment...', 'dim');
+    await runQuiet('cp', ['.env.example', '.env'], { cwd: buildDir });
+    await runQuiet('php', ['artisan', 'key:generate'], { cwd: buildDir });
+
+    log('  Building frontend...', 'dim');
+    await runQuiet('npm', ['run', 'build'], { cwd: buildDir });
+
+    log('  Running browser tests...', 'blue');
+    await runInherit('php', ['vendor/bin/pest', '--parallel'], { cwd: buildDir });
 }
 
 async function browserTestVariant(variant, index, total) {
-    log(`\n[${index}/${total}] ${variant.display} (${variant.key})`, 'blue');
+    log(`\n[${index}/${total}] ${variant.display}`, 'blue');
 
     removeBuildDirectory();
 
-    log('Building variant...', 'blue');
-    await runCommand('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
+    log('  Building variant...', 'dim');
+    await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
 
     copyBrowserTests();
 
-    log('Running browser tests...', 'blue');
     await runBrowserTestsForCurrentBuild();
-
-    log(`Passed ${variant.key}`, 'green');
 }
 
 async function main() {
-    const total = variants.length;
+    const selected = parseFrameworkFlags(process.argv.slice(2));
+    const active = filterVariants(variants, selected);
 
-    for (let index = 0; index < total; index++) {
-        await browserTestVariant(variants[index], index + 1, total);
+    if (active.length === 0) {
+        log('No variants matched the selected framework flags.', 'yellow');
+        process.exit(0);
     }
 
-    log('\nAll starter kit variants passed browser tests.', 'green');
+    if (selected) {
+        log(`Frameworks selected: ${[...selected].join(', ')}`, 'blue');
+    }
+
+    const total = active.length;
+    const results = [];
+
+    // Track skipped variants for summary
+    const skipped = variants.filter(v => !active.includes(v));
+
+    for (let index = 0; index < total; index++) {
+        const variant = active[index];
+        const start = Date.now();
+
+        try {
+            await browserTestVariant(variant, index + 1, total);
+            results.push({ key: variant.key, display: variant.display, status: 'passed', elapsed: Date.now() - start });
+            log(`  ${colors.green}✓ Passed${colors.reset}`);
+        } catch (error) {
+            results.push({ key: variant.key, display: variant.display, status: 'failed', elapsed: Date.now() - start });
+            log(`  ✗ Failed: ${error.message}`, 'red');
+
+            if (error.output) {
+                log('\n--- captured output ---', 'dim');
+                console.log(error.output);
+                log('--- end output ---\n', 'dim');
+            }
+        }
+    }
+
+    for (const s of skipped) {
+        results.push({ key: s.key, display: s.display, status: 'skipped', reason: 'framework not selected' });
+    }
+
+    printSummary('kits:browser-tests', results);
+
+    removeBuildDirectory();
+
+    if (results.some(r => r.status === 'failed')) {
+        process.exit(1);
+    }
 }
 
 main().catch(error => {

@@ -234,7 +234,7 @@ function fileNeedsSync(srcPath, destPath, processedContent) {
  * Perform initial sync of all files from build to kits.
  * This catches any changes that occurred while the watcher wasn't running.
  */
-function performInitialSync(folders, ig, kitType, uiComponents) {
+function performInitialSync(folders, ig, kitType, uiComponents, starterKit) {
     log('Performing initial sync to catch any missed changes...', 'blue');
 
     const allFiles = getAllFiles(buildDir);
@@ -248,8 +248,9 @@ function performInitialSync(folders, ig, kitType, uiComponents) {
             continue;
         }
 
-        const targetFolder = getTargetFolder(relativePath, folders);
-        const destPath = path.join(kitsDir, targetFolder, relativePath);
+        const destRelativePath = remapComponentsPath(relativePath, starterKit);
+        const targetFolder = getTargetFolder(destRelativePath, folders);
+        const destPath = path.join(kitsDir, targetFolder, destRelativePath);
         const processedContent = processFileContent(filePath, relativePath, targetFolder, kitType, uiComponents);
 
         if (isBlockedEmptyTextSync(relativePath, processedContent, destPath)) {
@@ -264,7 +265,10 @@ function performInitialSync(folders, ig, kitType, uiComponents) {
 
         try {
             writeToKit(filePath, destPath, processedContent);
-            log(`Synced: ${relativePath} -> kits/${targetFolder}`, 'green');
+            const syncLabel = destRelativePath !== relativePath
+                ? `${relativePath} (remapped to ${destRelativePath})`
+                : relativePath;
+            log(`Synced: ${syncLabel} -> kits/${targetFolder}`, 'green');
             syncedCount++;
         } catch (error) {
             log(`Error syncing ${relativePath}: ${error.message}`, 'red');
@@ -426,6 +430,35 @@ function isBlockedEmptyTextSync(relativePath, processedContent, destPath) {
 }
 
 /**
+ * Remap relocated paths for the livewire-components variant.
+ *
+ * The build process (relocateAuthViewsForComponents in BuildCommand.php) moves:
+ *   pages/settings/layout.blade.php  → components/settings/layout.blade.php
+ *   pages/auth/**                    → livewire/auth/**
+ *
+ * When syncing back to kits/ we need to reverse this so the file lands in
+ * its original source layer (Livewire/Base or Livewire/Fortify).
+ */
+function remapComponentsPath(relativePath, starterKit) {
+    if (starterKit !== 'livewire-components') {
+        return relativePath;
+    }
+
+    // components/settings/layout.blade.php → pages/settings/layout.blade.php
+    if (relativePath === normalizePath('resources/views/components/settings/layout.blade.php')) {
+        return 'resources/views/pages/settings/layout.blade.php';
+    }
+
+    // livewire/auth/** → pages/auth/**
+    const livewireAuthPrefix = normalizePath('resources/views/livewire/auth/');
+    if (relativePath.startsWith(livewireAuthPrefix)) {
+        return 'resources/views/pages/auth/' + relativePath.slice(livewireAuthPrefix.length);
+    }
+
+    return relativePath;
+}
+
+/**
  * Get the target kit folder for a file.
  * Returns the highest-priority folder that contains the file, or the highest-priority folder if not found.
  */
@@ -481,9 +514,10 @@ function writeToKit(srcPath, destPath, processedContent) {
  * Copy a file from build to the appropriate kit folder.
  * Restores placeholders for files in placeholder paths.
  */
-function copyToKit(srcPath, relativePath, folders, kitType, uiComponents) {
-    const targetFolder = getTargetFolder(relativePath, folders);
-    const destPath = path.join(kitsDir, targetFolder, relativePath);
+function copyToKit(srcPath, relativePath, folders, kitType, uiComponents, starterKit) {
+    const destRelativePath = remapComponentsPath(relativePath, starterKit);
+    const targetFolder = getTargetFolder(destRelativePath, folders);
+    const destPath = path.join(kitsDir, targetFolder, destRelativePath);
 
     try {
         const processedContent = processFileContent(srcPath, relativePath, targetFolder, kitType, uiComponents);
@@ -495,7 +529,10 @@ function copyToKit(srcPath, relativePath, folders, kitType, uiComponents) {
         }
 
         writeToKit(srcPath, destPath, processedContent);
-        log(`Copied: ${relativePath} -> kits/${targetFolder}`, 'green');
+        const copyLabel = destRelativePath !== relativePath
+            ? `${relativePath} (remapped to ${destRelativePath})`
+            : relativePath;
+        log(`Copied: ${copyLabel} -> kits/${targetFolder}`, 'green');
     } catch (error) {
         log(`Error copying ${relativePath}: ${error.message}`, 'red');
     }
@@ -504,30 +541,32 @@ function copyToKit(srcPath, relativePath, folders, kitType, uiComponents) {
 /**
  * Delete a file from the appropriate kit folder.
  */
-function deleteFromKit(relativePath, folders) {
+function deleteFromKit(relativePath, folders, starterKit) {
+    const destRelativePath = remapComponentsPath(relativePath, starterKit);
+
     // Find the highest-priority folder that has this file
-    const targetFolder = findSourceKitFolder(relativePath, folders);
+    const targetFolder = findSourceKitFolder(destRelativePath, folders);
 
     if (!targetFolder) {
         return;
     }
 
-    const targetPath = path.join(kitsDir, targetFolder, relativePath);
+    const targetPath = path.join(kitsDir, targetFolder, destRelativePath);
 
     try {
         if (fs.existsSync(targetPath)) {
             fs.unlinkSync(targetPath);
-            log(`Deleted: kits/${targetFolder}/${relativePath}`, 'yellow');
+            log(`Deleted: kits/${targetFolder}/${destRelativePath}`, 'yellow');
         }
     } catch (error) {
-        log(`Error deleting ${relativePath}: ${error.message}`, 'red');
+        log(`Error deleting ${destRelativePath}: ${error.message}`, 'red');
     }
 }
 
 /**
  * Handle file change events from the build directory.
  */
-function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponents) {
+function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponents, starterKit) {
     const relativePath = getRelativePath(filePath);
 
     // Skip files that match .gitignore patterns
@@ -536,12 +575,12 @@ function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponent
     }
 
     if (eventType === 'unlink') {
-        deleteFromKit(relativePath, folders);
+        deleteFromKit(relativePath, folders, starterKit);
 
         return;
     }
 
-    copyToKit(filePath, relativePath, folders, kitType, uiComponents);
+    copyToKit(filePath, relativePath, folders, kitType, uiComponents, starterKit);
 }
 
 function startWatching() {
@@ -578,7 +617,7 @@ function startWatching() {
     const ig = loadGitignores();
 
     // Perform initial sync to catch any changes that occurred while watcher wasn't running
-    performInitialSync(folders, ig, kitType, uiComponents);
+    performInitialSync(folders, ig, kitType, uiComponents, starterKit);
 
     if (initialSyncOnly) {
         log('Initial sync only mode enabled. Exiting without starting watcher.', 'blue');
@@ -593,9 +632,9 @@ function startWatching() {
     });
 
     watcher
-        .on('add', filePath => handleFileChange('add', filePath, folders, ig, kitType, uiComponents))
-        .on('change', filePath => handleFileChange('change', filePath, folders, ig, kitType, uiComponents))
-        .on('unlink', filePath => handleFileChange('unlink', filePath, folders, ig, kitType, uiComponents))
+        .on('add', filePath => handleFileChange('add', filePath, folders, ig, kitType, uiComponents, starterKit))
+        .on('change', filePath => handleFileChange('change', filePath, folders, ig, kitType, uiComponents, starterKit))
+        .on('unlink', filePath => handleFileChange('unlink', filePath, folders, ig, kitType, uiComponents, starterKit))
         .on('ready', () => {
             log('Watcher ready. Waiting for changes in build directory...', 'green');
         })

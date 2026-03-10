@@ -51,9 +51,26 @@ From the `orchestrator` directory, run:
 composer kits:lint
 ```
 
-This command loops over all Inertia variants, builds each variant, runs frontend linting/formatting in `build` (`npm install`, then lint/format), and then runs `npm run watch:kits -- --initial-sync-only` to perform and verify an initial sync back to `kits`.
+This command runs Pint on `kits/` and `browser_tests/` first, then loops over all Inertia variants, builds each variant, runs frontend linting/formatting in `build` (`npm install`, then lint/format), and then runs `npm run watch:kits -- --initial-sync-only` to sync changes back to `kits`.
 
-`composer kits:lint` also runs Pint on `kits/` before the frontend lint pass.
+To run only the Pint step without the frontend lint pass:
+
+```bash
+composer kits:pint
+```
+
+### Selective Framework Execution
+
+Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks:
+
+```bash
+composer kits:check -- --react --svelte
+composer kits:lint -- --vue
+composer kits:lint -- --livewire        # runs only the shared Pint step (no frontend lint phase)
+composer kits:browser-tests -- --vue
+```
+
+No flags runs the full default matrix for each command.
 
 ### Submitting Changes
 

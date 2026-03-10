@@ -57,9 +57,12 @@
         "lint": [
             "pint --parallel"
         ],
+        "kits:pint": [
+            "pint --parallel ../kits",
+            "pint --parallel ../browser_tests"
+        ],
         "kits:lint": [
             "Composer\\Config::disableProcessTimeout",
-            "pint --parallel ../kits",
             "node scripts/lint-kits.js"
         ],
         "kits:check": [
