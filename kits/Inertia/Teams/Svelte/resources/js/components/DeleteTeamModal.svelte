@@ -34,6 +34,7 @@
 
     let confirmationName = $state('');
     let newCurrentTeamId = $state('');
+    let processing = $state(false);
 
     const canDeleteTeam = $derived(
         confirmationName === team.name &&
@@ -49,6 +50,7 @@
     const resetDialog = () => {
         confirmationName = '';
         newCurrentTeamId = '';
+        processing = false;
     };
 
     $effect(() => {
@@ -64,6 +66,8 @@
                 new_current_team_id:
                     newCurrentTeamId === '' ? null : Number(newCurrentTeamId),
             },
+            onStart: () => (processing = true),
+            onFinish: () => (processing = false),
             onSuccess: () => (open = false),
         });
     };
@@ -148,7 +152,7 @@
 
             <Button
                 variant="destructive"
-                disabled={!canDeleteTeam}
+                disabled={!canDeleteTeam || processing}
                 onclick={deleteTeam}
             >
                 Delete team

@@ -1,4 +1,5 @@
 import { router } from '@inertiajs/react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -25,12 +26,16 @@ export default function RemoveMemberModal({
     open,
     onOpenChange,
 }: Props) {
+    const [processing, setProcessing] = useState(false);
+
     const removeMember = () => {
         if (!member) {
             return;
         }
 
         router.delete(destroyMember([team.slug, member.id]).url, {
+            onStart: () => setProcessing(true),
+            onFinish: () => setProcessing(false),
             onSuccess: () => onOpenChange(false),
         });
     };
@@ -51,7 +56,7 @@ export default function RemoveMemberModal({
                         <Button variant="secondary">Cancel</Button>
                     </DialogClose>
 
-                    <Button variant="destructive" onClick={removeMember}>
+                    <Button variant="destructive" disabled={processing} onClick={removeMember}>
                         Remove member
                     </Button>
                 </DialogFooter>

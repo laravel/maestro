@@ -37,6 +37,7 @@ const emit = defineEmits<{
 
 const confirmationName = ref('');
 const newCurrentTeamId = ref('');
+const processing = ref(false);
 
 const canDeleteTeam = computed(() => {
     const nameMatches = confirmationName.value === props.team.name;
@@ -49,6 +50,7 @@ const canDeleteTeam = computed(() => {
 const resetDialog = () => {
     confirmationName.value = '';
     newCurrentTeamId.value = '';
+    processing.value = false;
 };
 
 const handleOpenChange = (nextOpen: boolean) => {
@@ -67,10 +69,9 @@ const deleteTeam = () => {
                     ? null
                     : Number(newCurrentTeamId.value),
         },
+        onStart: () => (processing.value = true),
+        onFinish: () => (processing.value = false),
         onSuccess: () => handleOpenChange(false),
-        onError: () => {
-            // Keep the dialog open on validation errors
-        },
     });
 };
 </script>
@@ -151,7 +152,7 @@ const deleteTeam = () => {
 
                 <Button
                     variant="destructive"
-                    :disabled="!canDeleteTeam"
+                    :disabled="!canDeleteTeam || processing"
                     @click="deleteTeam"
                 >
                     Delete team

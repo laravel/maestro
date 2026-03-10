@@ -22,12 +22,16 @@
         open: boolean;
     } = $props();
 
+    let processing = $state(false);
+
     const removeMember = () => {
         if (!member) {
             return;
         }
 
         router.delete(destroyMember([team.slug, member.id]).url, {
+            onStart: () => (processing = true),
+            onFinish: () => (processing = false),
             onSuccess: () => {
                 open = false;
             },
@@ -50,7 +54,7 @@
                 <Button variant="secondary">Cancel</Button>
             </DialogClose>
 
-            <Button variant="destructive" onclick={removeMember}
+            <Button variant="destructive" disabled={processing} onclick={removeMember}
                 >Remove member</Button
             >
         </DialogFooter>

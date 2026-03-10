@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -24,12 +25,16 @@ const emit = defineEmits<{
     'update:open': [value: boolean];
 }>();
 
+const processing = ref(false);
+
 const removeMember = () => {
     if (!props.member) {
         return;
     }
 
     router.delete(destroyMember([props.team.slug, props.member.id]).url, {
+        onStart: () => (processing.value = true),
+        onFinish: () => (processing.value = false),
         onSuccess: () => emit('update:open', false),
     });
 };
@@ -51,7 +56,7 @@ const removeMember = () => {
                     <Button variant="secondary"> Cancel </Button>
                 </DialogClose>
 
-                <Button variant="destructive" @click="removeMember">
+                <Button variant="destructive" :disabled="processing" @click="removeMember">
                     Remove member
                 </Button>
             </DialogFooter>

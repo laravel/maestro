@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -24,6 +25,8 @@ const emit = defineEmits<{
     'update:open': [value: boolean];
 }>();
 
+const processing = ref(false);
+
 const cancelInvitation = () => {
     if (!props.invitation) {
         return;
@@ -32,6 +35,8 @@ const cancelInvitation = () => {
     router.delete(
         destroyInvitation([props.team.slug, props.invitation.code]).url,
         {
+            onStart: () => (processing.value = true),
+            onFinish: () => (processing.value = false),
             onSuccess: () => emit('update:open', false),
         },
     );
@@ -55,7 +60,7 @@ const cancelInvitation = () => {
                     <Button variant="secondary"> Keep invitation </Button>
                 </DialogClose>
 
-                <Button variant="destructive" @click="cancelInvitation">
+                <Button variant="destructive" :disabled="processing" @click="cancelInvitation">
                     Cancel invitation
                 </Button>
             </DialogFooter>
