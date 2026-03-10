@@ -43,6 +43,8 @@ class TeamMemberController extends Controller
     {
         Gate::authorize('removeMember', $team);
 
+        abort_if($team->owner()?->is($user), 403, 'The team owner cannot be removed.');
+
         $team->memberships()
             ->where('user_id', $user->id)
             ->delete();
