@@ -19,7 +19,7 @@ new #[Title('Teams')] class extends Component {
     {
         $user = Auth::user();
 
-        return $user->userTeams(includeCurrent: true);
+        return $user->toUserTeams(includeCurrent: true);
     }
 
     public function createTeam(CreateTeam $createTeam): void

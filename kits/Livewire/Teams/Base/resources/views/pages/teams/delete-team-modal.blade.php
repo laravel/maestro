@@ -30,7 +30,7 @@ new class extends Component {
      */
     public function getOtherTeamsProperty(): Collection
     {
-        return Auth::user()->userTeams();
+        return Auth::user()->toUserTeams();
     }
 
     public function deleteTeam(): void
