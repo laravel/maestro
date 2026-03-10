@@ -16,3 +16,6 @@ export function getInitials(fullName?: string): string {
 export function useInitials(): UseInitialsReturn {
     return { getInitials };
 }
+seInitialsReturn {
+    return { getInitials };
+}
