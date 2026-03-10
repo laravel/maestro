@@ -15,7 +15,6 @@ use App\Models\TeamInvitation;
 use App\Notifications\Teams\InvitationAccepted;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
@@ -48,11 +47,11 @@ class TeamInvitationController extends Controller
     /**
      * Cancel the specified invitation.
      */
-    public function destroy(Request $request, Team $team, TeamInvitation $invitation): RedirectResponse
+    public function destroy(Team $team, TeamInvitation $invitation): RedirectResponse
     {
         abort_unless($invitation->team_id === $team->id, 404);
 
-        Gate::authorize('cancelInvitation', $invitation->team);
+        Gate::authorize('cancelInvitation', $team);
 
         $invitation->delete();
 
