@@ -97,3 +97,8 @@ export function themeState(): ThemeState {
         updateAppearance,
     };
 }
+,
+        resolvedAppearance: getResolvedAppearance,
+        updateAppearance,
+    };
+}

@@ -16,3 +16,6 @@ export function getInitials(fullName?: string): string {
 export function initialsApi(): InitialsApi {
     return { getInitials };
 }
+i(): InitialsApi {
+    return { getInitials };
+}
