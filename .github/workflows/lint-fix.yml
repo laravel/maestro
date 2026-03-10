@@ -8,8 +8,19 @@ permissions:
 
 jobs:
   lint-fix:
-    name: Lint Fix
+    name: Lint Fix (${{ matrix.name }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: React
+            kit: React
+          - name: Svelte
+            kit: Svelte
+          - name: Vue
+            kit: Vue
 
     steps:
       - name: Checkout
@@ -30,17 +41,57 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install Composer Dependencies
+      - name: Install Orchestrator Dependencies
         working-directory: orchestrator
-        run: composer install --no-interaction --prefer-dist
+        run: |
+          composer install --no-interaction --prefer-dist
+          npm install
 
-      - name: Install Node Dependencies
+      - name: Build Kit
         working-directory: orchestrator
-        run: npm install
+        run: php artisan build --no-interaction --kit=${{ matrix.kit }}
 
-      - name: Lint and Fix Kits
+      - name: Install and Lint
+        working-directory: build
+        run: |
+          npm install
+          npm run lint
+          npm run format
+          npm run lint
+          npm run format
+
+      - name: Sync Fixes Back to Kits
         working-directory: orchestrator
-        run: composer kits:lint
+        run: node scripts/watch.js --initial-sync-only
+
+      - name: Upload Fixed Kits
+        uses: actions/upload-artifact@v4
+        with:
+          name: kits-${{ matrix.kit }}
+          path: kits/
+
+  commit:
+    name: Commit Fixes
+    runs-on: ubuntu-latest
+    needs: lint-fix
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: kits-merged/
+          merge-multiple: true
+
+      - name: Apply Fixes
+        run: |
+          cp -r kits-merged/* kits/ 2>/dev/null || true
+          rm -rf kits-merged/
 
       - name: Commit Changes
         run: |
