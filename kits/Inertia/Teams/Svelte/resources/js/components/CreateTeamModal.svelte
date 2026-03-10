@@ -28,15 +28,25 @@
     } = $props();
 
     let open = $state(false);
+    let formKey = $state(0);
+
+    function handleOpenChange(value: boolean) {
+        open = value;
+
+        if (!value) {
+            formKey++;
+        }
+    }
 </script>
 
-<Dialog bind:open>
+<Dialog open={open} onOpenChange={handleOpenChange}>
     <DialogTrigger asChild>
         {#snippet children(props)}
             {@render trigger?.(props)}
         {/snippet}
     </DialogTrigger>
     <DialogContent>
+        {#key formKey}
         <Form
             {...store.form()}
             class="space-y-6"
@@ -72,5 +82,6 @@
                 </DialogFooter>
             {/snippet}
         </Form>
+        {/key}
     </DialogContent>
 </Dialog>
