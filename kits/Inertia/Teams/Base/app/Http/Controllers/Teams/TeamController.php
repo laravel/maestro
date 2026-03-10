@@ -54,7 +54,7 @@ class TeamController extends Controller
                 'id' => $team->id,
                 'name' => $team->name,
                 'slug' => $team->slug,
-                'is_personal' => $team->is_personal,
+                'isPersonal' => $team->is_personal,
             ],
             'members' => $team->members()->get()->map(fn ($member) => [
                 'id' => $member->id,
