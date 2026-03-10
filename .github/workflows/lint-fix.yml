@@ -34,6 +34,10 @@ jobs:
         working-directory: orchestrator
         run: composer install --no-interaction --prefer-dist
 
+      - name: Install Node Dependencies
+        working-directory: orchestrator
+        run: npm install
+
       - name: Lint and Fix Kits
         working-directory: orchestrator
         run: composer kits:lint
