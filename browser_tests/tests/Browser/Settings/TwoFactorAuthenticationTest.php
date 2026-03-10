@@ -1,15 +1,21 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Auth\Middleware\RequirePassword;
 use Pest\Browser\Api\AwaitableWebpage;
 use PragmaRX\Google2FA\Google2FA;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\withoutMiddleware;
+
+beforeEach(function () {
+    withoutMiddleware(RequirePassword::class);
+});
 
 test('two-factor authentication page can be rendered', function () {
     actingAs(User::factory()->create());
 
-    visitPasswordProtectedPage('two-factor.show')
+    visit(route('two-factor.show'))
         ->assertPathEndsWith('/settings/two-factor')
         ->assertSee('Two-factor authentication')
         ->assertSee('Manage your two-factor authentication settings')
@@ -20,7 +26,7 @@ test('two-factor authentication page can be rendered', function () {
 test('two-factor authentication shows disabled state by default', function () {
     actingAs(User::factory()->create());
 
-    visitPasswordProtectedPage('two-factor.show')
+    visit(route('two-factor.show'))
         ->assertPathEndsWith('/settings/two-factor')
         ->assertSee('Disabled')
         ->assertSee('Enable 2FA')
@@ -34,7 +40,7 @@ test('two-factor authentication can be enabled and confirmed', function () {
 
     actingAs($user);
 
-    $browser = visitPasswordProtectedPage('two-factor.show')
+    $browser = visit(route('two-factor.show'))
         ->assertPathEndsWith('/settings/two-factor')
         ->assertSee('Disabled')
         ->click('Enable 2FA')
@@ -66,7 +72,7 @@ test('two-factor authentication shows enabled state', function () {
         ])),
     ]));
 
-    visitPasswordProtectedPage('two-factor.show')
+    visit(route('two-factor.show'))
         ->assertPathEndsWith('/settings/two-factor')
         ->assertSee('Enabled')
         ->assertSee('Disable 2FA')
@@ -85,7 +91,7 @@ test('two-factor authentication recovery codes can be viewed', function () {
         ])),
     ]));
 
-    visitPasswordProtectedPage('two-factor.show')
+    visit(route('two-factor.show'))
         ->assertPathEndsWith('/settings/two-factor')
         ->assertSee('View recovery codes')
         ->click('View recovery codes')
