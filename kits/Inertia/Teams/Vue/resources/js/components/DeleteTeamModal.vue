@@ -61,7 +61,7 @@ const handleOpenChange = (nextOpen: boolean) => {
 };
 
 const deleteTeam = () => {
-    router.delete(destroy(props.team.slug).url, {
+    router.visit(destroy(props.team.slug), {
         data: {
             name: confirmationName.value,
             new_current_team_id:
