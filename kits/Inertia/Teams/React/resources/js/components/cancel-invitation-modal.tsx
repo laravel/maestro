@@ -1,4 +1,5 @@
 import { router } from '@inertiajs/react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -25,12 +26,16 @@ export default function CancelInvitationModal({
     open,
     onOpenChange,
 }: Props) {
+    const [processing, setProcessing] = useState(false);
+
     const cancelInvitation = () => {
         if (!invitation) {
             return;
         }
 
         router.delete(destroyInvitation([team.slug, invitation.code]).url, {
+            onStart: () => setProcessing(true),
+            onFinish: () => setProcessing(false),
             onSuccess: () => onOpenChange(false),
         });
     };
@@ -51,7 +56,7 @@ export default function CancelInvitationModal({
                         <Button variant="secondary">Keep invitation</Button>
                     </DialogClose>
 
-                    <Button variant="destructive" onClick={cancelInvitation}>
+                    <Button variant="destructive" disabled={processing} onClick={cancelInvitation}>
                         Cancel invitation
                     </Button>
                 </DialogFooter>
