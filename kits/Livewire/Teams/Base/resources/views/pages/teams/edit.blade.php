@@ -74,7 +74,7 @@ new class extends Component {
 
     public function getPermissionsProperty(): TeamPermissions
     {
-        return Auth::user()->teamPermissions($this->teamModel);
+        return Auth::user()->toTeamPermissions($this->teamModel);
     }
 
     public function updateTeam(): void
