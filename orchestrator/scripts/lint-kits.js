@@ -142,14 +142,14 @@ async function main() {
         if (selected && selected.has('livewire') && selected.size === 1) {
             log('Livewire has no frontend lint phase. Only the shared Pint step applies.', 'yellow');
         } else {
-            log('No Inertia variants matched the selected framework flags.', 'yellow');
+            log('No Inertia variants matched the selected kit flags.', 'yellow');
         }
 
         process.exit(0);
     }
 
     if (selected) {
-        log(`Frameworks selected: ${[...selected].join(', ')}`, 'blue');
+        log(`Kits selected: ${[...selected].join(', ')}`, 'blue');
     }
 
     const total = active.length;
@@ -179,7 +179,7 @@ async function main() {
     }
 
     for (const s of skipped) {
-        results.push({ key: s.key, display: s.display, status: 'skipped', reason: 'framework not selected' });
+        results.push({ key: s.key, display: s.display, status: 'skipped', reason: 'kit not selected' });
     }
 
     printSummary('kits:lint', results);

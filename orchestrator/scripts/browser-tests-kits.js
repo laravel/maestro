@@ -121,12 +121,12 @@ async function main() {
     const active = filterVariants(variants, selected);
 
     if (active.length === 0) {
-        log('No variants matched the selected framework flags.', 'yellow');
+        log('No variants matched the selected kit flags.', 'yellow');
         process.exit(0);
     }
 
     if (selected) {
-        log(`Frameworks selected: ${[...selected].join(', ')}`, 'blue');
+        log(`Kits selected: ${[...selected].join(', ')}`, 'blue');
     }
 
     const total = active.length;
@@ -156,7 +156,7 @@ async function main() {
     }
 
     for (const s of skipped) {
-        results.push({ key: s.key, display: s.display, status: 'skipped', reason: 'framework not selected' });
+        results.push({ key: s.key, display: s.display, status: 'skipped', reason: 'kit not selected' });
     }
 
     printSummary('kits:browser-tests', results);

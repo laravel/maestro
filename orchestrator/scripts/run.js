@@ -27,7 +27,9 @@ function log(message, color = 'reset') {
  */
 function runCommand(command, args, options = {}) {
     return new Promise((resolve, reject) => {
-        const proc = spawn(command, args, {
+        const fullCommand = [command, ...args].join(' ');
+
+        const proc = spawn(fullCommand, [], {
             stdio: 'inherit',
             shell: true,
             ...options,

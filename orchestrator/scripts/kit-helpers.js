@@ -60,7 +60,9 @@ export function filterVariants(variants, selected) {
  */
 export function runQuiet(command, args, options = {}) {
     return new Promise((resolve, reject) => {
-        const child = spawn(command, args, {
+        const fullCommand = [command, ...args].join(' ');
+
+        const child = spawn(fullCommand, [], {
             stdio: ['ignore', 'pipe', 'pipe'],
             shell: true,
             ...options,
@@ -85,7 +87,7 @@ export function runQuiet(command, args, options = {}) {
             }
 
             const output = [stdout, stderr].filter(Boolean).join('\n');
-            const error = new Error(`Command failed: ${command} ${args.join(' ')}`);
+            const error = new Error(`Command failed: ${fullCommand}`);
             error.output = output;
             reject(error);
         });
@@ -99,7 +101,9 @@ export function runQuiet(command, args, options = {}) {
  */
 export function runInherit(command, args, options = {}) {
     return new Promise((resolve, reject) => {
-        const child = spawn(command, args, {
+        const fullCommand = [command, ...args].join(' ');
+
+        const child = spawn(fullCommand, [], {
             stdio: 'inherit',
             shell: true,
             ...options,
@@ -112,7 +116,7 @@ export function runInherit(command, args, options = {}) {
                 return;
             }
 
-            reject(new Error(`Command failed: ${command} ${args.join(' ')}`));
+            reject(new Error(`Command failed: ${fullCommand}`));
         });
 
         child.on('error', reject);
