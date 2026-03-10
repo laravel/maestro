@@ -36,12 +36,23 @@ const emit = defineEmits<{
 }>();
 
 const inviteRole = ref('member');
+const formKey = ref(0);
+
+function handleOpenChange(value: boolean) {
+    emit('update:open', value);
+
+    if (!value) {
+        inviteRole.value = 'member';
+        formKey.value++;
+    }
+}
 </script>
 
 <template>
-    <Dialog :open="props.open" @update:open="emit('update:open', $event)">
+    <Dialog :open="props.open" @update:open="handleOpenChange">
         <DialogContent>
             <Form
+                :key="formKey"
                 v-bind="storeInvitation.form(props.team.slug)"
                 class="space-y-6"
                 v-slot="{ errors, processing }"

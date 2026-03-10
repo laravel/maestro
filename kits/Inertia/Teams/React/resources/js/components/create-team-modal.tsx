@@ -25,6 +25,7 @@ export default function CreateTeamModal({ children }: PropsWithChildren) {
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent>
                 <Form
+                    key={String(open)}
                     {...store.form()}
                     className="space-y-6"
                     onSuccess={() => setOpen(false)}

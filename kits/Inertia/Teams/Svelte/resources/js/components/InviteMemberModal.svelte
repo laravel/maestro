@@ -32,15 +32,26 @@
     } = $props();
 
     let inviteRole = $state<RoleOption['value']>('member');
+    let formKey = $state(0);
 
     const inviteRoleLabel = $derived(
         availableRoles.find((role) => role.value === inviteRole)?.label ??
             'Select a role',
     );
+
+    function handleOpenChange(value: boolean) {
+        open = value;
+
+        if (!value) {
+            inviteRole = 'member';
+            formKey++;
+        }
+    }
 </script>
 
-<Dialog bind:open>
+<Dialog open={open} onOpenChange={handleOpenChange}>
     <DialogContent>
+        {#key formKey}
         <Form
             {...storeInvitation.form(team.slug)}
             class="space-y-6"
@@ -101,5 +112,6 @@
                 </DialogFooter>
             {/snippet}
         </Form>
+        {/key}
     </DialogContent>
 </Dialog>
