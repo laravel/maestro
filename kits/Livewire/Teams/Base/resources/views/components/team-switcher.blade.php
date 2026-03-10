@@ -29,7 +29,7 @@ new class extends Component {
      */
     public function teams(): Collection
     {
-        return Auth::user()->userTeams(includeCurrent: true);
+        return Auth::user()->toUserTeams(includeCurrent: true);
     }
 
     public function switchTeam(string $slug): void
