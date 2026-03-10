@@ -98,7 +98,6 @@ export default [
             '@stylistic': stylistic,
         },
         rules: {
-            '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: false }],
             '@stylistic/padding-line-between-statements': [
                 'error',
                 ...paddingAroundControl,
@@ -120,8 +119,12 @@ export default [
     },
     prettier, // Turn off all rules that might conflict with Prettier
     {
+        plugins: {
+            '@stylistic': stylistic,
+        },
         rules: {
             curly: ['error', 'all'],
+            '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: false }],
         },
     },
 ];
