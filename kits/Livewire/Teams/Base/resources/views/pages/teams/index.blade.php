@@ -12,16 +12,6 @@ use Livewire\Component;
 new #[Title('Teams')] class extends Component {
     public string $name = '';
 
-    /**
-     * @return Collection<int, UserTeam>
-     */
-    public function getTeamsProperty()
-    {
-        $user = Auth::user();
-
-        return $user->toUserTeams(includeCurrent: true);
-    }
-
     public function createTeam(CreateTeam $createTeam): void
     {
         $validated = $this->validate([
@@ -31,6 +21,7 @@ new #[Title('Teams')] class extends Component {
         $team = $createTeam->handle(Auth::user(), $validated['name']);
 
         $this->dispatch('close-modal', name: 'create-team');
+
         $this->reset('name');
 
         $this->redirectRoute('teams.edit', ['team' => $team->slug], navigate: true);
@@ -41,9 +32,18 @@ new #[Title('Teams')] class extends Component {
         $team = Team::where('slug', $team)->firstOrFail();
 
         abort_unless(Auth::user()->belongsToTeam($team), 403);
+
         Auth::user()->switchTeam($team);
 
         $this->redirectRoute('teams.index', navigate: true);
+    }
+
+    /**
+     * @return Collection<int, UserTeam>
+     */
+    public function getTeamsProperty()
+    {
+        return Auth::user()->toUserTeams(includeCurrent: true);
     }
 }; ?>
 

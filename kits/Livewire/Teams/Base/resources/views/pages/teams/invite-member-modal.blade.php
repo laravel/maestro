@@ -22,11 +22,6 @@ new class extends Component {
         $this->team = $team;
     }
 
-    public function getAvailableRolesProperty(): array
-    {
-        return TeamRole::assignable();
-    }
-
     public function createInvitation(): void
     {
         Gate::authorize('inviteMember', $this->team);
@@ -43,12 +38,18 @@ new class extends Component {
             'expires_at' => now()->plus(days: 3),
         ]);
 
-        Notification::route('mail', $invitation->email)->notify(new TeamInvitationNotification($invitation));
+        Notification::route('mail', $invitation->email)
+            ->notify(new TeamInvitationNotification($invitation));
 
         $this->reset('inviteEmail', 'inviteRole');
         $this->dispatch('close-modal', name: 'invite-member');
 
         $this->redirectRoute('teams.edit', ['team' => $this->team->slug], navigate: true);
+    }
+
+    public function getAvailableRolesProperty(): array
+    {
+        return TeamRole::assignable();
     }
 }; ?>
 
