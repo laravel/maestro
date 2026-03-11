@@ -56,7 +56,11 @@ export default function RemoveMemberModal({
                         <Button variant="secondary">Cancel</Button>
                     </DialogClose>
 
-                    <Button variant="destructive" disabled={processing} onClick={removeMember}>
+                    <Button
+                        variant="destructive"
+                        disabled={processing}
+                        onClick={removeMember}
+                    >
                         Remove member
                     </Button>
                 </DialogFooter>

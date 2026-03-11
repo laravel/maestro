@@ -56,7 +56,11 @@ const removeMember = () => {
                     <Button variant="secondary"> Cancel </Button>
                 </DialogClose>
 
-                <Button variant="destructive" :disabled="processing" @click="removeMember">
+                <Button
+                    variant="destructive"
+                    :disabled="processing"
+                    @click="removeMember"
+                >
                     Remove member
                 </Button>
             </DialogFooter>
