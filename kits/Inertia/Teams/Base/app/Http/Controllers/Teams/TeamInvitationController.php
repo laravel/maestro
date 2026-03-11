@@ -23,13 +23,11 @@ class TeamInvitationController extends Controller
     {
         Gate::authorize('inviteMember', $team);
 
-        $expiryMinutes = config('teams.invitations.default_expiry');
-
         $invitation = $team->invitations()->create([
             'email' => $request->validated('email'),
             'role' => TeamRole::from($request->validated('role')),
             'invited_by' => $request->user()->id,
-            'expires_at' => $expiryMinutes ? now()->addMinutes($expiryMinutes) : null,
+            'expires_at' => now()->plus(days: 3),
         ]);
 
         Notification::route('mail', $invitation->email)->notify(new TeamInvitationNotification($invitation));

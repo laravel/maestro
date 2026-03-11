@@ -36,13 +36,11 @@ new class extends Component {
             'inviteRole' => ['required', 'string', Rule::enum(TeamRole::class)],
         ]);
 
-        $expiryMinutes = config('teams.invitations.default_expiry');
-
         $invitation = $this->team->invitations()->create([
             'email' => $validated['inviteEmail'],
             'role' => TeamRole::from($validated['inviteRole']),
             'invited_by' => Auth::id(),
-            'expires_at' => $expiryMinutes ? now()->addMinutes($expiryMinutes) : null,
+            'expires_at' => now()->plus(days: 3),
         ]);
 
         Notification::route('mail', $invitation->email)->notify(new TeamInvitationNotification($invitation));

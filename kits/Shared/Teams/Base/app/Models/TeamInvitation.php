@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TeamRole;
+use App\Models\User;
 use Database\Factories\TeamInvitationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -59,7 +60,7 @@ class TeamInvitation extends Model
      */
     public function inviter(): BelongsTo
     {
-        return $this->belongsTo(config('teams.user_model'), 'invited_by');
+        return $this->belongsTo(User::class, 'invited_by');
     }
 
     /**

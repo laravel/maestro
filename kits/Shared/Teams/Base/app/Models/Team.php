@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Concerns\GeneratesUniqueTeamSlugs;
 use App\Enums\TeamRole;
+use App\Models\User;
 use Database\Factories\TeamFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -65,7 +66,7 @@ class Team extends Model
      */
     public function members(): BelongsToMany
     {
-        return $this->belongsToMany(config('teams.user_model'), 'team_members', 'team_id', 'user_id')
+        return $this->belongsToMany(User::class, 'team_members', 'team_id', 'user_id')
             ->using(Membership::class)
             ->withPivot(['role'])
             ->withTimestamps();
