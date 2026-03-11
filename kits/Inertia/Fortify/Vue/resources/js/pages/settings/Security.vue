@@ -19,11 +19,13 @@ import { disable, enable } from '@/routes/two-factor';
 import type { BreadcrumbItem } from '@/types';
 
 type Props = {
+    canManageTwoFactor?: boolean;
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
 };
 
 withDefaults(defineProps<Props>(), {
+    canManageTwoFactor: false,
     requiresConfirmation: false,
     twoFactorEnabled: false,
 });
@@ -131,7 +133,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                 </Form>
             </div>
 
-            <div class="space-y-6">
+            <div v-if="canManageTwoFactor" class="space-y-6">
                 <Heading
                     variant="small"
                     title="Two-factor authentication"

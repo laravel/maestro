@@ -15,7 +15,6 @@ use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Symfony\Component\HttpFoundation\Response;
 
 #[Title('Security settings')]
 class Security extends Component
@@ -27,6 +26,9 @@ class Security extends Component
     public string $password = '';
 
     public string $password_confirmation = '';
+
+    #[Locked]
+    public bool $canManageTwoFactor;
 
     #[Locked]
     public bool $twoFactorEnabled;
@@ -52,14 +54,16 @@ class Security extends Component
      */
     public function mount(DisableTwoFactorAuthentication $disableTwoFactorAuthentication): void
     {
-        abort_unless(Features::enabled(Features::twoFactorAuthentication()), Response::HTTP_FORBIDDEN);
+        $this->canManageTwoFactor = Features::canManageTwoFactorAuthentication();
 
-        if (Fortify::confirmsTwoFactorAuthentication() && is_null(auth()->user()->two_factor_confirmed_at)) {
-            $disableTwoFactorAuthentication(auth()->user());
+        if ($this->canManageTwoFactor) {
+            if (Fortify::confirmsTwoFactorAuthentication() && is_null(auth()->user()->two_factor_confirmed_at)) {
+                $disableTwoFactorAuthentication(auth()->user());
+            }
+
+            $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();
+            $this->requiresConfirmation = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
         }
-
-        $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();
-        $this->requiresConfirmation = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
     }
 
     /**

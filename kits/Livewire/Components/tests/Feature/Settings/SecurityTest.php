@@ -48,17 +48,18 @@ class SecurityTest extends TestCase
         $response->assertRedirect(route('password.confirm'));
     }
 
-    public function test_security_settings_page_returns_forbidden_response_when_two_factor_is_disabled(): void
+    public function test_security_settings_page_renders_without_two_factor_when_feature_is_disabled(): void
     {
         config(['fortify.features' => []]);
 
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)
+        $this->actingAs($user)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->get(route('security.edit'));
-
-        $response->assertForbidden();
+            ->get(route('security.edit'))
+            ->assertOk()
+            ->assertSee('Update password')
+            ->assertDontSee('Two-factor authentication');
     }
 
     public function test_two_factor_authentication_disabled_when_confirmation_abandoned_between_requests(): void

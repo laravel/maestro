@@ -145,6 +145,39 @@ test('two-factor authentication recovery codes can be viewed', function () {
         ->assertNoJavaScriptErrors();
 });
 
+test('security page displays password section without two-factor when feature is disabled', function () {
+    config(['fortify.features' => []]);
+
+    actingAs(User::factory()->create());
+
+    visit(route('security.edit'))
+        ->assertPathEndsWith('/settings/security')
+        ->assertSee('Update password')
+        ->assertSee('Ensure your account is using a long, random password to stay secure')
+        ->assertDontSee('Two-factor authentication')
+        ->assertDontSee('Enable 2FA')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
+test('password can be updated when two-factor feature is disabled', function () {
+    config(['fortify.features' => []]);
+
+    actingAs($user = User::factory()->create());
+
+    visit(route('security.edit'))
+        ->fill('current_password', 'password')
+        ->fill('password', 'new-password')
+        ->fill('password_confirmation', 'new-password')
+        ->press('@update-password-button')
+        ->assertSee('Saved')
+        ->assertUrlIs(route('security.edit'))
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+
+    expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue();
+});
+
 function fillOTPCode(AwaitableWebpage $browser, string $code): AwaitableWebpage
 {
     $isInertia = $browser->script(
