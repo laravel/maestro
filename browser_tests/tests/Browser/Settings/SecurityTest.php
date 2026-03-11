@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Auth\Middleware\RequirePassword;
+use Illuminate\Support\Facades\Hash;
 use Pest\Browser\Api\AwaitableWebpage;
 use PragmaRX\Google2FA\Google2FA;
 
@@ -12,11 +13,53 @@ beforeEach(function () {
     withoutMiddleware(RequirePassword::class);
 });
 
-test('two-factor authentication page can be rendered', function () {
+test('password update section is displayed on security page', function () {
     actingAs(User::factory()->create());
 
-    visit(route('two-factor.show'))
-        ->assertPathEndsWith('/settings/two-factor')
+    visit(route('security.edit'))
+        ->assertSee('Update password')
+        ->assertSee('Ensure your account is using a long, random password to stay secure')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
+test('password can be updated', function () {
+    actingAs($user = User::factory()->create());
+
+    visit(route('security.edit'))
+        ->fill('current_password', 'password')
+        ->fill('password', 'new-password')
+        ->fill('password_confirmation', 'new-password')
+        ->press('@update-password-button')
+        ->assertSee('Saved')
+        ->assertUrlIs(route('security.edit'))
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+
+    expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue();
+});
+
+test('correct password must be provided to update password', function () {
+    actingAs($user = User::factory()->create());
+
+    visit(route('security.edit'))
+        ->fill('current_password', 'wrong-password')
+        ->fill('password', 'new-password')
+        ->fill('password_confirmation', 'new-password')
+        ->press('@update-password-button')
+        ->assertSee('The password is incorrect.')
+        ->assertUrlIs(route('security.edit'))
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+
+    expect(Hash::check('wrong-password', $user->refresh()->password))->toBeFalse();
+});
+
+test('two-factor authentication section is displayed on security page', function () {
+    actingAs(User::factory()->create());
+
+    visit(route('security.edit'))
+        ->assertPathEndsWith('/settings/security')
         ->assertSee('Two-factor authentication')
         ->assertSee('Manage your two-factor authentication settings')
         ->assertNoConsoleLogs()
@@ -26,8 +69,8 @@ test('two-factor authentication page can be rendered', function () {
 test('two-factor authentication shows disabled state by default', function () {
     actingAs(User::factory()->create());
 
-    visit(route('two-factor.show'))
-        ->assertPathEndsWith('/settings/two-factor')
+    visit(route('security.edit'))
+        ->assertPathEndsWith('/settings/security')
         ->assertSee('Disabled')
         ->assertSee('Enable 2FA')
         ->assertSee('When you enable two-factor authentication')
@@ -40,8 +83,8 @@ test('two-factor authentication can be enabled and confirmed', function () {
 
     actingAs($user);
 
-    $browser = visit(route('two-factor.show'))
-        ->assertPathEndsWith('/settings/two-factor')
+    $browser = visit(route('security.edit'))
+        ->assertPathEndsWith('/settings/security')
         ->assertSee('Disabled')
         ->click('Enable 2FA')
         ->assertSee('Enable two-factor authentication')
@@ -72,8 +115,8 @@ test('two-factor authentication shows enabled state', function () {
         ])),
     ]));
 
-    visit(route('two-factor.show'))
-        ->assertPathEndsWith('/settings/two-factor')
+    visit(route('security.edit'))
+        ->assertPathEndsWith('/settings/security')
         ->assertSee('Enabled')
         ->assertSee('Disable 2FA')
         ->assertSee('View recovery codes')
@@ -91,8 +134,8 @@ test('two-factor authentication recovery codes can be viewed', function () {
         ])),
     ]));
 
-    visit(route('two-factor.show'))
-        ->assertPathEndsWith('/settings/two-factor')
+    visit(route('security.edit'))
+        ->assertPathEndsWith('/settings/security')
         ->assertSee('View recovery codes')
         ->click('View recovery codes')
         ->assertSee('Hide recovery codes')
@@ -100,6 +143,39 @@ test('two-factor authentication recovery codes can be viewed', function () {
         ->assertSee('Each recovery code can be used once')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
+});
+
+test('security page displays password section without two-factor when feature is disabled', function () {
+    config(['fortify.features' => []]);
+
+    actingAs(User::factory()->create());
+
+    visit(route('security.edit'))
+        ->assertPathEndsWith('/settings/security')
+        ->assertSee('Update password')
+        ->assertSee('Ensure your account is using a long, random password to stay secure')
+        ->assertDontSee('Two-factor authentication')
+        ->assertDontSee('Enable 2FA')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
+test('password can be updated when two-factor feature is disabled', function () {
+    config(['fortify.features' => []]);
+
+    actingAs($user = User::factory()->create());
+
+    visit(route('security.edit'))
+        ->fill('current_password', 'password')
+        ->fill('password', 'new-password')
+        ->fill('password_confirmation', 'new-password')
+        ->press('@update-password-button')
+        ->assertSee('Saved')
+        ->assertUrlIs(route('security.edit'))
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+
+    expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue();
 });
 
 function fillOTPCode(AwaitableWebpage $browser, string $code): AwaitableWebpage

@@ -2,9 +2,8 @@
 
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Passkeys;
-use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
-use App\Livewire\Settings\TwoFactor;
+use App\Livewire\Settings\Security;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -15,10 +14,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::livewire('settings/password', Password::class)->name('user-password.edit');
     Route::livewire('settings/appearance', Appearance::class)->name('appearance.edit');
 
-    Route::livewire('settings/two-factor', TwoFactor::class)
+    Route::livewire('settings/security', Security::class)
         ->middleware(
             when(
                 Features::canManageTwoFactorAuthentication()
@@ -27,7 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 [],
             ),
         )
-        ->name('two-factor.show');
+        ->name('security.edit');
 
     Route::livewire('settings/passkeys', Passkeys::class)
         ->middleware(
