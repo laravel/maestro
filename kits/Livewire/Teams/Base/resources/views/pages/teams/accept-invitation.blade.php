@@ -22,6 +22,7 @@ new #[Title('Teams')] class extends Component {
     public function acceptInvitation(): void
     {
         $user = Auth::user();
+
         $this->validateInvitation($user, $this->invitation);
 
         DB::transaction(function () use ($user) {
@@ -31,8 +32,6 @@ new #[Title('Teams')] class extends Component {
                 ['user_id' => $user->id],
                 ['role' => $this->invitation->role]
             );
-
-            $wasRecentlyCreated = $membership->wasRecentlyCreated;
 
             $this->invitation->update(['accepted_at' => now()]);
 

@@ -37,6 +37,7 @@ new class extends Component {
     private function setTeamData(): void
     {
         $user = Auth::user();
+
         $team = $this->teamModel->fresh();
 
         $this->teamData = [
@@ -67,6 +68,7 @@ new class extends Component {
             ])->toArray();
 
         $this->availableRoles = TeamRole::assignable();
+
         $this->isCurrentTeam = $user->isCurrentTeam($team);
     }
 

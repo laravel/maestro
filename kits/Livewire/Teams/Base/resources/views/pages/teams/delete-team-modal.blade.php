@@ -59,6 +59,14 @@ new class extends Component {
 
         $this->redirectRoute('teams.index', navigate: true);
     }
+
+    /**
+     * @return Collection<int, UserTeam>
+     */
+    public function getOtherTeamsProperty(): Collection
+    {
+        return Auth::user()->toUserTeams();
+    }
 }; ?>
 
 <flux:modal name="delete-team" :show="$errors->isNotEmpty()" focusable class="max-w-lg">
