@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { colors, filterVariants, log, parseFrameworkFlags, printSummary, runQuiet } from './kit-helpers.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const orchestratorDir = path.dirname(__dirname);
-const rootDir = path.dirname(orchestratorDir);
-const buildDir = path.join(rootDir, 'build');
+import { buildDir, log, orchestratorDir, removeBuildDirectory, runMatrix, runQuiet } from './kit-helpers.js';
 
 const variants = [
     {
@@ -92,14 +83,6 @@ const variants = [
     },
 ];
 
-function removeBuildDirectory() {
-    if (!fs.existsSync(buildDir)) {
-        return;
-    }
-
-    fs.rmSync(buildDir, { recursive: true, force: true });
-}
-
 async function checkCurrentBuild() {
     log('  Installing dependencies...', 'dim');
     await runQuiet('composer', ['setup'], { cwd: buildDir });
@@ -119,61 +102,11 @@ async function checkVariant(variant, index, total) {
     await checkCurrentBuild();
 }
 
-async function main() {
-    const selected = parseFrameworkFlags(process.argv.slice(2));
-    const active = filterVariants(variants, selected);
-
-    if (active.length === 0) {
-        log('No variants matched the selected kit flags.', 'yellow');
-        process.exit(0);
-    }
-
-    if (selected) {
-        log(`Kits selected: ${[...selected].join(', ')}`, 'blue');
-    }
-
-    const total = active.length;
-    const results = [];
-
-    // Track skipped variants for summary
-    const skipped = variants.filter(v => !active.includes(v));
-
-    for (let index = 0; index < total; index++) {
-        const variant = active[index];
-        const start = Date.now();
-
-        try {
-            await checkVariant(variant, index + 1, total);
-            results.push({ key: variant.key, display: variant.display, status: 'passed', elapsed: Date.now() - start });
-            log(`  ${colors.green}✓ Passed${colors.reset}`);
-        } catch (error) {
-            results.push({ key: variant.key, display: variant.display, status: 'failed', elapsed: Date.now() - start });
-            log(`  ✗ Failed: ${error.message}`, 'red');
-
-            if (error.output) {
-                log('\n--- captured output ---', 'dim');
-                console.log(error.output);
-                log('--- end output ---\n', 'dim');
-            }
-
-            // Continue to remaining variants
-        }
-    }
-
-    for (const s of skipped) {
-        results.push({ key: s.key, display: s.display, status: 'skipped', reason: 'kit not selected' });
-    }
-
-    printSummary('kits:check', results);
-
-    removeBuildDirectory();
-
-    if (results.some(r => r.status === 'failed')) {
-        process.exit(1);
-    }
-}
-
-main().catch(error => {
+runMatrix({
+    scriptLabel: 'kits:check',
+    allVariants: variants,
+    runVariant: checkVariant,
+}).catch(error => {
     log(`\nCheck kits failed: ${error.message}`, 'red');
     process.exit(1);
 });

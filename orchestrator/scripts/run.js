@@ -1,51 +1,8 @@
 #!/usr/bin/env node
 
-import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const orchestratorDir = path.dirname(__dirname);
-const rootDir = path.dirname(orchestratorDir);
-const buildDir = path.join(rootDir, 'build');
-
-const colors = {
-    reset: '\x1b[0m',
-    blue: '\x1b[34m',
-    green: '\x1b[32m',
-    red: '\x1b[31m',
-};
-
-function log(message, color = 'reset') {
-    console.log(`${colors[color]}${message}${colors.reset}`);
-}
-
-/**
- * Run a command and return a promise.
- */
-function runCommand(command, args, options = {}) {
-    return new Promise((resolve, reject) => {
-        const fullCommand = [command, ...args].join(' ');
-
-        const proc = spawn(fullCommand, [], {
-            stdio: 'inherit',
-            shell: true,
-            ...options,
-        });
-
-        proc.on('close', code => {
-            if (code === 0) {
-                resolve();
-            } else {
-                reject(new Error(`Command failed with code ${code}`));
-            }
-        });
-
-        proc.on('error', reject);
-    });
-}
+import { buildDir, log, orchestratorDir, runInherit } from './kit-helpers.js';
 
 function readEnvValue(envPath, key) {
     if (!fs.existsSync(envPath)) {
@@ -103,15 +60,13 @@ async function main() {
         process.exit(1);
     }
 
-    process.chdir(buildDir);
-
     log('Running composer setup...', 'blue');
-    await runCommand('composer', ['setup']);
+    await runInherit('composer', ['setup'], { cwd: buildDir });
 
     configureEnv();
 
     log('Starting development server...', 'green');
-    await runCommand('composer', ['dev']);
+    await runInherit('composer', ['dev'], { cwd: buildDir });
 }
 
 main().catch(error => {

@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { colors, filterVariants, log, parseFrameworkFlags, printSummary, runInherit, runQuiet } from './kit-helpers.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const orchestratorDir = path.dirname(__dirname);
-const rootDir = path.dirname(orchestratorDir);
-const buildDir = path.join(rootDir, 'build');
+import {
+    buildDir,
+    filterVariants,
+    log,
+    orchestratorDir,
+    parseFrameworkFlags,
+    printSummary,
+    removeBuildDirectory,
+    runInherit,
+    runQuiet,
+    colors,
+} from './kit-helpers.js';
 
 /**
  * Only Inertia variants need frontend lint/format. Livewire has no frontend
@@ -73,13 +75,7 @@ const variants = [
     },
 ];
 
-function removeBuildDirectory() {
-    if (!fs.existsSync(buildDir)) {
-        return;
-    }
-
-    fs.rmSync(buildDir, { recursive: true, force: true });
-}
+const MAX_LINT_PASSES = 2;
 
 async function lintCurrentBuild() {
     log('  Installing composer deps...', 'dim');
@@ -91,17 +87,13 @@ async function lintCurrentBuild() {
     log('  Building frontend...', 'dim');
     await runQuiet('npm', ['run', 'build'], { cwd: buildDir });
 
-    log('  Running lint pass 1...', 'dim');
-    await runQuiet('npm', ['run', 'lint'], { cwd: buildDir });
+    for (let pass = 1; pass <= MAX_LINT_PASSES; pass++) {
+        log(`  Running lint pass ${pass}...`, 'dim');
+        await runQuiet('npm', ['run', 'lint'], { cwd: buildDir });
 
-    log('  Running format pass 1...', 'dim');
-    await runQuiet('npm', ['run', 'format'], { cwd: buildDir });
-
-    log('  Running lint pass 2...', 'dim');
-    await runQuiet('npm', ['run', 'lint'], { cwd: buildDir });
-
-    log('  Running format pass 2...', 'dim');
-    await runQuiet('npm', ['run', 'format'], { cwd: buildDir });
+        log(`  Running format pass ${pass}...`, 'dim');
+        await runQuiet('npm', ['run', 'format'], { cwd: buildDir });
+    }
 }
 
 function runWatcherInitialSync() {
