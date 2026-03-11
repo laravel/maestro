@@ -168,13 +168,13 @@ class BuildCommand extends Command
         bool $blank = false,
         bool $teams = false,
     ): string {
-        $teamsLabel = $teams ? 'Teams' : '';
-
         return match (true) {
             $blank => "{$kit} (Blank)",
-            $workos => "{$kit} (WorkOS - {$teamsLabel})",
+            $workos && $teams => "{$kit} (WorkOS - Teams)",
+            $workos => "{$kit} (WorkOS)",
             $components => "{$kit} (Components)",
-            default => "{$kit} (Fortify - {$teamsLabel})",
+            $teams => "{$kit} (Fortify - Teams)",
+            default => "{$kit} (Fortify)",
         };
     }
 
