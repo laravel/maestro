@@ -81,6 +81,7 @@ enum TeamRole: string
         return collect(self::cases())
             ->filter(fn (self $role) => $role !== self::Owner)
             ->map(fn (self $role) => ['value' => $role->value, 'label' => $role->label()])
+            ->values()
             ->toArray();
     }
 }
