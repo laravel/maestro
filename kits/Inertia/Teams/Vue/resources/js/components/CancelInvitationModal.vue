@@ -57,7 +57,11 @@ const cancelInvitation = () => {
                     <Button variant="secondary"> Keep invitation </Button>
                 </DialogClose>
 
-                <Button variant="destructive" :disabled="processing" @click="cancelInvitation">
+                <Button
+                    variant="destructive"
+                    :disabled="processing"
+                    @click="cancelInvitation"
+                >
                     Cancel invitation
                 </Button>
             </DialogFooter>

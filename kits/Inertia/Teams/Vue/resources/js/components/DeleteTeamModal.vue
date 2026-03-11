@@ -55,6 +55,7 @@ const resetDialog = () => {
 
 const handleOpenChange = (nextOpen: boolean) => {
     emit('update:open', nextOpen);
+
     if (!nextOpen) {
         resetDialog();
     }
