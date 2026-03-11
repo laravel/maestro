@@ -14,21 +14,6 @@ class TeamInvitation extends Model
     /** @use HasFactory<TeamInvitationFactory> */
     use HasFactory;
 
-    protected static function boot(): void
-    {
-        parent::boot();
-        static::creating(function (TeamInvitation $invitation) {
-            if (empty($invitation->code)) {
-                $invitation->code = Str::random(64);
-            }
-        });
-    }
-
-    public function getRouteKeyName(): string
-    {
-        return 'code';
-    }
-
     /**
      * The attributes that are mass assignable.
      *
@@ -44,17 +29,17 @@ class TeamInvitation extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Bootstrap the model and its traits.
      */
-    protected function casts(): array
+    protected static function boot(): void
     {
-        return [
-            'role' => TeamRole::class,
-            'expires_at' => 'datetime',
-            'accepted_at' => 'datetime',
-        ];
+        parent::boot();
+
+        static::creating(function (TeamInvitation $invitation) {
+            if (empty($invitation->code)) {
+                $invitation->code = Str::random(64);
+            }
+        });
     }
 
     /**
@@ -99,5 +84,27 @@ class TeamInvitation extends Model
     public function isExpired(): bool
     {
         return $this->expires_at !== null && $this->expires_at->isPast();
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'role' => TeamRole::class,
+            'expires_at' => 'datetime',
+            'accepted_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'code';
     }
 }

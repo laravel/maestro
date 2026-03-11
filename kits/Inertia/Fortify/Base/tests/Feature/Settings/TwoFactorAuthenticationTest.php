@@ -14,7 +14,7 @@ class TwoFactorAuthenticationTest extends TestCase
 
     public function test_two_factor_settings_page_can_be_rendered()
     {
-        $this->skipUnlessFortifyFeature(Features::twoFactorAuthentication());
+        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
         Features::twoFactorAuthentication([
             'confirm' => true,
@@ -34,7 +34,7 @@ class TwoFactorAuthenticationTest extends TestCase
 
     public function test_two_factor_settings_page_requires_password_confirmation_when_enabled()
     {
-        $this->skipUnlessFortifyFeature(Features::twoFactorAuthentication());
+        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
         $user = User::factory()->create();
 
@@ -51,7 +51,7 @@ class TwoFactorAuthenticationTest extends TestCase
 
     public function test_two_factor_settings_page_does_not_requires_password_confirmation_when_disabled()
     {
-        $this->skipUnlessFortifyFeature(Features::twoFactorAuthentication());
+        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
         $user = User::factory()->create();
 
@@ -70,7 +70,7 @@ class TwoFactorAuthenticationTest extends TestCase
 
     public function test_two_factor_settings_page_returns_forbidden_response_when_two_factor_is_disabled()
     {
-        $this->skipUnlessFortifyFeature(Features::twoFactorAuthentication());
+        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
         config(['fortify.features' => []]);
 

@@ -1,8 +1,6 @@
 <?php
 
 use App\Enums\TeamRole;
-use App\Events\Teams\TeamMemberRoleChanged;
-use App\Events\Teams\TeamUpdated;
 use App\Models\Team;
 use App\Rules\TeamName;
 use App\Support\TeamPermissions;
@@ -88,7 +86,6 @@ new class extends Component {
         $team = DB::transaction(function () use ($validated) {
             $lockedTeam = Team::whereKey($this->teamModel->id)->lockForUpdate()->firstOrFail();
             $lockedTeam->update(['name' => $validated['teamName']]);
-            event(new TeamUpdated($lockedTeam));
 
             return $lockedTeam;
         });
@@ -116,7 +113,6 @@ new class extends Component {
         $oldRole = $membership->role;
         $membership->update(['role' => $newRole]);
 
-        event(new TeamMemberRoleChanged($this->teamModel, $membership->user, $oldRole, $newRole));
         $this->setTeamData();
     }
 

@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\TeamRole;
-use App\Events\Teams\TeamInvitationSent;
 use App\Models\Team;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
 use App\Rules\UniqueTeamInvitation;
@@ -46,7 +45,6 @@ new class extends Component {
             'expires_at' => $expiryMinutes ? now()->addMinutes($expiryMinutes) : null,
         ]);
 
-        event(new TeamInvitationSent($invitation));
         Notification::route('mail', $invitation->email)->notify(new TeamInvitationNotification($invitation));
 
         $this->reset('inviteEmail', 'inviteRole');

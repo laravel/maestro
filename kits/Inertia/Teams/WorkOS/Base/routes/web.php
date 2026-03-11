@@ -1,14 +1,14 @@
 <?php
 
 use App\Http\Controllers\Teams\TeamInvitationController;
-use App\Http\Middleware\EnsureMembership;
+use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
 
 Route::inertia('/', '{{welcome}}')->name('home');
 
 Route::prefix('{current_team}')
-    ->middleware(['auth', ValidateSessionWithWorkOS::class, EnsureMembership::class])
+    ->middleware(['auth', ValidateSessionWithWorkOS::class, EnsureTeamMembership::class])
     ->group(function () {
         Route::inertia('dashboard', '{{dashboard}}')->name('dashboard');
     });

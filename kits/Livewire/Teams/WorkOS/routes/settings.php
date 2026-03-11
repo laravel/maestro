@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\EnsureMembership;
+use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
 
@@ -15,7 +15,7 @@ Route::middleware([
 
     Route::livewire('settings/teams', 'pages::teams.index')->name('teams.index');
 
-    Route::middleware(EnsureMembership::class)->group(function () {
+    Route::middleware(EnsureTeamMembership::class)->group(function () {
         Route::livewire('settings/teams/{team}', 'pages::teams.edit')->name('teams.edit');
     });
 });

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\GeneratesUniqueTeamSlugs;
 use App\Enums\TeamRole;
 use Database\Factories\TeamFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Illuminate\Support\Str;
 class Team extends Model
 {
     /** @use HasFactory<TeamFactory> */
-    use HasFactory, SoftDeletes;
+    use GeneratesUniqueTeamSlugs, HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -28,18 +29,6 @@ class Team extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'is_personal' => 'boolean',
-        ];
-    }
-
-    /**
      * Bootstrap the model and its traits.
      */
     protected static function boot(): void
@@ -48,69 +37,25 @@ class Team extends Model
 
         static::creating(function (Team $team) {
             if (empty($team->slug)) {
-                $team->slug = static::generateUniqueSlug($team->name);
+                $team->slug = static::generateUniqueTeamSlug($team->name);
             }
         });
 
         static::updating(function (Team $team) {
             if ($team->isDirty('name')) {
-                $team->slug = static::generateUniqueSlug($team->name, $team->id);
+                $team->slug = static::generateUniqueTeamSlug($team->name, $team->id);
             }
         });
     }
 
     /**
-     * Generate a unique slug for the team.
+     * Get the team owner.
      */
-    protected static function generateUniqueSlug(string $name, ?int $excludeId = null): string
+    public function owner(): ?Model
     {
-        $baseSlug = Str::slug($name);
-
-        $query = static::withTrashed()
-            ->where(function ($query) use ($baseSlug) {
-                $query->where('slug', $baseSlug)
-                    ->orWhere('slug', 'like', $baseSlug.'-%');
-            });
-
-        if ($excludeId) {
-            $query->where('id', '!=', $excludeId);
-        }
-
-        $existingSlugs = $query->pluck('slug');
-
-        if ($existingSlugs->isEmpty()) {
-            return $baseSlug;
-        }
-
-        $maxSuffix = 0;
-
-        foreach ($existingSlugs as $existingSlug) {
-            if ($existingSlug === $baseSlug) {
-                $maxSuffix = max($maxSuffix, 0);
-
-                continue;
-            }
-
-            if (! Str::startsWith($existingSlug, $baseSlug.'-')) {
-                continue;
-            }
-
-            $suffix = substr($existingSlug, strlen($baseSlug) + 1);
-
-            if ($suffix !== '' && ctype_digit($suffix)) {
-                $maxSuffix = max($maxSuffix, (int) $suffix);
-            }
-        }
-
-        return $baseSlug.'-'.($maxSuffix + 1);
-    }
-
-    /**
-     * Get the route key for the model.
-     */
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
+        return $this->members()
+            ->wherePivot('role', TeamRole::Owner->value)
+            ->first();
     }
 
     /**
@@ -137,16 +82,6 @@ class Team extends Model
     }
 
     /**
-     * Get the team owner.
-     */
-    public function owner(): ?Model
-    {
-        return $this->members()
-            ->wherePivot('role', TeamRole::Owner->value)
-            ->first();
-    }
-
-    /**
      * Get all invitations for this team.
      *
      * @return HasMany<TeamInvitation, $this>
@@ -154,5 +89,25 @@ class Team extends Model
     public function invitations(): HasMany
     {
         return $this->hasMany(TeamInvitation::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_personal' => 'boolean',
+        ];
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

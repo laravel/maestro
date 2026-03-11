@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\Teams;
 
 use App\Enums\TeamRole;
-use App\Events\Teams\TeamMemberRemoved;
-use App\Events\Teams\TeamMemberRoleChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teams\UpdateTeamMemberRequest;
 use App\Models\Team;
 use App\Models\User;
-use App\Notifications\Teams\RemovedFromTeam;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 
@@ -31,8 +28,6 @@ class TeamMemberController extends Controller
         $oldRole = $membership->role;
         $membership->update(['role' => $newRole]);
 
-        event(new TeamMemberRoleChanged($team, $user, $oldRole, $newRole));
-
         return to_route('teams.edit', ['team' => $team->slug]);
     }
 
@@ -52,10 +47,6 @@ class TeamMemberController extends Controller
         if ($user->isCurrentTeam($team)) {
             $user->switchTeam($user->personalTeam());
         }
-
-        event(new TeamMemberRemoved($team, $user));
-
-        $user->notify(new RemovedFromTeam($team));
 
         return to_route('teams.edit', ['team' => $team->slug]);
     }

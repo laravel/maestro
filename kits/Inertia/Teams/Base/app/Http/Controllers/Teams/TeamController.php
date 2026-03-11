@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Teams;
 
 use App\Actions\Teams\CreateTeam;
 use App\Enums\TeamRole;
-use App\Events\Teams\TeamDeleted;
-use App\Events\Teams\TeamUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teams\DeleteTeamRequest;
 use App\Http\Requests\Teams\SaveTeamRequest;
@@ -89,7 +87,6 @@ class TeamController extends Controller
         $team = DB::transaction(function () use ($request, $team) {
             $lockedTeam = Team::whereKey($team->id)->lockForUpdate()->firstOrFail();
             $lockedTeam->update(['name' => $request->validated('name')]);
-            event(new TeamUpdated($lockedTeam));
 
             return $lockedTeam;
         });
@@ -117,10 +114,9 @@ class TeamController extends Controller
             $team->delete();
         });
 
-        event(new TeamDeleted($team));
-
         if ($fallbackTeam) {
             $user->switchTeam($fallbackTeam);
+
         }
 
         return to_route('teams.index');

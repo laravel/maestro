@@ -66,6 +66,16 @@ trait HasTeams
     }
 
     /**
+     * Get the user's personal team.
+     */
+    public function personalTeam(): ?Team
+    {
+        return $this->teams()
+            ->where('is_personal', true)
+            ->first();
+    }
+
+    /**
      * Switch to the given team.
      */
     public function switchTeam(Team $team): bool
@@ -83,16 +93,6 @@ trait HasTeams
     }
 
     /**
-     * Get the user's personal team.
-     */
-    public function personalTeam(): ?Team
-    {
-        return $this->teams()
-            ->where('is_personal', true)
-            ->first();
-    }
-
-    /**
      * Determine if the user belongs to the given team.
      */
     public function belongsToTeam(Team $team): bool
@@ -106,6 +106,14 @@ trait HasTeams
     public function isCurrentTeam(Team $team): bool
     {
         return $this->current_team_id === $team->id;
+    }
+
+    /**
+     * Determine if the user is the owner of the given team.
+     */
+    public function ownsTeam(Team $team): bool
+    {
+        return $this->teamRole($team) === TeamRole::Owner;
     }
 
     /**
@@ -175,14 +183,6 @@ trait HasTeams
             ->when($excluding, fn ($query) => $query->where('teams.id', '!=', $excluding->id))
             ->orderByRaw('LOWER(teams.name)')
             ->first();
-    }
-
-    /**
-     * Determine if the user is the owner of the given team.
-     */
-    public function isOwnerOfTeam(Team $team): bool
-    {
-        return $this->teamRole($team) === TeamRole::Owner;
     }
 
     /**

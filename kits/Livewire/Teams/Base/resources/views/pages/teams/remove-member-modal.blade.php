@@ -1,9 +1,7 @@
 <?php
 
-use App\Events\Teams\TeamMemberRemoved;
 use App\Models\Team;
 use App\Models\User;
-use App\Notifications\Teams\RemovedFromTeam;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
@@ -46,9 +44,6 @@ new class extends Component {
         if ($user->isCurrentTeam($this->team)) {
             $user->switchTeam($user->personalTeam());
         }
-
-        event(new TeamMemberRemoved($this->team, $user));
-        $user->notify(new RemovedFromTeam($this->team));
 
         $this->dispatch('close-modal', name: $this->modalName);
 

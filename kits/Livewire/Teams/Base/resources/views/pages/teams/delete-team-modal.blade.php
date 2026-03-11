@@ -53,8 +53,6 @@ new class extends Component {
             $this->team->delete();
         });
 
-        event(new TeamDeleted($this->team));
-
         if ($fallbackTeam) {
             $user->switchTeam($fallbackTeam);
         }

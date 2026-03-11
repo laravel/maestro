@@ -35,18 +35,6 @@ class Membership extends Pivot
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'role' => TeamRole::class,
-        ];
-    }
-
-    /**
      * Get the team that the membership belongs to.
      *
      * @return BelongsTo<Team, $this>
@@ -64,5 +52,17 @@ class Membership extends Pivot
     public function user(): BelongsTo
     {
         return $this->belongsTo(config('teams.user_model'));
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'role' => TeamRole::class,
+        ];
     }
 }
