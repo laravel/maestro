@@ -39,7 +39,7 @@
     }
 </script>
 
-<Dialog open={open} onOpenChange={handleOpenChange}>
+<Dialog {open} onOpenChange={handleOpenChange}>
     <DialogTrigger asChild>
         {#snippet children(props)}
             {@render trigger?.(props)}
@@ -47,41 +47,41 @@
     </DialogTrigger>
     <DialogContent>
         {#key formKey}
-        <Form
-            {...store.form()}
-            class="space-y-6"
-            onSuccess={() => (open = false)}
-        >
-            {#snippet children({ errors, processing })}
-                <div class="space-y-3">
-                    <DialogTitle>Create a new team</DialogTitle>
-                    <DialogDescription>
-                        Create a new team to collaborate with others.
-                    </DialogDescription>
-                </div>
+            <Form
+                {...store.form()}
+                class="space-y-6"
+                onSuccess={() => (open = false)}
+            >
+                {#snippet children({ errors, processing })}
+                    <div class="space-y-3">
+                        <DialogTitle>Create a new team</DialogTitle>
+                        <DialogDescription>
+                            Create a new team to collaborate with others.
+                        </DialogDescription>
+                    </div>
 
-                <div class="grid gap-2">
-                    <Label for="name">Team name</Label>
-                    <Input
-                        id="name"
-                        name="name"
-                        placeholder="My team"
-                        required
-                    />
-                    <InputError message={errors.name} />
-                </div>
+                    <div class="grid gap-2">
+                        <Label for="name">Team name</Label>
+                        <Input
+                            id="name"
+                            name="name"
+                            placeholder="My team"
+                            required
+                        />
+                        <InputError message={errors.name} />
+                    </div>
 
-                <DialogFooter class="gap-2">
-                    <DialogClose asChild>
-                        <Button variant="secondary">Cancel</Button>
-                    </DialogClose>
+                    <DialogFooter class="gap-2">
+                        <DialogClose asChild>
+                            <Button variant="secondary">Cancel</Button>
+                        </DialogClose>
 
-                    <Button type="submit" disabled={processing}
-                        >Create team</Button
-                    >
-                </DialogFooter>
-            {/snippet}
-        </Form>
+                        <Button type="submit" disabled={processing}
+                            >Create team</Button
+                        >
+                    </DialogFooter>
+                {/snippet}
+            </Form>
         {/key}
     </DialogContent>
 </Dialog>

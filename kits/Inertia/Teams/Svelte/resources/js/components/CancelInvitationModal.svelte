@@ -55,8 +55,10 @@
                 <Button variant="secondary">Keep invitation</Button>
             </DialogClose>
 
-            <Button variant="destructive" disabled={processing} onclick={cancelInvitation}
-                >Cancel invitation</Button
+            <Button
+                variant="destructive"
+                disabled={processing}
+                onclick={cancelInvitation}>Cancel invitation</Button
             >
         </DialogFooter>
     </DialogContent>

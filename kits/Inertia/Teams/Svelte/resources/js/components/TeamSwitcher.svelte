@@ -43,7 +43,7 @@
     const switchTeam = (team: Team) => {
         const previousTeamSlug = currentTeam?.slug;
 
-        router.visit(switchMethod(team.slug), {
+        const options = {
             onFinish: () => {
                 if (!previousTeamSlug || typeof window === 'undefined') {
                     router.reload();
@@ -55,19 +55,18 @@
                 const segment = `/${previousTeamSlug}`;
 
                 if (currentUrl.includes(segment)) {
-                    router.visit(
-                        currentUrl.replace(segment, `/${team.slug}`),
-                        {
-                            replace: true,
-                        },
-                    );
+                    router.visit(currentUrl.replace(segment, `/${team.slug}`), {
+                        replace: true,
+                    });
 
                     return;
                 }
 
                 router.reload();
             },
-        );
+        };
+
+        router.visit(switchMethod(team.slug), options);
     };
 </script>
 

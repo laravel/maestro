@@ -49,69 +49,73 @@
     }
 </script>
 
-<Dialog open={open} onOpenChange={handleOpenChange}>
+<Dialog {open} onOpenChange={handleOpenChange}>
     <DialogContent>
         {#key formKey}
-        <Form
-            {...storeInvitation.form(team.slug)}
-            class="space-y-6"
-            onSuccess={() => (open = false)}
-        >
-            {#snippet children({ errors, processing })}
-                <div class="space-y-3">
-                    <DialogTitle>Invite a team member</DialogTitle>
-                    <DialogDescription>
-                        Send an invitation to join this team.
-                    </DialogDescription>
-                </div>
-
-                <div class="grid gap-4">
-                    <div class="grid gap-2">
-                        <Label for="email">Email address</Label>
-                        <Input
-                            id="email"
-                            name="email"
-                            type="email"
-                            placeholder="colleague@example.com"
-                            required
-                        />
-                        <InputError message={errors.email} />
+            <Form
+                {...storeInvitation.form(team.slug)}
+                class="space-y-6"
+                onSuccess={() => (open = false)}
+            >
+                {#snippet children({ errors, processing })}
+                    <div class="space-y-3">
+                        <DialogTitle>Invite a team member</DialogTitle>
+                        <DialogDescription>
+                            Send an invitation to join this team.
+                        </DialogDescription>
                     </div>
 
-                    <div class="grid gap-2">
-                        <Label for="role">Role</Label>
-                        <Select bind:value={inviteRole}>
-                            <SelectTrigger class="w-full">
-                                {inviteRoleLabel}
-                            </SelectTrigger>
-                            <SelectContent>
-                                {#each availableRoles as role (role.value)}
-                                    <SelectItem
-                                        value={role.value}
-                                        label={role.label}
-                                    >
-                                        {role.label}
-                                    </SelectItem>
-                                {/each}
-                            </SelectContent>
-                        </Select>
+                    <div class="grid gap-4">
+                        <div class="grid gap-2">
+                            <Label for="email">Email address</Label>
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="colleague@example.com"
+                                required
+                            />
+                            <InputError message={errors.email} />
+                        </div>
 
-                        <input type="hidden" name="role" value={inviteRole} />
-                        <InputError message={errors.role} />
+                        <div class="grid gap-2">
+                            <Label for="role">Role</Label>
+                            <Select bind:value={inviteRole}>
+                                <SelectTrigger class="w-full">
+                                    {inviteRoleLabel}
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {#each availableRoles as role (role.value)}
+                                        <SelectItem
+                                            value={role.value}
+                                            label={role.label}
+                                        >
+                                            {role.label}
+                                        </SelectItem>
+                                    {/each}
+                                </SelectContent>
+                            </Select>
+
+                            <input
+                                type="hidden"
+                                name="role"
+                                value={inviteRole}
+                            />
+                            <InputError message={errors.role} />
+                        </div>
                     </div>
-                </div>
 
-                <DialogFooter class="gap-2">
-                    <DialogClose>
-                        <Button variant="secondary">Cancel</Button>
-                    </DialogClose>
+                    <DialogFooter class="gap-2">
+                        <DialogClose>
+                            <Button variant="secondary">Cancel</Button>
+                        </DialogClose>
 
-                    <Button type="submit" disabled={processing}
-                        >Send invitation</Button
-                    >
-                </DialogFooter>
-            {/snippet}
-        </Form>
+                        <Button type="submit" disabled={processing}
+                            >Send invitation</Button
+                        >
+                    </DialogFooter>
+                {/snippet}
+            </Form>
         {/key}
     </DialogContent>
 </Dialog>

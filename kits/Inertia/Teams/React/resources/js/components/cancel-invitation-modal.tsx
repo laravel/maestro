@@ -56,7 +56,11 @@ export default function CancelInvitationModal({
                         <Button variant="secondary">Keep invitation</Button>
                     </DialogClose>
 
-                    <Button variant="destructive" disabled={processing} onClick={cancelInvitation}>
+                    <Button
+                        variant="destructive"
+                        disabled={processing}
+                        onClick={cancelInvitation}
+                    >
                         Cancel invitation
                     </Button>
                 </DialogFooter>

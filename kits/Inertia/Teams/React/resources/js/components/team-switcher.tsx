@@ -39,12 +39,9 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
                 const segment = `/${previousTeamSlug}`;
 
                 if (currentUrl.includes(segment)) {
-                    router.visit(
-                        currentUrl.replace(segment, `/${team.slug}`),
-                        {
-                            replace: true,
-                        },
-                    );
+                    router.visit(currentUrl.replace(segment, `/${team.slug}`), {
+                        replace: true,
+                    });
 
                     return;
                 }

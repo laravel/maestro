@@ -54,8 +54,10 @@
                 <Button variant="secondary">Cancel</Button>
             </DialogClose>
 
-            <Button variant="destructive" disabled={processing} onclick={removeMember}
-                >Remove member</Button
+            <Button
+                variant="destructive"
+                disabled={processing}
+                onclick={removeMember}>Remove member</Button
             >
         </DialogFooter>
     </DialogContent>
