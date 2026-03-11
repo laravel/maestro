@@ -90,6 +90,7 @@
             showVerificationStep = true;
             await tick();
             pinInputContainerRef?.querySelector('input')?.focus();
+
             return;
         }
 
@@ -109,6 +110,7 @@
     $effect(() => {
         if (!isOpen) {
             resetModalState();
+
             return;
         }
 

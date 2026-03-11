@@ -3,6 +3,7 @@
     import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
+    import PasswordInput from '@/components/PasswordInput.svelte';
     import { Button } from '@/components/ui/button';
     import {
         Dialog,
@@ -13,7 +14,6 @@
         DialogTitle,
         DialogTrigger,
     } from '@/components/ui/dialog';
-    import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
 </script>
 
@@ -62,9 +62,8 @@
                             <Label for="password" class="sr-only"
                                 >Password</Label
                             >
-                            <Input
+                            <PasswordInput
                                 id="password"
-                                type="password"
                                 name="password"
                                 placeholder="Password"
                             />

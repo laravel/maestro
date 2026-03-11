@@ -1,148 +1,186 @@
 #!/usr/bin/env node
 
-import { spawn } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import {
+    buildDir,
+    filterVariants,
+    log,
+    orchestratorDir,
+    parseFrameworkFlags,
+    printSummary,
+    removeBuildDirectory,
+    runInherit,
+    runQuiet,
+    colors,
+} from './kit-helpers.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const orchestratorDir = path.dirname(__dirname);
-const rootDir = path.dirname(orchestratorDir);
-const buildDir = path.join(rootDir, 'build');
-
+/**
+ * Only Inertia variants need frontend lint/format. Livewire has no frontend
+ * lint phase — its PHP formatting is handled by `kits:pint` (called before
+ * this script by the `kits:lint` composer command).
+ */
 const variants = [
     {
         key: 'react-blank',
         display: 'React Blank',
+        framework: 'react',
         buildArgs: ['build', '--no-interaction', '--kit=React', '--blank'],
     },
     {
         key: 'react',
         display: 'React Fortify',
+        framework: 'react',
         buildArgs: ['build', '--no-interaction', '--kit=React'],
     },
     {
         key: 'react-workos',
         display: 'React WorkOS',
+        framework: 'react',
         buildArgs: ['build', '--no-interaction', '--kit=React', '--workos'],
     },
     {
         key: 'svelte-blank',
         display: 'Svelte Blank',
+        framework: 'svelte',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--blank'],
     },
     {
         key: 'svelte',
         display: 'Svelte Fortify',
+        framework: 'svelte',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte'],
     },
     {
         key: 'svelte-workos',
         display: 'Svelte WorkOS',
+        framework: 'svelte',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--workos'],
     },
     {
         key: 'vue-blank',
         display: 'Vue Blank',
+        framework: 'vue',
         buildArgs: ['build', '--no-interaction', '--kit=Vue', '--blank'],
     },
     {
         key: 'vue',
         display: 'Vue Fortify',
+        framework: 'vue',
         buildArgs: ['build', '--no-interaction', '--kit=Vue'],
     },
     {
         key: 'vue-workos',
         display: 'Vue WorkOS',
+        framework: 'vue',
         buildArgs: ['build', '--no-interaction', '--kit=Vue', '--workos'],
     },
 ];
 
-const colors = {
-    reset: '\x1b[0m',
-    blue: '\x1b[34m',
-    green: '\x1b[32m',
-    yellow: '\x1b[33m',
-    red: '\x1b[31m',
-};
-
-function log(message, color = 'reset') {
-    console.log(`${colors[color]}${message}${colors.reset}`);
-}
-
-function runCommand(command, args, options = {}) {
-    return new Promise((resolve, reject) => {
-        const child = spawn(command, args, {
-            stdio: 'inherit',
-            shell: true,
-            ...options,
-        });
-
-        child.on('close', code => {
-            if (code === 0) {
-                resolve();
-
-                return;
-            }
-
-            reject(new Error(`Command failed: ${command} ${args.join(' ')}`));
-        });
-
-        child.on('error', reject);
-    });
-}
-
-function removeBuildDirectory() {
-    if (!fs.existsSync(buildDir)) {
-        return;
-    }
-
-    log('Removing existing build directory...', 'yellow');
-    fs.rmSync(buildDir, { recursive: true, force: true });
-}
+const MAX_LINT_PASSES = 2;
 
 async function lintCurrentBuild() {
-    await runCommand('composer', ['install'], { cwd: buildDir });
-    await runCommand('npm', ['install'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'build'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'lint'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'format'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'lint'], { cwd: buildDir });
-    await runCommand('npm', ['run', 'format'], { cwd: buildDir });
+    log('  Installing composer deps...', 'dim');
+    await runQuiet('composer', ['install'], { cwd: buildDir });
+
+    log('  Installing npm deps...', 'dim');
+    await runQuiet('npm', ['install'], { cwd: buildDir });
+
+    log('  Building frontend...', 'dim');
+    await runQuiet('npm', ['run', 'build'], { cwd: buildDir });
+
+    for (let pass = 1; pass <= MAX_LINT_PASSES; pass++) {
+        log(`  Running lint pass ${pass}...`, 'dim');
+        await runQuiet('npm', ['run', 'lint'], { cwd: buildDir });
+
+        log(`  Running format pass ${pass}...`, 'dim');
+        await runQuiet('npm', ['run', 'format'], { cwd: buildDir });
+    }
 }
 
 function runWatcherInitialSync() {
-    return runCommand('node', ['scripts/watch.js', '--initial-sync-only'], {
+    log('  Syncing changes back to kits...', 'dim');
+
+    return runQuiet('node', ['scripts/watch.js', '--initial-sync-only'], {
         cwd: orchestratorDir,
     });
 }
 
 async function lintVariant(variant, index, total) {
-    log(`\n[${index}/${total}] ${variant.display} (${variant.key})`, 'blue');
+    log(`\n[${index}/${total}] ${variant.display}`, 'blue');
 
     removeBuildDirectory();
 
-    log('Building variant...', 'blue');
-    await runCommand('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
+    log('  Building variant...', 'dim');
+    await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
 
-    log('Running frontend lint and format commands...', 'blue');
     await lintCurrentBuild();
-
-    log('Running watcher initial sync...', 'blue');
     await runWatcherInitialSync();
+}
 
-    log(`Finished ${variant.key}`, 'green');
+async function runPint() {
+    log('Running Pint on kits/ and browser_tests/...', 'blue');
+    await runInherit('pint', ['--parallel', '../kits'], { cwd: orchestratorDir });
+    await runInherit('pint', ['--parallel', '../browser_tests'], { cwd: orchestratorDir });
 }
 
 async function main() {
-    const total = variants.length;
+    const selected = parseFrameworkFlags(process.argv.slice(2));
+    const active = filterVariants(variants, selected);
 
-    for (let index = 0; index < total; index++) {
-        await lintVariant(variants[index], index + 1, total);
+    // Always run Pint first (it applies to all frameworks including Livewire).
+    await runPint();
+
+    // If only --livewire was selected, there are no Inertia variants to run.
+    if (active.length === 0) {
+        if (selected && selected.has('livewire') && selected.size === 1) {
+            log('Livewire has no frontend lint phase. Only the shared Pint step applies.', 'yellow');
+        } else {
+            log('No Inertia variants matched the selected kit flags.', 'yellow');
+        }
+
+        process.exit(0);
     }
 
-    log('\nAll Inertia kit variants linted successfully.', 'green');
+    if (selected) {
+        log(`Kits selected: ${[...selected].join(', ')}`, 'blue');
+    }
+
+    const total = active.length;
+    const results = [];
+
+    // Track skipped variants for summary
+    const skipped = variants.filter(v => !active.includes(v));
+
+    for (let index = 0; index < total; index++) {
+        const variant = active[index];
+        const start = Date.now();
+
+        try {
+            await lintVariant(variant, index + 1, total);
+            results.push({ key: variant.key, display: variant.display, status: 'passed', elapsed: Date.now() - start });
+            log(`  ${colors.green}✓ Finished${colors.reset}`);
+        } catch (error) {
+            results.push({ key: variant.key, display: variant.display, status: 'failed', elapsed: Date.now() - start });
+            log(`  ✗ Failed: ${error.message}`, 'red');
+
+            if (error.output) {
+                log('\n--- captured output ---', 'dim');
+                console.log(error.output);
+                log('--- end output ---\n', 'dim');
+            }
+        }
+    }
+
+    for (const s of skipped) {
+        results.push({ key: s.key, display: s.display, status: 'skipped', reason: 'kit not selected' });
+    }
+
+    printSummary('kits:lint', results);
+
+    removeBuildDirectory();
+
+    if (results.some(r => r.status === 'failed')) {
+        process.exit(1);
+    }
 }
 
 main().catch(error => {

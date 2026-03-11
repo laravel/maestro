@@ -5,8 +5,6 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 
-use function Pest\Laravel\post;
-
 test('reset password link screen can be rendered', function () {
     visit(route('password.request'))
         ->assertSee('Forgot password')
@@ -60,7 +58,9 @@ test('password can be reset with valid token', function () {
             ->assertValue('email', $user->email)
             ->press('@reset-password-button')
             ->assertUrlIs(route('login'))
-            ->assertSee('Your password has been reset.');
+            ->assertSee('Your password has been reset.')
+            ->assertNoConsoleLogs()
+            ->assertNoJavaScriptErrors();
 
         return true;
     });

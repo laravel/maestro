@@ -275,6 +275,18 @@ class BuildCommand extends Command
     }
 
     /**
+     * Load the shared kit manifest from the JSON file.
+     *
+     * @return array{placeholderSearchPaths: string[], componentsRelocations: array<int, array{from: string, to: string, directory?: bool}>, componentsDeleteDirectory: string, kitFolderMap: array<string, string[]>}
+     */
+    protected function getManifest(): array
+    {
+        $jsonPath = base_path('scripts/kit-manifest.json');
+
+        return json_decode(File::get($jsonPath), true);
+    }
+
+    /**
      * Get the UI components configuration from the JSON file.
      */
     protected function getUiComponents(): array
@@ -290,13 +302,12 @@ class BuildCommand extends Command
     protected function replacePlaceholders(string $buildPath, string $kit): void
     {
         $uiComponents = $this->getUiComponents();
+        $manifest = $this->getManifest();
 
-        $searchPaths = [
-            $buildPath.'/app/Http/Controllers',
-            $buildPath.'/app/Providers',
-            $buildPath.'/routes',
-            $buildPath.'/tests',
-        ];
+        $searchPaths = array_map(
+            fn (string $relativePath): string => $buildPath.'/'.$relativePath,
+            $manifest['placeholderSearchPaths'],
+        );
 
         foreach ($searchPaths as $searchPath) {
             if (! File::exists($searchPath)) {
@@ -416,29 +427,34 @@ class BuildCommand extends Command
     }
 
     /**
-     * Relocate auth views for the Components variant.
+     * Relocate auth views for the Components variant using rules from the shared manifest.
      */
     protected function relocateAuthViewsForComponents(string $buildPath): void
     {
-        $pagesPath = $buildPath.'/resources/views/pages';
-        $settingsLayoutSource = $pagesPath.'/settings/layout.blade.php';
-        $settingsLayoutDest = $buildPath.'/resources/views/components/settings/layout.blade.php';
+        $manifest = $this->getManifest();
 
-        if (File::exists($settingsLayoutSource)) {
-            File::ensureDirectoryExists(dirname($settingsLayoutDest));
-            File::copy($settingsLayoutSource, $settingsLayoutDest);
+        foreach ($manifest['componentsRelocations'] as $rule) {
+            $source = $buildPath.'/'.$rule['from'];
+            $dest = $buildPath.'/'.$rule['to'];
+            $isDirectory = $rule['directory'] ?? false;
+
+            if (! File::exists(rtrim($source, '/'))) {
+                continue;
+            }
+
+            File::ensureDirectoryExists($isDirectory ? $dest : dirname($dest));
+
+            if ($isDirectory) {
+                File::copyDirectory(rtrim($source, '/'), rtrim($dest, '/'));
+            } else {
+                File::copy($source, $dest);
+            }
         }
 
-        $authSource = $pagesPath.'/auth';
-        $authDest = $buildPath.'/resources/views/livewire/auth';
+        $deleteDir = $buildPath.'/'.$manifest['componentsDeleteDirectory'];
 
-        if (File::exists($authSource)) {
-            File::ensureDirectoryExists($authDest);
-            File::copyDirectory($authSource, $authDest);
-        }
-
-        if (File::exists($pagesPath)) {
-            File::deleteDirectory($pagesPath);
+        if (File::exists($deleteDir)) {
+            File::deleteDirectory($deleteDir);
         }
     }
 

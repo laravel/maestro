@@ -12,6 +12,7 @@ createInertiaApp({
             './pages/**/*.svelte',
             { eager: true },
         );
+
         return pages[`./pages/${name}.svelte`];
     },
     setup({ el, App, props }) {

@@ -40,7 +40,7 @@ test('profile information can be updated', function () {
     expect($user->name)->toBe('Test User');
     expect($user->email)->toBe('test@example.com');
     expect($user->email_verified_at)->toBeNull();
-})->with('users');;
+})->with('users');
 
 test('email verification status is unchanged when the email address is unchanged', function () {
     actingAs($user = User::factory()->create());

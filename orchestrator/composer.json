@@ -18,7 +18,7 @@
         "fakerphp/faker": "^1.23",
         "laravel/boost": "^1.8",
         "laravel/pail": "^1.2.2",
-        "laravel/pint": "^1.24",
+        "laravel/pint": "^1.28",
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
@@ -57,14 +57,21 @@
         "lint": [
             "pint --parallel"
         ],
-        "lint:kits": [
-            "Composer\\Config::disableProcessTimeout",
+        "kits:pint": [
             "pint --parallel ../kits",
+            "pint --parallel ../browser_tests"
+        ],
+        "kits:lint": [
+            "Composer\\Config::disableProcessTimeout",
             "node scripts/lint-kits.js"
         ],
         "kits:check": [
             "Composer\\Config::disableProcessTimeout",
             "node scripts/check-kits.js"
+        ],
+        "kits:browser-tests": [
+            "Composer\\Config::disableProcessTimeout",
+            "node scripts/browser-tests-kits.js"
         ],
         "kit:run": [
             "Composer\\Config::disableProcessTimeout",

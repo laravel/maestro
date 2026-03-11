@@ -14,6 +14,7 @@ const kitsDir = path.join(rootDir, 'kits');
 const buildDir = path.join(rootDir, 'build');
 const starterKitFile = path.join(orchestratorDir, 'storage', 'app', 'private', 'starter_kit');
 const uiComponentsFile = path.join(__dirname, 'ui-components.json');
+const manifestFile = path.join(__dirname, 'kit-manifest.json');
 const args = process.argv.slice(2);
 const initialSyncOnly = args.includes('--initial-sync-only');
 
@@ -32,33 +33,11 @@ function log(message, color = 'reset') {
 }
 
 /**
- * Kit folder mapping based on starter kit value.
- * Folders are listed in priority order (lowest to highest).
- * Higher priority folders override lower priority ones.
- * Shared folders contain files common to both Livewire and Inertia kits.
+ * Load the shared kit manifest.
  */
-const kitFolderMap = {
-    // Livewire variants
-    'livewire-blank': ['Shared/Blank', 'Livewire/Blank'],
-    'livewire': ['Shared/Blank', 'Livewire/Blank', 'Shared/Base', 'Livewire/Base', 'Shared/Fortify', 'Livewire/Fortify'],
-    'livewire-components': ['Shared/Blank', 'Livewire/Blank', 'Shared/Base', 'Livewire/Base', 'Shared/Fortify', 'Livewire/Fortify', 'Livewire/Components'],
-    'livewire-workos': ['Shared/Blank', 'Livewire/Blank', 'Shared/Base', 'Livewire/Base', 'Shared/WorkOS', 'Livewire/WorkOS'],
-
-    // React variants
-    'react-blank': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/React'],
-    'react': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/React', 'Shared/Base', 'Inertia/Base', 'Inertia/React', 'Shared/Fortify', 'Inertia/Fortify/Base', 'Inertia/Fortify/React'],
-    'react-workos': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/React', 'Shared/Base', 'Inertia/Base', 'Inertia/React', 'Shared/WorkOS', 'Inertia/WorkOS/Base', 'Inertia/WorkOS/React'],
-
-    // Svelte variants
-    'svelte-blank': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Svelte'],
-    'svelte': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Svelte', 'Shared/Base', 'Inertia/Base', 'Inertia/Svelte', 'Shared/Fortify', 'Inertia/Fortify/Base', 'Inertia/Fortify/Svelte'],
-    'svelte-workos': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Svelte', 'Shared/Base', 'Inertia/Base', 'Inertia/Svelte', 'Shared/WorkOS', 'Inertia/WorkOS/Base', 'Inertia/WorkOS/Svelte'],
-
-    // Vue variants
-    'vue-blank': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Vue'],
-    'vue': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Vue', 'Shared/Base', 'Inertia/Base', 'Inertia/Vue', 'Shared/Fortify', 'Inertia/Fortify/Base', 'Inertia/Fortify/Vue'],
-    'vue-workos': ['Shared/Blank', 'Inertia/Blank/Base', 'Inertia/Blank/Vue', 'Shared/Base', 'Inertia/Base', 'Inertia/Vue', 'Shared/WorkOS', 'Inertia/WorkOS/Base', 'Inertia/WorkOS/Vue'],
-};
+function loadManifest() {
+    return JSON.parse(fs.readFileSync(manifestFile, 'utf-8'));
+}
 
 /**
  * Load UI components mapping from the JSON configuration file.
@@ -68,17 +47,6 @@ function loadUiComponents() {
 
     return JSON.parse(content);
 }
-
-/**
- * Paths (relative to build) where placeholders should be restored.
- * These match the searchPaths in BuildCommand.php replacePlaceholders method.
- */
-const placeholderPaths = [
-    'app/Http/Controllers',
-    'app/Providers',
-    'routes',
-    'tests',
-];
 
 const allowedEmptyTextFiles = new Set([
     'resources/js/app.js',
@@ -102,7 +70,7 @@ function getKitType(starterKit) {
     return null;
 }
 
-function shouldRestorePlaceholders(relativePath) {
+function shouldRestorePlaceholders(relativePath, placeholderPaths) {
     return placeholderPaths.some(p => relativePath.startsWith(p));
 }
 
@@ -231,14 +199,41 @@ function fileNeedsSync(srcPath, destPath, processedContent) {
 }
 
 /**
+ * Collect all file paths across the active layer set for the current starter kit.
+ * Returns a Set of relative paths (posix-style) that should exist in kits/.
+ */
+function collectKitFiles(folders) {
+    const files = new Set();
+
+    for (const folder of folders) {
+        const folderPath = path.join(kitsDir, folder);
+
+        if (!fs.existsSync(folderPath)) {
+            continue;
+        }
+
+        for (const file of getAllFiles(folderPath)) {
+            files.add(path.relative(folderPath, file).replace(/\\/g, '/'));
+        }
+    }
+
+    return files;
+}
+
+/**
  * Perform initial sync of all files from build to kits.
  * This catches any changes that occurred while the watcher wasn't running.
+ * When reconcile is true, also removes stale files in kits/ that no longer
+ * exist in the built tree.
  */
-function performInitialSync(folders, ig, kitType, uiComponents) {
+function performInitialSync(folders, ig, kitType, uiComponents, starterKit, manifest, reconcile = true) {
     log('Performing initial sync to catch any missed changes...', 'blue');
 
     const allFiles = getAllFiles(buildDir);
     let syncedCount = 0;
+
+    // Track which kit-relative paths exist in the build so we can reconcile.
+    const buildRelPaths = new Set();
 
     for (const filePath of allFiles) {
         const relativePath = getRelativePath(filePath);
@@ -248,9 +243,12 @@ function performInitialSync(folders, ig, kitType, uiComponents) {
             continue;
         }
 
-        const targetFolder = getTargetFolder(relativePath, folders);
-        const destPath = path.join(kitsDir, targetFolder, relativePath);
-        const processedContent = processFileContent(filePath, relativePath, targetFolder, kitType, uiComponents);
+        const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
+        buildRelPaths.add(destRelativePath);
+
+        const targetFolder = getTargetFolder(destRelativePath, folders);
+        const destPath = path.join(kitsDir, targetFolder, destRelativePath);
+        const processedContent = processFileContent(filePath, relativePath, targetFolder, kitType, uiComponents, manifest);
 
         if (isBlockedEmptyTextSync(relativePath, processedContent, destPath)) {
             log(`Blocked empty file sync: ${relativePath} -> kits/${targetFolder}`, 'red');
@@ -264,7 +262,10 @@ function performInitialSync(folders, ig, kitType, uiComponents) {
 
         try {
             writeToKit(filePath, destPath, processedContent);
-            log(`Synced: ${relativePath} -> kits/${targetFolder}`, 'green');
+            const syncLabel = destRelativePath !== relativePath
+                ? `${relativePath} (remapped to ${destRelativePath})`
+                : relativePath;
+            log(`Synced: ${syncLabel} -> kits/${targetFolder}`, 'green');
             syncedCount++;
         } catch (error) {
             log(`Error syncing ${relativePath}: ${error.message}`, 'red');
@@ -273,11 +274,84 @@ function performInitialSync(folders, ig, kitType, uiComponents) {
 
     if (syncedCount > 0) {
         log(`Initial sync complete: ${syncedCount} file(s) updated`, 'green');
-
-        return;
+    } else {
+        log('Initial sync complete: all files up to date', 'green');
     }
 
-    log('Initial sync complete: all files up to date', 'green');
+    // Reconcile stale files that exist in kits/ but not in the build.
+    if (reconcile) {
+        reconcileStaleFiles(folders, buildRelPaths, ig);
+    }
+}
+
+/**
+ * Remove files from kits/ that no longer exist in the build output.
+ * Only operates within the active layer set for the current starter kit.
+ */
+function reconcileStaleFiles(folders, buildRelPaths, ig) {
+    const kitFiles = collectKitFiles(folders);
+    let removedCount = 0;
+
+    for (const relPath of kitFiles) {
+        // If the file exists in the build output, keep it.
+        if (buildRelPaths.has(relPath)) {
+            continue;
+        }
+
+        // If the file would be ignored by .gitignore, skip it.
+        if (ig.ignores(relPath)) {
+            continue;
+        }
+
+        // Find which layer owns this file and remove it.
+        for (let i = folders.length - 1; i >= 0; i--) {
+            const candidate = path.join(kitsDir, folders[i], relPath);
+
+            if (!fs.existsSync(candidate)) {
+                continue;
+            }
+
+            try {
+                fs.unlinkSync(candidate);
+                log(`Reconciled (removed stale): kits/${folders[i]}/${relPath}`, 'yellow');
+                removedCount++;
+
+                // Clean up empty parent directories.
+                removeEmptyParents(path.dirname(candidate), path.join(kitsDir, folders[i]));
+            } catch (error) {
+                log(`Error removing stale file ${relPath}: ${error.message}`, 'red');
+            }
+        }
+    }
+
+    if (removedCount > 0) {
+        log(`Reconciliation complete: ${removedCount} stale file(s) removed`, 'yellow');
+    } else {
+        log('Reconciliation complete: no stale files found', 'green');
+    }
+}
+
+/**
+ * Remove empty directories upward until `stopAt` is reached.
+ */
+function removeEmptyParents(dir, stopAt) {
+    let current = dir;
+
+    while (current !== stopAt && current.startsWith(stopAt)) {
+        try {
+            const entries = fs.readdirSync(current);
+
+            if (entries.length > 0) {
+                break;
+            }
+
+            fs.rmdirSync(current);
+        } catch {
+            break;
+        }
+
+        current = path.dirname(current);
+    }
 }
 
 /**
@@ -426,6 +500,45 @@ function isBlockedEmptyTextSync(relativePath, processedContent, destPath) {
 }
 
 /**
+ * Remap relocated paths for the livewire-components variant.
+ *
+ * The build process (relocateAuthViewsForComponents in BuildCommand.php) moves:
+ *   pages/settings/layout.blade.php  -> components/settings/layout.blade.php
+ *   pages/auth/**                    -> livewire/auth/**
+ *
+ * When syncing back to kits/ we need to reverse this so the file lands in
+ * its original source layer (Livewire/Base or Livewire/Fortify).
+ *
+ * Uses componentsRelocations from the shared manifest.
+ */
+function remapComponentsPath(relativePath, starterKit, manifest) {
+    if (starterKit !== 'livewire-components') {
+        return relativePath;
+    }
+
+    const normalized = normalizePath(relativePath);
+
+    for (const rule of manifest.componentsRelocations) {
+        const toNorm = normalizePath(rule.to);
+        const fromNorm = normalizePath(rule.from);
+
+        if (rule.directory) {
+            // Directory prefix match: livewire/auth/** -> pages/auth/**
+            if (normalized.startsWith(toNorm)) {
+                return fromNorm + normalized.slice(toNorm.length);
+            }
+        } else {
+            // Exact file match
+            if (normalized === toNorm) {
+                return fromNorm;
+            }
+        }
+    }
+
+    return relativePath;
+}
+
+/**
  * Get the target kit folder for a file.
  * Returns the highest-priority folder that contains the file, or the highest-priority folder if not found.
  */
@@ -437,7 +550,7 @@ function getTargetFolder(relativePath, folders) {
  * Process file content, applying placeholder restoration if needed.
  * Returns the processed content for text files, or null for binary files.
  */
-function processFileContent(srcPath, relativePath, targetFolder, kitType, uiComponents) {
+function processFileContent(srcPath, relativePath, targetFolder, kitType, uiComponents, manifest) {
     if (!isTextFile(relativePath)) {
         return null;
     }
@@ -445,7 +558,7 @@ function processFileContent(srcPath, relativePath, targetFolder, kitType, uiComp
     let content = fs.readFileSync(srcPath, 'utf-8');
 
     // Apply placeholder restoration for specific paths
-    if (kitType && shouldRestorePlaceholders(relativePath)) {
+    if (kitType && shouldRestorePlaceholders(relativePath, manifest.placeholderSearchPaths)) {
         content = restorePlaceholders(content, kitType, uiComponents);
     }
 
@@ -481,12 +594,13 @@ function writeToKit(srcPath, destPath, processedContent) {
  * Copy a file from build to the appropriate kit folder.
  * Restores placeholders for files in placeholder paths.
  */
-function copyToKit(srcPath, relativePath, folders, kitType, uiComponents) {
-    const targetFolder = getTargetFolder(relativePath, folders);
-    const destPath = path.join(kitsDir, targetFolder, relativePath);
+function copyToKit(srcPath, relativePath, folders, kitType, uiComponents, starterKit, manifest) {
+    const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
+    const targetFolder = getTargetFolder(destRelativePath, folders);
+    const destPath = path.join(kitsDir, targetFolder, destRelativePath);
 
     try {
-        const processedContent = processFileContent(srcPath, relativePath, targetFolder, kitType, uiComponents);
+        const processedContent = processFileContent(srcPath, relativePath, targetFolder, kitType, uiComponents, manifest);
 
         if (isBlockedEmptyTextSync(relativePath, processedContent, destPath)) {
             log(`Blocked empty file sync: ${relativePath} -> kits/${targetFolder}`, 'red');
@@ -495,7 +609,10 @@ function copyToKit(srcPath, relativePath, folders, kitType, uiComponents) {
         }
 
         writeToKit(srcPath, destPath, processedContent);
-        log(`Copied: ${relativePath} -> kits/${targetFolder}`, 'green');
+        const copyLabel = destRelativePath !== relativePath
+            ? `${relativePath} (remapped to ${destRelativePath})`
+            : relativePath;
+        log(`Copied: ${copyLabel} -> kits/${targetFolder}`, 'green');
     } catch (error) {
         log(`Error copying ${relativePath}: ${error.message}`, 'red');
     }
@@ -504,30 +621,59 @@ function copyToKit(srcPath, relativePath, folders, kitType, uiComponents) {
 /**
  * Delete a file from the appropriate kit folder.
  */
-function deleteFromKit(relativePath, folders) {
+function deleteFromKit(relativePath, folders, starterKit, manifest) {
+    const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
+
     // Find the highest-priority folder that has this file
-    const targetFolder = findSourceKitFolder(relativePath, folders);
+    const targetFolder = findSourceKitFolder(destRelativePath, folders);
 
     if (!targetFolder) {
         return;
     }
 
-    const targetPath = path.join(kitsDir, targetFolder, relativePath);
+    const targetPath = path.join(kitsDir, targetFolder, destRelativePath);
 
     try {
         if (fs.existsSync(targetPath)) {
             fs.unlinkSync(targetPath);
-            log(`Deleted: kits/${targetFolder}/${relativePath}`, 'yellow');
+            log(`Deleted: kits/${targetFolder}/${destRelativePath}`, 'yellow');
+
+            // Clean up empty parent directories.
+            removeEmptyParents(path.dirname(targetPath), path.join(kitsDir, targetFolder));
         }
     } catch (error) {
-        log(`Error deleting ${relativePath}: ${error.message}`, 'red');
+        log(`Error deleting ${destRelativePath}: ${error.message}`, 'red');
+    }
+}
+
+/**
+ * Delete a directory and its contents from the appropriate kit folder(s).
+ */
+function deleteDirFromKit(relativePath, folders, starterKit, manifest) {
+    const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
+
+    for (let i = folders.length - 1; i >= 0; i--) {
+        const targetDir = path.join(kitsDir, folders[i], destRelativePath);
+
+        if (!fs.existsSync(targetDir)) {
+            continue;
+        }
+
+        try {
+            fs.rmSync(targetDir, { recursive: true, force: true });
+            log(`Deleted directory: kits/${folders[i]}/${destRelativePath}`, 'yellow');
+
+            removeEmptyParents(path.dirname(targetDir), path.join(kitsDir, folders[i]));
+        } catch (error) {
+            log(`Error deleting directory ${destRelativePath}: ${error.message}`, 'red');
+        }
     }
 }
 
 /**
  * Handle file change events from the build directory.
  */
-function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponents) {
+function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponents, starterKit, manifest) {
     const relativePath = getRelativePath(filePath);
 
     // Skip files that match .gitignore patterns
@@ -536,12 +682,18 @@ function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponent
     }
 
     if (eventType === 'unlink') {
-        deleteFromKit(relativePath, folders);
+        deleteFromKit(relativePath, folders, starterKit, manifest);
 
         return;
     }
 
-    copyToKit(filePath, relativePath, folders, kitType, uiComponents);
+    if (eventType === 'unlinkDir') {
+        deleteDirFromKit(relativePath, folders, starterKit, manifest);
+
+        return;
+    }
+
+    copyToKit(filePath, relativePath, folders, kitType, uiComponents, starterKit, manifest);
 }
 
 function startWatching() {
@@ -552,7 +704,8 @@ function startWatching() {
         process.exit(1);
     }
 
-    const folders = kitFolderMap[starterKit];
+    const manifest = loadManifest();
+    const folders = manifest.kitFolderMap[starterKit];
 
     if (!folders) {
         log(`Unknown starter kit: ${starterKit}`, 'red');
@@ -578,7 +731,7 @@ function startWatching() {
     const ig = loadGitignores();
 
     // Perform initial sync to catch any changes that occurred while watcher wasn't running
-    performInitialSync(folders, ig, kitType, uiComponents);
+    performInitialSync(folders, ig, kitType, uiComponents, starterKit, manifest);
 
     if (initialSyncOnly) {
         log('Initial sync only mode enabled. Exiting without starting watcher.', 'blue');
@@ -593,9 +746,10 @@ function startWatching() {
     });
 
     watcher
-        .on('add', filePath => handleFileChange('add', filePath, folders, ig, kitType, uiComponents))
-        .on('change', filePath => handleFileChange('change', filePath, folders, ig, kitType, uiComponents))
-        .on('unlink', filePath => handleFileChange('unlink', filePath, folders, ig, kitType, uiComponents))
+        .on('add', filePath => handleFileChange('add', filePath, folders, ig, kitType, uiComponents, starterKit, manifest))
+        .on('change', filePath => handleFileChange('change', filePath, folders, ig, kitType, uiComponents, starterKit, manifest))
+        .on('unlink', filePath => handleFileChange('unlink', filePath, folders, ig, kitType, uiComponents, starterKit, manifest))
+        .on('unlinkDir', filePath => handleFileChange('unlinkDir', filePath, folders, ig, kitType, uiComponents, starterKit, manifest))
         .on('ready', () => {
             log('Watcher ready. Waiting for changes in build directory...', 'green');
         })

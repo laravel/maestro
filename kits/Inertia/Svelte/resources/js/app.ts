@@ -11,10 +11,14 @@ createInertiaApp({
         const pages = import.meta.glob('./pages/**/*.svelte', {
             eager: true,
         });
+
         return pages[`./pages/${name}.svelte`] as never;
     },
     setup({ el, App, props }) {
-        if (!el) return;
+        if (!el) {
+            return;
+        }
+
         if (el.dataset.serverRendered === 'true') {
             hydrate(App, { target: el, props });
         } else {
