@@ -190,7 +190,7 @@ kits/
 │       ├── Fortify/
 │       │   ├── Base/          # Fortify teams backend: User model, FortifyServiceProvider, routes, auth tests
 │       │   ├── React/         # React Fortify teams: welcome page, settings layout
-│       │   ├── Svelte/         # Svelte Fortify teams: welcome page, settings layout
+│       │   ├── Svelte/        # Svelte Fortify teams: welcome page, settings layout
 │       │   └── Vue/           # Vue Fortify teams: welcome page, settings layout
 │       └── WorkOS/
 │           ├── Base/          # WorkOS teams backend: User model, routes
