@@ -30,7 +30,8 @@ class TeamInvitationController extends Controller
             'expires_at' => now()->plus(days: 3),
         ]);
 
-        Notification::route('mail', $invitation->email)->notify(new TeamInvitationNotification($invitation));
+        Notification::route('mail', $invitation->email)
+            ->notify(new TeamInvitationNotification($invitation));
 
         return to_route('teams.edit', ['team' => $team->slug]);
     }

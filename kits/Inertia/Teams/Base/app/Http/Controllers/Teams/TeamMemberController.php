@@ -21,12 +21,10 @@ class TeamMemberController extends Controller
 
         $newRole = TeamRole::from($request->validated('role'));
 
-        $membership = $team->memberships()
+        $team->memberships()
             ->where('user_id', $user->id)
-            ->firstOrFail();
-
-        $oldRole = $membership->role;
-        $membership->update(['role' => $newRole]);
+            ->firstOrFail()
+            ->update(['role' => $newRole]);
 
         return to_route('teams.edit', ['team' => $team->slug]);
     }
