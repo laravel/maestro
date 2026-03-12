@@ -45,8 +45,6 @@ type Props = {
     invitations: TeamInvitation[];
     permissions: TeamPermissions;
     availableRoles: RoleOption[];
-    isCurrentTeam: boolean;
-    otherTeams: Team[];
 };
 
 export default function TeamEdit({
@@ -55,8 +53,6 @@ export default function TeamEdit({
     invitations,
     permissions,
     availableRoles,
-    isCurrentTeam,
-    otherTeams,
 }: Props) {
     const getInitials = useInitials();
     const breadcrumbs = useMemo<BreadcrumbItem[]>(
@@ -405,8 +401,6 @@ export default function TeamEdit({
                 {permissions.canDeleteTeam && !team.isPersonal ? (
                     <DeleteTeamModal
                         team={team}
-                        isCurrentTeam={isCurrentTeam}
-                        otherTeams={otherTeams}
                         open={deleteDialogOpen}
                         onOpenChange={setDeleteDialogOpen}
                     />

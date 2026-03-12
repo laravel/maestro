@@ -52,16 +52,12 @@
         invitations,
         permissions,
         availableRoles,
-        isCurrentTeam,
-        otherTeams,
     }: {
         team: Team;
         members: TeamMember[];
         invitations: TeamInvitation[];
         permissions: TeamPermissions;
         availableRoles: RoleOption[];
-        isCurrentTeam: boolean;
-        otherTeams: Team[];
     } = $props();
 
     const breadcrumbs = $derived<BreadcrumbItem[]>([
@@ -415,12 +411,7 @@
         />
 
         {#if permissions.canDeleteTeam && !team.isPersonal}
-            <DeleteTeamModal
-                {team}
-                {isCurrentTeam}
-                {otherTeams}
-                bind:open={deleteDialogOpen}
-            />
+            <DeleteTeamModal {team} bind:open={deleteDialogOpen} />
         {/if}
     </SettingsLayout>
 </AppLayout>
