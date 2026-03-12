@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import SecurityController from "@/actions/App/Http/Controllers/Settings/SecurityController";
-import Heading from "@/components/Heading.vue";
-import InputError from "@/components/InputError.vue";
-import PasswordInput from "@/components/PasswordInput.vue";
-import TwoFactorRecoveryCodes from "@/components/TwoFactorRecoveryCodes.vue";
-import TwoFactorSetupModal from "@/components/TwoFactorSetupModal.vue";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { useTwoFactorAuth } from "@/composables/useTwoFactorAuth";
-import AppLayout from "@/layouts/AppLayout.vue";
-import SettingsLayout from "@/layouts/settings/Layout.vue";
-import { edit } from "@/routes/security";
-import { disable, enable } from "@/routes/two-factor";
-import type { BreadcrumbItem } from "@/types";
-import { Form, Head } from "@inertiajs/vue3";
-import { ShieldCheck } from "lucide-vue-next";
-import { onUnmounted, ref } from "vue";
+import { Form, Head } from '@inertiajs/vue3';
+import { ShieldCheck } from 'lucide-vue-next';
+import { onUnmounted, ref } from 'vue';
+import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+import Heading from '@/components/Heading.vue';
+import InputError from '@/components/InputError.vue';
+import PasswordInput from '@/components/PasswordInput.vue';
+import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
+import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import AppLayout from '@/layouts/AppLayout.vue';
+import SettingsLayout from '@/layouts/settings/Layout.vue';
+import { edit } from '@/routes/security';
+import { disable, enable } from '@/routes/two-factor';
+import type { BreadcrumbItem } from '@/types';
 
 type Props = {
     canManageTwoFactor?: boolean;
