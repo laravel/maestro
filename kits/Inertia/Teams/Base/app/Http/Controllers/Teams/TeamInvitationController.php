@@ -3,16 +3,11 @@
 namespace App\Http\Controllers\Teams;
 
 use App\Enums\TeamRole;
-use App\Events\Teams\TeamInvitationAccepted;
-use App\Events\Teams\TeamInvitationCancelled;
-use App\Events\Teams\TeamInvitationSent;
-use App\Events\Teams\TeamMemberAdded;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teams\AcceptTeamInvitationRequest;
 use App\Http\Requests\Teams\CreateTeamInvitationRequest;
 use App\Models\Team;
 use App\Models\TeamInvitation;
-use App\Notifications\Teams\InvitationAccepted;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -28,18 +23,15 @@ class TeamInvitationController extends Controller
     {
         Gate::authorize('inviteMember', $team);
 
-        $expiryMinutes = config('teams.invitations.default_expiry');
-
         $invitation = $team->invitations()->create([
             'email' => $request->validated('email'),
             'role' => TeamRole::from($request->validated('role')),
             'invited_by' => $request->user()->id,
-            'expires_at' => $expiryMinutes ? now()->addMinutes($expiryMinutes) : null,
+            'expires_at' => now()->addDays(3),
         ]);
 
-        event(new TeamInvitationSent($invitation));
-
-        Notification::route('mail', $invitation->email)->notify(new TeamInvitationNotification($invitation));
+        Notification::route('mail', $invitation->email)
+            ->notify(new TeamInvitationNotification($invitation));
 
         return to_route('teams.edit', ['team' => $team->slug]);
     }
@@ -54,8 +46,6 @@ class TeamInvitationController extends Controller
         Gate::authorize('cancelInvitation', $team);
 
         $invitation->delete();
-
-        event(new TeamInvitationCancelled($invitation));
 
         return to_route('teams.edit', ['team' => $team->slug]);
     }
@@ -78,17 +68,8 @@ class TeamInvitationController extends Controller
             $wasRecentlyCreated = $membership->wasRecentlyCreated;
 
             $invitation->update(['accepted_at' => now()]);
+
             $user->switchTeam($team);
-
-            event(new TeamInvitationAccepted($invitation, $user));
-
-            if ($wasRecentlyCreated) {
-                event(new TeamMemberAdded($team, $user, $membership));
-
-                if (config()->boolean('teams.invitations.notify_on_join')) {
-                    $team->owner()?->notify(new InvitationAccepted($team, $user));
-                }
-            }
         });
 
         return to_route('dashboard');

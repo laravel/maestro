@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Teams;
 
 use App\Actions\Teams\CreateTeam;
 use App\Enums\TeamRole;
-use App\Events\Teams\TeamDeleted;
-use App\Events\Teams\TeamUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teams\DeleteTeamRequest;
 use App\Http\Requests\Teams\SaveTeamRequest;
@@ -87,14 +85,26 @@ class TeamController extends Controller
         Gate::authorize('update', $team);
 
         $team = DB::transaction(function () use ($request, $team) {
-            $lockedTeam = Team::whereKey($team->id)->lockForUpdate()->firstOrFail();
-            $lockedTeam->update(['name' => $request->validated('name')]);
-            event(new TeamUpdated($lockedTeam));
+            $team = Team::whereKey($team->id)->lockForUpdate()->firstOrFail();
 
-            return $lockedTeam;
+            $team->update(['name' => $request->validated('name')]);
+
+            return $team;
         });
 
         return to_route('teams.edit', ['team' => $team->slug]);
+    }
+
+    /**
+     * Switch the user's current team.
+     */
+    public function switch(Request $request, Team $team): RedirectResponse
+    {
+        abort_unless($request->user()->belongsToTeam($team), 403);
+
+        $request->user()->switchTeam($team);
+
+        return back();
     }
 
     /**
@@ -117,24 +127,11 @@ class TeamController extends Controller
             $team->delete();
         });
 
-        event(new TeamDeleted($team));
-
         if ($fallbackTeam) {
             $user->switchTeam($fallbackTeam);
+
         }
 
         return to_route('teams.index');
-    }
-
-    /**
-     * Switch the user's current team.
-     */
-    public function switch(Request $request, Team $team): RedirectResponse
-    {
-        abort_unless($request->user()->belongsToTeam($team), 403);
-
-        $request->user()->switchTeam($team);
-
-        return back();
     }
 }

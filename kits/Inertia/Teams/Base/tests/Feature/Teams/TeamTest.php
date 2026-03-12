@@ -12,7 +12,7 @@ class TeamTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_teams_index_page_can_be_rendered()
+    public function test_the_teams_index_page_can_be_rendered()
     {
         $user = User::factory()->create();
 
@@ -23,7 +23,7 @@ class TeamTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_team_can_be_created()
+    public function test_teams_can_be_created()
     {
         $user = User::factory()->create();
 
@@ -61,10 +61,11 @@ class TeamTest extends TestCase
         ]);
     }
 
-    public function test_team_edit_page_can_be_rendered()
+    public function test_the_team_edit_page_can_be_rendered()
     {
         $user = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($user, ['role' => TeamRole::Owner->value]);
 
         $response = $this
@@ -74,10 +75,11 @@ class TeamTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_team_can_be_updated_by_owner()
+    public function test_teams_can_be_updated_by_owners()
     {
         $user = User::factory()->create();
         $team = Team::factory()->create(['name' => 'Original Name']);
+
         $team->members()->attach($user, ['role' => TeamRole::Owner->value]);
 
         $response = $this
@@ -94,11 +96,12 @@ class TeamTest extends TestCase
         ]);
     }
 
-    public function test_team_cannot_be_updated_by_member()
+    public function test_teams_cannot_be_updated_by_members()
     {
         $owner = User::factory()->create();
         $member = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
@@ -111,10 +114,11 @@ class TeamTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_can_be_deleted_by_owner()
+    public function test_teams_can_be_deleted_by_owners()
     {
         $user = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($user, ['role' => TeamRole::Owner->value]);
 
         $response = $this
@@ -134,6 +138,7 @@ class TeamTest extends TestCase
     {
         $user = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($user, ['role' => TeamRole::Owner->value]);
 
         $response = $this
@@ -251,9 +256,10 @@ class TeamTest extends TestCase
         $this->assertEquals($member->personalTeam()->id, $member->fresh()->current_team_id);
     }
 
-    public function test_personal_team_cannot_be_deleted()
+    public function test_personal_teams_cannot_be_deleted()
     {
         $user = User::factory()->create();
+
         $personalTeam = $user->personalTeam();
 
         $response = $this
@@ -270,11 +276,12 @@ class TeamTest extends TestCase
         ]);
     }
 
-    public function test_team_cannot_be_deleted_by_non_owner()
+    public function test_teams_cannot_be_deleted_by_non_owners()
     {
         $owner = User::factory()->create();
         $member = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
@@ -287,10 +294,11 @@ class TeamTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_user_can_switch_team()
+    public function test_users_can_switch_teams()
     {
         $user = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($user, ['role' => TeamRole::Member->value]);
 
         $response = $this
@@ -302,7 +310,7 @@ class TeamTest extends TestCase
         $this->assertEquals($team->id, $user->fresh()->current_team_id);
     }
 
-    public function test_user_cannot_switch_to_team_they_dont_belong_to()
+    public function test_users_cannot_switch_to_team_they_dont_belong_to()
     {
         $user = User::factory()->create();
         $team = Team::factory()->create();

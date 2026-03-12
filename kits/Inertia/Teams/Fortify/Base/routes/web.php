@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Teams\TeamInvitationController;
-use App\Http\Middleware\EnsureMembership;
+use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -10,7 +10,7 @@ Route::inertia('/', '{{welcome}}', [
 ])->name('home');
 
 Route::prefix('{current_team}')
-    ->middleware(['auth', 'verified', EnsureMembership::class])
+    ->middleware(['auth', 'verified', EnsureTeamMembership::class])
     ->group(function () {
         Route::inertia('dashboard', '{{dashboard}}')->name('dashboard');
     });

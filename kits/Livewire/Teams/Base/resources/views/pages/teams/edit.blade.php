@@ -1,20 +1,21 @@
 <?php
 
 use App\Enums\TeamRole;
-use App\Events\Teams\TeamMemberRoleChanged;
-use App\Events\Teams\TeamUpdated;
 use App\Models\Team;
 use App\Rules\TeamName;
 use App\Support\TeamPermissions;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
-new class extends Component {
+new class extends Component
+{
     public Team $teamModel;
+
+    public string $teamName = '';
 
     public array $teamData = [];
 
@@ -26,19 +27,57 @@ new class extends Component {
 
     public bool $isCurrentTeam = false;
 
-    public string $teamName = '';
-
     public function mount(Team $team): void
     {
         $this->teamModel = $team;
         $this->teamName = $team->name;
 
-        $this->setTeamData();
+        $this->populateTeamData();
     }
 
-    private function setTeamData(): void
+    public function updateTeam(): void
+    {
+        Gate::authorize('update', $this->teamModel);
+
+        $validated = $this->validate([
+            'teamName' => ['required', 'string', 'max:255', new TeamName],
+        ]);
+
+        $team = DB::transaction(function () use ($validated) {
+            $team = Team::whereKey($this->teamModel->id)->lockForUpdate()->firstOrFail();
+
+            $team->update(['name' => $validated['teamName']]);
+
+            return $team;
+        });
+
+        $this->teamModel = $team;
+
+        $this->populateTeamData();
+
+        $this->redirectRoute('teams.edit', ['team' => $this->teamModel->fresh()->slug], navigate: true);
+    }
+
+    public function updateMember(int $userId, string $role): void
+    {
+        Gate::authorize('updateMember', $this->teamModel);
+
+        $validated = Validator::make(['role' => $role], [
+            'role' => ['required', 'string', Rule::enum(TeamRole::class)],
+        ])->validate();
+
+        $this->teamModel->memberships()
+            ->where('user_id', $userId)
+            ->firstOrFail()
+            ->update(['role' => TeamRole::from($validated['role'])]);
+
+        $this->populateTeamData();
+    }
+
+    private function populateTeamData(): void
     {
         $user = Auth::user();
+
         $team = $this->teamModel->fresh();
 
         $this->teamData = [
@@ -69,55 +108,8 @@ new class extends Component {
             ])->toArray();
 
         $this->availableRoles = TeamRole::assignable();
+
         $this->isCurrentTeam = $user->isCurrentTeam($team);
-    }
-
-    public function getPermissionsProperty(): TeamPermissions
-    {
-        return Auth::user()->toTeamPermissions($this->teamModel);
-    }
-
-    public function updateTeam(): void
-    {
-        Gate::authorize('update', $this->teamModel);
-
-        $validated = $this->validate([
-            'teamName' => ['required', 'string', 'max:255', new TeamName],
-        ]);
-
-        $team = DB::transaction(function () use ($validated) {
-            $lockedTeam = Team::whereKey($this->teamModel->id)->lockForUpdate()->firstOrFail();
-            $lockedTeam->update(['name' => $validated['teamName']]);
-            event(new TeamUpdated($lockedTeam));
-
-            return $lockedTeam;
-        });
-
-        $this->teamModel = $team;
-        $this->setTeamData();
-
-        $this->redirectRoute('teams.edit', ['team' => $this->teamModel->fresh()->slug], navigate: true);
-    }
-
-    public function updateMember(int $userId, string $role): void
-    {
-        Gate::authorize('updateMember', $this->teamModel);
-
-        $validated = Validator::make(['role' => $role], [
-            'role' => ['required', 'string', Rule::enum(TeamRole::class)],
-        ])->validate();
-
-        $newRole = TeamRole::from($validated['role']);
-
-        $membership = $this->teamModel->memberships()
-            ->where('user_id', $userId)
-            ->firstOrFail();
-
-        $oldRole = $membership->role;
-        $membership->update(['role' => $newRole]);
-
-        event(new TeamMemberRoleChanged($this->teamModel, $membership->user, $oldRole, $newRole));
-        $this->setTeamData();
     }
 
     public function render()
@@ -129,6 +121,11 @@ new class extends Component {
             : "View {$teamName}";
 
         return $this->view()->title($title);
+    }
+
+    public function getPermissionsProperty(): TeamPermissions
+    {
+        return Auth::user()->toTeamPermissions($this->teamModel);
     }
 }; ?>
 

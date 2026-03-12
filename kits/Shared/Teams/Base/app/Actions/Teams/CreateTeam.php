@@ -3,8 +3,6 @@
 namespace App\Actions\Teams;
 
 use App\Enums\TeamRole;
-use App\Events\Teams\TeamCreated;
-use App\Events\Teams\TeamMemberAdded;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -28,9 +26,6 @@ class CreateTeam
             ]);
 
             $user->switchTeam($team);
-
-            event(new TeamCreated($team));
-            event(new TeamMemberAdded($team, $user, $membership));
 
             return $team;
         });

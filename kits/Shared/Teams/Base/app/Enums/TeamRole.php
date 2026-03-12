@@ -9,6 +9,14 @@ enum TeamRole: string
     case Member = 'member';
 
     /**
+     * Get the display label for the role.
+     */
+    public function label(): string
+    {
+        return ucfirst($this->value);
+    }
+
+    /**
      * Get all the permissions for this role.
      *
      * @return array<string>
@@ -43,14 +51,6 @@ enum TeamRole: string
     }
 
     /**
-     * Get the display label for the role.
-     */
-    public function label(): string
-    {
-        return ucfirst($this->value);
-    }
-
-    /**
      * Get the hierarchy level for this role.
      * Higher numbers indicate higher privileges.
      */
@@ -72,7 +72,7 @@ enum TeamRole: string
     }
 
     /**
-     * Get roles that can be assigned to team members (excludes Owner).
+     * Get the roles that can be assigned to team members (excludes Owner).
      *
      * @return array<array{value: string, label: string}>
      */

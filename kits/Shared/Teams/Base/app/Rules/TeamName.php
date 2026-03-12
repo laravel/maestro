@@ -367,7 +367,7 @@ class TeamName implements ValidationRule
     }
 
     /**
-     * Get a list of reserved names from routes's prefixes.
+     * Get a list of reserved names from the application's route prefixes.
      */
     protected function routesPrefixes(): array
     {

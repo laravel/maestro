@@ -1,6 +1,5 @@
 <?php
 
-use App\Events\Teams\TeamDeleted;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -53,13 +52,19 @@ new class extends Component {
             $this->team->delete();
         });
 
-        event(new TeamDeleted($this->team));
-
         if ($fallbackTeam) {
             $user->switchTeam($fallbackTeam);
         }
 
         $this->redirectRoute('teams.index', navigate: true);
+    }
+
+    /**
+     * @return Collection<int, UserTeam>
+     */
+    public function getOtherTeamsProperty(): Collection
+    {
+        return Auth::user()->toUserTeams();
     }
 }; ?>
 
