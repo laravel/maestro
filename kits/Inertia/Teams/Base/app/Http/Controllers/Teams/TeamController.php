@@ -76,8 +76,6 @@ class TeamController extends Controller
                 ]),
             'permissions' => $user->toTeamPermissions($team),
             'availableRoles' => TeamRole::assignable(),
-            'isCurrentTeam' => $user->isCurrentTeam($team),
-            'otherTeams' => $user->toUserTeams(),
         ]);
     }
 
@@ -105,7 +103,9 @@ class TeamController extends Controller
     public function destroy(DeleteTeamRequest $request, Team $team): RedirectResponse
     {
         $user = $request->user();
-        $newCurrentTeamId = $request->validated('new_current_team_id');
+        $fallbackTeam = $user->isCurrentTeam($team)
+            ? $user->fallbackTeam($team)
+            : null;
 
         DB::transaction(function () use ($user, $team) {
             User::where('current_team_id', $team->id)
@@ -119,8 +119,8 @@ class TeamController extends Controller
 
         event(new TeamDeleted($team));
 
-        if ($newCurrentTeamId) {
-            $user->switchTeam(Team::findOrFail($newCurrentTeamId));
+        if ($fallbackTeam) {
+            $user->switchTeam($fallbackTeam);
         }
 
         return to_route('teams.index');

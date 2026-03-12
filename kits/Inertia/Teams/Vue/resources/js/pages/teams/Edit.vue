@@ -45,8 +45,6 @@ type Props = {
     invitations: TeamInvitation[];
     permissions: TeamPermissions;
     availableRoles: RoleOption[];
-    isCurrentTeam: boolean;
-    otherTeams: Team[];
 };
 
 const props = defineProps<Props>();
@@ -377,8 +375,6 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
             <DeleteTeamModal
                 v-if="permissions.canDeleteTeam && !team.isPersonal"
                 :team="team"
-                :is-current-team="isCurrentTeam"
-                :other-teams="otherTeams"
                 :open="deleteDialogOpen"
                 @update:open="deleteDialogOpen = $event"
             />
