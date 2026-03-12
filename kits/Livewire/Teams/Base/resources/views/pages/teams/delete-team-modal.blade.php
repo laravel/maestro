@@ -1,6 +1,5 @@
 <?php
 
-use App\Events\Teams\TeamDeleted;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\TeamRole;
-use App\Models\User;
 use Database\Factories\TeamInvitationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

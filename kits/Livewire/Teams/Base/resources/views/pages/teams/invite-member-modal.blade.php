@@ -35,7 +35,7 @@ new class extends Component {
             'email' => $validated['inviteEmail'],
             'role' => TeamRole::from($validated['inviteRole']),
             'invited_by' => Auth::id(),
-            'expires_at' => now()->plus(days: 3),
+            'expires_at' => now()->addDays(3),
         ]);
 
         Notification::route('mail', $invitation->email)

@@ -27,7 +27,7 @@ class TeamInvitationController extends Controller
             'email' => $request->validated('email'),
             'role' => TeamRole::from($request->validated('role')),
             'invited_by' => $request->user()->id,
-            'expires_at' => now()->plus(days: 3),
+            'expires_at' => now()->addDays(3),
         ]);
 
         Notification::route('mail', $invitation->email)
