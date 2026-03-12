@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
-import { ShieldBan, ShieldCheck } from 'lucide-vue-next';
-import { onUnmounted, ref } from 'vue';
-import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-import Heading from '@/components/Heading.vue';
-import InputError from '@/components/InputError.vue';
-import PasswordInput from '@/components/PasswordInput.vue';
-import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
-import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit } from '@/routes/security';
-import { disable, enable } from '@/routes/two-factor';
-import type { BreadcrumbItem } from '@/types';
+import SecurityController from "@/actions/App/Http/Controllers/Settings/SecurityController";
+import Heading from "@/components/Heading.vue";
+import InputError from "@/components/InputError.vue";
+import PasswordInput from "@/components/PasswordInput.vue";
+import TwoFactorRecoveryCodes from "@/components/TwoFactorRecoveryCodes.vue";
+import TwoFactorSetupModal from "@/components/TwoFactorSetupModal.vue";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useTwoFactorAuth } from "@/composables/useTwoFactorAuth";
+import AppLayout from "@/layouts/AppLayout.vue";
+import SettingsLayout from "@/layouts/settings/Layout.vue";
+import { edit } from "@/routes/security";
+import { disable, enable } from "@/routes/two-factor";
+import type { BreadcrumbItem } from "@/types";
+import { Form, Head } from "@inertiajs/vue3";
+import { ShieldCheck } from "lucide-vue-next";
+import { onUnmounted, ref } from "vue";
 
 type Props = {
     canManageTwoFactor?: boolean;
@@ -32,7 +31,7 @@ withDefaults(defineProps<Props>(), {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Security settings',
+        title: "Security settings",
         href: edit(),
     },
 ];
@@ -113,8 +112,9 @@ onUnmounted(() => clearTwoFactorAuthData());
                         <Button
                             :disabled="processing"
                             data-test="update-password-button"
-                            >Save password</Button
                         >
+                            Save password
+                        </Button>
 
                         <Transition
                             enter-active-class="transition ease-in-out"
@@ -144,9 +144,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                     v-if="!twoFactorEnabled"
                     class="flex flex-col items-start justify-start space-y-4"
                 >
-                    <Badge variant="destructive">Disabled</Badge>
-
-                    <p class="text-muted-foreground">
+                    <p class="text-muted-foreground text-sm">
                         When you enable two-factor authentication, you will be
                         prompted for a secure pin during login. This pin can be
                         retrieved from a TOTP-supported application on your
@@ -167,9 +165,9 @@ onUnmounted(() => clearTwoFactorAuthData());
                             #default="{ processing }"
                         >
                             <Button type="submit" :disabled="processing">
-                                <ShieldCheck />Enable 2FA</Button
-                            ></Form
-                        >
+                                Enable 2FA
+                            </Button>
+                        </Form>
                     </div>
                 </div>
 
@@ -177,16 +175,11 @@ onUnmounted(() => clearTwoFactorAuthData());
                     v-else
                     class="flex flex-col items-start justify-start space-y-4"
                 >
-                    <Badge variant="default">Enabled</Badge>
-
-                    <p class="text-muted-foreground">
-                        With two-factor authentication enabled, you will be
-                        prompted for a secure, random pin during login, which
-                        you can retrieve from the TOTP-supported application on
-                        your phone.
+                    <p class="text-muted-foreground text-sm">
+                        You will be prompted for a secure, random pin during
+                        login, which you can retrieve from the TOTP-supported
+                        application on your phone.
                     </p>
-
-                    <TwoFactorRecoveryCodes />
 
                     <div class="relative inline">
                         <Form v-bind="disable.form()" #default="{ processing }">
@@ -195,11 +188,12 @@ onUnmounted(() => clearTwoFactorAuthData());
                                 type="submit"
                                 :disabled="processing"
                             >
-                                <ShieldBan />
                                 Disable 2FA
                             </Button>
                         </Form>
                     </div>
+
+                    <TwoFactorRecoveryCodes />
                 </div>
 
                 <TwoFactorSetupModal

@@ -1,14 +1,9 @@
-import { Transition } from '@headlessui/react';
-import { Form, Head } from '@inertiajs/react';
-import { ShieldBan, ShieldCheck } from 'lucide-react';
-import { useRef, useState } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
@@ -17,6 +12,10 @@ import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/security';
 import { disable, enable } from '@/routes/two-factor';
 import type { BreadcrumbItem } from '@/types';
+import { Transition } from '@headlessui/react';
+import { Form, Head } from '@inertiajs/react';
+import { ShieldCheck } from 'lucide-react';
+import { useRef, useState } from 'react';
 
 type Props = {
     canManageTwoFactor?: boolean;
@@ -177,20 +176,13 @@ export default function Security({
                         />
                         {twoFactorEnabled ? (
                             <div className="flex flex-col items-start justify-start space-y-4">
-                                <Badge variant="default">Enabled</Badge>
-                                <p className="text-muted-foreground">
-                                    With two-factor authentication enabled, you
+                                <p className="text-muted-foreground text-sm">
+                                    You
                                     will be prompted for a secure, random pin
                                     during login, which you can retrieve from
                                     the TOTP-supported application on your
                                     phone.
                                 </p>
-
-                                <TwoFactorRecoveryCodes
-                                    recoveryCodesList={recoveryCodesList}
-                                    fetchRecoveryCodes={fetchRecoveryCodes}
-                                    errors={errors}
-                                />
 
                                 <div className="relative inline">
                                     <Form {...disable.form()}>
@@ -200,16 +192,21 @@ export default function Security({
                                                 type="submit"
                                                 disabled={processing}
                                             >
-                                                <ShieldBan /> Disable 2FA
+                                                Disable 2FA
                                             </Button>
                                         )}
                                     </Form>
                                 </div>
+
+                                <TwoFactorRecoveryCodes
+                                    recoveryCodesList={recoveryCodesList}
+                                    fetchRecoveryCodes={fetchRecoveryCodes}
+                                    errors={errors}
+                                />
                             </div>
                         ) : (
                             <div className="flex flex-col items-start justify-start space-y-4">
-                                <Badge variant="destructive">Disabled</Badge>
-                                <p className="text-muted-foreground">
+                                <p className="text-muted-foreground text-sm">
                                     When you enable two-factor authentication,
                                     you will be prompted for a secure pin during
                                     login. This pin can be retrieved from a
@@ -238,7 +235,6 @@ export default function Security({
                                                     type="submit"
                                                     disabled={processing}
                                                 >
-                                                    <ShieldCheck />
                                                     Enable 2FA
                                                 </Button>
                                             )}
