@@ -34,7 +34,7 @@ class SecurityTest extends TestCase
             ->get(route('security.edit'))
             ->assertOk()
             ->assertSee('Two-factor authentication')
-            ->assertSee('Disabled');
+            ->assertSee('Enable 2FA');
     }
 
     public function test_security_settings_page_requires_password_confirmation_when_enabled(): void
