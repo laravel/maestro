@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\TeamRole;
-use App\Events\Teams\TeamInvitationSent;
 use App\Models\Team;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
 use App\Rules\UniqueTeamInvitation;
@@ -23,11 +22,6 @@ new class extends Component {
         $this->team = $team;
     }
 
-    public function getAvailableRolesProperty(): array
-    {
-        return TeamRole::assignable();
-    }
-
     public function createInvitation(): void
     {
         Gate::authorize('inviteMember', $this->team);
@@ -37,22 +31,25 @@ new class extends Component {
             'inviteRole' => ['required', 'string', Rule::enum(TeamRole::class)],
         ]);
 
-        $expiryMinutes = config('teams.invitations.default_expiry');
-
         $invitation = $this->team->invitations()->create([
             'email' => $validated['inviteEmail'],
             'role' => TeamRole::from($validated['inviteRole']),
             'invited_by' => Auth::id(),
-            'expires_at' => $expiryMinutes ? now()->addMinutes($expiryMinutes) : null,
+            'expires_at' => now()->addDays(3),
         ]);
 
-        event(new TeamInvitationSent($invitation));
-        Notification::route('mail', $invitation->email)->notify(new TeamInvitationNotification($invitation));
+        Notification::route('mail', $invitation->email)
+            ->notify(new TeamInvitationNotification($invitation));
 
         $this->reset('inviteEmail', 'inviteRole');
         $this->dispatch('close-modal', name: 'invite-member');
 
         $this->redirectRoute('teams.edit', ['team' => $this->team->slug], navigate: true);
+    }
+
+    public function getAvailableRolesProperty(): array
+    {
+        return TeamRole::assignable();
     }
 }; ?>
 

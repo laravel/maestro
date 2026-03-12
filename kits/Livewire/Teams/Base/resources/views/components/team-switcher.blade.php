@@ -15,13 +15,11 @@ new class extends Component {
     {
         $team = Auth::user()->currentTeam;
 
-        return ! $team
-            ? null
-            : [
-                'id' => $team->id,
-                'name' => $team->name,
-                'slug' => $team->slug,
-            ];
+        return $team ? [
+            'id' => $team->id,
+            'name' => $team->name,
+            'slug' => $team->slug,
+        ] : null;
     }
 
     /**
@@ -30,46 +28,6 @@ new class extends Component {
     public function teams(): Collection
     {
         return Auth::user()->toUserTeams(includeCurrent: true);
-    }
-
-    public function switchTeam(string $slug): void
-    {
-        $user = Auth::user();
-        $currentTeamSlug = $user->currentTeam?->slug;
-        $team = Team::where('slug', $slug)->firstOrFail();
-
-        abort_unless($user->belongsToTeam($team), 403);
-        $user->switchTeam($team);
-
-        $referer = request()->header('Referer');
-
-        if (! $referer) {
-            $this->redirectRoute('dashboard', ['current_team' => $team->slug], navigate: true);
-
-            return;
-        }
-
-        if (! $currentTeamSlug) {
-            $this->redirect($referer, navigate: true);
-
-            return;
-        }
-
-        $redirectTo = preg_replace(
-            '#/'.preg_quote($currentTeamSlug, '#').'(?=/|\?|$)#',
-            '/'.$team->slug,
-            $referer,
-            1,
-        );
-
-        $redirectTo = preg_replace(
-            '#([?&]current_team=)'.preg_quote($currentTeamSlug, '#').'(?=&|$)#',
-            '$1'.$team->slug,
-            $redirectTo ?? $referer,
-            1,
-        );
-
-        $this->redirect($redirectTo ?? $referer, navigate: true);
     }
 
     public function createTeam(CreateTeam $createTeam): void
@@ -81,9 +39,61 @@ new class extends Component {
         $team = $createTeam->handle(Auth::user(), $validated['name']);
 
         $this->dispatch('close-modal', name: 'create-team-switcher');
+
         $this->reset('name');
 
         $this->redirectRoute('teams.edit', ['team' => $team->slug], navigate: true);
+    }
+
+    public function switchTeam(string $slug): void
+    {
+        $user = Auth::user();
+
+        abort_unless(
+            $user->belongsToTeam($team = Team::where('slug', $slug)->firstOrFail()),
+            403
+        );
+
+        $currentTeamSlug = $user->currentTeam?->slug;
+
+        $user->switchTeam($team);
+
+        if (! request()->header('Referer')) {
+            $this->redirectRoute('dashboard', ['current_team' => $team->slug], navigate: true);
+
+            return;
+        }
+
+        if (! $currentTeamSlug) {
+            $this->redirect(request()->header('Referer'), navigate: true);
+
+            return;
+        }
+
+        $redirectTo = $this->replaceCurrentTeamInReferer(
+            request()->header('Referer'),
+            $currentTeamSlug,
+            $team->slug,
+        );
+
+        $this->redirect($redirectTo ?? request()->header('Referer'), navigate: true);
+    }
+
+    protected function replaceCurrentTeamInReferer(string $referer, string $currentTeamSlug, string $newTeamSlug): ?string
+    {
+        $redirectTo = preg_replace(
+            '#/'.preg_quote($currentTeamSlug, '#').'(?=/|\?|$)#',
+            '/'.$newTeamSlug,
+            $referer,
+            1,
+        );
+
+        return preg_replace(
+            '#([?&]current_team=)'.preg_quote($currentTeamSlug, '#').'(?=&|$)#',
+            '$1'.$newTeamSlug,
+            $redirectTo ?? $referer,
+            1,
+        );
     }
 }; ?>
 

@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class SetTeamUrlDefaults
 {
     /**
-     * Set default URL parameters for team-based routes.
+     * Set the default URL parameters for team-based routes.
      *
      * @param  Closure(Request): (Response)  $next
      */

@@ -1,6 +1,5 @@
 <?php
 
-use App\Events\Teams\TeamInvitationCancelled;
 use App\Models\Team;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
@@ -38,7 +37,6 @@ new class extends Component {
         Gate::authorize('cancelInvitation', $this->team);
 
         $invitation->delete();
-        event(new TeamInvitationCancelled($invitation));
 
         $this->dispatch('close-modal', name: $this->modalName);
 

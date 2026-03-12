@@ -1,10 +1,7 @@
 <?php
 
-use App\Events\Teams\TeamInvitationAccepted;
-use App\Events\Teams\TeamMemberAdded;
 use App\Models\TeamInvitation;
 use App\Models\User;
-use App\Notifications\Teams\InvitationAccepted;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -25,6 +22,7 @@ new #[Title('Teams')] class extends Component {
     public function acceptInvitation(): void
     {
         $user = Auth::user();
+
         $this->validateInvitation($user, $this->invitation);
 
         DB::transaction(function () use ($user) {
@@ -35,20 +33,9 @@ new #[Title('Teams')] class extends Component {
                 ['role' => $this->invitation->role]
             );
 
-            $wasRecentlyCreated = $membership->wasRecentlyCreated;
-
             $this->invitation->update(['accepted_at' => now()]);
+
             $user->switchTeam($team);
-
-            event(new TeamInvitationAccepted($this->invitation, $user));
-
-            if ($wasRecentlyCreated) {
-                event(new TeamMemberAdded($team, $user, $membership));
-
-                if (config()->boolean('teams.invitations.notify_on_join')) {
-                    $team->owner()?->notify(new InvitationAccepted($team, $user));
-                }
-            }
         });
 
         $this->redirectRoute('dashboard');

@@ -44,9 +44,7 @@ class TeamPolicy
      */
     public function delete(User $user, Team $team): bool
     {
-        return $team->is_personal
-            ? false
-            : $user->hasTeamPermission($team, 'team:delete');
+        return ! $team->is_personal && $user->hasTeamPermission($team, 'team:delete');
     }
 
     /**

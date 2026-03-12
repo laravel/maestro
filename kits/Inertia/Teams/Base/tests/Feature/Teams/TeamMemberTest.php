@@ -12,11 +12,12 @@ class TeamMemberTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_team_member_role_can_be_updated_by_owner()
+    public function test_team_member_roles_can_be_updated_by_owners()
     {
         $owner = User::factory()->create();
         $member = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
@@ -34,12 +35,13 @@ class TeamMemberTest extends TestCase
         );
     }
 
-    public function test_team_member_role_cannot_be_updated_by_non_owner()
+    public function test_team_member_roles_cannot_be_updated_by_non_owners()
     {
         $owner = User::factory()->create();
         $admin = User::factory()->create();
         $member = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
         $team->members()->attach($admin, ['role' => TeamRole::Admin->value]);
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
@@ -53,11 +55,12 @@ class TeamMemberTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_team_member_can_be_removed_by_owner()
+    public function test_team_members_can_be_removed_by_owners()
     {
         $owner = User::factory()->create();
         $member = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
@@ -70,12 +73,13 @@ class TeamMemberTest extends TestCase
         $this->assertFalse($member->fresh()->belongsToTeam($team));
     }
 
-    public function test_team_member_cannot_be_removed_by_non_owner()
+    public function test_team_members_cannot_be_removed_by_non_owners()
     {
         $owner = User::factory()->create();
         $admin = User::factory()->create();
         $member = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
         $team->members()->attach($admin, ['role' => TeamRole::Admin->value]);
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
@@ -91,6 +95,7 @@ class TeamMemberTest extends TestCase
     {
         $owner = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
 
         $response = $this
@@ -107,6 +112,7 @@ class TeamMemberTest extends TestCase
         $owner = User::factory()->create();
         $member = User::factory()->create();
         $team = Team::factory()->create();
+
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
@@ -130,8 +136,10 @@ class TeamMemberTest extends TestCase
         $member = User::factory()->create();
         $personalTeam = $member->personalTeam();
         $team = Team::factory()->create();
+
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
+
         $member->update(['current_team_id' => $team->id]);
 
         $this
