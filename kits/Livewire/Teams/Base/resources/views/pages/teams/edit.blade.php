@@ -310,6 +310,6 @@ new class extends Component {
     @endif
 
     @if ($this->permissions->canDeleteTeam && ! $teamData['is_personal'])
-        <livewire:pages::teams.delete-team-modal :team="$teamModel" :is-current-team="$isCurrentTeam" />
+        <livewire:pages::teams.delete-team-modal :team="$teamModel" />
     @endif
 </section>

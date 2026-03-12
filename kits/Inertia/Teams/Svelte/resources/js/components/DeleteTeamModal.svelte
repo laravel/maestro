@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { router } from '@inertiajs/svelte';
+    import { Form } from '@inertiajs/svelte';
+    import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';
     import {
         Dialog,
@@ -11,152 +12,85 @@
     } from '@/components/ui/dialog';
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
-    import {
-        Select,
-        SelectContent,
-        SelectItem,
-        SelectTrigger,
-    } from '@/components/ui/select';
     import { destroy } from '@/routes/teams';
     import type { Team } from '@/types';
 
     let {
         team,
-        isCurrentTeam,
-        otherTeams,
         open = $bindable(),
     }: {
         team: Team;
-        isCurrentTeam: boolean;
-        otherTeams: Team[];
         open: boolean;
     } = $props();
 
     let confirmationName = $state('');
-    let newCurrentTeamId = $state('');
-    let processing = $state(false);
+    let formKey = $state(0);
 
-    const canDeleteTeam = $derived(
-        confirmationName === team.name &&
-            (!isCurrentTeam || newCurrentTeamId !== ''),
-    );
+    const canDeleteTeam = $derived(confirmationName === team.name);
 
-    const selectedNewCurrentTeam = $derived(
-        otherTeams.find(
-            (otherTeam) => String(otherTeam.id) === newCurrentTeamId,
-        ),
-    );
+    function handleOpenChange(value: boolean) {
+        open = value;
 
-    const resetDialog = () => {
-        confirmationName = '';
-        newCurrentTeamId = '';
-        processing = false;
-    };
-
-    $effect(() => {
-        if (!open) {
-            resetDialog();
+        if (!value) {
+            confirmationName = '';
+            formKey++;
         }
-    });
-
-    const deleteTeam = () => {
-        router.visit(destroy(team.slug), {
-            data: {
-                name: confirmationName,
-                new_current_team_id:
-                    newCurrentTeamId === '' ? null : Number(newCurrentTeamId),
-            },
-            onStart: () => (processing = true),
-            onFinish: () => (processing = false),
-            onSuccess: () => (open = false),
-        });
-    };
+    }
 </script>
 
-<Dialog bind:open>
+<Dialog {open} onOpenChange={handleOpenChange}>
     <DialogContent>
-        <div class="space-y-3">
-            <DialogTitle>Are you sure?</DialogTitle>
-            <DialogDescription>
-                This action cannot be undone. This will permanently delete the
-                team
-                <strong>"{team.name}"</strong> and remove all of its members.
-            </DialogDescription>
-        </div>
-
-        <div class="space-y-4 py-4">
-            <div class="grid gap-2">
-                <Label for="confirmation-name">
-                    Type <strong>"{team.name}"</strong> to confirm
-                </Label>
-                <Input
-                    id="confirmation-name"
-                    value={confirmationName}
-                    oninput={(event) =>
-                        (confirmationName = (
-                            event.currentTarget as HTMLInputElement
-                        ).value)}
-                    placeholder="Enter team name"
-                    autocomplete="off"
-                />
-            </div>
-
-            {#if isCurrentTeam && otherTeams.length > 0}
-                <div class="grid gap-2">
-                    <Label for="new-current-team"
-                        >Select a new current team</Label
-                    >
-
-                    <Select bind:value={newCurrentTeamId}>
-                        <SelectTrigger class="w-full">
-                            {selectedNewCurrentTeam?.name ?? 'Select a team'}
-                        </SelectTrigger>
-                        <SelectContent>
-                            {#each otherTeams as otherTeam (otherTeam.id)}
-                                <SelectItem
-                                    value={String(otherTeam.id)}
-                                    label={otherTeam.name}
-                                >
-                                    {otherTeam.name}
-                                    {#if otherTeam.isPersonal}
-                                        <span class="ml-2 text-muted-foreground"
-                                            >(Personal)</span
-                                        >
-                                    {/if}
-                                </SelectItem>
-                            {/each}
-                        </SelectContent>
-                    </Select>
-
-                    <p class="text-sm text-muted-foreground">
-                        You are deleting your current team. Please select which
-                        team to switch to.
-                    </p>
-                </div>
-            {:else if isCurrentTeam && otherTeams.length === 0}
-                <div
-                    class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-200/20 dark:bg-red-900/20 dark:text-red-200"
-                >
-                    You cannot delete your current team because you have no
-                    other teams to switch to. Please create or join another team
-                    first.
-                </div>
-            {/if}
-        </div>
-
-        <DialogFooter class="gap-2">
-            <DialogClose>
-                <Button variant="secondary" onclick={resetDialog}>Cancel</Button
-                >
-            </DialogClose>
-
-            <Button
-                variant="destructive"
-                disabled={!canDeleteTeam || processing}
-                onclick={deleteTeam}
+        {#key formKey}
+            <Form
+                {...destroy.form(team.slug)}
+                class="space-y-6"
+                onSuccess={() => (open = false)}
             >
-                Delete team
-            </Button>
-        </DialogFooter>
+                {#snippet children({ errors, processing })}
+                    <div class="space-y-3">
+                        <DialogTitle>Are you sure?</DialogTitle>
+                        <DialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete the team
+                            <strong>"{team.name}"</strong>.
+                        </DialogDescription>
+                    </div>
+
+                    <div class="space-y-4 py-4">
+                        <div class="grid gap-2">
+                            <Label for="confirmation-name">
+                                Type <strong>"{team.name}"</strong> to confirm
+                            </Label>
+                            <Input
+                                id="confirmation-name"
+                                name="name"
+                                value={confirmationName}
+                                oninput={(event) =>
+                                    (confirmationName = (
+                                        event.currentTarget as HTMLInputElement
+                                    ).value)}
+                                placeholder="Enter team name"
+                                autocomplete="off"
+                            />
+                            <InputError message={errors.name} />
+                        </div>
+                    </div>
+
+                    <DialogFooter class="gap-2">
+                        <DialogClose>
+                            <Button variant="secondary">Cancel</Button>
+                        </DialogClose>
+
+                        <Button
+                            variant="destructive"
+                            type="submit"
+                            disabled={!canDeleteTeam || processing}
+                        >
+                            Delete team
+                        </Button>
+                    </DialogFooter>
+                {/snippet}
+            </Form>
+        {/key}
     </DialogContent>
 </Dialog>

@@ -169,6 +169,14 @@ trait HasTeams
         );
     }
 
+    public function fallbackTeam(?Team $excluding = null): ?Team
+    {
+        return $this->teams()
+            ->when($excluding, fn ($query) => $query->where('teams.id', '!=', $excluding->id))
+            ->orderByRaw('LOWER(teams.name)')
+            ->first();
+    }
+
     /**
      * Determine if the user is the owner of the given team.
      */
