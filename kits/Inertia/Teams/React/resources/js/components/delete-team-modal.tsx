@@ -79,15 +79,15 @@ export default function DeleteTeamModal({
                     <DialogTitle>Are you sure?</DialogTitle>
                     <DialogDescription>
                         This action cannot be undone. This will permanently
-                        delete the team <strong>{team.name}</strong> and remove
-                        all of its members.
+                        delete the team <strong>"{team.name}"</strong> and
+                        remove all of its members.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="confirmation-name">
-                            Type <strong>{team.name}</strong> to confirm
+                            Type <strong>"{team.name}"</strong> to confirm
                         </Label>
                         <Input
                             id="confirmation-name"

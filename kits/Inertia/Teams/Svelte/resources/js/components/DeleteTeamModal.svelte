@@ -80,14 +80,14 @@
             <DialogDescription>
                 This action cannot be undone. This will permanently delete the
                 team
-                <strong>{team.name}</strong> and remove all of its members.
+                <strong>"{team.name}"</strong> and remove all of its members.
             </DialogDescription>
         </div>
 
         <div class="space-y-4 py-4">
             <div class="grid gap-2">
                 <Label for="confirmation-name">
-                    Type <strong>{team.name}</strong> to confirm
+                    Type <strong>"{team.name}"</strong> to confirm
                 </Label>
                 <Input
                     id="confirmation-name"

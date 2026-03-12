@@ -156,7 +156,7 @@ onUnmounted(() => {
             <CreateTeamModal>
                 <DropdownMenuItem :class="teamItemClass" @select.prevent>
                     <Plus :class="plusIconClass" />
-                    <span class="text-muted-foreground">Create team</span>
+                    <span class="text-muted-foreground">New team</span>
                 </DropdownMenuItem>
             </CreateTeamModal>
         </DropdownMenuContent>

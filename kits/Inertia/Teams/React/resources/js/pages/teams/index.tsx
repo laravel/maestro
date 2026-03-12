@@ -46,7 +46,7 @@ export default function TeamsIndex({ teams }: Props) {
 
                         <CreateTeamModal>
                             <Button>
-                                <Plus /> Create team
+                                <Plus /> New team
                             </Button>
                         </CreateTeamModal>
                     </div>

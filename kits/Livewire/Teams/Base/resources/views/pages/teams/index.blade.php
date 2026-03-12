@@ -56,7 +56,7 @@ new #[Title('Teams')] class extends Component {
         <div class="flex items-center justify-end">
             <flux:modal.trigger name="create-team">
                 <flux:button variant="primary" icon="plus" x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-team')">
-                    {{ __('Create team') }}
+                    {{ __('New team') }}
                 </flux:button>
             </flux:modal.trigger>
         </div>
