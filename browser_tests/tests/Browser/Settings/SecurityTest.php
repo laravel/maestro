@@ -73,9 +73,9 @@ test('two-factor authentication shows disabled state by default', function () {
 
     visit(route('security.edit'))
         ->assertPathEndsWith('/settings/security')
-        ->assertSee('Disabled')
         ->assertSee('Enable 2FA')
         ->assertSee('When you enable two-factor authentication')
+        ->assertDontSee('Disable 2FA')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });
@@ -87,7 +87,7 @@ test('two-factor authentication can be enabled and confirmed', function () {
 
     $browser = visit(route('security.edit'))
         ->assertPathEndsWith('/settings/security')
-        ->assertSee('Disabled')
+        ->assertSee('Enable 2FA')
         ->click('Enable 2FA')
         ->assertSee('Enable two-factor authentication')
         ->assertSee('Continue')
@@ -101,8 +101,8 @@ test('two-factor authentication can be enabled and confirmed', function () {
     fillOTPCode($browser, $code);
 
     $browser->click('Confirm')
-        ->assertSee('Enabled')
         ->assertSee('Disable 2FA')
+        ->assertDontSee('Enable 2FA')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });
@@ -119,8 +119,8 @@ test('two-factor authentication shows enabled state', function () {
 
     visit(route('security.edit'))
         ->assertPathEndsWith('/settings/security')
-        ->assertSee('Enabled')
         ->assertSee('Disable 2FA')
+        ->assertDontSee('Enable 2FA')
         ->assertSee('View recovery codes')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();

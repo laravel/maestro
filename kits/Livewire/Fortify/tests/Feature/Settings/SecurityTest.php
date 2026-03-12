@@ -39,7 +39,7 @@ class SecurityTest extends TestCase
             ->assertSee('Passkeys')
             ->assertSee('No passkeys yet')
             ->assertSee('Two-factor authentication')
-            ->assertSee('Disabled');
+            ->assertSee('Enable 2FA');
     }
 
     public function test_security_settings_page_requires_password_confirmation_when_enabled(): void

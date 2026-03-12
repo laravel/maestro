@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, router } from '@inertiajs/vue3';
-import { KeyRound, ShieldBan, ShieldCheck } from 'lucide-vue-next';
+import { KeyRound, ShieldCheck } from 'lucide-vue-next';
 import { onUnmounted, ref } from 'vue';
 import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
@@ -11,7 +11,6 @@ import PasskeyRegister from '@/components/PasskeyRegister.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
 import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
@@ -140,8 +139,9 @@ onUnmounted(() => clearTwoFactorAuthData());
                         <Button
                             :disabled="processing"
                             data-test="update-password-button"
-                            >Save password</Button
                         >
+                            Save password
+                        </Button>
 
                         <Transition
                             enter-active-class="transition ease-in-out"
@@ -171,9 +171,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                     v-if="!twoFactorEnabled"
                     class="flex flex-col items-start justify-start space-y-4"
                 >
-                    <Badge variant="destructive">Disabled</Badge>
-
-                    <p class="text-muted-foreground">
+                    <p class="text-sm text-muted-foreground">
                         When you enable two-factor authentication, you will be
                         prompted for a secure pin during login. This pin can be
                         retrieved from a TOTP-supported application on your
@@ -194,9 +192,9 @@ onUnmounted(() => clearTwoFactorAuthData());
                             #default="{ processing }"
                         >
                             <Button type="submit" :disabled="processing">
-                                <ShieldCheck />Enable 2FA</Button
-                            ></Form
-                        >
+                                Enable 2FA
+                            </Button>
+                        </Form>
                     </div>
                 </div>
 
@@ -204,16 +202,11 @@ onUnmounted(() => clearTwoFactorAuthData());
                     v-else
                     class="flex flex-col items-start justify-start space-y-4"
                 >
-                    <Badge variant="default">Enabled</Badge>
-
-                    <p class="text-muted-foreground">
-                        With two-factor authentication enabled, you will be
-                        prompted for a secure, random pin during login, which
-                        you can retrieve from the TOTP-supported application on
-                        your phone.
+                    <p class="text-sm text-muted-foreground">
+                        You will be prompted for a secure, random pin during
+                        login, which you can retrieve from the TOTP-supported
+                        application on your phone.
                     </p>
-
-                    <TwoFactorRecoveryCodes />
 
                     <div class="relative inline">
                         <Form v-bind="disable.form()" #default="{ processing }">
@@ -222,11 +215,12 @@ onUnmounted(() => clearTwoFactorAuthData());
                                 type="submit"
                                 :disabled="processing"
                             >
-                                <ShieldBan />
                                 Disable 2FA
                             </Button>
                         </Form>
                     </div>
+
+                    <TwoFactorRecoveryCodes />
                 </div>
 
                 <TwoFactorSetupModal
