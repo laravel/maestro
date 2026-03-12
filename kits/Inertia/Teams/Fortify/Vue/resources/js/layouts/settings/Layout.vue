@@ -7,9 +7,8 @@ import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';
+import { edit as editSecurity } from '@/routes/security';
 import { index as teams } from '@/routes/teams';
-import { show } from '@/routes/two-factor';
-import { edit as editPassword } from '@/routes/user-password';
 import type { NavItem } from '@/types';
 
 const sidebarNavItems: NavItem[] = [
@@ -18,12 +17,8 @@ const sidebarNavItems: NavItem[] = [
         href: editProfile(),
     },
     {
-        title: 'Password',
-        href: editPassword(),
-    },
-    {
-        title: 'Two-factor auth',
-        href: show(),
+        title: 'Security',
+        href: editSecurity(),
     },
     {
         title: 'Teams',
