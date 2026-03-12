@@ -158,9 +158,7 @@
                             }}
                         >
                             <Plus class={inHeader ? 'size-4' : 'h-4 w-4'} />
-                            <span class="text-muted-foreground"
-                                >Create team</span
-                            >
+                            <span class="text-muted-foreground">New team</span>
                         </button>
                     {/snippet}
                 </DropdownMenuItem>

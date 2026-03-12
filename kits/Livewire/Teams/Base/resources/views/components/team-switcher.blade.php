@@ -120,7 +120,7 @@ new class extends Component {
 
             <flux:modal.trigger name="create-team-switcher">
                 <flux:menu.item icon="plus" class="cursor-pointer">
-                    {{ __('Create team') }}
+                    {{ __('New team') }}
                 </flux:menu.item>
             </flux:modal.trigger>
         </flux:menu>
