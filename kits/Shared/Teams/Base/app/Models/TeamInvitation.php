@@ -19,7 +19,7 @@ class TeamInvitation extends Model
         parent::boot();
         static::creating(function (TeamInvitation $invitation) {
             if (empty($invitation->code)) {
-                $invitation->code = Str::random(128);
+                $invitation->code = Str::random(64);
             }
         });
     }
