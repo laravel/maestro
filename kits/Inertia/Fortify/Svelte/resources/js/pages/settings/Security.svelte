@@ -1,12 +1,16 @@
 <script lang="ts">
-    import { Form } from '@inertiajs/svelte';
+    import { Form, router } from '@inertiajs/svelte';
+    import KeyRound from 'lucide-svelte/icons/key-round';
     import ShieldBan from 'lucide-svelte/icons/shield-ban';
     import ShieldCheck from 'lucide-svelte/icons/shield-check';
     import { onDestroy } from 'svelte';
+    import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
     import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
     import AppHead from '@/components/AppHead.svelte';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
+    import PasskeyItem from '@/components/PasskeyItem.svelte';
+    import PasskeyRegister from '@/components/PasskeyRegister.svelte';
     import PasswordInput from '@/components/PasswordInput.svelte';
     import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.svelte';
     import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.svelte';
@@ -20,12 +24,24 @@
     import { disable, enable } from '@/routes/two-factor';
     import type { BreadcrumbItem } from '@/types';
 
+    type Passkey = {
+        id: number;
+        name: string;
+        authenticator: string | null;
+        created_at_diff: string;
+        last_used_at_diff: string | null;
+    };
+
     let {
         canManageTwoFactor = false,
+        canManagePasskeys = false,
+        passkeys = [],
         requiresConfirmation = false,
         twoFactorEnabled = false,
     }: {
         canManageTwoFactor?: boolean;
+        canManagePasskeys?: boolean;
+        passkeys?: Passkey[];
         requiresConfirmation?: boolean;
         twoFactorEnabled?: boolean;
     } = $props();
@@ -39,6 +55,18 @@
 
     const twoFactorAuth = twoFactorAuthState();
     let showSetupModal = $state(false);
+
+    function handleDelete(id: number) {
+        router.delete(destroy.url(id), {
+            preserveScroll: true,
+        });
+    }
+
+    function handleRegisterSuccess() {
+        router.reload({
+            preserveScroll: true,
+        });
+    }
 
     onDestroy(() => twoFactorAuth.clearTwoFactorAuthData());
 </script>
@@ -204,6 +232,38 @@
                     {requiresConfirmation}
                     {twoFactorEnabled}
                 />
+            </div>
+        {/if}
+
+        {#if canManagePasskeys}
+            <div class="space-y-6">
+                <Heading
+                    variant="small"
+                    title="Passkeys"
+                    description="Manage your passkeys for passwordless sign-in"
+                />
+
+                <div class="overflow-hidden rounded-lg border border-border">
+                    {#if passkeys.length > 0}
+                        {#each passkeys as passkey (passkey.id)}
+                            <PasskeyItem {passkey} onDelete={handleDelete} />
+                        {/each}
+                    {:else}
+                        <div class="p-8 text-center">
+                            <div
+                                class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted"
+                            >
+                                <KeyRound class="h-7 w-7 text-muted-foreground" />
+                            </div>
+                            <p class="font-medium">No passkeys yet</p>
+                            <p class="mt-1 text-sm text-muted-foreground">
+                                Add a passkey to sign in without a password
+                            </p>
+                        </div>
+                    {/if}
+                </div>
+
+                <PasskeyRegister onSuccess={handleRegisterSuccess} />
             </div>
         {/if}
     </SettingsLayout>

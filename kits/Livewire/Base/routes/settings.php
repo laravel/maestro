@@ -15,21 +15,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('settings/security', 'pages::settings.security')
         ->middleware(
             when(
-                Features::canManageTwoFactorAuthentication()
-                    && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
+                (
+                    Features::canManageTwoFactorAuthentication()
+                    && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')
+                ) || (
+                    Features::canManagePasskeys()
+                    && Features::optionEnabled(Features::passkeys(), 'confirmPassword')
+                ),
                 ['password.confirm'],
                 [],
             ),
         )
         ->name('security.edit');
-
-    Route::livewire('settings/passkeys', 'pages::settings.passkeys')
-        ->middleware(
-            when(
-                Features::optionEnabled(Features::passkeys(), 'confirmPassword'),
-                ['password.confirm'],
-                [],
-            ),
-        )
-        ->name('passkeys.show');
 });

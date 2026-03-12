@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Settings\PasskeysController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use Illuminate\Support\Facades\Route;
@@ -22,7 +21,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user-password.update');
 
     Route::inertia('settings/appearance', '{{appearance_settings}}')->name('appearance.edit');
-
-    Route::get('settings/passkeys', [PasskeysController::class, 'index'])
-        ->name('passkeys.index');
 });

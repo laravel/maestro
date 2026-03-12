@@ -19,6 +19,8 @@ test('password update section is displayed on security page', function () {
     visit(route('security.edit'))
         ->assertSee('Update password')
         ->assertSee('Ensure your account is using a long, random password to stay secure')
+        ->assertSee('Passkeys')
+        ->assertSee('Manage your passkeys for passwordless sign-in')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });
@@ -154,6 +156,8 @@ test('security page displays password section without two-factor when feature is
         ->assertPathEndsWith('/settings/security')
         ->assertSee('Update password')
         ->assertSee('Ensure your account is using a long, random password to stay secure')
+        ->assertDontSee('Manage your passkeys for passwordless sign-in')
+        ->assertDontSee('Add a passkey to sign in without a password')
         ->assertDontSee('Two-factor authentication')
         ->assertDontSee('Enable 2FA')
         ->assertNoConsoleLogs()

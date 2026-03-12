@@ -54,11 +54,6 @@
         "svelte": "settings/Profile",
         "vue": "settings/Profile"
     },
-    "passkey_settings": {
-        "react": "settings/passkeys",
-        "svelte": "settings/Passkeys",
-        "vue": "settings/Passkeys"
-    },
     "security_settings": {
         "react": "settings/security",
         "svelte": "settings/Security",

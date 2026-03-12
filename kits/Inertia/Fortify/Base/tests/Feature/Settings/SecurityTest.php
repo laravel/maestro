@@ -21,6 +21,9 @@ class SecurityTest extends TestCase
             'confirm' => true,
             'confirmPassword' => true,
         ]);
+        Features::passkeys([
+            'confirmPassword' => true,
+        ]);
 
         $user = User::factory()->create();
 
@@ -29,7 +32,9 @@ class SecurityTest extends TestCase
             ->get(route('security.edit'))
             ->assertInertia(fn (Assert $page) => $page
                 ->component('{{security_settings}}')
+                ->where('canManagePasskeys', true)
                 ->where('canManageTwoFactor', true)
+                ->where('passkeys', [])
                 ->where('twoFactorEnabled', false),
             );
     }
@@ -61,6 +66,9 @@ class SecurityTest extends TestCase
             'confirm' => true,
             'confirmPassword' => false,
         ]);
+        Features::passkeys([
+            'confirmPassword' => false,
+        ]);
 
         $this->actingAs($user)
             ->get(route('security.edit'))
@@ -83,7 +91,9 @@ class SecurityTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('{{security_settings}}')
+                ->where('canManagePasskeys', false)
                 ->where('canManageTwoFactor', false)
+                ->where('passkeys', [])
                 ->missing('twoFactorEnabled')
                 ->missing('requiresConfirmation'),
             );

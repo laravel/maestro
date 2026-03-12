@@ -1,7 +1,6 @@
 <?php
 
 use App\Livewire\Settings\Appearance;
-use App\Livewire\Settings\Passkeys;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\Security;
 use Illuminate\Support\Facades\Route;
@@ -19,21 +18,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('settings/security', Security::class)
         ->middleware(
             when(
-                Features::canManageTwoFactorAuthentication()
-                && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
+                (
+                    Features::canManageTwoFactorAuthentication()
+                    && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')
+                ) || (
+                    Features::canManagePasskeys()
+                    && Features::optionEnabled(Features::passkeys(), 'confirmPassword')
+                ),
                 ['password.confirm'],
                 [],
             ),
         )
         ->name('security.edit');
-
-    Route::livewire('settings/passkeys', Passkeys::class)
-        ->middleware(
-            when(
-                Features::optionEnabled(Features::passkeys(), 'confirmPassword'),
-                ['password.confirm'],
-                [],
-            ),
-        )
-        ->name('passkeys.show');
 });

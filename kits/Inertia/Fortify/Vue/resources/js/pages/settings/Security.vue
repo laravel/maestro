@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
-import { ShieldBan, ShieldCheck } from 'lucide-vue-next';
+import { Form, Head, router } from '@inertiajs/vue3';
+import { KeyRound, ShieldBan, ShieldCheck } from 'lucide-vue-next';
 import { onUnmounted, ref } from 'vue';
+import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
+import PasskeyItem from '@/components/PasskeyItem.vue';
+import PasskeyRegister from '@/components/PasskeyRegister.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
 import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
@@ -18,14 +21,26 @@ import { edit } from '@/routes/security';
 import { disable, enable } from '@/routes/two-factor';
 import type { BreadcrumbItem } from '@/types';
 
+type Passkey = {
+    id: number;
+    name: string;
+    authenticator: string | null;
+    created_at_diff: string;
+    last_used_at_diff: string | null;
+};
+
 type Props = {
     canManageTwoFactor?: boolean;
+    canManagePasskeys?: boolean;
+    passkeys?: Passkey[];
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
 };
 
 withDefaults(defineProps<Props>(), {
     canManageTwoFactor: false,
+    canManagePasskeys: false,
+    passkeys: () => [],
     requiresConfirmation: false,
     twoFactorEnabled: false,
 });
@@ -39,6 +54,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth();
 const showSetupModal = ref<boolean>(false);
+
+const handleDelete = (id: number) => {
+    router.delete(destroy.url(id), {
+        preserveScroll: true,
+    });
+};
+
+const handleRegisterSuccess = () => {
+    router.reload({
+        preserveScroll: true,
+    });
+};
 
 onUnmounted(() => clearTwoFactorAuthData());
 </script>
@@ -207,6 +234,39 @@ onUnmounted(() => clearTwoFactorAuthData());
                     :requiresConfirmation="requiresConfirmation"
                     :twoFactorEnabled="twoFactorEnabled"
                 />
+            </div>
+
+            <div v-if="canManagePasskeys" class="space-y-6">
+                <Heading
+                    variant="small"
+                    title="Passkeys"
+                    description="Manage your passkeys for passwordless sign-in"
+                />
+
+                <div class="overflow-hidden rounded-lg border border-border">
+                    <template v-if="passkeys.length">
+                        <PasskeyItem
+                            v-for="passkey in passkeys"
+                            :key="passkey.id"
+                            :passkey="passkey"
+                            @remove="handleDelete"
+                        />
+                    </template>
+
+                    <div v-else class="p-8 text-center">
+                        <div
+                            class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted"
+                        >
+                            <KeyRound class="h-7 w-7 text-muted-foreground" />
+                        </div>
+                        <p class="font-medium">No passkeys yet</p>
+                        <p class="mt-1 text-sm text-muted-foreground">
+                            Add a passkey to sign in without a password
+                        </p>
+                    </div>
+                </div>
+
+                <PasskeyRegister @success="handleRegisterSuccess" />
             </div>
         </SettingsLayout>
     </AppLayout>

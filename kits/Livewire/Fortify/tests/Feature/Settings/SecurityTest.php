@@ -23,6 +23,9 @@ class SecurityTest extends TestCase
             'confirm' => true,
             'confirmPassword' => true,
         ]);
+        Features::passkeys([
+            'confirmPassword' => true,
+        ]);
     }
 
     public function test_security_settings_page_can_be_rendered(): void
@@ -33,6 +36,8 @@ class SecurityTest extends TestCase
             ->withSession(['auth.password_confirmed_at' => time()])
             ->get(route('security.edit'))
             ->assertOk()
+            ->assertSee('Passkeys')
+            ->assertSee('No passkeys yet')
             ->assertSee('Two-factor authentication')
             ->assertSee('Disabled');
     }
@@ -58,6 +63,8 @@ class SecurityTest extends TestCase
             ->get(route('security.edit'))
             ->assertOk()
             ->assertSee('Update password')
+            ->assertDontSee('Manage your passkeys for passwordless sign-in')
+            ->assertDontSee('Add a passkey to sign in without a password')
             ->assertDontSee('Two-factor authentication');
     }
 
