@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Teams;
 
-use App\Rules\AcceptTeamInvitation;
+use App\Rules\ValidTeamInvitation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,7 +26,7 @@ class AcceptTeamInvitationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'invitation' => ['required', new AcceptTeamInvitation($this->user())],
+            'invitation' => ['required', new ValidTeamInvitation($this->user())],
         ];
     }
 }
