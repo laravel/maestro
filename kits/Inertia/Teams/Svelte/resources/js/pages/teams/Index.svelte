@@ -70,7 +70,7 @@
                             onclick={(event) =>
                                 handleCreateTeamClick(props, event)}
                         >
-                            <Plus class="h-4 w-4" /> Create team
+                            <Plus class="h-4 w-4" /> New team
                         </Button>
                     {/snippet}
                 </CreateTeamModal>

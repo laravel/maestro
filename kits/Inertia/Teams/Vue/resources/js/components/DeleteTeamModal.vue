@@ -84,7 +84,7 @@ const deleteTeam = () => {
                 <DialogTitle>Are you sure?</DialogTitle>
                 <DialogDescription>
                     This action cannot be undone. This will permanently delete
-                    the team <strong>{{ props.team.name }}</strong> and remove
+                    the team <strong>"{{ props.team.name }}"</strong> and remove
                     all of its members.
                 </DialogDescription>
             </DialogHeader>
@@ -92,7 +92,7 @@ const deleteTeam = () => {
             <div class="space-y-4 py-4">
                 <div class="grid gap-2">
                     <Label for="confirmation-name">
-                        Type <strong>{{ props.team.name }}</strong> to confirm
+                        Type <strong>"{{ props.team.name }}"</strong> to confirm
                     </Label>
                     <Input
                         id="confirmation-name"

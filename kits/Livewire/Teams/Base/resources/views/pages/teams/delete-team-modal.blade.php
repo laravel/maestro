@@ -33,6 +33,11 @@ new class extends Component {
         return Auth::user()->toUserTeams();
     }
 
+    public function getDeleteConfirmLabelProperty(): string
+    {
+        return __('Type ":name" to confirm', ['name' => $this->team->name]);
+    }
+
     public function deleteTeam(): void
     {
         Gate::authorize('delete', $this->team);
@@ -95,12 +100,12 @@ new class extends Component {
         <div>
             <flux:heading size="lg">{{ __('Are you sure?') }}</flux:heading>
             <flux:subheading>
-                {{ __('This action cannot be undone. This will permanently delete the team :name and remove all of its members.', ['name' => $team->name]) }}
+                {{ __('This action cannot be undone. This will permanently delete the team ":name" and remove all of its members.', ['name' => $team->name]) }}
             </flux:subheading>
         </div>
 
         <div class="space-y-4">
-            <flux:input wire:model="deleteName" :label="__('Type :name to confirm', ['name' => $team->name])" required />
+            <flux:input wire:model="deleteName" :label="$this->deleteConfirmLabel" required />
 
             @if ($isCurrentTeam && $this->otherTeams->isNotEmpty())
                 <div class="space-y-2">

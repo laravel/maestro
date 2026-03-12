@@ -161,7 +161,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                             title="Team members"
                             :description="
                                 permissions.canCreateInvitation
-                                    ? 'Manage who has access to this team'
+                                    ? 'Manage who belongs to this team'
                                     : ''
                             "
                         />
@@ -329,7 +329,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                     <Heading
                         variant="small"
                         title="Delete team"
-                        description="Delete your team and remove all of its members"
+                        description="Permanently delete your team"
                     />
                     <div
                         class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"

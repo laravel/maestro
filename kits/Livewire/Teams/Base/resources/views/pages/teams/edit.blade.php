@@ -162,7 +162,7 @@ new class extends Component {
                     <div>
                         <flux:heading>{{ __('Team members') }}</flux:heading>
                         @if ($this->permissions->canAddMember || $this->permissions->canUpdateMember || $this->permissions->canRemoveMember)
-                            <flux:subheading>{{ __('Manage who has access to this team') }}</flux:subheading>
+                            <flux:subheading>{{ __('Manage who belongs to this team') }}</flux:subheading>
                         @endif
                     </div>
 
@@ -285,7 +285,7 @@ new class extends Component {
                 <div class="space-y-6">
                     <div>
                         <flux:heading>{{ __('Delete team') }}</flux:heading>
-                        <flux:subheading>{{ __('Delete your team and remove access from all the members to it') }}</flux:subheading>
+                        <flux:subheading>{{ __('Permanently delete your team') }}</flux:subheading>
                     </div>
 
                     <div class="space-y-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-200/10 dark:bg-red-900/20 dark:text-red-100">

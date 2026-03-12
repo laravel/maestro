@@ -12,7 +12,7 @@ class TeamTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_teams_index_page_can_be_displayed()
+    public function test_teams_index_page_can_be_rendered()
     {
         $user = User::factory()->create();
 
@@ -61,7 +61,7 @@ class TeamTest extends TestCase
         ]);
     }
 
-    public function test_team_edit_page_can_be_displayed()
+    public function test_team_edit_page_can_be_rendered()
     {
         $user = User::factory()->create();
         $team = Team::factory()->create();
