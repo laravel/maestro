@@ -18,24 +18,28 @@ const variants = [
         key: 'livewire',
         display: 'Livewire',
         framework: 'livewire',
+        variant: 'fortify',
         buildArgs: ['build', '--no-interaction', '--kit=Livewire'],
     },
     {
         key: 'react',
         display: 'React',
         framework: 'react',
+        variant: 'fortify',
         buildArgs: ['build', '--no-interaction', '--kit=React'],
     },
     {
         key: 'svelte',
         display: 'Svelte',
         framework: 'svelte',
+        variant: 'fortify',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte'],
     },
     {
         key: 'vue',
         display: 'Vue',
         framework: 'vue',
+        variant: 'fortify',
         buildArgs: ['build', '--no-interaction', '--kit=Vue'],
     },
 ];

@@ -6,6 +6,7 @@ import {
     log,
     orchestratorDir,
     parseFrameworkFlags,
+    parseVariantFlags,
     printSummary,
     removeBuildDirectory,
     runInherit,
@@ -23,54 +24,63 @@ const variants = [
         key: 'react-blank',
         display: 'React Blank',
         framework: 'react',
+        variant: 'blank',
         buildArgs: ['build', '--no-interaction', '--kit=React', '--blank'],
     },
     {
         key: 'react',
         display: 'React Fortify',
         framework: 'react',
+        variant: 'fortify',
         buildArgs: ['build', '--no-interaction', '--kit=React'],
     },
     {
         key: 'react-workos',
         display: 'React WorkOS',
         framework: 'react',
+        variant: 'workos',
         buildArgs: ['build', '--no-interaction', '--kit=React', '--workos'],
     },
     {
         key: 'svelte-blank',
         display: 'Svelte Blank',
         framework: 'svelte',
+        variant: 'blank',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--blank'],
     },
     {
         key: 'svelte',
         display: 'Svelte Fortify',
         framework: 'svelte',
+        variant: 'fortify',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte'],
     },
     {
         key: 'svelte-workos',
         display: 'Svelte WorkOS',
         framework: 'svelte',
+        variant: 'workos',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--workos'],
     },
     {
         key: 'vue-blank',
         display: 'Vue Blank',
         framework: 'vue',
+        variant: 'blank',
         buildArgs: ['build', '--no-interaction', '--kit=Vue', '--blank'],
     },
     {
         key: 'vue',
         display: 'Vue Fortify',
         framework: 'vue',
+        variant: 'fortify',
         buildArgs: ['build', '--no-interaction', '--kit=Vue'],
     },
     {
         key: 'vue-workos',
         display: 'Vue WorkOS',
         framework: 'vue',
+        variant: 'workos',
         buildArgs: ['build', '--no-interaction', '--kit=Vue', '--workos'],
     },
 ];
@@ -123,25 +133,37 @@ async function runPint() {
 }
 
 async function main() {
-    const selected = parseFrameworkFlags(process.argv.slice(2));
-    const active = filterVariants(variants, selected);
+    const argv = process.argv.slice(2);
+    const selectedFrameworks = parseFrameworkFlags(argv);
+    const selectedVariants = parseVariantFlags(argv);
+    const active = filterVariants(variants, selectedFrameworks, selectedVariants);
 
     // Always run Pint first (it applies to all frameworks including Livewire).
     await runPint();
 
     // If only --livewire was selected, there are no Inertia variants to run.
     if (active.length === 0) {
-        if (selected && selected.has('livewire') && selected.size === 1) {
+        if (selectedFrameworks && selectedFrameworks.has('livewire') && selectedFrameworks.size === 1) {
             log('Livewire has no frontend lint phase. Only the shared Pint step applies.', 'yellow');
         } else {
-            log('No Inertia variants matched the selected kit flags.', 'yellow');
+            log('No Inertia variants matched the selected flags.', 'yellow');
         }
 
         process.exit(0);
     }
 
-    if (selected) {
-        log(`Kits selected: ${[...selected].join(', ')}`, 'blue');
+    const labels = [];
+
+    if (selectedFrameworks) {
+        labels.push(`kits: ${[...selectedFrameworks].join(', ')}`);
+    }
+
+    if (selectedVariants) {
+        labels.push(`variants: ${[...selectedVariants].join(', ')}`);
+    }
+
+    if (labels.length > 0) {
+        log(`Filters — ${labels.join(' | ')}`, 'blue');
     }
 
     const total = active.length;

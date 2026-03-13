@@ -33,14 +33,19 @@ All commands below run from the `orchestrator/` directory unless noted otherwise
 | `npm run watch:kits`                                 | Run only the file watcher (no dev server).                                 |
 | `composer setup && composer ci:check`                | Run inside `build/` — installs deps, builds frontend, runs checks (see below). |
 
-### Selective Framework Execution
+### Selective Execution
 
-Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks:
+Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.
+Pass `--blank`, `--fortify`, `--workos`, and/or `--components` to target specific variants.
+Combine both to narrow down exactly which kit variants to run:
 
 ```bash
 composer kits:check -- --react --svelte
+composer kits:check -- --vue --svelte --fortify     # Vue and Svelte, Fortify variants only
+composer kits:check -- --livewire --fortify --workos # Livewire Fortify and WorkOS only
+composer kits:check -- --workos                      # all frameworks, WorkOS variant only
 composer kits:lint -- --vue
-composer kits:lint -- --livewire        # runs only the shared Pint step (no frontend lint phase)
+composer kits:lint -- --livewire                     # runs only the shared Pint step (no frontend lint phase)
 composer kits:browser-tests -- --vue
 ```
 
