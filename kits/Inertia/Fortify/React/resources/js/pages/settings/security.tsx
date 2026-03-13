@@ -1,25 +1,43 @@
 import { Transition } from '@headlessui/react';
-import { Form, Head, router } from '@inertiajs/react';
-import { KeyRound, ShieldCheck } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
+import { Form, Head } from '@inertiajs/react';
+/* @passkeys */
+import { router } from '@inertiajs/react';
+import { KeyRound } from 'lucide-react';
+/* @end-passkeys */
+/* @2fa */
+import { ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
+/* @end-2fa */
+import { useRef } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+/* @passkeys */
+import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
+/* @end-passkeys */
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+/* @passkeys */
 import PasskeyItem from '@/components/passkey-item';
 import PasskeyRegistration from '@/components/passkey-register';
+/* @end-passkeys */
 import PasswordInput from '@/components/password-input';
+/* @2fa */
 import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
+/* @end-2fa */
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+/* @2fa */
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
+/* @end-2fa */
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/security';
+/* @2fa */
 import { disable, enable } from '@/routes/two-factor';
+/* @end-2fa */
 import type { BreadcrumbItem } from '@/types';
 
+/* @passkeys */
 type Passkey = {
     id: number;
     name: string;
@@ -27,13 +45,18 @@ type Passkey = {
     created_at_diff: string;
     last_used_at_diff: string | null;
 };
+/* @end-passkeys */
 
-type Props = {
+type Props = Record<string, never> & {
+    /* @2fa */
     canManageTwoFactor?: boolean;
-    canManagePasskeys?: boolean;
-    passkeys?: Passkey[];
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
+    /* @end-2fa */
+    /* @passkeys */
+    canManagePasskeys?: boolean;
+    passkeys?: Passkey[];
+    /* @end-passkeys */
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -43,29 +66,32 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+/* @passkeys */
 function EmptyState() {
     return (
         <div className="p-8 text-center">
-            <div className="bg-muted mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl">
-                <KeyRound className="text-muted-foreground h-7 w-7" />
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
+                <KeyRound className="h-7 w-7 text-muted-foreground" />
             </div>
             <p className="font-medium">No passkeys yet</p>
-            <p className="text-muted-foreground mt-1 text-sm">
+            <p className="mt-1 text-sm text-muted-foreground">
                 Add a passkey to sign in without a password
             </p>
         </div>
     );
 }
+/* @end-passkeys */
 
-export default function Security({
-    canManageTwoFactor = false,
-    canManagePasskeys = false,
-    passkeys = [],
-    requiresConfirmation = false,
-    twoFactorEnabled = false,
-}: Props) {
+export default function Security(props: Props) {
+    void props;
+
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+
+    /* @2fa */
+    const canManageTwoFactor = props.canManageTwoFactor ?? false;
+    const requiresConfirmation = props.requiresConfirmation ?? false;
+    const twoFactorEnabled = props.twoFactorEnabled ?? false;
 
     const {
         qrCodeSvg,
@@ -78,6 +104,11 @@ export default function Security({
         errors,
     } = useTwoFactorAuth();
     const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
+    /* @end-2fa */
+
+    /* @passkeys */
+    const canManagePasskeys = props.canManagePasskeys ?? false;
+    const passkeys = props.passkeys ?? [];
 
     const handleDelete = (id: number) => {
         router.delete(destroy.url(id), {
@@ -86,10 +117,9 @@ export default function Security({
     };
 
     const handleRegisterSuccess = () => {
-        router.reload({
-            preserveScroll: true,
-        });
+        router.reload();
     };
+    /* @end-passkeys */
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -208,6 +238,7 @@ export default function Security({
                     </Form>
                 </div>
 
+                {/* @2fa */}
                 {canManageTwoFactor && (
                     <div className="space-y-6">
                         <Heading
@@ -297,7 +328,9 @@ export default function Security({
                         />
                     </div>
                 )}
+                {/* @end-2fa */}
 
+                {/* @passkeys */}
                 {canManagePasskeys && (
                     <div className="space-y-6">
                         <Heading
@@ -306,7 +339,7 @@ export default function Security({
                             description="Manage your passkeys for passwordless sign-in"
                         />
 
-                        <div className="border-border overflow-hidden rounded-lg border">
+                        <div className="overflow-hidden rounded-lg border border-border">
                             {passkeys.length > 0 ? (
                                 passkeys.map((passkey) => (
                                     <PasskeyItem
@@ -325,6 +358,7 @@ export default function Security({
                         />
                     </div>
                 )}
+                {/* @end-passkeys */}
             </SettingsLayout>
         </AppLayout>
     );

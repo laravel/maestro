@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/livewire-starter-kit",
+    "name": "laravel/{{variant}}-starter-kit",
     "type": "project",
-    "description": "The official Laravel starter kit for Livewire.",
+    "description": "The skeleton application for the Laravel framework.",
     "keywords": [
         "laravel",
         "framework"
@@ -10,12 +10,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "inertiajs/inertia-laravel": "^2.0",
+        "laravel/chisel": "dev-main",
         "laravel/fortify": "dev-add-passkey-support#242c342",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "livewire/blaze": "^1.0",
-        "livewire/flux": "^2.9.0",
-        "livewire/livewire": "^4.0"
+        "laravel/wayfinder": "^0.1.9"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -51,6 +51,11 @@
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
         ],
+        "dev:ssr": [
+            "npm run build:ssr",
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"php artisan inertia:start-ssr\" --names=server,queue,logs,ssr --kill-others"
+        ],
         "lint": [
             "pint --parallel"
         ],
@@ -59,6 +64,9 @@
         ],
         "ci:check": [
             "Composer\\Config::disableProcessTimeout",
+            "npm run lint:check",
+            "npm run format:check",
+            "npm run types:check",
             "@test"
         ],
         "test": [
@@ -77,7 +85,6 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php rename_livewire_files.php",
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
@@ -103,6 +110,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/benbjurstrom/installer-tools"
+        },
         {
             "type": "vcs",
             "url": "https://github.com/benbjurstrom/fortify"

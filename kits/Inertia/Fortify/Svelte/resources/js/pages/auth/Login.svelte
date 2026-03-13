@@ -2,7 +2,9 @@
     import { Form } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
+    /* @passkeys */
     import PasskeyVerify from '@/components/PasskeyVerify.svelte';
+    /* @end-passkeys */
     import PasswordInput from '@/components/PasswordInput.svelte';
     import TextLink from '@/components/TextLink.svelte';
     import { Button } from '@/components/ui/button';
@@ -32,7 +34,9 @@
     title="Log in to your account"
     description="Enter your email and password below to log in"
 >
+    <!-- @passkeys -->
     <PasskeyVerify />
+    <!-- @end-passkeys -->
 
     {#if status}
         <div class="mb-4 text-center text-sm font-medium text-green-600">

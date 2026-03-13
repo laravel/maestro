@@ -10,6 +10,7 @@
             <div>
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
 
+                {{-- @email-verification --}}
                 @if ($this->hasUnverifiedEmail)
                     <div>
                         <flux:text class="mt-4">
@@ -27,6 +28,7 @@
                         @endif
                     </div>
                 @endif
+                {{-- @end-email-verification --}}
             </div>
 
             <div class="flex items-center gap-4">

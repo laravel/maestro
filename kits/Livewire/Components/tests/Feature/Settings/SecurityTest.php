@@ -18,32 +18,43 @@ class SecurityTest extends TestCase
     {
         parent::setUp();
 
+        /* @2fa */
         $this->skipUnlessFortifyFeature(Features::twoFactorAuthentication());
 
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,
         ]);
+        /* @end-2fa */
+        /* @passkeys */
         Features::passkeys([
             'confirmPassword' => true,
         ]);
+        /* @end-passkeys */
     }
 
     public function test_security_settings_page_can_be_rendered(): void
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user)
+        $response = $this->actingAs($user)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->get(route('security.edit'))
-            ->assertOk()
-            ->assertSee('Passkeys')
-            ->assertSee('No passkeys yet')
-            ->assertSee('Two-factor authentication')
-            ->assertSee('Enable 2FA');
+            ->get(route('security.edit'));
+
+        $response->assertOk();
+
+        /* @passkeys */
+        $response->assertSee('Passkeys');
+        $response->assertSee('No passkeys yet');
+        /* @end-passkeys */
+        /* @2fa */
+        $response->assertSee('Two-factor authentication');
+        $response->assertSee('Enable 2FA');
+        /* @end-2fa */
     }
 
-    public function test_security_settings_page_requires_password_confirmation_when_enabled(): void
+    /* @2fa */
+    public function test_security_settings_page_requires_password_confirmation_when_two_factor_confirmation_is_enabled(): void
     {
         $user = User::factory()->create();
 
@@ -52,6 +63,19 @@ class SecurityTest extends TestCase
 
         $response->assertRedirect(route('password.confirm'));
     }
+    /* @end-2fa */
+
+    /* @passkeys */
+    public function test_security_settings_page_requires_password_confirmation_when_passkey_confirmation_is_enabled(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->get(route('security.edit'));
+
+        $response->assertRedirect(route('password.confirm'));
+    }
+    /* @end-passkeys */
 
     public function test_security_settings_page_renders_without_two_factor_when_feature_is_disabled(): void
     {
@@ -69,6 +93,7 @@ class SecurityTest extends TestCase
             ->assertDontSee('Two-factor authentication');
     }
 
+    /* @2fa */
     public function test_two_factor_authentication_disabled_when_confirmation_abandoned_between_requests(): void
     {
         $user = User::factory()->create();
@@ -91,6 +116,7 @@ class SecurityTest extends TestCase
             'two_factor_recovery_codes' => null,
         ]);
     }
+    /* @end-2fa */
 
     public function test_password_can_be_updated(): void
     {

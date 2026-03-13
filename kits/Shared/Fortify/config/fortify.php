@@ -116,8 +116,12 @@ return [
 
     'limiters' => [
         'login' => 'login',
+        /* @2fa */
         'two-factor' => 'two-factor',
+        /* @end-2fa */
+        /* @passkeys */
         'passkeys' => 'passkeys',
+        /* @end-passkeys */
     ],
 
     /*
@@ -133,6 +137,7 @@ return [
 
     'views' => true,
 
+    /* @passkeys */
     /*
     |--------------------------------------------------------------------------
     | Passkeys
@@ -146,6 +151,7 @@ return [
         'relying_party_id' => parse_url(config('app.url'), PHP_URL_HOST),
         'timeout' => 60000,
     ],
+    /* @end-passkeys */
 
     /*
     |--------------------------------------------------------------------------
@@ -162,14 +168,18 @@ return [
         Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
+        /* @2fa */
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,
             // 'window' => 0
         ]),
+        /* @end-2fa */
+        /* @passkeys */
         Features::passkeys([
             'confirmPassword' => true,
         ]),
+        /* @end-passkeys */
     ],
 
 ];

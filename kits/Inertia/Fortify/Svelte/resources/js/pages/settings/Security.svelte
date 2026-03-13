@@ -1,27 +1,43 @@
 <script lang="ts">
-    import { Form, router } from '@inertiajs/svelte';
+    import { Form } from '@inertiajs/svelte';
+    /* @passkeys */
+    import { router } from '@inertiajs/svelte';
     import KeyRound from 'lucide-svelte/icons/key-round';
+    /* @end-passkeys */
+    /* @2fa */
     import ShieldCheck from 'lucide-svelte/icons/shield-check';
     import { onDestroy } from 'svelte';
-    import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
+    /* @end-2fa */
     import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+    /* @passkeys */
+    import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
+    /* @end-passkeys */
     import AppHead from '@/components/AppHead.svelte';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
+    /* @passkeys */
     import PasskeyItem from '@/components/PasskeyItem.svelte';
     import PasskeyRegister from '@/components/PasskeyRegister.svelte';
+    /* @end-passkeys */
     import PasswordInput from '@/components/PasswordInput.svelte';
+    /* @2fa */
     import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.svelte';
     import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.svelte';
+    /* @end-2fa */
     import { Button } from '@/components/ui/button';
     import { Label } from '@/components/ui/label';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
+    /* @2fa */
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
+    /* @end-2fa */
     import { edit } from '@/routes/security';
+    /* @2fa */
     import { disable, enable } from '@/routes/two-factor';
+    /* @end-2fa */
     import type { BreadcrumbItem } from '@/types';
 
+    /* @passkeys */
     type Passkey = {
         id: number;
         name: string;
@@ -29,19 +45,30 @@
         created_at_diff: string;
         last_used_at_diff: string | null;
     };
+    /* @end-passkeys */
 
     let {
+        _props = undefined,
+        /* @2fa */
         canManageTwoFactor = false,
-        canManagePasskeys = false,
-        passkeys = [],
         requiresConfirmation = false,
         twoFactorEnabled = false,
+        /* @end-2fa */
+        /* @passkeys */
+        canManagePasskeys = false,
+        passkeys = [],
+        /* @end-passkeys */
     }: {
+        _props?: never;
+        /* @2fa */
         canManageTwoFactor?: boolean;
-        canManagePasskeys?: boolean;
-        passkeys?: Passkey[];
         requiresConfirmation?: boolean;
         twoFactorEnabled?: boolean;
+        /* @end-2fa */
+        /* @passkeys */
+        canManagePasskeys?: boolean;
+        passkeys?: Passkey[];
+        /* @end-passkeys */
     } = $props();
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -51,9 +78,12 @@
         },
     ];
 
+    /* @2fa */
     const twoFactorAuth = twoFactorAuthState();
     let showSetupModal = $state(false);
+    /* @end-2fa */
 
+    /* @passkeys */
     function handleDelete(id: number) {
         router.delete(destroy.url(id), {
             preserveScroll: true,
@@ -61,12 +91,13 @@
     }
 
     function handleRegisterSuccess() {
-        router.reload({
-            preserveScroll: true,
-        });
+        router.reload();
     }
+    /* @end-passkeys */
 
+    /* @2fa */
     onDestroy(() => twoFactorAuth.clearTwoFactorAuthData());
+    /* @end-2fa */
 </script>
 
 <AppHead title="Security settings" />
@@ -149,6 +180,7 @@
             </Form>
         </div>
 
+        <!-- @2fa -->
         {#if canManageTwoFactor}
             <div class="space-y-6">
                 <Heading
@@ -225,7 +257,9 @@
                 />
             </div>
         {/if}
+        <!-- @end-2fa -->
 
+        <!-- @passkeys -->
         {#if canManagePasskeys}
             <div class="space-y-6">
                 <Heading
@@ -244,7 +278,9 @@
                             <div
                                 class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted"
                             >
-                                <KeyRound class="h-7 w-7 text-muted-foreground" />
+                                <KeyRound
+                                    class="h-7 w-7 text-muted-foreground"
+                                />
                             </div>
                             <p class="font-medium">No passkeys yet</p>
                             <p class="mt-1 text-sm text-muted-foreground">
@@ -257,5 +293,6 @@
                 <PasskeyRegister onSuccess={handleRegisterSuccess} />
             </div>
         {/if}
+        <!-- @end-passkeys -->
     </SettingsLayout>
 </AppLayout>

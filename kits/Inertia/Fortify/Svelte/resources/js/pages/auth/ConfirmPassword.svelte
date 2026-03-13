@@ -1,9 +1,16 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
-    import { index as confirmOptions, store as confirmStore } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyConfirmationController';
+    /* @passkeys */
+    import {
+        index as confirmOptions,
+        store as confirmStore,
+    } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyConfirmationController';
+    /* @end-passkeys */
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
+    /* @passkeys */
     import PasskeyVerify from '@/components/PasskeyVerify.svelte';
+    /* @end-passkeys */
     import PasswordInput from '@/components/PasswordInput.svelte';
     import { Button } from '@/components/ui/button';
     import { Label } from '@/components/ui/label';
@@ -18,6 +25,7 @@
     title="Confirm your password"
     description="This is a secure area of the application. Please confirm your password before continuing."
 >
+    <!-- @passkeys -->
     <PasskeyVerify
         routes={{
             options: confirmOptions.url(),
@@ -27,6 +35,7 @@
         loadingLabel="Confirming..."
         separator="Or confirm with password"
     />
+    <!-- @end-passkeys -->
 
     <Form {...store.form()} resetOnSuccess>
         {#snippet children({ errors, processing })}

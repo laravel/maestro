@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { Form, Head, Link, usePage } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
+/* @email-verification */
+import { Link } from '@inertiajs/vue3';
+/* @end-email-verification */
 import { computed } from 'vue';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/DeleteUser.vue';
@@ -11,12 +14,17 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/profile';
+/* @email-verification */
 import { send } from '@/routes/verification';
+/* @end-email-verification */
 import type { BreadcrumbItem } from '@/types';
 
 type Props = {
-    mustVerifyEmail: boolean;
+    _props?: never;
+    /* @email-verification */
+    mustVerifyEmail?: boolean;
     status?: string;
+    /* @end-email-verification */
 };
 
 defineProps<Props>();
@@ -80,6 +88,7 @@ const user = computed(() => page.props.auth.user);
                         <InputError class="mt-2" :message="errors.email" />
                     </div>
 
+                    <!-- @email-verification -->
                     <div v-if="mustVerifyEmail && !user.email_verified_at">
                         <p class="-mt-4 text-sm text-muted-foreground">
                             Your email address is unverified.
@@ -100,6 +109,7 @@ const user = computed(() => page.props.auth.user);
                             address.
                         </div>
                     </div>
+                    <!-- @end-email-verification -->
 
                     <div class="flex items-center gap-4">
                         <Button

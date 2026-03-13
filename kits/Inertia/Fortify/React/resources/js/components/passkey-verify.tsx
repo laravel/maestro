@@ -16,13 +16,13 @@ type Props = {
     separator?: string;
 };
 
-export default function PasskeyVerify({ routes, label, loadingLabel, separator }: Props = {}) {
-    const {
-        verify,
-        isLoading,
-        error,
-        isSupported,
-    } = usePasskeyVerify({
+export default function PasskeyVerify({
+    routes,
+    label,
+    loadingLabel,
+    separator,
+}: Props = {}) {
+    const { verify, isLoading, error, isSupported } = usePasskeyVerify({
         ...(routes && { routes }),
         onSuccess: (response) => {
             router.visit(response.redirect ?? '/dashboard');
@@ -44,11 +44,7 @@ export default function PasskeyVerify({ routes, label, loadingLabel, separator }
                     onClick={verify}
                     disabled={isLoading}
                 >
-                    {isLoading ? (
-                        <Spinner />
-                    ) : (
-                        <KeyRound className="h-4 w-4" />
-                    )}
+                    {isLoading ? <Spinner /> : <KeyRound className="h-4 w-4" />}
                     {isLoading
                         ? (loadingLabel ?? 'Authenticating...')
                         : (label ?? 'Sign in with passkey')}
@@ -63,7 +59,7 @@ export default function PasskeyVerify({ routes, label, loadingLabel, separator }
                     <Separator className="w-full" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background text-muted-foreground px-2">
+                    <span className="bg-background px-2 text-muted-foreground">
                         {separator ?? 'Or continue with email'}
                     </span>
                 </div>

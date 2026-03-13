@@ -23,7 +23,11 @@ export default function PasskeyRegistration({ onSuccess }: Props) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name.trim()) return;
+
+        if (!name.trim()) {
+            return;
+        }
+
         await register(name);
     };
 
@@ -34,7 +38,7 @@ export default function PasskeyRegistration({ onSuccess }: Props) {
 
     if (!isSupported) {
         return (
-            <div className="text-muted-foreground text-sm">
+            <div className="text-sm text-muted-foreground">
                 Passkeys are not supported in this browser.
             </div>
         );
@@ -50,7 +54,10 @@ export default function PasskeyRegistration({ onSuccess }: Props) {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="border-border bg-muted/50 space-y-4 rounded-lg border p-4">
+        <form
+            onSubmit={handleSubmit}
+            className="space-y-4 rounded-lg border border-border bg-muted/50 p-4"
+        >
             <div className="space-y-2">
                 <Label htmlFor="passkey-name">Passkey name</Label>
                 <Input
@@ -61,7 +68,7 @@ export default function PasskeyRegistration({ onSuccess }: Props) {
                     placeholder="e.g., MacBook Pro, iPhone"
                     autoFocus
                 />
-                <p className="text-muted-foreground text-xs">
+                <p className="text-xs text-muted-foreground">
                     Give this passkey a name to help you identify it later
                 </p>
             </div>

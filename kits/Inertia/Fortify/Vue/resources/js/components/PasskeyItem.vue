@@ -49,7 +49,7 @@ const handleDelete = () => {
                     <p class="font-medium tracking-tight">{{ passkey.name }}</p>
                     <span
                         v-if="passkey.authenticator"
-                        class="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground ring-1 ring-inset ring-border"
+                        class="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium tracking-wide text-muted-foreground uppercase ring-1 ring-border ring-inset"
                     >
                         {{ passkey.authenticator }}
                     </span>

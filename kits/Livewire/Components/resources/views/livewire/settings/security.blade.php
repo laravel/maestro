@@ -41,6 +41,7 @@
             </div>
         </form>
 
+        {{-- @2fa --}}
         @if ($canManageTwoFactor)
             <section class="mt-12">
                 <flux:heading>{{ __('Two-factor authentication') }}</flux:heading>
@@ -62,7 +63,7 @@
                                 </flux:button>
                             </div>
 
-                            <livewire:settings.two-factor.recovery-codes :$requiresConfirmation/>
+                            <livewire:settings.two-factor.recovery-codes :$requiresConfirmation />
                         </div>
                     @else
                         <div class="space-y-4">
@@ -80,7 +81,11 @@
                     @endif
                 </div>
             </section>
+        @endif
+        {{-- @end-2fa --}}
 
+        {{-- @2fa --}}
+        @if ($canManageTwoFactor)
             <flux:modal
                 name="two-factor-setup-modal"
                 class="max-w-md md:min-w-md"
@@ -235,7 +240,9 @@
                 </div>
             </flux:modal>
         @endif
+        {{-- @end-2fa --}}
 
+        {{-- @passkeys --}}
         @if ($canManagePasskeys)
             <section class="mt-12">
                 <flux:heading>{{ __('Passkeys') }}</flux:heading>
@@ -290,8 +297,10 @@
                 </div>
             </section>
         @endif
+        {{-- @end-passkeys --}}
     </x-settings.layout>
 
+    {{-- @passkeys --}}
     <flux:modal
         name="delete-passkey-modal"
         class="max-w-md md:min-w-md"
@@ -322,4 +331,5 @@
             </div>
         </div>
     </flux:modal>
+    {{-- @end-passkeys --}}
 </section>

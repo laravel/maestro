@@ -3,9 +3,13 @@
 namespace App\Livewire\Settings;
 
 use App\Concerns\ProfileValidationRules;
+/* @email-verification */
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+/* @end-email-verification */
 use Illuminate\Support\Facades\Auth;
+/* @email-verification */
 use Illuminate\Support\Facades\Session;
+/* @end-email-verification */
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -53,6 +57,7 @@ class Profile extends Component
      */
     public function resendVerificationNotification(): void
     {
+        /* @email-verification */
         $user = Auth::user();
 
         if ($user->hasVerifiedEmail()) {
@@ -64,18 +69,31 @@ class Profile extends Component
         $user->sendEmailVerificationNotification();
 
         Session::flash('status', 'verification-link-sent');
+        /* @end-email-verification */
     }
 
     #[Computed]
     public function hasUnverifiedEmail(): bool
     {
-        return Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
+        $hasUnverifiedEmail = false;
+
+        /* @email-verification */
+        $hasUnverifiedEmail = Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
+        /* @end-email-verification */
+
+        return $hasUnverifiedEmail;
     }
 
     #[Computed]
     public function showDeleteUser(): bool
     {
-        return ! Auth::user() instanceof MustVerifyEmail
+        $showDeleteUser = true;
+
+        /* @email-verification */
+        $showDeleteUser = ! Auth::user() instanceof MustVerifyEmail
             || (Auth::user() instanceof MustVerifyEmail && Auth::user()->hasVerifiedEmail());
+        /* @end-email-verification */
+
+        return $showDeleteUser;
     }
 }

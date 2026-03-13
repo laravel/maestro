@@ -88,10 +88,7 @@
             <DialogFooter>
                 <DialogClose asChild>
                     {#snippet children(props)}
-                        <Button
-                            variant="secondary"
-                            onclick={props.onClick}
-                        >
+                        <Button variant="secondary" onclick={props.onClick}>
                             Cancel
                         </Button>
                     {/snippet}

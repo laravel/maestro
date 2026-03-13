@@ -43,8 +43,8 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
                 <KeyRound v-else class="h-4 w-4" />
                 {{
                     isLoading
-                        ? props.loadingLabel ?? 'Authenticating...'
-                        : props.label ?? 'Sign in with passkey'
+                        ? (props.loadingLabel ?? 'Authenticating...')
+                        : (props.label ?? 'Sign in with passkey')
                 }}
             </Button>
 
