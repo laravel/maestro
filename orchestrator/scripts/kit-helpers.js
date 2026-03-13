@@ -13,7 +13,7 @@ const FRAMEWORK_FLAGS = ['--livewire', '--react', '--svelte', '--vue'];
 /**
  * All recognized variant flags.
  */
-const VARIANT_FLAGS = ['--blank', '--fortify', '--workos', '--components'];
+const VARIANT_FLAGS = ['--blank', '--fortify', '--workos', '--components', '--teams'];
 
 /**
  * Resolved directory paths shared across scripts.

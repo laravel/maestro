@@ -28,12 +28,14 @@ const variants = [
         key: 'react-teams',
         display: 'React Teams (Fortify)',
         framework: 'react',
+        variant: 'teams',
         buildArgs: ['build', '--no-interaction', '--kit=React', '--teams'],
     },
     {
         key: 'react-workos-teams',
         display: 'React Teams (WorkOS)',
         framework: 'react',
+        variant: 'teams',
         buildArgs: ['build', '--no-interaction', '--kit=React', '--workos', '--teams'],
     },
     {
@@ -61,12 +63,14 @@ const variants = [
         key: 'svelte-teams',
         display: 'Svelte Teams (Fortify)',
         framework: 'svelte',
+        variant: 'teams',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--teams'],
     },
     {
         key: 'svelte-workos-teams',
         display: 'Svelte Teams (WorkOS)',
         framework: 'svelte',
+        variant: 'teams',
         buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--workos', '--teams'],
     },
     {
@@ -94,12 +98,14 @@ const variants = [
         key: 'vue-teams',
         display: 'Vue Teams (Fortify)',
         framework: 'vue',
+        variant: 'teams',
         buildArgs: ['build', '--no-interaction', '--kit=Vue', '--teams'],
     },
     {
         key: 'vue-workos-teams',
         display: 'Vue Teams (WorkOS)',
         framework: 'vue',
+        variant: 'teams',
         buildArgs: ['build', '--no-interaction', '--kit=Vue', '--workos', '--teams'],
     },
     {
@@ -134,12 +140,14 @@ const variants = [
         key: 'livewire-teams',
         display: 'Livewire Teams (Fortify)',
         framework: 'livewire',
+        variant: 'teams',
         buildArgs: ['build', '--no-interaction', '--kit=Livewire', '--teams'],
     },
     {
         key: 'livewire-workos-teams',
         display: 'Livewire Teams (WorkOS)',
         framework: 'livewire',
+        variant: 'teams',
         buildArgs: ['build', '--no-interaction', '--kit=Livewire', '--workos', '--teams'],
     },
 ];

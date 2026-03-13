@@ -38,7 +38,7 @@ All commands below run from the `orchestrator/` directory unless noted otherwise
 ### Selective Execution
 
 Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.
-Pass `--blank`, `--fortify`, `--workos`, and/or `--components` to target specific variants.
+Pass `--blank`, `--fortify`, `--workos`, `--components`, and/or `--teams` to target specific variants.
 Combine both to narrow down exactly which kit variants to run:
 
 ```bash
