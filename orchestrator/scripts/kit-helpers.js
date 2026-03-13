@@ -11,6 +11,11 @@ import { spawn } from 'child_process';
 const FRAMEWORK_FLAGS = ['--livewire', '--react', '--svelte', '--vue'];
 
 /**
+ * All recognized variant flags.
+ */
+const VARIANT_FLAGS = ['--blank', '--fortify', '--workos', '--components'];
+
+/**
  * Resolved directory paths shared across scripts.
  */
 const __filename = fileURLToPath(import.meta.url);
@@ -47,11 +52,12 @@ export function log(message, color = 'reset') {
  * Exits with a non-zero code if any unrecognized --* flag is found.
  */
 export function parseFrameworkFlags(argv) {
-    const unknownFlags = argv.filter(arg => arg.startsWith('--') && !FRAMEWORK_FLAGS.includes(arg));
+    const allFlags = [...FRAMEWORK_FLAGS, ...VARIANT_FLAGS];
+    const unknownFlags = argv.filter(arg => arg.startsWith('--') && !allFlags.includes(arg));
 
     if (unknownFlags.length > 0) {
         log(`Unknown flag(s): ${unknownFlags.join(', ')}`, 'red');
-        log(`Recognized flags: ${FRAMEWORK_FLAGS.join(', ')}`, 'yellow');
+        log(`Recognized flags: ${allFlags.join(', ')}`, 'yellow');
         process.exit(1);
     }
 
@@ -63,16 +69,35 @@ export function parseFrameworkFlags(argv) {
 }
 
 /**
- * Filter an array of variant objects by the selected frameworks.
- * Each variant must have a `framework` property (e.g. 'react', 'livewire').
- * When `selected` is null every variant passes.
+ * Parse process.argv (after slice(2)) and return the set of selected variant types.
+ * Returns null when no variant flags are present (means "run all variants").
  */
-export function filterVariants(variants, selected) {
-    if (!selected) {
-        return variants;
+export function parseVariantFlags(argv) {
+    const selected = VARIANT_FLAGS
+        .filter(flag => argv.includes(flag))
+        .map(flag => flag.replace('--', ''));
+
+    return selected.length > 0 ? new Set(selected) : null;
+}
+
+/**
+ * Filter an array of variant objects by the selected frameworks and variant types.
+ * Each variant must have a `framework` property (e.g. 'react', 'livewire')
+ * and a `variant` property (e.g. 'blank', 'fortify', 'workos', 'components').
+ * When a selection is null every variant passes for that dimension.
+ */
+export function filterVariants(variants, selectedFrameworks, selectedVariants = null) {
+    let filtered = variants;
+
+    if (selectedFrameworks) {
+        filtered = filtered.filter(v => selectedFrameworks.has(v.framework));
     }
 
-    return variants.filter(v => selected.has(v.framework));
+    if (selectedVariants) {
+        filtered = filtered.filter(v => selectedVariants.has(v.variant));
+    }
+
+    return filtered;
 }
 
 /**
@@ -225,16 +250,28 @@ export function removeBuildDirectory() {
  * @param {string}   [options.successVerb]   Verb for the per-variant success line (default 'Passed').
  */
 export async function runMatrix({ scriptLabel, allVariants, runVariant, successVerb = 'Passed' }) {
-    const selected = parseFrameworkFlags(process.argv.slice(2));
-    const active = filterVariants(allVariants, selected);
+    const argv = process.argv.slice(2);
+    const selectedFrameworks = parseFrameworkFlags(argv);
+    const selectedVariants = parseVariantFlags(argv);
+    const active = filterVariants(allVariants, selectedFrameworks, selectedVariants);
 
     if (active.length === 0) {
-        log('No variants matched the selected kit flags.', 'yellow');
+        log('No variants matched the selected flags.', 'yellow');
         process.exit(0);
     }
 
-    if (selected) {
-        log(`Kits selected: ${[...selected].join(', ')}`, 'blue');
+    const labels = [];
+
+    if (selectedFrameworks) {
+        labels.push(`kits: ${[...selectedFrameworks].join(', ')}`);
+    }
+
+    if (selectedVariants) {
+        labels.push(`variants: ${[...selectedVariants].join(', ')}`);
+    }
+
+    if (labels.length > 0) {
+        log(`Filters — ${labels.join(' | ')}`, 'blue');
     }
 
     const total = active.length;
