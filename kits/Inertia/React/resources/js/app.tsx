@@ -1,5 +1,5 @@
 import { createInertiaApp } from '@inertiajs/react';
-import { createRoot } from 'react-dom/client';
+import { hydrateRoot } from 'react-dom/client';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import '../css/app.css';
 import { initializeTheme } from '@/hooks/use-appearance';
@@ -10,11 +10,14 @@ createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     strictMode: true,
     setup({ el, App, props }) {
-        createRoot(el!).render(
-            <TooltipProvider delayDuration={0}>
-                <App {...props} />
-            </TooltipProvider>,
-        );
+        if (el) {
+            hydrateRoot(
+                el,
+                <TooltipProvider delayDuration={0}>
+                    <App {...props} />
+                </TooltipProvider>,
+            );
+        }
     },
     progress: {
         color: '#4B5563',
