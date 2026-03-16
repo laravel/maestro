@@ -4,7 +4,7 @@
     import { toUrl } from '@/lib/utils';
     import { dashboard, login } from '@/routes';
 
-    const auth = $derived($page.props.auth);
+    const auth = $derived(page.props.auth);
 </script>
 
 <AppHead title="Welcome">

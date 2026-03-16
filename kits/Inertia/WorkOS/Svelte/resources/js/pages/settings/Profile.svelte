@@ -20,7 +20,7 @@
         },
     ];
 
-    const user = $derived($page.props.auth.user);
+    const user = $derived(page.props.auth.user);
 </script>
 
 <AppHead title="Profile settings" />
