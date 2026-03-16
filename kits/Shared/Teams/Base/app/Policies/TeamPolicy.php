@@ -40,14 +40,6 @@ class TeamPolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Team $team): bool
-    {
-        return ! $team->is_personal && $user->hasTeamPermission($team, 'team:delete');
-    }
-
-    /**
      * Determine whether the user can add a member to the team.
      */
     public function addMember(User $user, Team $team): bool
@@ -85,5 +77,13 @@ class TeamPolicy
     public function cancelInvitation(User $user, Team $team): bool
     {
         return $user->hasTeamPermission($team, 'invitation:cancel');
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     */
+    public function delete(User $user, Team $team): bool
+    {
+        return ! $team->is_personal && $user->hasTeamPermission($team, 'team:delete');
     }
 }
