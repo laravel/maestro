@@ -1,5 +1,5 @@
 import { createInertiaApp } from '@inertiajs/react';
-import { hydrateRoot } from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import '../css/app.css';
 import { initializeTheme } from '@/hooks/use-appearance';
@@ -11,8 +11,7 @@ createInertiaApp({
     strictMode: true,
     setup({ el, App, props }) {
         if (el) {
-            hydrateRoot(
-                el,
+            createRoot(el).render(
                 <TooltipProvider delayDuration={0}>
                     <App {...props} />
                 </TooltipProvider>,
