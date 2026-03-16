@@ -277,8 +277,9 @@
                                     </InputOTPGroup>
                                 </InputOTP>
                                 <InputError
-                                    message={formErrors
-                                        ?.confirmTwoFactorAuthentication?.code}
+                                    message={formErrors?.[
+                                        'confirmTwoFactorAuthentication.code'
+                                    ]}
                                 />
                             </div>
 
