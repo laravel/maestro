@@ -39,7 +39,7 @@
         TooltipTrigger,
     } from '@/components/ui/tooltip';
     import UserMenuContent from '@/components/UserMenuContent.svelte';
-    import { currentUrlState } from '@/lib/currentUrl';
+    import { currentUrlState } from '@/lib/currentUrl.svelte';
     import { getInitials } from '@/lib/initials';
     import { toUrl } from '@/lib/utils';
     import { dashboard } from '@/routes';
@@ -51,7 +51,7 @@
         breadcrumbs?: BreadcrumbItem[];
     } = $props();
 
-    const auth = $derived($page.props.auth);
+    const auth = $derived(page.props.auth);
     const { currentUrl, isCurrentUrl, whenCurrentUrl } = currentUrlState();
 
     const activeItemStyles =
@@ -114,7 +114,7 @@
                                         href={toUrl(item.href)}
                                         class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent {whenCurrentUrl(
                                             item.href,
-                                            $currentUrl,
+                                            currentUrl,
                                             activeItemStyles,
                                             '',
                                         ) ?? ''}"
@@ -163,7 +163,7 @@
                                 <Link
                                     class="{navigationMenuTriggerStyle()} {whenCurrentUrl(
                                         item.href,
-                                        $currentUrl,
+                                        currentUrl,
                                         activeItemStyles,
                                         '',
                                     ) ?? ''} h-9 cursor-pointer px-4"
@@ -174,7 +174,7 @@
                                     {/if}
                                     {item.title}
                                 </Link>
-                                {#if isCurrentUrl(item.href, $currentUrl)}
+                                {#if isCurrentUrl(item.href, currentUrl)}
                                     <div
                                         class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"
                                     ></div>

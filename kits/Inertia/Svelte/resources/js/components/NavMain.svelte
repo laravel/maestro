@@ -7,7 +7,7 @@
         SidebarMenuButton,
         SidebarMenuItem,
     } from '@/components/ui/sidebar';
-    import { currentUrlState } from '@/lib/currentUrl';
+    import { currentUrlState } from '@/lib/currentUrl.svelte';
     import { toUrl } from '@/lib/utils';
     import type { NavItem } from '@/types';
 
@@ -27,7 +27,7 @@
             <SidebarMenuItem>
                 <SidebarMenuButton
                     asChild
-                    isActive={isCurrentUrl(item.href, $currentUrl)}
+                    isActive={isCurrentUrl(item.href, currentUrl)}
                     tooltip={item.title}
                 >
                     {#snippet children(props)}

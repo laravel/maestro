@@ -10,7 +10,7 @@
         canRegister: boolean;
     } = $props();
 
-    const auth = $derived($page.props.auth);
+    const auth = $derived(page.props.auth);
 </script>
 
 <AppHead title="Welcome">
