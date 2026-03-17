@@ -1,17 +1,18 @@
+import { useLayoutProps } from '@inertiajs/react';
 import AuthLayoutTemplate from '@/layouts/auth/auth-simple-layout';
 
 export default function AuthLayout({
     children,
-    title,
-    description,
-    ...props
 }: {
     children: React.ReactNode;
-    title: string;
-    description: string;
 }) {
+    const { title, description } = useLayoutProps({
+        title: '',
+        description: '',
+    });
+
     return (
-        <AuthLayoutTemplate title={title} description={description} {...props}>
+        <AuthLayoutTemplate title={title} description={description}>
             {children}
         </AuthLayoutTemplate>
     );

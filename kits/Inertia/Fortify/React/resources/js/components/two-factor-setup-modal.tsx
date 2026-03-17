@@ -306,7 +306,10 @@ export default function TwoFactorSetupModal({
     }, [requiresConfirmation, handleClose]);
 
     const fetchSetupDataRef = useRef(fetchSetupData);
-    fetchSetupDataRef.current = fetchSetupData;
+
+    useEffect(() => {
+        fetchSetupDataRef.current = fetchSetupData;
+    }, [fetchSetupData]);
 
     useEffect(() => {
         if (isOpen && !qrCodeSvg) {
