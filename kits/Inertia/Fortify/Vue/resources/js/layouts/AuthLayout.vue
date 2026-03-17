@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import { useLayoutProps } from '@inertiajs/vue3';
 import AuthLayout from '@/layouts/auth/AuthSimpleLayout.vue';
 
-defineProps<{
-    title?: string;
-    description?: string;
-}>();
+const layout = useLayoutProps({
+    title: '',
+    description: '',
+});
 </script>
 
 <template>
-    <AuthLayout :title="title" :description="description">
+    <AuthLayout :title="layout.title" :description="layout.description">
         <slot />
     </AuthLayout>
 </template>
