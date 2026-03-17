@@ -242,23 +242,25 @@
                                 <Avatar
                                     class="size-8 overflow-hidden rounded-full"
                                 >
-                                    {#if auth.user.avatar}
+                                    {#if auth.user?.avatar}
                                         <AvatarImage
                                             src={auth.user.avatar}
-                                            alt={auth.user.name}
+                                            alt={auth.user?.name}
                                         />
                                     {/if}
                                     <AvatarFallback
                                         class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {getInitials(auth.user?.name)}
+                                        {getInitials(auth.user?.name ?? '')}
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
                         {/snippet}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-56">
-                        <UserMenuContent user={auth.user} />
+                        {#if auth.user}
+                            <UserMenuContent user={auth.user} />
+                        {/if}
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
