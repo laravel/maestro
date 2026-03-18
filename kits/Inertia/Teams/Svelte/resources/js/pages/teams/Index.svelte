@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { Link, router } from '@inertiajs/svelte';
+    import { Link } from '@inertiajs/svelte';
     import Eye from 'lucide-svelte/icons/eye';
     import Pencil from 'lucide-svelte/icons/pencil';
     import Plus from 'lucide-svelte/icons/plus';
-    import Star from 'lucide-svelte/icons/star';
     import AppHead from '@/components/AppHead.svelte';
     import CreateTeamModal from '@/components/CreateTeamModal.svelte';
     import Heading from '@/components/Heading.svelte';
@@ -17,7 +16,7 @@
     } from '@/components/ui/tooltip';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
-    import { edit, index, switchMethod } from '@/routes/teams';
+    import { edit, index } from '@/routes/teams';
     import type { BreadcrumbItem, Team } from '@/types';
 
     let {
@@ -32,8 +31,6 @@
             href: index().url,
         },
     ];
-
-    const switchTeam = (team: Team) => router.visit(switchMethod(team.slug));
 
     const callClickHandler = (handler: unknown, event: MouseEvent) => {
         if (typeof handler === 'function') {
@@ -85,13 +82,6 @@
                                 <div class="flex items-center gap-2">
                                     <span class="font-medium">{team.name}</span>
 
-                                    {#if team.isCurrent}
-                                        <Badge
-                                            class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                                        >
-                                            Current
-                                        </Badge>
-                                    {/if}
                                     {#if team.isPersonal}
                                         <Badge variant="secondary">
                                             Personal
@@ -107,32 +97,6 @@
 
                         <TooltipProvider delayDuration={0}>
                             <div class="flex items-center gap-2">
-                                {#if !team.isCurrent}
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            {#snippet child({ props })}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    {...props}
-                                                    onclick={(event) => {
-                                                        callClickHandler(
-                                                            props.onClick,
-                                                            event,
-                                                        );
-                                                        switchTeam(team);
-                                                    }}
-                                                >
-                                                    <Star class="h-4 w-4" />
-                                                </Button>
-                                            {/snippet}
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Set as current team</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                {/if}
-
                                 {#if team.role === 'member'}
                                     <Tooltip>
                                         <TooltipTrigger>

@@ -1,5 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Eye, Pencil, Plus, Star } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { Eye, Pencil, Plus } from 'lucide-react';
 import CreateTeamModal from '@/components/create-team-modal';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { edit, index, switchMethod } from '@/routes/teams';
+import { edit, index } from '@/routes/teams';
 import type { BreadcrumbItem, Team } from '@/types';
 
 type Props = {
@@ -25,8 +25,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: index().url,
     },
 ];
-
-const switchTeam = (team: Team) => router.visit(switchMethod(team.slug));
 
 export default function TeamsIndex({ teams }: Props) {
     return (
@@ -63,11 +61,6 @@ export default function TeamsIndex({ teams }: Props) {
                                             <span className="font-medium">
                                                 {team.name}
                                             </span>
-                                            {team.isCurrent ? (
-                                                <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                                                    Current
-                                                </Badge>
-                                            ) : null}
                                             {team.isPersonal ? (
                                                 <Badge variant="secondary">
                                                     Personal
@@ -82,25 +75,6 @@ export default function TeamsIndex({ teams }: Props) {
 
                                 <TooltipProvider>
                                     <div className="flex items-center gap-2">
-                                        {!team.isCurrent ? (
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() =>
-                                                            switchTeam(team)
-                                                        }
-                                                    >
-                                                        <Star className="h-4 w-4" />
-                                                    </Button>
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>Set as current team</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        ) : null}
-
                                         {team.role === 'member' ? (
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
