@@ -23,15 +23,23 @@ jobs:
           - Livewire Kit
           - Livewire Kit (Components)
           - Livewire Kit (WorkOS)
+          - Livewire Kit (Teams)
+          - Livewire Kit (WorkOS Teams)
           - React Kit (Blank)
           - React Kit
           - React Kit (WorkOS)
+          - React Kit (Teams)
+          - React Kit (WorkOS Teams)
           - Svelte Kit (Blank)
           - Svelte Kit
           - Svelte Kit (WorkOS)
+          - Svelte Kit (Teams)
+          - Svelte Kit (WorkOS Teams)
           - Vue Kit (Blank)
           - Vue Kit
           - Vue Kit (WorkOS)
+          - Vue Kit (Teams)
+          - Vue Kit (WorkOS Teams)
         include:
           # Livewire variants
           - name: Livewire Kit (Blank)
