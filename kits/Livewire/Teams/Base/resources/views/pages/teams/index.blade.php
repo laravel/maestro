@@ -1,7 +1,6 @@
 <?php
 
 use App\Actions\Teams\CreateTeam;
-use App\Models\Team;
 use App\Rules\TeamName;
 use App\Support\UserTeam;
 use Illuminate\Support\Collection;
@@ -25,17 +24,6 @@ new #[Title('Teams')] class extends Component {
         $this->reset('name');
 
         $this->redirectRoute('teams.edit', ['team' => $team->slug], navigate: true);
-    }
-
-    public function switchTeam(string $team): void
-    {
-        $team = Team::where('slug', $team)->firstOrFail();
-
-        abort_unless(Auth::user()->belongsToTeam($team), 403);
-
-        Auth::user()->switchTeam($team);
-
-        $this->redirectRoute('teams.index', navigate: true);
     }
 
     /**
@@ -68,9 +56,6 @@ new #[Title('Teams')] class extends Component {
                         <div>
                             <div class="flex items-center gap-2">
                                 <span class="font-medium">{{ $team->name }}</span>
-                                @if ($team->isCurrent)
-                                    <flux:badge color="green">{{ __('Current') }}</flux:badge>
-                                @endif
                                 @if ($team->isPersonal)
                                     <flux:badge color="zinc">{{ __('Personal') }}</flux:badge>
                                 @endif
@@ -80,12 +65,6 @@ new #[Title('Teams')] class extends Component {
                     </div>
 
                     <div class="flex items-center gap-1">
-                        @if (! $team->isCurrent)
-                            <flux:tooltip :content="__('Set as current team')">
-                                <flux:button variant="ghost" size="sm" icon="star" wire:click="switchTeam('{{ $team->slug }}')" />
-                            </flux:tooltip>
-                        @endif
-
                         <flux:tooltip :content="$team->role === 'member' ? __('View team') : __('Edit team')">
                             <flux:button
                                 variant="ghost"

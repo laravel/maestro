@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
-import { Eye, Pencil, Plus, Star } from 'lucide-vue-next';
+import { Head, Link } from '@inertiajs/vue3';
+import { Eye, Pencil, Plus } from 'lucide-vue-next';
 import CreateTeamModal from '@/components/CreateTeamModal.vue';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit, index, switchMethod } from '@/routes/teams';
+import { edit, index } from '@/routes/teams';
 import type { BreadcrumbItem, Team } from '@/types';
 
 type Props = {
@@ -28,8 +28,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: index().url,
     },
 ];
-
-const switchTeam = (team: Team) => router.visit(switchMethod(team.slug));
 </script>
 
 <template>
@@ -65,12 +63,6 @@ const switchTeam = (team: Team) => router.visit(switchMethod(team.slug));
                                         team.name
                                     }}</span>
                                     <Badge
-                                        v-if="team.isCurrent"
-                                        class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                                    >
-                                        Current
-                                    </Badge>
-                                    <Badge
                                         v-if="team.isPersonal"
                                         variant="secondary"
                                     >
@@ -85,21 +77,6 @@ const switchTeam = (team: Team) => router.visit(switchMethod(team.slug));
 
                         <TooltipProvider>
                             <div class="flex items-center gap-2">
-                                <Tooltip v-if="!team.isCurrent">
-                                    <TooltipTrigger as-child>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            @click="switchTeam(team)"
-                                        >
-                                            <Star class="h-4 w-4" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Set as current team</p>
-                                    </TooltipContent>
-                                </Tooltip>
-
                                 <Tooltip v-if="team.role === 'member'">
                                     <TooltipTrigger as-child>
                                         <Button

@@ -284,34 +284,6 @@ class TeamTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_users_can_switch_teams(): void
-    {
-        $user = User::factory()->create();
-        $team = Team::factory()->create();
-
-        $team->members()->attach($user, ['role' => TeamRole::Member->value]);
-
-        $this->actingAs($user);
-
-        Livewire::test('pages::teams.index')
-            ->call('switchTeam', $team->slug)
-            ->assertHasNoErrors();
-
-        $this->assertEquals($team->id, $user->fresh()->current_team_id);
-    }
-
-    public function test_users_cannot_switch_to_team_they_dont_belong_to(): void
-    {
-        $user = User::factory()->create();
-        $team = Team::factory()->create();
-
-        $this->actingAs($user);
-
-        Livewire::test('pages::teams.index')
-            ->call('switchTeam', $team->slug)
-            ->assertForbidden();
-    }
-
     public function test_guests_cannot_access_teams(): void
     {
         $response = $this->get(route('teams.index'));
