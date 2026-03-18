@@ -1,10 +1,9 @@
 <script lang="ts">
     import { Link, router } from '@inertiajs/svelte';
-    import CheckCircle from 'lucide-svelte/icons/check-circle';
-    import Circle from 'lucide-svelte/icons/circle';
     import Eye from 'lucide-svelte/icons/eye';
     import Pencil from 'lucide-svelte/icons/pencil';
     import Plus from 'lucide-svelte/icons/plus';
+    import Star from 'lucide-svelte/icons/star';
     import AppHead from '@/components/AppHead.svelte';
     import CreateTeamModal from '@/components/CreateTeamModal.svelte';
     import Heading from '@/components/Heading.svelte';
@@ -79,15 +78,20 @@
             <div class="space-y-3">
                 {#each teams as team (team.id)}
                     <div
-                        class="flex items-center justify-between rounded-lg border p-4 {team.isCurrent
-                            ? 'border-ring/60'
-                            : ''}"
+                        class="flex items-center justify-between rounded-lg border p-4"
                     >
                         <div class="flex items-center gap-4">
                             <div>
                                 <div class="flex items-center gap-2">
                                     <span class="font-medium">{team.name}</span>
 
+                                    {#if team.isCurrent}
+                                        <Badge
+                                            class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                                        >
+                                            Current
+                                        </Badge>
+                                    {/if}
                                     {#if team.isPersonal}
                                         <Badge variant="secondary">
                                             Personal
@@ -103,26 +107,7 @@
 
                         <TooltipProvider delayDuration={0}>
                             <div class="flex items-center gap-2">
-                                {#if team.isCurrent}
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            {#snippet child({ props })}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    {...props}
-                                                >
-                                                    <CheckCircle
-                                                        class="h-4 w-4"
-                                                    />
-                                                </Button>
-                                            {/snippet}
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Current team</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                {:else}
+                                {#if !team.isCurrent}
                                     <Tooltip>
                                         <TooltipTrigger>
                                             {#snippet child({ props })}
@@ -138,9 +123,7 @@
                                                         switchTeam(team);
                                                     }}
                                                 >
-                                                    <Circle
-                                                        class="h-4 w-4 text-muted-foreground"
-                                                    />
+                                                    <Star class="h-4 w-4" />
                                                 </Button>
                                             {/snippet}
                                         </TooltipTrigger>
