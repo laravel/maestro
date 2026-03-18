@@ -76,7 +76,7 @@ jobs:
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('build/package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('orchestrator/composer.lock') }}
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'

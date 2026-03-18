@@ -11,12 +11,27 @@ permissions:
 
 jobs:
   tests:
-    name: ${{ matrix.name }}
+    name: ${{ matrix.name }} (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
+        php: ['8.3', '8.4', '8.5']
+        name:
+          - Livewire Kit (Blank)
+          - Livewire Kit
+          - Livewire Kit (Components)
+          - Livewire Kit (WorkOS)
+          - React Kit (Blank)
+          - React Kit
+          - React Kit (WorkOS)
+          - Svelte Kit (Blank)
+          - Svelte Kit
+          - Svelte Kit (WorkOS)
+          - Vue Kit (Blank)
+          - Vue Kit
+          - Vue Kit (WorkOS)
         include:
           # Livewire variants
           - name: Livewire Kit (Blank)
@@ -104,7 +119,7 @@ jobs:
       - name: Checkout Maestro
         uses: actions/checkout@v6
 
-      - name: Setup PHP
+      - name: Setup PHP for Orchestrator
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
@@ -127,6 +142,13 @@ jobs:
 
       - name: Rename Build
         run: mv build ${{ matrix.path }}
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
 
       - name: Setup Kit
         working-directory: ${{ matrix.path }}
