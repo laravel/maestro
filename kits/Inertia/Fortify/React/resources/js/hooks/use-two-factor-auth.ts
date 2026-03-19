@@ -1,5 +1,5 @@
 import { useHttp } from '@inertiajs/react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
 
 export type UseTwoFactorAuthReturn = {
@@ -22,7 +22,10 @@ export const OTP_MAX_LENGTH = 6;
 export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const http = useHttp();
     const httpRef = useRef(http);
-    httpRef.current = http;
+
+    useEffect(() => {
+        httpRef.current = http;
+    }, [http]);
 
     const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
     const [manualSetupKey, setManualSetupKey] = useState<string | null>(null);
@@ -64,18 +67,9 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
     const fetchSetupKey = useCallback(async (): Promise<void> => {
         try {
-            const payload = (await httpRef.current.submit(secretKey())) as
-                | { secretKey?: string; secret_key?: string }
-                | string;
-
-            const key =
-                typeof payload === 'string'
-                    ? payload
-                    : (payload.secretKey ?? payload.secret_key ?? null);
-
-            if (!key) {
-                throw new Error('Setup key not found in response');
-            }
+            const { secretKey: key } = (await httpRef.current.submit(
+                secretKey(),
+            )) as { secretKey: string };
 
             setManualSetupKey(key);
         } catch {

@@ -49,18 +49,9 @@ export function twoFactorAuthState(): TwoFactorAuthStateApi {
 
     const fetchSetupKey = async (): Promise<void> => {
         try {
-            const payload = (await http.submit(secretKey())) as
-                | { secretKey?: string; secret_key?: string }
-                | string;
-
-            const key =
-                typeof payload === 'string'
-                    ? payload
-                    : (payload.secretKey ?? payload.secret_key ?? null);
-
-            if (!key) {
-                throw new Error('Setup key not found in response');
-            }
+            const { secretKey: key } = (await http.submit(secretKey())) as {
+                secretKey: string;
+            };
 
             state.manualSetupKey = key;
         } catch {
