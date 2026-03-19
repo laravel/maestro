@@ -5,13 +5,19 @@ module.exports = async ({ github, context, core }) => {
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const findMergedPr = async () => {
-        const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            commit_sha: context.sha,
-        });
+        try {
+            const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+            });
 
-        return prs.find((pr) => pr.merged_at);
+            return prs.find((pr) => pr.merged_at) || null;
+        } catch (error) {
+            core.warning(`API request failed: ${error.message}`);
+
+            return null;
+        }
     };
 
     let mergedPr = null;
