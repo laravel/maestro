@@ -32,7 +32,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
     const fetchQrCode = async (): Promise<void> => {
         try {
-            const { svg } = (await http.get(qrCode.url())) as {
+            const { svg } = (await http.submit(qrCode())) as {
                 svg: string;
                 url: string;
             };
@@ -46,7 +46,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
     const fetchSetupKey = async (): Promise<void> => {
         try {
-            const { secretKey: key } = (await http.get(secretKey.url())) as {
+            const { secretKey: key } = (await http.submit(secretKey())) as {
                 secretKey: string;
             };
 
@@ -76,8 +76,8 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const fetchRecoveryCodes = async (): Promise<void> => {
         try {
             clearErrors();
-            recoveryCodesList.value = (await http.get(
-                recoveryCodes.url(),
+            recoveryCodesList.value = (await http.submit(
+                recoveryCodes(),
             )) as string[];
         } catch {
             errors.value.push('Failed to fetch recovery codes');

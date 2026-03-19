@@ -50,7 +50,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
     const fetchQrCode = useCallback(async (): Promise<void> => {
         try {
-            const { svg } = (await httpRef.current.get(qrCode.url())) as {
+            const { svg } = (await httpRef.current.submit(qrCode())) as {
                 svg: string;
                 url: string;
             };
@@ -64,7 +64,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
     const fetchSetupKey = useCallback(async (): Promise<void> => {
         try {
-            const payload = (await httpRef.current.get(secretKey.url())) as
+            const payload = (await httpRef.current.submit(secretKey())) as
                 | { secretKey?: string; secret_key?: string }
                 | string;
 
@@ -87,8 +87,8 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const fetchRecoveryCodes = useCallback(async (): Promise<void> => {
         try {
             setErrors([]);
-            const codes = (await httpRef.current.get(
-                recoveryCodes.url(),
+            const codes = (await httpRef.current.submit(
+                recoveryCodes(),
             )) as string[];
             setRecoveryCodesList(codes);
         } catch {

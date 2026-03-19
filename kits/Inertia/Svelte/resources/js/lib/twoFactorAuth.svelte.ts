@@ -35,7 +35,7 @@ export function twoFactorAuthState(): TwoFactorAuthStateApi {
 
     const fetchQrCode = async (): Promise<void> => {
         try {
-            const { svg } = (await http.get(qrCode.url())) as {
+            const { svg } = (await http.submit(qrCode())) as {
                 svg: string;
                 url: string;
             };
@@ -49,7 +49,7 @@ export function twoFactorAuthState(): TwoFactorAuthStateApi {
 
     const fetchSetupKey = async (): Promise<void> => {
         try {
-            const payload = (await http.get(secretKey.url())) as
+            const payload = (await http.submit(secretKey())) as
                 | { secretKey?: string; secret_key?: string }
                 | string;
 
@@ -88,8 +88,8 @@ export function twoFactorAuthState(): TwoFactorAuthStateApi {
     const fetchRecoveryCodes = async (): Promise<void> => {
         try {
             clearErrors();
-            state.recoveryCodesList = (await http.get(
-                recoveryCodes.url(),
+            state.recoveryCodesList = (await http.submit(
+                recoveryCodes(),
             )) as string[];
         } catch {
             state.errors = [...state.errors, 'Failed to fetch recovery codes'];
