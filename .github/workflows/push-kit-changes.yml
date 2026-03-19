@@ -56,7 +56,6 @@ jobs:
             repository: laravel/livewire-starter-kit
             path: livewire-starter-kit-teams
             branch: teams
-            pr_branch: maestro-update-teams
             node: false
 
           - name: Livewire Kit (WorkOS Teams)
@@ -65,7 +64,6 @@ jobs:
             repository: laravel/livewire-starter-kit
             path: livewire-starter-kit-workos-teams
             branch: workos-teams
-            pr_branch: maestro-update-workos-teams
             node: false
 
           # React variants
@@ -99,7 +97,6 @@ jobs:
             repository: laravel/react-starter-kit
             path: react-starter-kit-teams
             branch: teams
-            pr_branch: maestro-update-teams
             node: true
 
           - name: React Kit (WorkOS Teams)
@@ -108,7 +105,6 @@ jobs:
             repository: laravel/react-starter-kit
             path: react-starter-kit-workos-teams
             branch: workos-teams
-            pr_branch: maestro-update-workos-teams
             node: true
 
           # Svelte variants
@@ -142,7 +138,6 @@ jobs:
             repository: laravel/svelte-starter-kit
             path: svelte-starter-kit-teams
             branch: teams
-            pr_branch: maestro-update-teams
             node: true
 
           - name: Svelte Kit (WorkOS Teams)
@@ -151,7 +146,6 @@ jobs:
             repository: laravel/svelte-starter-kit
             path: svelte-starter-kit-workos-teams
             branch: workos-teams
-            pr_branch: maestro-update-workos-teams
             node: true
 
           # Vue variants
@@ -185,7 +179,6 @@ jobs:
             repository: laravel/vue-starter-kit
             path: vue-starter-kit-teams
             branch: teams
-            pr_branch: maestro-update-teams
             node: true
 
           - name: Vue Kit (WorkOS Teams)
@@ -194,7 +187,6 @@ jobs:
             repository: laravel/vue-starter-kit
             path: vue-starter-kit-workos-teams
             branch: workos-teams
-            pr_branch: maestro-update-workos-teams
             node: true
 
     steps:
