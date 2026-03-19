@@ -13,7 +13,6 @@ import { Label } from '@/components/ui/label';
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
 import { edit } from '@/routes/security';
 import { disable, enable } from '@/routes/two-factor';
-import type { BreadcrumbItem } from '@/types';
 
 type Props = {
     canManageTwoFactor?: boolean;
@@ -32,7 +31,7 @@ export default function Security({
                 title: 'Security settings',
                 href: edit(),
             },
-        ] as BreadcrumbItem[],
+        ],
     });
 
     const passwordInput = useRef<HTMLInputElement>(null);

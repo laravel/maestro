@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/profile';
-import type { BreadcrumbItem } from '@/types';
 
 export default function Profile() {
     setLayoutProps({
@@ -17,7 +16,7 @@ export default function Profile() {
                 title: 'Profile settings',
                 href: edit(),
             },
-        ] as BreadcrumbItem[],
+        ],
     });
 
     const { auth } = usePage().props;

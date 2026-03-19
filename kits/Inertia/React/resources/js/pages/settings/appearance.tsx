@@ -2,7 +2,6 @@ import { Head, setLayoutProps } from '@inertiajs/react';
 import AppearanceTabs from '@/components/appearance-tabs';
 import Heading from '@/components/heading';
 import { edit as editAppearance } from '@/routes/appearance';
-import type { BreadcrumbItem } from '@/types';
 
 export default function Appearance() {
     setLayoutProps({
@@ -11,7 +10,7 @@ export default function Appearance() {
                 title: 'Appearance settings',
                 href: editAppearance(),
             },
-        ] as BreadcrumbItem[],
+        ],
     });
 
     return (
