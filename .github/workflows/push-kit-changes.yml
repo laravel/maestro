@@ -1,4 +1,4 @@
-name: Build and Create PRs
+name: Build and Push Kit Changes
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
 
 jobs:
   build:
@@ -24,7 +23,6 @@ jobs:
             repository: laravel/blank-livewire-starter-kit
             path: blank-livewire-starter-kit
             branch: main
-            pr_branch: maestro-update
             node: false
 
           - name: Livewire Kit
@@ -33,7 +31,6 @@ jobs:
             repository: laravel/livewire-starter-kit
             path: livewire-starter-kit
             branch: main
-            pr_branch: maestro-update
             node: false
 
           - name: Livewire Kit (Components)
@@ -42,7 +39,6 @@ jobs:
             repository: laravel/livewire-starter-kit
             path: livewire-starter-kit-components
             branch: components
-            pr_branch: maestro-update-components
             node: false
 
           - name: Livewire Kit (WorkOS)
@@ -51,7 +47,6 @@ jobs:
             repository: laravel/livewire-starter-kit
             path: livewire-starter-kit-workos
             branch: workos
-            pr_branch: maestro-update-workos
             node: false
 
           # React variants
@@ -61,7 +56,6 @@ jobs:
             repository: laravel/blank-react-starter-kit
             path: blank-react-starter-kit
             branch: main
-            pr_branch: maestro-update
             node: true
 
           - name: React Kit
@@ -70,7 +64,6 @@ jobs:
             repository: laravel/react-starter-kit
             path: react-starter-kit
             branch: main
-            pr_branch: maestro-update
             node: true
 
           - name: React Kit (WorkOS)
@@ -79,7 +72,6 @@ jobs:
             repository: laravel/react-starter-kit
             path: react-starter-kit-workos
             branch: workos
-            pr_branch: maestro-update-workos
             node: true
 
           # Svelte variants
@@ -89,7 +81,6 @@ jobs:
             repository: laravel/blank-svelte-starter-kit
             path: blank-svelte-starter-kit
             branch: main
-            pr_branch: maestro-update
             node: true
 
           - name: Svelte Kit
@@ -98,7 +89,6 @@ jobs:
             repository: laravel/svelte-starter-kit
             path: svelte-starter-kit
             branch: main
-            pr_branch: maestro-update
             node: true
 
           - name: Svelte Kit (WorkOS)
@@ -107,7 +97,6 @@ jobs:
             repository: laravel/svelte-starter-kit
             path: svelte-starter-kit-workos
             branch: workos
-            pr_branch: maestro-update-workos
             node: true
 
           # Vue variants
@@ -117,7 +106,6 @@ jobs:
             repository: laravel/blank-vue-starter-kit
             path: blank-vue-starter-kit
             branch: main
-            pr_branch: maestro-update
             node: true
 
           - name: Vue Kit
@@ -126,7 +114,6 @@ jobs:
             repository: laravel/vue-starter-kit
             path: vue-starter-kit
             branch: main
-            pr_branch: maestro-update
             node: true
 
           - name: Vue Kit (WorkOS)
@@ -135,7 +122,6 @@ jobs:
             repository: laravel/vue-starter-kit
             path: vue-starter-kit-workos
             branch: workos
-            pr_branch: maestro-update-workos
             node: true
 
     steps:
@@ -150,7 +136,7 @@ jobs:
 
       - name: Setup Node.js
         if: matrix.node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
@@ -177,24 +163,11 @@ jobs:
           cp -r ../build/* .
           cp -r ../build/.[!.]* . 2>/dev/null || true
 
-      - name: Check for Changes
-        id: changes
-        working-directory: ${{ matrix.path }}
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "No changes detected, skipping PR creation."
-          fi
-
       - name: Remove Lock Files
-        if: steps.changes.outputs.has_changes == 'true'
         working-directory: ${{ matrix.path }}
         run: rm -f composer.lock package-lock.json
 
       - name: Discard Permission-Only Changes
-        if: steps.changes.outputs.has_changes == 'true'
         working-directory: ${{ matrix.path }}
         run: |
           git diff --diff-filter=M --name-only | while read file; do
@@ -204,29 +177,46 @@ jobs:
             fi
           done
 
+      - name: Check for Changes
+        id: changes
+        working-directory: ${{ matrix.path }}
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected, skipping push."
+          fi
+
       - name: Get Merged PR Information
         if: steps.changes.outputs.has_changes == 'true'
         id: pr-info
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const script = require('./.github/scripts/get-merged-pr-info.js');
             await script({ github, context, core });
 
-      - name: Create Pull Request
+      - name: Commit and Push Changes
         if: steps.changes.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v8
-        with:
-          path: ${{ matrix.path }}
-          token: ${{ secrets.STARTER_KIT_TOKEN }}
-          commit-message: |
-            ${{ steps.pr-info.outputs.title }}
+        working-directory: ${{ matrix.path }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-            ${{ steps.pr-info.outputs.found == 'true' && format('Co-authored-by: {0} <{1}>', steps.pr-info.outputs.author, steps.pr-info.outputs.author_email) || '' }}
-          title: ${{ steps.pr-info.outputs.title }}
-          body: |
-            This PR was automatically generated by Maestro.
+          git add -A
 
-            ${{ steps.pr-info.outputs.found == 'true' && format('**Source PR:** {0} by [@{1}]({2})', steps.pr-info.outputs.url, steps.pr-info.outputs.author, steps.pr-info.outputs.author_url) || format('**Triggered by commit:** {0}', github.sha) }}
-          branch: ${{ matrix.pr_branch }}
-          base: ${{ matrix.branch }}
+          COMMIT_MSG="${{ steps.pr-info.outputs.title }}"
+          CO_AUTHOR=""
+
+          if [[ "${{ steps.pr-info.outputs.found }}" == "true" ]]; then
+            CO_AUTHOR="Co-authored-by: ${{ steps.pr-info.outputs.author }} <${{ steps.pr-info.outputs.author_email }}>"
+          fi
+
+          if [[ -n "$CO_AUTHOR" ]]; then
+            git commit -m "$COMMIT_MSG" -m "$CO_AUTHOR"
+          else
+            git commit -m "$COMMIT_MSG"
+          fi
+
+          git push origin ${{ matrix.branch }}
