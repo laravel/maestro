@@ -60,7 +60,7 @@ new class extends Component {
     }
 
     /**
-     * @return Collection<int, UserTeam>
+     * @return Collection<int, array{id: int, name: string, slug: string, isPersonal: bool, role: ?string, roleLabel: ?string, isCurrent: bool}>
      */
     public function getOtherTeamsProperty(): Collection
     {

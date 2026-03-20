@@ -3,7 +3,6 @@
 use App\Actions\Teams\CreateTeam;
 use App\Models\Team;
 use App\Rules\TeamName;
-use App\Support\UserTeam;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -23,7 +22,7 @@ new class extends Component {
     }
 
     /**
-     * @return Collection<int, UserTeam>
+     * @return Collection<int, array{id: int, name: string, slug: string, isPersonal: bool, role: ?string, roleLabel: ?string, isCurrent: bool}>
      */
     public function teams(): Collection
     {
@@ -114,12 +113,12 @@ new class extends Component {
 
             @foreach ($this->teams() as $team)
                 <flux:menu.item
-                    wire:click="switchTeam('{{ $team->slug }}')"
+                    wire:click="switchTeam('{{ $team['slug'] }}')"
                     class="cursor-pointer"
                 >
                     <div class="flex w-full items-center justify-between">
-                        <span>{{ $team->name }}</span>
-                        @if ($team->isCurrent)
+                        <span>{{ $team['name'] }}</span>
+                        @if ($team['isCurrent'])
                             <flux:icon name="check" class="size-4" />
                         @endif
                     </div>

@@ -2,7 +2,6 @@
 
 use App\Actions\Teams\CreateTeam;
 use App\Rules\TeamName;
-use App\Support\UserTeam;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
@@ -27,7 +26,7 @@ new #[Title('Teams')] class extends Component {
     }
 
     /**
-     * @return Collection<int, UserTeam>
+     * @return Collection<int, array{id: int, name: string, slug: string, isPersonal: bool, role: ?string, roleLabel: ?string, isCurrent: bool}>
      */
     public function getTeamsProperty()
     {
@@ -55,22 +54,22 @@ new #[Title('Teams')] class extends Component {
                     <div class="flex items-center gap-4">
                         <div>
                             <div class="flex items-center gap-2">
-                                <span class="font-medium">{{ $team->name }}</span>
-                                @if ($team->isPersonal)
+                                <span class="font-medium">{{ $team['name'] }}</span>
+                                @if ($team['isPersonal'])
                                     <flux:badge color="zinc">{{ __('Personal') }}</flux:badge>
                                 @endif
                             </div>
-                            <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ $team->roleLabel }}</flux:text>
+                            <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ $team['roleLabel'] }}</flux:text>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-1">
-                        <flux:tooltip :content="$team->role === 'member' ? __('View team') : __('Edit team')">
+                        <flux:tooltip :content="$team['role'] === 'member' ? __('View team') : __('Edit team')">
                             <flux:button
                                 variant="ghost"
                                 size="sm"
-                                :icon="$team->role === 'member' ? 'eye' : 'pencil'"
-                                :href="route('teams.edit', $team->slug)"
+                                :icon="$team['role'] === 'member' ? 'eye' : 'pencil'"
+                                :href="route('teams.edit', $team['slug'])"
                                 wire:navigate
                             />
                         </flux:tooltip>

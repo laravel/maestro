@@ -5,8 +5,6 @@ namespace App\Concerns;
 use App\Enums\TeamRole;
 use App\Models\Membership;
 use App\Models\Team;
-use App\Support\TeamPermissions;
-use App\Support\UserTeam;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -128,9 +126,9 @@ trait HasTeams
     }
 
     /**
-     * Get the user's teams as a collection of UserTeam objects.
+     * Get the user's teams as a collection of arrays.
      *
-     * @return Collection<int, UserTeam>
+     * @return Collection<int, array{id: int, name: string, slug: string, isPersonal: bool, role: ?string, roleLabel: ?string, isCurrent: bool}>
      */
     public function toUserTeams(bool $includeCurrent = false): Collection
     {
@@ -142,39 +140,43 @@ trait HasTeams
     }
 
     /**
-     * Get the user's team as a UserTeam object.
+     * Get the user's team as an array.
+     *
+     * @return array{id: int, name: string, slug: string, isPersonal: bool, role: ?string, roleLabel: ?string, isCurrent: bool}
      */
-    public function toUserTeam(Team $team): UserTeam
+    public function toUserTeam(Team $team): array
     {
         $role = $this->teamRole($team);
 
-        return new UserTeam(
-            id: $team->id,
-            name: $team->name,
-            slug: $team->slug,
-            isPersonal: $team->is_personal,
-            role: $role?->value,
-            roleLabel: $role?->label(),
-            isCurrent: $this->isCurrentTeam($team),
-        );
+        return [
+            'id' => $team->id,
+            'name' => $team->name,
+            'slug' => $team->slug,
+            'isPersonal' => $team->is_personal,
+            'role' => $role?->value,
+            'roleLabel' => $role?->label(),
+            'isCurrent' => $this->isCurrentTeam($team),
+        ];
     }
 
     /**
-     * Get the standard permissions for a team as a TeamPermissions object.
+     * Get the standard permissions for a team as an array.
+     *
+     * @return array{canUpdateTeam: bool, canDeleteTeam: bool, canAddMember: bool, canUpdateMember: bool, canRemoveMember: bool, canCreateInvitation: bool, canCancelInvitation: bool}
      */
-    public function toTeamPermissions(Team $team): TeamPermissions
+    public function toTeamPermissions(Team $team): array
     {
         $role = $this->teamRole($team);
 
-        return new TeamPermissions(
-            canUpdateTeam: $role?->hasPermission('team:update') ?? false,
-            canDeleteTeam: $role?->hasPermission('team:delete') ?? false,
-            canAddMember: $role?->hasPermission('member:add') ?? false,
-            canUpdateMember: $role?->hasPermission('member:update') ?? false,
-            canRemoveMember: $role?->hasPermission('member:remove') ?? false,
-            canCreateInvitation: $role?->hasPermission('invitation:create') ?? false,
-            canCancelInvitation: $role?->hasPermission('invitation:cancel') ?? false,
-        );
+        return [
+            'canUpdateTeam' => $role?->hasPermission('team:update') ?? false,
+            'canDeleteTeam' => $role?->hasPermission('team:delete') ?? false,
+            'canAddMember' => $role?->hasPermission('member:add') ?? false,
+            'canUpdateMember' => $role?->hasPermission('member:update') ?? false,
+            'canRemoveMember' => $role?->hasPermission('member:remove') ?? false,
+            'canCreateInvitation' => $role?->hasPermission('invitation:create') ?? false,
+            'canCancelInvitation' => $role?->hasPermission('invitation:cancel') ?? false,
+        ];
     }
 
     public function fallbackTeam(?Team $excluding = null): ?Team
