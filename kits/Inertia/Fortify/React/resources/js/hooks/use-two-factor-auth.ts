@@ -1,5 +1,5 @@
 import { useHttp } from '@inertiajs/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
 
 export type UseTwoFactorAuthReturn = {
@@ -20,12 +20,7 @@ export type UseTwoFactorAuthReturn = {
 export const OTP_MAX_LENGTH = 6;
 
 export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
-    const http = useHttp();
-    const httpRef = useRef(http);
-
-    useEffect(() => {
-        httpRef.current = http;
-    }, [http]);
+    const { submit } = useHttp();
 
     const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
     const [manualSetupKey, setManualSetupKey] = useState<string | null>(null);
@@ -53,7 +48,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
     const fetchQrCode = useCallback(async (): Promise<void> => {
         try {
-            const { svg } = (await httpRef.current.submit(qrCode())) as {
+            const { svg } = (await submit(qrCode())) as {
                 svg: string;
                 url: string;
             };
@@ -63,33 +58,31 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
             setErrors((prev) => [...prev, 'Failed to fetch QR code']);
             setQrCodeSvg(null);
         }
-    }, []);
+    }, [submit]);
 
     const fetchSetupKey = useCallback(async (): Promise<void> => {
         try {
-            const { secretKey: key } = (await httpRef.current.submit(
-                secretKey(),
-            )) as { secretKey: string };
+            const { secretKey: key } = (await submit(secretKey())) as {
+                secretKey: string;
+            };
 
             setManualSetupKey(key);
         } catch {
             setErrors((prev) => [...prev, 'Failed to fetch a setup key']);
             setManualSetupKey(null);
         }
-    }, []);
+    }, [submit]);
 
     const fetchRecoveryCodes = useCallback(async (): Promise<void> => {
         try {
             setErrors([]);
-            const codes = (await httpRef.current.submit(
-                recoveryCodes(),
-            )) as string[];
+            const codes = (await submit(recoveryCodes())) as string[];
             setRecoveryCodesList(codes);
         } catch {
             setErrors((prev) => [...prev, 'Failed to fetch recovery codes']);
             setRecoveryCodesList([]);
         }
-    }, []);
+    }, [submit]);
 
     const fetchSetupData = useCallback(async (): Promise<void> => {
         try {
