@@ -7,7 +7,7 @@
         "dev": "vite"
     },
     "dependencies": {
-        "@laravel/passkeys": "github:laravel/passkeys#34debbfb",
+        "@laravel/passkeys": "github:laravel/passkeys#605f38f",
         "@tailwindcss/vite": "^4.1.11",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.4",

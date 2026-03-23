@@ -66,11 +66,13 @@
             </p>
         </div>
 
-        <InputError message={$error ?? ''} />
+        {#if error}
+            <InputError message={error} />
+        {/if}
 
         <div class="flex gap-2">
-            <Button type="submit" disabled={$isLoading || !name.trim()}>
-                {$isLoading ? 'Registering...' : 'Register passkey'}
+            <Button type="submit" disabled={isLoading || !name.trim()}>
+                {isLoading ? 'Registering...' : 'Register passkey'}
             </Button>
             <Button type="button" variant="ghost" onclick={handleCancel}>
                 Cancel

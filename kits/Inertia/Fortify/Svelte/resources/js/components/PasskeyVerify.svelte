@@ -37,20 +37,22 @@
             variant="outline"
             class="w-full"
             onclick={verify}
-            disabled={$isLoading}
+            disabled={isLoading}
         >
-            {#if $isLoading}
+            {#if isLoading}
                 <Spinner />
             {:else}
                 <KeyRound class="h-4 w-4" />
             {/if}
-            {$isLoading
+            {isLoading
                 ? (props.loadingLabel ?? 'Authenticating...')
                 : (props.label ?? 'Sign in with passkey')}
         </Button>
 
-        {#if $error}
-            <InputError message={$error} class="text-center" />
+        {#if error}
+            <div class="text-center">
+                <InputError message={error} />
+            </div>
         {/if}
     </div>
 
