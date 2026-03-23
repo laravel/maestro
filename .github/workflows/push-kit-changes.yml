@@ -208,14 +208,24 @@ jobs:
           git add -A
 
           COMMIT_MSG="${{ steps.pr-info.outputs.title }}"
-          CO_AUTHOR=""
+          TRAILERS=""
 
           if [[ "${{ steps.pr-info.outputs.found }}" == "true" ]]; then
-            CO_AUTHOR="Co-authored-by: ${{ steps.pr-info.outputs.author }} <${{ steps.pr-info.outputs.author_email }}>"
+            TRAILERS="Co-authored-by: ${{ steps.pr-info.outputs.author }} <${{ steps.pr-info.outputs.author_email }}>"
           fi
 
-          if [[ -n "$CO_AUTHOR" ]]; then
-            git commit -m "$COMMIT_MSG" -m "$CO_AUTHOR"
+          CO_AUTHORS="${{ steps.pr-info.outputs.co_authors }}"
+          if [[ -n "$CO_AUTHORS" ]]; then
+            if [[ -n "$TRAILERS" ]]; then
+              TRAILERS="$TRAILERS
+          $CO_AUTHORS"
+            else
+              TRAILERS="$CO_AUTHORS"
+            fi
+          fi
+
+          if [[ -n "$TRAILERS" ]]; then
+            git commit -m "$COMMIT_MSG" -m "$TRAILERS"
           else
             git commit -m "$COMMIT_MSG"
           fi
