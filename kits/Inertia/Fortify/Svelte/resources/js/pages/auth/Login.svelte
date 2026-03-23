@@ -58,7 +58,7 @@
                         type="email"
                         name="email"
                         required
-                        autocomplete="email webauthn"
+                        autocomplete="email"
                         placeholder="email@example.com"
                     />
                     <InputError message={errors.email} />

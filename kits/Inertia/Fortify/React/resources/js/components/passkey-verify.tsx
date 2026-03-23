@@ -35,7 +35,6 @@ export default function PasskeyVerify({
 
     return (
         <>
-            <input type="hidden" autoComplete="webauthn" />
             <div className="grid gap-2">
                 <Button
                     type="button"

@@ -46,8 +46,6 @@
 >
     <template x-if="supported">
         <div>
-            <input type="hidden" autocomplete="webauthn" />
-
             <div class="grid gap-2">
                 <flux:button
                     variant="outline"

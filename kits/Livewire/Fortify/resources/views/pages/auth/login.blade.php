@@ -20,7 +20,7 @@
                 type="email"
                 required
                 autofocus
-                autocomplete="email webauthn"
+                autocomplete="email"
                 placeholder="email@example.com"
             />
 

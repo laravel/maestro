@@ -47,7 +47,7 @@
                         name="password"
                         class="mt-1 block w-full"
                         required
-                        autocomplete="current-password webauthn"
+                        autocomplete="current-password"
                     />
                     <InputError message={errors.password} />
                 </div>

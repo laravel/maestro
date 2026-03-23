@@ -29,8 +29,6 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
 
 <template>
     <div v-if="isSupported">
-        <input type="hidden" autocomplete="webauthn" />
-
         <div class="grid gap-2">
             <Button
                 type="button"
