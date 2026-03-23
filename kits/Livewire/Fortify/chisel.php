@@ -15,11 +15,7 @@ function runCommand(array $command): int
 
 function formatFiles(): void
 {
-    $pint = DIRECTORY_SEPARATOR === '\\'
-        ? __DIR__.'/vendor/bin/pint.bat'
-        : __DIR__.'/vendor/bin/pint';
-
-    if (file_exists($pint) && runCommand([$pint]) !== 0) {
+    if (runCommand(['composer', 'lint']) !== 0) {
         exit(1);
     }
 }

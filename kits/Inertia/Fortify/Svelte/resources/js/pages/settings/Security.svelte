@@ -36,19 +36,11 @@
     import { disable, enable } from '@/routes/two-factor';
     /* @end-2fa */
     import type { BreadcrumbItem } from '@/types';
-
     /* @passkeys */
-    type Passkey = {
-        id: number;
-        name: string;
-        authenticator: string | null;
-        created_at_diff: string;
-        last_used_at_diff: string | null;
-    };
+    import type { Passkey } from '@/types/auth';
     /* @end-passkeys */
 
     let {
-        _props = undefined,
         /* @2fa */
         canManageTwoFactor = false,
         requiresConfirmation = false,
@@ -59,7 +51,6 @@
         passkeys = [],
         /* @end-passkeys */
     }: {
-        _props?: never;
         /* @2fa */
         canManageTwoFactor?: boolean;
         requiresConfirmation?: boolean;

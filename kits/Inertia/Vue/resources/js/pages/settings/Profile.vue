@@ -20,7 +20,6 @@ import { send } from '@/routes/verification';
 import type { BreadcrumbItem } from '@/types';
 
 type Props = {
-    _props?: never;
     /* @email-verification */
     mustVerifyEmail?: boolean;
     status?: string;

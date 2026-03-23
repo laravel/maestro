@@ -20,13 +20,11 @@
     import type { BreadcrumbItem } from '@/types';
 
     let {
-        _props = undefined,
         /* @email-verification */
         mustVerifyEmail = false,
         status = '',
         /* @end-email-verification */
     }: {
-        _props?: never;
         /* @email-verification */
         mustVerifyEmail?: boolean;
         status?: string;

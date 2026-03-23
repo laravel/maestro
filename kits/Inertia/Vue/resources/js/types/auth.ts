@@ -16,6 +16,16 @@ export type Auth = {
     user: User;
 };
 
+/* @passkeys */
+export type Passkey = {
+    id: number;
+    name: string;
+    authenticator: string | null;
+    created_at_diff: string;
+    last_used_at_diff: string | null;
+};
+/* @end-passkeys */
+
 /* @2fa */
 export type TwoFactorConfigContent = {
     title: string;
