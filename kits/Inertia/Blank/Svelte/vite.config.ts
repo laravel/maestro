@@ -4,7 +4,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vite-plus';
 
 const isSvelteCheck = process.argv.some((argument) => argument.includes('svelte-check'));
 
@@ -40,5 +40,25 @@ export default defineConfig({
                 '**/vendor/**',
             ],
         },
+    },
+    lint: {
+        ignorePatterns: [
+            'vendor/**',
+            'node_modules/**',
+            'public/**',
+            'bootstrap/ssr/**',
+            'tailwind.config.js',
+            'resources/js/actions/**',
+            'resources/js/components/ui/*',
+            'resources/js/routes/**',
+            'resources/js/wayfinder/**',
+        ],
+        options: {
+            typeAware: true,
+            typeCheck: true,
+        },
+    },
+    fmt: {
+        singleQuote: true,
     },
 });
