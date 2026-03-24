@@ -29,8 +29,8 @@
         "typescript-eslint": "^8.23.0"
     },
     "dependencies": {
-        "@inertiajs/react": "3.0.0-beta.5",
-        "@inertiajs/vite": "3.0.0-beta.5",
+        "@inertiajs/react": "3.0.0-beta.6",
+        "@inertiajs/vite": "3.0.0-beta.6",
         "@tailwindcss/vite": "^4.1.11",
         "@types/react": "^19.2.0",
         "@types/react-dom": "^19.2.0",
