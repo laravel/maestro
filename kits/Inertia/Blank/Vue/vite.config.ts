@@ -3,7 +3,7 @@ import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
     plugins: [
@@ -25,4 +25,24 @@ export default defineConfig({
             formVariants: true,
         }),
     ],
+    lint: {
+        ignorePatterns: [
+            'vendor/**',
+            'node_modules/**',
+            'public/**',
+            'bootstrap/ssr/**',
+            'tailwind.config.js',
+            'resources/js/actions/**',
+            'resources/js/components/ui/*',
+            'resources/js/routes/**',
+            'resources/js/wayfinder/**',
+        ],
+        options: {
+            typeAware: true,
+            typeCheck: true,
+        },
+    },
+    fmt: {
+        singleQuote: true,
+    },
 });
