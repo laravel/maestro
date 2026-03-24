@@ -10,9 +10,9 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                /* @passkeys */
+                /* @chisel-passkeys */
                 'resources/js/passkeys.js',
-                /* @end-passkeys */
+                /* @end-chisel-passkeys */
             ],
             refresh: true,
         }),

@@ -62,17 +62,17 @@ class FortifyServiceProvider extends ServiceProvider
             'status' => $request->session()->get('status'),
         ]));
 
-        /* @email-verification */
+        /* @chisel-email-verification */
         Fortify::verifyEmailView(fn (Request $request) => Inertia::render('{{auth_verify_email}}', [
             'status' => $request->session()->get('status'),
         ]));
-        /* @end-email-verification */
+        /* @end-chisel-email-verification */
 
         Fortify::registerView(fn () => Inertia::render('{{auth_register}}'));
 
-        /* @2fa */
+        /* @chisel-2fa */
         Fortify::twoFactorChallengeView(fn () => Inertia::render('{{auth_two_factor_challenge}}'));
-        /* @end-2fa */
+        /* @end-chisel-2fa */
 
         Fortify::confirmPasswordView(fn () => Inertia::render('{{auth_confirm_password}}'));
     }
@@ -82,11 +82,11 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureRateLimiting(): void
     {
-        /* @2fa */
+        /* @chisel-2fa */
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
-        /* @end-2fa */
+        /* @end-chisel-2fa */
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
@@ -94,7 +94,7 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($throttleKey);
         });
 
-        /* @passkeys */
+        /* @chisel-passkeys */
         RateLimiter::for('passkeys', function (Request $request) {
             $credentialId = $request->input('credential.id');
 
@@ -102,6 +102,6 @@ class FortifyServiceProvider extends ServiceProvider
                 ($credentialId ?: $request->session()->getId()).'|'.$request->ip(),
             );
         });
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
     }
 }

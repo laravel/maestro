@@ -14,18 +14,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     $requiresPasswordConfirmation = false;
 
-    /* @2fa */
+    /* @chisel-2fa */
     $requiresPasswordConfirmation = $requiresPasswordConfirmation || (
         Features::canManageTwoFactorAuthentication()
         && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')
     );
-    /* @end-2fa */
-    /* @passkeys */
+    /* @end-chisel-2fa */
+    /* @chisel-passkeys */
     $requiresPasswordConfirmation = $requiresPasswordConfirmation || (
         Features::canManagePasskeys()
         && Features::optionEnabled(Features::passkeys(), 'confirmPassword')
     );
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 
     Route::livewire('settings/security', 'pages::settings.security')
         ->middleware(

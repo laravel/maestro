@@ -46,12 +46,12 @@ class FortifyServiceProvider extends ServiceProvider
     private function configureViews(): void
     {
         Fortify::loginView(fn () => view('pages::auth.login'));
-        /* @email-verification */
+        /* @chisel-email-verification */
         Fortify::verifyEmailView(fn () => view('pages::auth.verify-email'));
-        /* @end-email-verification */
-        /* @2fa */
+        /* @end-chisel-email-verification */
+        /* @chisel-2fa */
         Fortify::twoFactorChallengeView(fn () => view('pages::auth.two-factor-challenge'));
-        /* @end-2fa */
+        /* @end-chisel-2fa */
         Fortify::confirmPasswordView(fn () => view('pages::auth.confirm-password'));
         Fortify::registerView(fn () => view('pages::auth.register'));
         Fortify::resetPasswordView(fn () => view('pages::auth.reset-password'));
@@ -73,7 +73,7 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($throttleKey);
         });
 
-        /* @passkeys */
+        /* @chisel-passkeys */
         RateLimiter::for('passkeys', function (Request $request) {
             $credentialId = $request->input('credential.id');
 
@@ -81,6 +81,6 @@ class FortifyServiceProvider extends ServiceProvider
                 ($credentialId ?: $request->session()->getId()).'|'.$request->ip(),
             );
         });
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
     }
 }

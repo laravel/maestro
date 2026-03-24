@@ -1,65 +1,65 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
-    /* @passkeys */
+    /* @chisel-passkeys */
     import { router } from '@inertiajs/svelte';
     import KeyRound from 'lucide-svelte/icons/key-round';
-    /* @end-passkeys */
-    /* @2fa */
+    /* @end-chisel-passkeys */
+    /* @chisel-2fa */
     import ShieldCheck from 'lucide-svelte/icons/shield-check';
     import { onDestroy } from 'svelte';
-    /* @end-2fa */
+    /* @end-chisel-2fa */
     import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-    /* @passkeys */
+    /* @chisel-passkeys */
     import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
     import AppHead from '@/components/AppHead.svelte';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
-    /* @passkeys */
+    /* @chisel-passkeys */
     import PasskeyItem from '@/components/PasskeyItem.svelte';
     import PasskeyRegister from '@/components/PasskeyRegister.svelte';
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
     import PasswordInput from '@/components/PasswordInput.svelte';
-    /* @2fa */
+    /* @chisel-2fa */
     import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.svelte';
     import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.svelte';
-    /* @end-2fa */
+    /* @end-chisel-2fa */
     import { Button } from '@/components/ui/button';
     import { Label } from '@/components/ui/label';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
-    /* @2fa */
+    /* @chisel-2fa */
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
-    /* @end-2fa */
+    /* @end-chisel-2fa */
     import { edit } from '@/routes/security';
-    /* @2fa */
+    /* @chisel-2fa */
     import { disable, enable } from '@/routes/two-factor';
-    /* @end-2fa */
+    /* @end-chisel-2fa */
     import type { BreadcrumbItem } from '@/types';
-    /* @passkeys */
+    /* @chisel-passkeys */
     import type { Passkey } from '@/types/auth';
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 
     let {
-        /* @2fa */
+        /* @chisel-2fa */
         canManageTwoFactor = false,
         requiresConfirmation = false,
         twoFactorEnabled = false,
-        /* @end-2fa */
-        /* @passkeys */
+        /* @end-chisel-2fa */
+        /* @chisel-passkeys */
         canManagePasskeys = false,
         passkeys = [],
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
     }: {
-        /* @2fa */
+        /* @chisel-2fa */
         canManageTwoFactor?: boolean;
         requiresConfirmation?: boolean;
         twoFactorEnabled?: boolean;
-        /* @end-2fa */
-        /* @passkeys */
+        /* @end-chisel-2fa */
+        /* @chisel-passkeys */
         canManagePasskeys?: boolean;
         passkeys?: Passkey[];
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
     } = $props();
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -69,12 +69,12 @@
         },
     ];
 
-    /* @2fa */
+    /* @chisel-2fa */
     const twoFactorAuth = twoFactorAuthState();
     let showSetupModal = $state(false);
-    /* @end-2fa */
+    /* @end-chisel-2fa */
 
-    /* @passkeys */
+    /* @chisel-passkeys */
     function handleDelete(id: number) {
         router.delete(destroy.url(id), {
             preserveScroll: true,
@@ -84,11 +84,11 @@
     function handleRegisterSuccess() {
         router.reload();
     }
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 
-    /* @2fa */
+    /* @chisel-2fa */
     onDestroy(() => twoFactorAuth.clearTwoFactorAuthData());
-    /* @end-2fa */
+    /* @end-chisel-2fa */
 </script>
 
 <AppHead title="Security settings" />
@@ -171,7 +171,7 @@
             </Form>
         </div>
 
-        <!-- @2fa -->
+        <!-- @chisel-2fa -->
         {#if canManageTwoFactor}
             <div class="space-y-6">
                 <Heading
@@ -248,9 +248,9 @@
                 />
             </div>
         {/if}
-        <!-- @end-2fa -->
+        <!-- @end-chisel-2fa -->
 
-        <!-- @passkeys -->
+        <!-- @chisel-passkeys -->
         {#if canManagePasskeys}
             <div class="space-y-6">
                 <Heading
@@ -284,6 +284,6 @@
                 <PasskeyRegister onSuccess={handleRegisterSuccess} />
             </div>
         {/if}
-        <!-- @end-passkeys -->
+        <!-- @end-chisel-passkeys -->
     </SettingsLayout>
 </AppLayout>

@@ -1,8 +1,8 @@
 import { Transition } from '@headlessui/react';
 import { Form, Head, usePage } from '@inertiajs/react';
-/* @email-verification */
+/* @chisel-email-verification */
 import { Link } from '@inertiajs/react';
-/* @end-email-verification */
+/* @end-chisel-email-verification */
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
@@ -13,9 +13,9 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/profile';
-/* @email-verification */
+/* @chisel-email-verification */
 import { send } from '@/routes/verification';
-/* @end-email-verification */
+/* @end-chisel-email-verification */
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -26,10 +26,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 type Props = Record<string, never> & {
-    /* @email-verification */
+    /* @chisel-email-verification */
     mustVerifyEmail: boolean;
     status?: string;
-    /* @end-email-verification */
+    /* @end-chisel-email-verification */
 };
 
 export default function Profile(props: Props) {
@@ -37,10 +37,10 @@ export default function Profile(props: Props) {
 
     const { auth } = usePage().props;
 
-    /* @email-verification */
+    /* @chisel-email-verification */
     const mustVerifyEmail = props.mustVerifyEmail;
     const status = props.status;
-    /* @end-email-verification */
+    /* @end-chisel-email-verification */
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -104,7 +104,7 @@ export default function Profile(props: Props) {
                                     />
                                 </div>
 
-                                {/* @email-verification */}
+                                {/* @chisel-email-verification */}
                                 {mustVerifyEmail &&
                                     auth.user.email_verified_at === null && (
                                         <div>
@@ -131,7 +131,7 @@ export default function Profile(props: Props) {
                                             )}
                                         </div>
                                     )}
-                                {/* @end-email-verification */}
+                                {/* @end-chisel-email-verification */}
 
                                 <div className="flex items-center gap-4">
                                     <Button

@@ -1,66 +1,66 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
-/* @passkeys */
+/* @chisel-passkeys */
 import { router } from '@inertiajs/vue3';
 import { KeyRound } from 'lucide-vue-next';
-/* @end-passkeys */
-/* @2fa */
+/* @end-chisel-passkeys */
+/* @chisel-2fa */
 import { ShieldCheck } from 'lucide-vue-next';
 import { onUnmounted, ref } from 'vue';
-/* @end-2fa */
+/* @end-chisel-2fa */
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-/* @passkeys */
+/* @chisel-passkeys */
 import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
-/* @passkeys */
+/* @chisel-passkeys */
 import PasskeyItem from '@/components/PasskeyItem.vue';
 import PasskeyRegister from '@/components/PasskeyRegister.vue';
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 import PasswordInput from '@/components/PasswordInput.vue';
-/* @2fa */
+/* @chisel-2fa */
 import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
 import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
-/* @end-2fa */
+/* @end-chisel-2fa */
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-/* @2fa */
+/* @chisel-2fa */
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-/* @end-2fa */
+/* @end-chisel-2fa */
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/security';
-/* @2fa */
+/* @chisel-2fa */
 import { disable, enable } from '@/routes/two-factor';
-/* @end-2fa */
+/* @end-chisel-2fa */
 import type { BreadcrumbItem } from '@/types';
-/* @passkeys */
+/* @chisel-passkeys */
 import type { Passkey } from '@/types/auth';
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 
 type Props = {
-    /* @2fa */
+    /* @chisel-2fa */
     canManageTwoFactor?: boolean;
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
-    /* @end-2fa */
-    /* @passkeys */
+    /* @end-chisel-2fa */
+    /* @chisel-passkeys */
     canManagePasskeys?: boolean;
     passkeys?: Passkey[];
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 };
 
 withDefaults(defineProps<Props>(), {
-    /* @2fa */
+    /* @chisel-2fa */
     canManageTwoFactor: false,
     requiresConfirmation: false,
     twoFactorEnabled: false,
-    /* @end-2fa */
-    /* @passkeys */
+    /* @end-chisel-2fa */
+    /* @chisel-passkeys */
     canManagePasskeys: false,
     passkeys: () => [],
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -70,14 +70,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-/* @2fa */
+/* @chisel-2fa */
 const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth();
 const showSetupModal = ref<boolean>(false);
 
 onUnmounted(() => clearTwoFactorAuthData());
-/* @end-2fa */
+/* @end-chisel-2fa */
 
-/* @passkeys */
+/* @chisel-passkeys */
 const handleDelete = (id: number) => {
     router.delete(destroy.url(id), {
         preserveScroll: true,
@@ -87,7 +87,7 @@ const handleDelete = (id: number) => {
 const handleRegisterSuccess = () => {
     router.reload();
 };
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 </script>
 
 <template>
@@ -181,7 +181,7 @@ const handleRegisterSuccess = () => {
                 </Form>
             </div>
 
-            <!-- @2fa -->
+            <!-- @chisel-2fa -->
             <div v-if="canManageTwoFactor" class="space-y-6">
                 <Heading
                     variant="small"
@@ -251,9 +251,9 @@ const handleRegisterSuccess = () => {
                     :twoFactorEnabled="twoFactorEnabled"
                 />
             </div>
-            <!-- @end-2fa -->
+            <!-- @end-chisel-2fa -->
 
-            <!-- @passkeys -->
+            <!-- @chisel-passkeys -->
             <div v-if="canManagePasskeys" class="space-y-6">
                 <Heading
                     variant="small"
@@ -286,7 +286,7 @@ const handleRegisterSuccess = () => {
 
                 <PasskeyRegister @success="handleRegisterSuccess" />
             </div>
-            <!-- @end-passkeys -->
+            <!-- @end-chisel-passkeys -->
         </SettingsLayout>
     </AppLayout>
 </template>

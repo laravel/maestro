@@ -19,19 +19,19 @@ class SecurityController extends Controller implements HasMiddleware
      */
     public static function middleware(): array
     {
-        /* @2fa */
+        /* @chisel-2fa */
         if (Features::canManageTwoFactorAuthentication()
             && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')) {
             return [new Middleware('password.confirm', only: ['edit'])];
         }
-        /* @end-2fa */
+        /* @end-chisel-2fa */
 
-        /* @passkeys */
+        /* @chisel-passkeys */
         if (Features::canManagePasskeys()
             && Features::optionEnabled(Features::passkeys(), 'confirmPassword')) {
             return [new Middleware('password.confirm', only: ['edit'])];
         }
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
 
         return [];
     }
@@ -42,10 +42,10 @@ class SecurityController extends Controller implements HasMiddleware
     public function edit(TwoFactorAuthenticationRequest $request): Response
     {
         $props = [
-            /* @2fa */
+            /* @chisel-2fa */
             'canManageTwoFactor' => Features::canManageTwoFactorAuthentication(),
-            /* @end-2fa */
-            /* @passkeys */
+            /* @end-chisel-2fa */
+            /* @chisel-passkeys */
             'canManagePasskeys' => Features::canManagePasskeys(),
             'passkeys' => Features::canManagePasskeys()
                 ? $request->user()->passkeys()
@@ -62,17 +62,17 @@ class SecurityController extends Controller implements HasMiddleware
                     ->values()
                     ->all()
                 : [],
-            /* @end-passkeys */
+            /* @end-chisel-passkeys */
         ];
 
-        /* @2fa */
+        /* @chisel-2fa */
         if (Features::canManageTwoFactorAuthentication()) {
             $request->ensureStateIsValid();
 
             $props['twoFactorEnabled'] = $request->user()->hasEnabledTwoFactorAuthentication();
             $props['requiresConfirmation'] = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
         }
-        /* @end-2fa */
+        /* @end-chisel-2fa */
 
         return Inertia::render('{{security_settings}}', $props);
     }

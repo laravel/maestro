@@ -1,55 +1,55 @@
 import { Transition } from '@headlessui/react';
 import { Form, Head } from '@inertiajs/react';
-/* @passkeys */
+/* @chisel-passkeys */
 import { router } from '@inertiajs/react';
 import { KeyRound } from 'lucide-react';
-/* @end-passkeys */
-/* @2fa */
+/* @end-chisel-passkeys */
+/* @chisel-2fa */
 import { ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
-/* @end-2fa */
+/* @end-chisel-2fa */
 import { useRef } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-/* @passkeys */
+/* @chisel-passkeys */
 import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
-/* @passkeys */
+/* @chisel-passkeys */
 import PasskeyItem from '@/components/passkey-item';
 import PasskeyRegistration from '@/components/passkey-register';
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 import PasswordInput from '@/components/password-input';
-/* @2fa */
+/* @chisel-2fa */
 import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
-/* @end-2fa */
+/* @end-chisel-2fa */
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-/* @2fa */
+/* @chisel-2fa */
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
-/* @end-2fa */
+/* @end-chisel-2fa */
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/security';
-/* @2fa */
+/* @chisel-2fa */
 import { disable, enable } from '@/routes/two-factor';
-/* @end-2fa */
+/* @end-chisel-2fa */
 import type { BreadcrumbItem } from '@/types';
-/* @passkeys */
+/* @chisel-passkeys */
 import type { Passkey } from '@/types/auth';
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 
 type Props = Record<string, never> & {
-    /* @2fa */
+    /* @chisel-2fa */
     canManageTwoFactor?: boolean;
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
-    /* @end-2fa */
-    /* @passkeys */
+    /* @end-chisel-2fa */
+    /* @chisel-passkeys */
     canManagePasskeys?: boolean;
     passkeys?: Passkey[];
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -59,7 +59,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-/* @passkeys */
+/* @chisel-passkeys */
 function EmptyState() {
     return (
         <div className="p-8 text-center">
@@ -73,7 +73,7 @@ function EmptyState() {
         </div>
     );
 }
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 
 export default function Security(props: Props) {
     void props;
@@ -81,7 +81,7 @@ export default function Security(props: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 
-    /* @2fa */
+    /* @chisel-2fa */
     const canManageTwoFactor = props.canManageTwoFactor ?? false;
     const requiresConfirmation = props.requiresConfirmation ?? false;
     const twoFactorEnabled = props.twoFactorEnabled ?? false;
@@ -97,9 +97,9 @@ export default function Security(props: Props) {
         errors,
     } = useTwoFactorAuth();
     const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
-    /* @end-2fa */
+    /* @end-chisel-2fa */
 
-    /* @passkeys */
+    /* @chisel-passkeys */
     const canManagePasskeys = props.canManagePasskeys ?? false;
     const passkeys = props.passkeys ?? [];
 
@@ -112,7 +112,7 @@ export default function Security(props: Props) {
     const handleRegisterSuccess = () => {
         router.reload();
     };
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -231,7 +231,7 @@ export default function Security(props: Props) {
                     </Form>
                 </div>
 
-                {/* @2fa */}
+                {/* @chisel-2fa */}
                 {canManageTwoFactor && (
                     <div className="space-y-6">
                         <Heading
@@ -321,9 +321,9 @@ export default function Security(props: Props) {
                         />
                     </div>
                 )}
-                {/* @end-2fa */}
+                {/* @end-chisel-2fa */}
 
-                {/* @passkeys */}
+                {/* @chisel-passkeys */}
                 {canManagePasskeys && (
                     <div className="space-y-6">
                         <Heading
@@ -351,7 +351,7 @@ export default function Security(props: Props) {
                         />
                     </div>
                 )}
-                {/* @end-passkeys */}
+                {/* @end-chisel-passkeys */}
             </SettingsLayout>
         </AppLayout>
     );

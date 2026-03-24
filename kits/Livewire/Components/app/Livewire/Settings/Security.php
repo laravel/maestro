@@ -3,28 +3,28 @@
 namespace App\Livewire\Settings;
 
 use App\Concerns\PasswordValidationRules;
-/* @2fa */
+/* @chisel-2fa */
 use Exception;
-/* @end-2fa */
+/* @end-chisel-2fa */
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-/* @2fa */
+/* @chisel-2fa */
 use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
-/* @end-2fa */
+/* @end-chisel-2fa */
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
-/* @2fa */
+/* @chisel-2fa */
 use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
-/* @end-2fa */
+/* @end-chisel-2fa */
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
-/* @passkeys */
+/* @chisel-passkeys */
 use Laravel\Passkeys\Actions\DeletePasskey;
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
-/* @2fa */
+/* @chisel-2fa */
 use Livewire\Attributes\Validate;
-/* @end-2fa */
+/* @end-chisel-2fa */
 use Livewire\Component;
 
 #[Title('Security settings')]
@@ -38,7 +38,7 @@ class Security extends Component
 
     public string $password_confirmation = '';
 
-    /* @2fa */
+    /* @chisel-2fa */
     #[Locked]
     public bool $canManageTwoFactor;
 
@@ -47,17 +47,17 @@ class Security extends Component
 
     #[Locked]
     public bool $requiresConfirmation;
-    /* @end-2fa */
+    /* @end-chisel-2fa */
 
-    /* @passkeys */
+    /* @chisel-passkeys */
     #[Locked]
     public bool $canManagePasskeys;
 
     #[Locked]
     public array $passkeys = [];
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 
-    /* @2fa */
+    /* @chisel-2fa */
     #[Locked]
     public string $qrCodeSvg = '';
 
@@ -67,9 +67,9 @@ class Security extends Component
     public bool $showModal = false;
 
     public bool $showVerificationStep = false;
-    /* @end-2fa */
+    /* @end-chisel-2fa */
 
-    /* @passkeys */
+    /* @chisel-passkeys */
     public bool $showDeleteModal = false;
 
     #[Locked]
@@ -77,19 +77,19 @@ class Security extends Component
 
     #[Locked]
     public string $deletingPasskeyName = '';
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 
-    /* @2fa */
+    /* @chisel-2fa */
     #[Validate('required|string|size:6', onUpdate: false)]
     public string $code = '';
-    /* @end-2fa */
+    /* @end-chisel-2fa */
 
     /**
      * Mount the component.
      */
     public function mount(DisableTwoFactorAuthentication $disableTwoFactorAuthentication): void
     {
-        /* @2fa */
+        /* @chisel-2fa */
         $this->canManageTwoFactor = Features::canManageTwoFactorAuthentication();
 
         if ($this->canManageTwoFactor) {
@@ -100,15 +100,15 @@ class Security extends Component
             $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();
             $this->requiresConfirmation = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
         }
-        /* @end-2fa */
+        /* @end-chisel-2fa */
 
-        /* @passkeys */
+        /* @chisel-passkeys */
         $this->canManagePasskeys = Features::canManagePasskeys();
 
         if ($this->canManagePasskeys) {
             $this->loadPasskeys();
         }
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
     }
 
     /**
@@ -136,7 +136,7 @@ class Security extends Component
         $this->dispatch('password-updated');
     }
 
-    /* @passkeys */
+    /* @chisel-passkeys */
     /**
      * Load the user's passkeys.
      */
@@ -193,9 +193,9 @@ class Security extends Component
         $this->deletingPasskeyId = null;
         $this->deletingPasskeyName = '';
     }
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 
-    /* @2fa */
+    /* @chisel-2fa */
     /**
      * Enable two-factor authentication for the user.
      */
@@ -326,5 +326,5 @@ class Security extends Component
             'buttonText' => __('Continue'),
         ];
     }
-    /* @end-2fa */
+    /* @end-chisel-2fa */
 }

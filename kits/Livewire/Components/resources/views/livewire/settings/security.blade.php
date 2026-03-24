@@ -41,7 +41,7 @@
             </div>
         </form>
 
-        {{-- @2fa --}}
+        {{-- @chisel-2fa --}}
         @if ($canManageTwoFactor)
             <section class="mt-12">
                 <flux:heading>{{ __('Two-factor authentication') }}</flux:heading>
@@ -82,9 +82,9 @@
                 </div>
             </section>
         @endif
-        {{-- @end-2fa --}}
+        {{-- @end-chisel-2fa --}}
 
-        {{-- @2fa --}}
+        {{-- @chisel-2fa --}}
         @if ($canManageTwoFactor)
             <flux:modal
                 name="two-factor-setup-modal"
@@ -240,9 +240,9 @@
                 </div>
             </flux:modal>
         @endif
-        {{-- @end-2fa --}}
+        {{-- @end-chisel-2fa --}}
 
-        {{-- @passkeys --}}
+        {{-- @chisel-passkeys --}}
         @if ($canManagePasskeys)
             <section class="mt-12">
                 <flux:heading>{{ __('Passkeys') }}</flux:heading>
@@ -297,10 +297,10 @@
                 </div>
             </section>
         @endif
-        {{-- @end-passkeys --}}
+        {{-- @end-chisel-passkeys --}}
     </x-settings.layout>
 
-    {{-- @passkeys --}}
+    {{-- @chisel-passkeys --}}
     <flux:modal
         name="delete-passkey-modal"
         class="max-w-md md:min-w-md"
@@ -331,5 +331,5 @@
             </div>
         </div>
     </flux:modal>
-    {{-- @end-passkeys --}}
+    {{-- @end-chisel-passkeys --}}
 </section>

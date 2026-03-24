@@ -5,30 +5,30 @@
     import DeleteUser from '@/components/DeleteUser.svelte';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
-    /* @email-verification */
+    /* @chisel-email-verification */
     import TextLink from '@/components/TextLink.svelte';
-    /* @end-email-verification */
+    /* @end-chisel-email-verification */
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
     import AppLayout from '@/layouts/AppLayout.svelte';
     import SettingsLayout from '@/layouts/settings/Layout.svelte';
     import { edit } from '@/routes/profile';
-    /* @email-verification */
+    /* @chisel-email-verification */
     import { send } from '@/routes/verification';
-    /* @end-email-verification */
+    /* @end-chisel-email-verification */
     import type { BreadcrumbItem } from '@/types';
 
     let {
-        /* @email-verification */
+        /* @chisel-email-verification */
         mustVerifyEmail = false,
         status = '',
-        /* @end-email-verification */
+        /* @end-chisel-email-verification */
     }: {
-        /* @email-verification */
+        /* @chisel-email-verification */
         mustVerifyEmail?: boolean;
         status?: string;
-        /* @end-email-verification */
+        /* @end-chisel-email-verification */
     } = $props();
 
     const breadcrumbItems: BreadcrumbItem[] = [
@@ -89,7 +89,7 @@
                         <InputError class="mt-2" message={errors.email} />
                     </div>
 
-                    <!-- @email-verification -->
+                    <!-- @chisel-email-verification -->
                     {#if mustVerifyEmail && !user.email_verified_at}
                         <div>
                             <p class="-mt-4 text-sm text-muted-foreground">
@@ -109,7 +109,7 @@
                             {/if}
                         </div>
                     {/if}
-                    <!-- @end-email-verification -->
+                    <!-- @end-chisel-email-verification -->
 
                     <div class="flex items-center gap-4">
                         <Button

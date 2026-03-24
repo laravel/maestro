@@ -5,9 +5,9 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        {{-- @passkeys --}}
+        {{-- @chisel-passkeys --}}
         <x-passkey-verify />
-        {{-- @end-passkeys --}}
+        {{-- @end-chisel-passkeys --}}
 
         <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
             @csrf

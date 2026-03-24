@@ -30,9 +30,9 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            /* @2fa */
+            /* @chisel-2fa */
             'two_factor_confirmed_at' => 'datetime',
-            /* @end-2fa */
+            /* @end-chisel-2fa */
         ];
     }
 }

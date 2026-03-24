@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
-/* @passkeys */
+/* @chisel-passkeys */
 import {
     index as confirmOptions,
     store as confirmStore,
 } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyConfirmationController';
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 import InputError from '@/components/InputError.vue';
-/* @passkeys */
+/* @chisel-passkeys */
 import PasskeyVerify from '@/components/PasskeyVerify.vue';
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -25,7 +25,7 @@ import { store } from '@/routes/password/confirm';
     >
         <Head title="Confirm password" />
 
-        <!-- @passkeys -->
+        <!-- @chisel-passkeys -->
         <PasskeyVerify
             :routes="{
                 options: confirmOptions.url(),
@@ -35,7 +35,7 @@ import { store } from '@/routes/password/confirm';
             loading-label="Confirming..."
             separator="Or confirm with password"
         />
-        <!-- @end-passkeys -->
+        <!-- @end-chisel-passkeys -->
 
         <Form
             v-bind="store.form()"

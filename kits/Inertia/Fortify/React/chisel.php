@@ -37,7 +37,7 @@ $c->selected('auth_features', 'email-verification',
         $c->files(
             'resources/js/pages/settings/profile.tsx',
             'app/Providers/FortifyServiceProvider.php',
-        )->removeSectionMarkers('email-verification');
+        )->removeSectionMarkers('chisel-email-verification');
     },
     else: function (Chisel $c) {
         $c->phpFile('app/Models/User.php')
@@ -49,7 +49,7 @@ $c->selected('auth_features', 'email-verification',
         $c->files(
             'app/Providers/FortifyServiceProvider.php',
             'resources/js/pages/settings/profile.tsx',
-        )->removeSection('email-verification');
+        )->removeSection('chisel-email-verification');
 
         $c->files(
             'resources/js/pages/auth/verify-email.tsx',
@@ -69,7 +69,7 @@ $c->selected('auth_features', '2fa',
             'config/fortify.php',
             'app/Providers/FortifyServiceProvider.php',
             'app/Http/Controllers/Settings/SecurityController.php',
-        )->removeSectionMarkers('2fa');
+        )->removeSectionMarkers('chisel-2fa');
     },
     else: function (Chisel $c) {
         $c->phpFile('app/Models/User.php')
@@ -84,7 +84,7 @@ $c->selected('auth_features', '2fa',
             'app/Http/Controllers/Settings/SecurityController.php',
             'resources/js/pages/settings/security.tsx',
             'resources/js/types/auth.ts',
-        )->removeSection('2fa');
+        )->removeSection('chisel-2fa');
 
         $c->npm()->remove('input-otp');
 
@@ -110,7 +110,7 @@ $c->selected('auth_features', 'passkeys',
             'resources/js/pages/settings/security.tsx',
             'resources/js/pages/auth/login.tsx',
             'resources/js/pages/auth/confirm-password.tsx',
-        )->removeSectionMarkers('passkeys');
+        )->removeSectionMarkers('chisel-passkeys');
     },
     else: function (Chisel $c) {
         $c->phpFile('app/Models/User.php')
@@ -127,7 +127,7 @@ $c->selected('auth_features', 'passkeys',
             'resources/js/pages/settings/security.tsx',
             'resources/js/pages/auth/login.tsx',
             'resources/js/pages/auth/confirm-password.tsx',
-        )->removeSection('passkeys');
+        )->removeSection('chisel-passkeys');
 
         $c->npm()->remove('@laravel/passkeys');
 

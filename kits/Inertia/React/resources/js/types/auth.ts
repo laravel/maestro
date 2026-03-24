@@ -4,9 +4,9 @@ export type User = {
     email: string;
     avatar?: string;
     email_verified_at: string | null;
-    /* @2fa */
+    /* @chisel-2fa */
     two_factor_enabled?: boolean;
-    /* @end-2fa */
+    /* @end-chisel-2fa */
     created_at: string;
     updated_at: string;
     [key: string]: unknown;
@@ -16,7 +16,7 @@ export type Auth = {
     user: User;
 };
 
-/* @passkeys */
+/* @chisel-passkeys */
 export type Passkey = {
     id: number;
     name: string;
@@ -24,9 +24,9 @@ export type Passkey = {
     created_at_diff: string;
     last_used_at_diff: string | null;
 };
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 
-/* @2fa */
+/* @chisel-2fa */
 export type TwoFactorSetupData = {
     svg: string;
     url: string;
@@ -35,4 +35,4 @@ export type TwoFactorSetupData = {
 export type TwoFactorSecretKey = {
     secretKey: string;
 };
-/* @end-2fa */
+/* @end-chisel-2fa */

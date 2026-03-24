@@ -43,7 +43,7 @@ $c->selected('auth_features', 'email-verification',
         );
 
         if ($files !== []) {
-            $c->files(...$files)->removeSectionMarkers('email-verification');
+            $c->files(...$files)->removeSectionMarkers('chisel-email-verification');
         }
     },
     else: function (Chisel $c) {
@@ -61,7 +61,7 @@ $c->selected('auth_features', 'email-verification',
         );
 
         if ($files !== []) {
-            $c->files(...$files)->removeSection('email-verification');
+            $c->files(...$files)->removeSection('chisel-email-verification');
         }
 
         $c->files(
@@ -87,7 +87,7 @@ $c->selected('auth_features', '2fa',
             'resources/views/livewire/settings/security.blade.php',
         ));
 
-        $c->files(...$files)->removeSectionMarkers('2fa');
+        $c->files(...$files)->removeSectionMarkers('chisel-2fa');
     },
     else: function (Chisel $c) {
         $c->phpFile('app/Models/User.php')
@@ -107,7 +107,7 @@ $c->selected('auth_features', '2fa',
             'resources/views/livewire/settings/security.blade.php',
         ));
 
-        $c->files(...$files)->removeSection('2fa');
+        $c->files(...$files)->removeSection('chisel-2fa');
 
         $c->files(
             'resources/views/pages/auth/two-factor-challenge.blade.php',
@@ -140,7 +140,7 @@ $c->selected('auth_features', 'passkeys',
             'resources/views/livewire/auth/confirm-password.blade.php',
         ));
 
-        $c->files(...$files)->removeSectionMarkers('passkeys');
+        $c->files(...$files)->removeSectionMarkers('chisel-passkeys');
     },
     else: function (Chisel $c) {
         $c->phpFile('app/Models/User.php')
@@ -165,7 +165,7 @@ $c->selected('auth_features', 'passkeys',
             'resources/views/livewire/auth/confirm-password.blade.php',
         ));
 
-        $c->files(...$files)->removeSection('passkeys');
+        $c->files(...$files)->removeSection('chisel-passkeys');
 
         $c->npm()->remove('@laravel/passkeys');
 

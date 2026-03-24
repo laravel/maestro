@@ -1,9 +1,9 @@
 <?php
 
 use App\Concerns\ProfileValidationRules;
-/* @email-verification */
+/* @chisel-email-verification */
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-/* @end-email-verification */
+/* @end-chisel-email-verification */
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Computed;
@@ -50,7 +50,7 @@ new #[Title('Profile settings')] class extends Component {
      */
     public function resendVerificationNotification(): void
     {
-        /* @email-verification */
+        /* @chisel-email-verification */
         $user = Auth::user();
 
         if ($user->hasVerifiedEmail()) {
@@ -62,7 +62,7 @@ new #[Title('Profile settings')] class extends Component {
         $user->sendEmailVerificationNotification();
 
         Session::flash('status', 'verification-link-sent');
-        /* @end-email-verification */
+        /* @end-chisel-email-verification */
     }
 
     #[Computed]
@@ -70,9 +70,9 @@ new #[Title('Profile settings')] class extends Component {
     {
         $hasUnverifiedEmail = false;
 
-        /* @email-verification */
+        /* @chisel-email-verification */
         $hasUnverifiedEmail = Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
-        /* @end-email-verification */
+        /* @end-chisel-email-verification */
 
         return $hasUnverifiedEmail;
     }
@@ -82,10 +82,10 @@ new #[Title('Profile settings')] class extends Component {
     {
         $showDeleteUser = true;
 
-        /* @email-verification */
+        /* @chisel-email-verification */
         $showDeleteUser = ! Auth::user() instanceof MustVerifyEmail
             || (Auth::user() instanceof MustVerifyEmail && Auth::user()->hasVerifiedEmail());
-        /* @end-email-verification */
+        /* @end-chisel-email-verification */
 
         return $showDeleteUser;
     }
@@ -103,7 +103,7 @@ new #[Title('Profile settings')] class extends Component {
             <div>
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
 
-                {{-- @email-verification --}}
+                {{-- @chisel-email-verification --}}
                 @if ($this->hasUnverifiedEmail)
                     <div>
                         <flux:text class="mt-4">
@@ -121,7 +121,7 @@ new #[Title('Profile settings')] class extends Component {
                         @endif
                     </div>
                 @endif
-                {{-- @end-email-verification --}}
+                {{-- @end-chisel-email-verification --}}
             </div>
 
             <div class="flex items-center gap-4">

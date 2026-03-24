@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
-/* @passkeys */
+/* @chisel-passkeys */
 import PasskeyVerify from '@/components/PasskeyVerify.vue';
-/* @end-passkeys */
+/* @end-chisel-passkeys */
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -30,9 +30,9 @@ defineProps<{
     >
         <Head title="Log in" />
 
-        <!-- @passkeys -->
+        <!-- @chisel-passkeys -->
         <PasskeyVerify />
-        <!-- @end-passkeys -->
+        <!-- @end-chisel-passkeys -->
 
         <div
             v-if="status"

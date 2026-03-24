@@ -116,12 +116,12 @@ return [
 
     'limiters' => [
         'login' => 'login',
-        /* @2fa */
+        /* @chisel-2fa */
         'two-factor' => 'two-factor',
-        /* @end-2fa */
-        /* @passkeys */
+        /* @end-chisel-2fa */
+        /* @chisel-passkeys */
         'passkeys' => 'passkeys',
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
     ],
 
     /*
@@ -137,7 +137,7 @@ return [
 
     'views' => true,
 
-    /* @passkeys */
+    /* @chisel-passkeys */
     /*
     |--------------------------------------------------------------------------
     | Passkeys
@@ -151,7 +151,7 @@ return [
         'relying_party_id' => parse_url(config('app.url'), PHP_URL_HOST),
         'timeout' => 60000,
     ],
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 
     /*
     |--------------------------------------------------------------------------
@@ -168,18 +168,18 @@ return [
         Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
-        /* @2fa */
+        /* @chisel-2fa */
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,
             // 'window' => 0
         ]),
-        /* @end-2fa */
-        /* @passkeys */
+        /* @end-chisel-2fa */
+        /* @chisel-passkeys */
         Features::passkeys([
             'confirmPassword' => true,
         ]),
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
     ],
 
 ];

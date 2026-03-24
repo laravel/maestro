@@ -7,7 +7,7 @@
 
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        {{-- @passkeys --}}
+        {{-- @chisel-passkeys --}}
         <x-passkey-verify
             options-route="passkey.confirm-options"
             submit-route="passkey.confirm"
@@ -15,7 +15,7 @@
             :loading-label="__('Confirming...')"
             :separator="__('Or confirm with password')"
         />
-        {{-- @end-passkeys --}}
+        {{-- @end-chisel-passkeys --}}
 
         <form method="POST" action="{{ route('password.confirm.store') }}" class="flex flex-col gap-6">
             @csrf

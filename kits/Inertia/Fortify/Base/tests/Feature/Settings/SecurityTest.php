@@ -21,11 +21,11 @@ class SecurityTest extends TestCase
             'confirm' => true,
             'confirmPassword' => true,
         ]);
-        /* @passkeys */
+        /* @chisel-passkeys */
         Features::passkeys([
             'confirmPassword' => true,
         ]);
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
 
         $user = User::factory()->create();
 
@@ -34,13 +34,13 @@ class SecurityTest extends TestCase
             ->get(route('security.edit'))
             ->assertInertia(fn (Assert $page) => $page
                 ->component('{{security_settings}}')
-                /* @passkeys */
+                /* @chisel-passkeys */
                 ->where('canManagePasskeys', true)
-                /* @end-passkeys */
+                /* @end-chisel-passkeys */
                 ->where('canManageTwoFactor', true)
-                /* @passkeys */
+                /* @chisel-passkeys */
                 ->where('passkeys', [])
-                /* @end-passkeys */
+                /* @end-chisel-passkeys */
                 ->where('twoFactorEnabled', false),
             );
     }
@@ -72,11 +72,11 @@ class SecurityTest extends TestCase
             'confirm' => true,
             'confirmPassword' => false,
         ]);
-        /* @passkeys */
+        /* @chisel-passkeys */
         Features::passkeys([
             'confirmPassword' => false,
         ]);
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
 
         $this->actingAs($user)
             ->get(route('security.edit'))
@@ -99,13 +99,13 @@ class SecurityTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('{{security_settings}}')
-                /* @passkeys */
+                /* @chisel-passkeys */
                 ->where('canManagePasskeys', false)
-                /* @end-passkeys */
+                /* @end-chisel-passkeys */
                 ->where('canManageTwoFactor', false)
-                /* @passkeys */
+                /* @chisel-passkeys */
                 ->where('passkeys', [])
-                /* @end-passkeys */
+                /* @end-chisel-passkeys */
                 ->missing('twoFactorEnabled')
                 ->missing('requiresConfirmation'),
             );

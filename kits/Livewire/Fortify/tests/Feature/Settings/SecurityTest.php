@@ -17,19 +17,19 @@ class SecurityTest extends TestCase
     {
         parent::setUp();
 
-        /* @2fa */
+        /* @chisel-2fa */
         $this->skipUnlessFortifyFeature(Features::twoFactorAuthentication());
 
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,
         ]);
-        /* @end-2fa */
-        /* @passkeys */
+        /* @end-chisel-2fa */
+        /* @chisel-passkeys */
         Features::passkeys([
             'confirmPassword' => true,
         ]);
-        /* @end-passkeys */
+        /* @end-chisel-passkeys */
     }
 
     public function test_security_settings_page_can_be_rendered(): void
@@ -42,17 +42,17 @@ class SecurityTest extends TestCase
 
         $response->assertOk();
 
-        /* @passkeys */
+        /* @chisel-passkeys */
         $response->assertSee('Passkeys');
         $response->assertSee('No passkeys yet');
-        /* @end-passkeys */
-        /* @2fa */
+        /* @end-chisel-passkeys */
+        /* @chisel-2fa */
         $response->assertSee('Two-factor authentication');
         $response->assertSee('Enable 2FA');
-        /* @end-2fa */
+        /* @end-chisel-2fa */
     }
 
-    /* @2fa */
+    /* @chisel-2fa */
     public function test_security_settings_page_requires_password_confirmation_when_two_factor_confirmation_is_enabled(): void
     {
         $user = User::factory()->create();
@@ -62,9 +62,9 @@ class SecurityTest extends TestCase
 
         $response->assertRedirect(route('password.confirm'));
     }
-    /* @end-2fa */
+    /* @end-chisel-2fa */
 
-    /* @passkeys */
+    /* @chisel-passkeys */
     public function test_security_settings_page_requires_password_confirmation_when_passkey_confirmation_is_enabled(): void
     {
         $user = User::factory()->create();
@@ -74,7 +74,7 @@ class SecurityTest extends TestCase
 
         $response->assertRedirect(route('password.confirm'));
     }
-    /* @end-passkeys */
+    /* @end-chisel-passkeys */
 
     public function test_security_settings_page_renders_without_two_factor_when_feature_is_disabled(): void
     {
@@ -94,7 +94,7 @@ class SecurityTest extends TestCase
 
     public function test_two_factor_authentication_disabled_when_confirmation_abandoned_between_requests(): void
     {
-        /* @2fa */
+        /* @chisel-2fa */
         $user = User::factory()->create();
 
         $user->forceFill([
@@ -114,7 +114,7 @@ class SecurityTest extends TestCase
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
         ]);
-        /* @end-2fa */
+        /* @end-chisel-2fa */
     }
 
     public function test_password_can_be_updated(): void
