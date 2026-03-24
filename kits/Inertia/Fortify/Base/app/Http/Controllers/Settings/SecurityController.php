@@ -19,23 +19,21 @@ class SecurityController extends Controller implements HasMiddleware
      */
     public static function middleware(): array
     {
-        $requiresPasswordConfirmation = false;
-
         /* @2fa */
-        $requiresPasswordConfirmation = $requiresPasswordConfirmation
-            || (Features::canManageTwoFactorAuthentication()
-                && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'));
+        if (Features::canManageTwoFactorAuthentication()
+            && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')) {
+            return [new Middleware('password.confirm', only: ['edit'])];
+        }
         /* @end-2fa */
 
         /* @passkeys */
-        $requiresPasswordConfirmation = $requiresPasswordConfirmation
-            || (Features::canManagePasskeys()
-                && Features::optionEnabled(Features::passkeys(), 'confirmPassword'));
+        if (Features::canManagePasskeys()
+            && Features::optionEnabled(Features::passkeys(), 'confirmPassword')) {
+            return [new Middleware('password.confirm', only: ['edit'])];
+        }
         /* @end-passkeys */
 
-        return $requiresPasswordConfirmation
-            ? [new Middleware('password.confirm', only: ['edit'])]
-            : [];
+        return [];
     }
 
     /**
