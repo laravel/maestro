@@ -36,6 +36,23 @@ export default defineConfig({
         },
     },
     fmt: {
+        printWidth: 80,
+        tabWidth: 4,
         singleQuote: true,
+        semi: true,
+        singleAttributePerLine: false,
+        htmlWhitespaceSensitivity: 'css',
+        ignorePatterns: [
+            '.github/**',
+            'resources/js/components/ui/*',
+            'resources/views/mail/*',
+        ],
+        sortImports: {
+            newlinesBetween: false,
+        },
+        sortTailwindcss: {
+            functions: ['clsx', 'cn', 'cva'],
+            entryPoint: 'resources/css/app.css',
+        },
     },
 });
