@@ -155,16 +155,10 @@ async function lintCurrentBuild({ jsonMode }) {
 
     for (let pass = 1; pass <= MAX_LINT_PASSES; pass++) {
         if (!jsonMode) {
-            log(`  Running lint pass ${pass}...`, 'dim');
+            log(`  Running check:fix pass ${pass}...`, 'dim');
         }
 
-        await runQuiet('npm', ['run', 'lint'], { cwd: buildDir });
-
-        if (!jsonMode) {
-            log(`  Running format pass ${pass}...`, 'dim');
-        }
-
-        await runQuiet('npm', ['run', 'format'], { cwd: buildDir });
+        await runQuiet('npm', ['run', 'check:fix'], { cwd: buildDir });
     }
 }
 
