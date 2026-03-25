@@ -30,7 +30,8 @@ $c = Chisel::in(__DIR__)
         'email-verification' => 'Email verification',
         '2fa' => 'Two-factor authentication',
         'passkeys' => 'Passkeys',
-    ], hint: 'Use space to select, enter to confirm.');
+        'password-confirmation' => 'Password confirmation',
+    ], ['password-confirmation'], hint: 'Use space to select, enter to confirm.');
 
 $c->selected('auth_features', 'email-verification',
     then: function (Chisel $c) {
@@ -139,6 +140,36 @@ $c->selected('auth_features', 'passkeys',
             'resources/js/components/PasskeyRegister.svelte',
             'resources/js/components/PasskeyVerify.svelte',
             'database/migrations/2024_01_01_000000_create_passkeys_table.php',
+        )->delete();
+    },
+);
+
+$c->selected('auth_features', 'password-confirmation',
+    then: function (Chisel $c) {
+        $c->files(
+            'app/Providers/FortifyServiceProvider.php',
+            'app/Http/Controllers/Settings/SecurityController.php',
+            'tests/Feature/Settings/SecurityTest.php',
+        )->removeSectionMarkers('chisel-password-confirmation');
+    },
+    else: function (Chisel $c) {
+        $c->file('config/fortify.php')
+            ->replace("'confirmPassword' => true,", "'confirmPassword' => false,");
+
+        $c->phpFile('app/Http/Controllers/Settings/SecurityController.php')
+            ->removeImport('Illuminate\Routing\Controllers\HasMiddleware')
+            ->removeImport('Illuminate\Routing\Controllers\Middleware')
+            ->removeInterface('HasMiddleware');
+
+        $c->files(
+            'app/Providers/FortifyServiceProvider.php',
+            'app/Http/Controllers/Settings/SecurityController.php',
+            'tests/Feature/Settings/SecurityTest.php',
+        )->removeSection('chisel-password-confirmation');
+
+        $c->files(
+            'resources/js/pages/auth/ConfirmPassword.svelte',
+            'tests/Feature/Auth/PasswordConfirmationTest.php',
         )->delete();
     },
 );

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -12,24 +11,11 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('settings/appearance', 'pages::settings.appearance')->name('appearance.edit');
 
-    $requiresPasswordConfirmation = false;
-
-    /* @chisel-2fa */
-    $requiresPasswordConfirmation = $requiresPasswordConfirmation || (
-        Features::canManageTwoFactorAuthentication()
-        && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')
-    );
-    /* @end-chisel-2fa */
-    /* @chisel-passkeys */
-    $requiresPasswordConfirmation = $requiresPasswordConfirmation || (
-        Features::canManagePasskeys()
-        && Features::optionEnabled(Features::passkeys(), 'confirmPassword')
-    );
-    /* @end-chisel-passkeys */
-
     Route::livewire('settings/security', 'pages::settings.security')
-        ->middleware(
-            when($requiresPasswordConfirmation, ['password.confirm'], []),
-        )
+        /* @chisel-password-confirmation */
+        ->middleware([
+            'password.confirm',
+        ])
+        /* @end-chisel-password-confirmation */
         ->name('security.edit');
 });

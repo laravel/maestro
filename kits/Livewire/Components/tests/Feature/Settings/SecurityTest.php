@@ -38,7 +38,9 @@ class SecurityTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
+            /* @chisel-password-confirmation */
             ->withSession(['auth.password_confirmed_at' => time()])
+            /* @end-chisel-password-confirmation */
             ->get(route('security.edit'));
 
         $response->assertOk();
@@ -53,8 +55,8 @@ class SecurityTest extends TestCase
         /* @end-chisel-2fa */
     }
 
-    /* @chisel-2fa */
-    public function test_security_settings_page_requires_password_confirmation_when_two_factor_confirmation_is_enabled(): void
+    /* @chisel-password-confirmation */
+    public function test_security_settings_page_requires_password_confirmation_when_enabled(): void
     {
         $user = User::factory()->create();
 
@@ -63,19 +65,7 @@ class SecurityTest extends TestCase
 
         $response->assertRedirect(route('password.confirm'));
     }
-    /* @end-chisel-2fa */
-
-    /* @chisel-passkeys */
-    public function test_security_settings_page_requires_password_confirmation_when_passkey_confirmation_is_enabled(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)
-            ->get(route('security.edit'));
-
-        $response->assertRedirect(route('password.confirm'));
-    }
-    /* @end-chisel-passkeys */
+    /* @end-chisel-password-confirmation */
 
     public function test_security_settings_page_renders_without_two_factor_when_feature_is_disabled(): void
     {
@@ -84,7 +74,9 @@ class SecurityTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
+            /* @chisel-password-confirmation */
             ->withSession(['auth.password_confirmed_at' => time()])
+            /* @end-chisel-password-confirmation */
             ->get(route('security.edit'))
             ->assertOk()
             ->assertSee('Update password')

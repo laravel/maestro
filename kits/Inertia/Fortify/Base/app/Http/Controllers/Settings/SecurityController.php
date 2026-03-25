@@ -14,27 +14,15 @@ use Laravel\Fortify\Features;
 
 class SecurityController extends Controller implements HasMiddleware
 {
+    /* @chisel-password-confirmation */
     /**
      * Get the middleware that should be assigned to the controller.
      */
     public static function middleware(): array
     {
-        /* @chisel-2fa */
-        if (Features::canManageTwoFactorAuthentication()
-            && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')) {
-            return [new Middleware('password.confirm', only: ['edit'])];
-        }
-        /* @end-chisel-2fa */
-
-        /* @chisel-passkeys */
-        if (Features::canManagePasskeys()
-            && Features::optionEnabled(Features::passkeys(), 'confirmPassword')) {
-            return [new Middleware('password.confirm', only: ['edit'])];
-        }
-        /* @end-chisel-passkeys */
-
-        return [];
+        return [new Middleware('password.confirm', only: ['edit'])];
     }
+    /* @end-chisel-password-confirmation */
 
     /**
      * Show the user's security settings page.

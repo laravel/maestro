@@ -30,7 +30,9 @@ class SecurityTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
+            /* @chisel-password-confirmation */
             ->withSession(['auth.password_confirmed_at' => time()])
+            /* @end-chisel-password-confirmation */
             ->get(route('security.edit'))
             ->assertInertia(fn (Assert $page) => $page
                 ->component('{{security_settings}}')
@@ -45,6 +47,7 @@ class SecurityTest extends TestCase
             );
     }
 
+    /* @chisel-password-confirmation */
     public function test_security_page_requires_password_confirmation_when_enabled()
     {
         $this->skipUnlessFortifyFeature(Features::twoFactorAuthentication());
@@ -61,30 +64,7 @@ class SecurityTest extends TestCase
 
         $response->assertRedirect(route('password.confirm'));
     }
-
-    public function test_security_page_does_not_require_password_confirmation_when_disabled()
-    {
-        $this->skipUnlessFortifyFeature(Features::twoFactorAuthentication());
-
-        $user = User::factory()->create();
-
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => false,
-        ]);
-        /* @chisel-passkeys */
-        Features::passkeys([
-            'confirmPassword' => false,
-        ]);
-        /* @end-chisel-passkeys */
-
-        $this->actingAs($user)
-            ->get(route('security.edit'))
-            ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('{{security_settings}}'),
-            );
-    }
+    /* @end-chisel-password-confirmation */
 
     public function test_security_page_renders_without_two_factor_when_feature_is_disabled()
     {
@@ -95,6 +75,9 @@ class SecurityTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
+            /* @chisel-password-confirmation */
+            ->withSession(['auth.password_confirmed_at' => time()])
+            /* @end-chisel-password-confirmation */
             ->get(route('security.edit'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page

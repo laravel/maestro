@@ -74,7 +74,9 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::twoFactorChallengeView(fn () => Inertia::render('{{auth_two_factor_challenge}}'));
         /* @end-chisel-2fa */
 
+        /* @chisel-password-confirmation */
         Fortify::confirmPasswordView(fn () => Inertia::render('{{auth_confirm_password}}'));
+        /* @end-chisel-password-confirmation */
     }
 
     /**
