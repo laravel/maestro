@@ -173,7 +173,7 @@ jobs:
         run: |
           git diff --diff-filter=M --name-only | while read file; do
             if git diff "$file" | grep -q '^diff --git' && \
-               ! git diff "$file" | grep -qE '^(\+[^+]|-[^-])'; then
+               ! git diff "$file" | grep -qE '^(\+([^+]|$)|-([^-]|$))'; then
               git checkout -- "$file"
             fi
           done
