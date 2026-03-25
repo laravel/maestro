@@ -1,5 +1,5 @@
 import { Transition } from '@headlessui/react';
-import { Form, Head, setLayoutProps } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import { ShieldCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
@@ -25,15 +25,6 @@ export default function Security({
     requiresConfirmation = false,
     twoFactorEnabled = false,
 }: Props) {
-    setLayoutProps({
-        breadcrumbs: [
-            {
-                title: 'Security settings',
-                href: edit(),
-            },
-        ],
-    });
-
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 
@@ -260,3 +251,12 @@ export default function Security({
         </>
     );
 }
+
+Security.layout = {
+    breadcrumbs: [
+        {
+            title: 'Security settings',
+            href: edit(),
+        },
+    ],
+};

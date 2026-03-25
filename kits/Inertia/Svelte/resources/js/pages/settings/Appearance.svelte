@@ -1,13 +1,20 @@
+<script module lang="ts">
+    import { edit as editAppearance } from '@/routes/appearance';
+
+    export const layout = {
+        breadcrumbs: [
+            {
+                title: 'Appearance settings',
+                href: editAppearance(),
+            },
+        ],
+    };
+</script>
+
 <script lang="ts">
-    import { setLayoutProps } from '@inertiajs/svelte';
     import AppearanceTabs from '@/components/AppearanceTabs.svelte';
     import AppHead from '@/components/AppHead.svelte';
     import Heading from '@/components/Heading.svelte';
-    import { edit as editAppearance } from '@/routes/appearance';
-
-    setLayoutProps({
-        breadcrumbs: [{ title: 'Appearance settings', href: editAppearance() }],
-    });
 </script>
 
 <AppHead title="Appearance settings" />

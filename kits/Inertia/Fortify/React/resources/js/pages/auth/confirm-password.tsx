@@ -1,4 +1,4 @@
-import { Form, Head, setLayoutProps } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
@@ -7,12 +7,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { store } from '@/routes/password/confirm';
 
 export default function ConfirmPassword() {
-    setLayoutProps({
-        title: 'Confirm your password',
-        description:
-            'This is a secure area of the application. Please confirm your password before continuing.',
-    });
-
     return (
         <>
             <Head title="Confirm password" />
@@ -49,3 +43,9 @@ export default function ConfirmPassword() {
         </>
     );
 }
+
+ConfirmPassword.layout = {
+    title: 'Confirm your password',
+    description:
+        'This is a secure area of the application. Please confirm your password before continuing.',
+};

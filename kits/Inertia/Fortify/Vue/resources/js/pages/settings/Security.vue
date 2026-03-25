@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import { ShieldCheck } from 'lucide-vue-next';
 import { onUnmounted, ref } from 'vue';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
@@ -26,7 +26,16 @@ withDefaults(defineProps<Props>(), {
     twoFactorEnabled: false,
 });
 
-setLayoutProps({ breadcrumbs: [{ title: 'Security settings', href: edit() }] });
+defineOptions({
+    layout: {
+        breadcrumbs: [
+            {
+                title: 'Security settings',
+                href: edit(),
+            },
+        ],
+    },
+});
 
 const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth();
 const showSetupModal = ref<boolean>(false);

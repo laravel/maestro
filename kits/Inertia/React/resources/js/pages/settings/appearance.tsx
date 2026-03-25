@@ -1,18 +1,9 @@
-import { Head, setLayoutProps } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import AppearanceTabs from '@/components/appearance-tabs';
 import Heading from '@/components/heading';
 import { edit as editAppearance } from '@/routes/appearance';
 
 export default function Appearance() {
-    setLayoutProps({
-        breadcrumbs: [
-            {
-                title: 'Appearance settings',
-                href: editAppearance(),
-            },
-        ],
-    });
-
     return (
         <>
             <Head title="Appearance settings" />
@@ -30,3 +21,12 @@ export default function Appearance() {
         </>
     );
 }
+
+Appearance.layout = {
+    breadcrumbs: [
+        {
+            title: 'Appearance settings',
+            href: editAppearance(),
+        },
+    ],
+};

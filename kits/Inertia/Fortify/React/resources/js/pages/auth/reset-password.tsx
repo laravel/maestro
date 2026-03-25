@@ -1,4 +1,4 @@
-import { Form, Head, setLayoutProps } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
@@ -13,11 +13,6 @@ type Props = {
 };
 
 export default function ResetPassword({ token, email }: Props) {
-    setLayoutProps({
-        title: 'Reset password',
-        description: 'Please enter your new password below',
-    });
-
     return (
         <>
             <Head title="Reset password" />
@@ -91,3 +86,8 @@ export default function ResetPassword({ token, email }: Props) {
         </>
     );
 }
+
+ResetPassword.layout = {
+    title: 'Reset password',
+    description: 'Please enter your new password below',
+};

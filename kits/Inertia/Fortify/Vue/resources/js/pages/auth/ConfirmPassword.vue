@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
@@ -7,10 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { store } from '@/routes/password/confirm';
 
-setLayoutProps({
-    title: 'Confirm your password',
-    description:
-        'This is a secure area of the application. Please confirm your password before continuing.',
+defineOptions({
+    layout: {
+        title: 'Confirm your password',
+        description:
+            'This is a secure area of the application. Please confirm your password before continuing.',
+    },
 });
 </script>
 

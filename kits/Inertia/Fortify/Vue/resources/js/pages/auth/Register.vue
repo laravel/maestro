@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -10,9 +10,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
 
-setLayoutProps({
-    title: 'Create an account',
-    description: 'Enter your details below to create your account',
+defineOptions({
+    layout: {
+        title: 'Create an account',
+        description: 'Enter your details below to create your account',
+    },
 });
 </script>
 

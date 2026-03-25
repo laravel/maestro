@@ -1,4 +1,4 @@
-import { Form, Head, setLayoutProps } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -22,11 +22,6 @@ export default function Login({
     canResetPassword,
     canRegister,
 }: Props) {
-    setLayoutProps({
-        title: 'Log in to your account',
-        description: 'Enter your email and password below to log in',
-    });
-
     return (
         <>
             <Head title="Log in" />
@@ -119,3 +114,8 @@ export default function Login({
         </>
     );
 }
+
+Login.layout = {
+    title: 'Log in to your account',
+    description: 'Enter your email and password below to log in',
+};

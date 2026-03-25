@@ -1,5 +1,12 @@
+<script module lang="ts">
+    export const layout = {
+        title: 'Log in to your account',
+        description: 'Enter your email and password below to log in',
+    };
+</script>
+
 <script lang="ts">
-    import { Form, setLayoutProps } from '@inertiajs/svelte';
+    import { Form } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import PasswordInput from '@/components/PasswordInput.svelte';
@@ -22,11 +29,6 @@
         canResetPassword: boolean;
         canRegister: boolean;
     } = $props();
-
-    setLayoutProps({
-        title: 'Log in to your account',
-        description: 'Enter your email and password below to log in',
-    });
 </script>
 
 <AppHead title="Log in" />

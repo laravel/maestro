@@ -1,17 +1,19 @@
-<script lang="ts">
-    import { setLayoutProps } from '@inertiajs/svelte';
-    import AppHead from '@/components/AppHead.svelte';
-    import PlaceholderPattern from '@/components/PlaceholderPattern.svelte';
+<script module lang="ts">
     import { dashboard } from '@/routes';
 
-    setLayoutProps({
+    export const layout = {
         breadcrumbs: [
             {
                 title: 'Dashboard',
                 href: dashboard(),
             },
         ],
-    });
+    };
+</script>
+
+<script lang="ts">
+    import AppHead from '@/components/AppHead.svelte';
+    import PlaceholderPattern from '@/components/PlaceholderPattern.svelte';
 </script>
 
 <AppHead title="Dashboard" />

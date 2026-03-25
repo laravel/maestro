@@ -1,5 +1,13 @@
+<script module lang="ts">
+    export const layout = {
+        title: 'Verify email',
+        description:
+            'Please verify your email address by clicking on the link we just emailed to you.',
+    };
+</script>
+
 <script lang="ts">
-    import { Form, setLayoutProps } from '@inertiajs/svelte';
+    import { Form } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import TextLink from '@/components/TextLink.svelte';
     import { Button } from '@/components/ui/button';
@@ -12,12 +20,6 @@
     }: {
         status?: string;
     } = $props();
-
-    setLayoutProps({
-        title: 'Verify email',
-        description:
-            'Please verify your email address by clicking on the link we just emailed to you.',
-    });
 </script>
 
 <AppHead title="Email verification" />

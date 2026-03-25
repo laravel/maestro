@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
@@ -9,9 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { update } from '@/routes/password';
 
-setLayoutProps({
-    title: 'Reset password',
-    description: 'Please enter your new password below',
+defineOptions({
+    layout: {
+        title: 'Reset password',
+        description: 'Please enter your new password below',
+    },
 });
 
 const props = defineProps<{

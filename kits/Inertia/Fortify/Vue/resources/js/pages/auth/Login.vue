@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -12,9 +12,11 @@ import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 
-setLayoutProps({
-    title: 'Log in to your account',
-    description: 'Enter your email and password below to log in',
+defineOptions({
+    layout: {
+        title: 'Log in to your account',
+        description: 'Enter your email and password below to log in',
+    },
 });
 
 defineProps<{

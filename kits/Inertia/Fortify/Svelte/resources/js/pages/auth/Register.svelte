@@ -1,5 +1,12 @@
+<script module lang="ts">
+    export const layout = {
+        title: 'Create an account',
+        description: 'Enter your details below to create your account',
+    };
+</script>
+
 <script lang="ts">
-    import { Form, setLayoutProps } from '@inertiajs/svelte';
+    import { Form } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import PasswordInput from '@/components/PasswordInput.svelte';
@@ -10,11 +17,6 @@
     import { Spinner } from '@/components/ui/spinner';
     import { login } from '@/routes';
     import { store } from '@/routes/register';
-
-    setLayoutProps({
-        title: 'Create an account',
-        description: 'Enter your details below to create your account',
-    });
 </script>
 
 <AppHead title="Register" />

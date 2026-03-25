@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -9,9 +9,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
 import { email } from '@/routes/password';
 
-setLayoutProps({
-    title: 'Forgot password',
-    description: 'Enter your email to receive a password reset link',
+defineOptions({
+    layout: {
+        title: 'Forgot password',
+        description: 'Enter your email to receive a password reset link',
+    },
 });
 
 defineProps<{

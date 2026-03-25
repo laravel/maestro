@@ -1,4 +1,4 @@
-import { Form, Head, setLayoutProps } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -10,11 +10,6 @@ import { login } from '@/routes';
 import { store } from '@/routes/register';
 
 export default function Register() {
-    setLayoutProps({
-        title: 'Create an account',
-        description: 'Enter your details below to create your account',
-    });
-
     return (
         <>
             <Head title="Register" />
@@ -112,3 +107,8 @@ export default function Register() {
         </>
     );
 }
+
+Register.layout = {
+    title: 'Create an account',
+    description: 'Enter your details below to create your account',
+};

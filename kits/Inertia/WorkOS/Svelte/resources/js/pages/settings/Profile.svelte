@@ -1,5 +1,18 @@
+<script module lang="ts">
+    import { edit } from '@/routes/profile';
+
+    export const layout = {
+        breadcrumbs: [
+            {
+                title: 'Profile settings',
+                href: edit(),
+            },
+        ],
+    };
+</script>
+
 <script lang="ts">
-    import { Form, page, setLayoutProps } from '@inertiajs/svelte';
+    import { Form, page } from '@inertiajs/svelte';
     import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
     import AppHead from '@/components/AppHead.svelte';
     import DeleteUser from '@/components/DeleteUser.svelte';
@@ -8,11 +21,6 @@
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
-    import { edit } from '@/routes/profile';
-
-    setLayoutProps({
-        breadcrumbs: [{ title: 'Profile settings', href: edit() }],
-    });
 
     const user = $derived(page.props.auth.user);
 </script>

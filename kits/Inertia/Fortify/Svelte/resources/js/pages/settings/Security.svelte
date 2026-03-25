@@ -1,5 +1,18 @@
+<script module lang="ts">
+    import { edit } from '@/routes/security';
+
+    export const layout = {
+        breadcrumbs: [
+            {
+                title: 'Security settings',
+                href: edit(),
+            },
+        ],
+    };
+</script>
+
 <script lang="ts">
-    import { Form, setLayoutProps } from '@inertiajs/svelte';
+    import { Form } from '@inertiajs/svelte';
     import ShieldCheck from 'lucide-svelte/icons/shield-check';
     import { onDestroy } from 'svelte';
     import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
@@ -12,7 +25,6 @@
     import { Button } from '@/components/ui/button';
     import { Label } from '@/components/ui/label';
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
-    import { edit } from '@/routes/security';
     import { disable, enable } from '@/routes/two-factor';
 
     let {
@@ -24,10 +36,6 @@
         requiresConfirmation?: boolean;
         twoFactorEnabled?: boolean;
     } = $props();
-
-    setLayoutProps({
-        breadcrumbs: [{ title: 'Security settings', href: edit() }],
-    });
 
     const twoFactorAuth = twoFactorAuthState();
     let showSetupModal = $state(false);

@@ -1,5 +1,12 @@
+<script module lang="ts">
+    export const layout = {
+        title: 'Forgot password',
+        description: 'Enter your email to receive a password reset link',
+    };
+</script>
+
 <script lang="ts">
-    import { Form, setLayoutProps } from '@inertiajs/svelte';
+    import { Form } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
     import TextLink from '@/components/TextLink.svelte';
@@ -15,11 +22,6 @@
     }: {
         status?: string;
     } = $props();
-
-    setLayoutProps({
-        title: 'Forgot password',
-        description: 'Enter your email to receive a password reset link',
-    });
 </script>
 
 <AppHead title="Forgot password" />

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, setLayoutProps, usePage } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/DeleteUser.vue';
@@ -16,7 +16,16 @@ type Props = {
 
 defineProps<Props>();
 
-setLayoutProps({ breadcrumbs: [{ title: 'Profile settings', href: edit() }] });
+defineOptions({
+    layout: {
+        breadcrumbs: [
+            {
+                title: 'Profile settings',
+                href: edit(),
+            },
+        ],
+    },
+});
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);

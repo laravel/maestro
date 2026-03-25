@@ -1,5 +1,5 @@
 import { Transition } from '@headlessui/react';
-import { Form, Head, Link, setLayoutProps, usePage } from '@inertiajs/react';
+import { Form, Head, Link, usePage } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
@@ -17,15 +17,6 @@ export default function Profile({
     mustVerifyEmail: boolean;
     status?: string;
 }) {
-    setLayoutProps({
-        breadcrumbs: [
-            {
-                title: 'Profile settings',
-                href: edit(),
-            },
-        ],
-    });
-
     const { auth } = usePage().props;
 
     return (
@@ -143,3 +134,12 @@ export default function Profile({
         </>
     );
 }
+
+Profile.layout = {
+    breadcrumbs: [
+        {
+            title: 'Profile settings',
+            href: edit(),
+        },
+    ],
+};
