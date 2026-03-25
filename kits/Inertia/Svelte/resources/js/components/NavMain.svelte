@@ -17,7 +17,7 @@
         items: NavItem[];
     } = $props();
 
-    const { currentUrl, isCurrentUrl } = currentUrlState();
+    const url = currentUrlState();
 </script>
 
 <SidebarGroup class="px-2 py-0">
@@ -27,7 +27,7 @@
             <SidebarMenuItem>
                 <SidebarMenuButton
                     asChild
-                    isActive={isCurrentUrl(item.href, currentUrl)}
+                    isActive={url.isCurrentUrl(item.href, url.currentUrl)}
                     tooltip={item.title}
                 >
                     {#snippet children(props)}

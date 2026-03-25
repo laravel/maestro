@@ -27,7 +27,7 @@
         },
     ];
 
-    const { currentUrl, isCurrentUrl } = currentUrlState();
+    const url = currentUrlState();
 </script>
 
 <div class="px-4 py-6">
@@ -45,9 +45,9 @@
                 {#each sidebarNavItems as item (toUrl(item.href))}
                     <Button
                         variant="ghost"
-                        class="w-full justify-start {isCurrentUrl(
+                        class="w-full justify-start {url.isCurrentUrl(
                             item.href,
-                            currentUrl,
+                            url.currentUrl,
                         )
                             ? 'bg-muted'
                             : ''}"
