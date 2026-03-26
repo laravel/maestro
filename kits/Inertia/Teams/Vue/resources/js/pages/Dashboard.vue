@@ -1,50 +1,50 @@
 <script setup lang="ts">
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
-import type { BreadcrumbItem, Team } from '@/types';
+import type { Team } from '@/types';
 
-const page = usePage();
-const currentTeam = page.props.currentTeam as Team | null;
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: currentTeam ? dashboard(currentTeam.slug).url : '/',
-    },
-];
+defineOptions({
+    layout: (props: { currentTeam?: Team | null }) => ({
+        breadcrumbs: [
+            {
+                title: 'Dashboard',
+                href: props.currentTeam
+                    ? dashboard(props.currentTeam.slug)
+                    : '/',
+            },
+        ],
+    }),
+});
 </script>
 
 <template>
     <Head title="Dashboard" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
-        >
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
+    <div
+        class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+    >
+        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div
+                class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
+            >
+                <PlaceholderPattern />
             </div>
             <div
-                class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
+                class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
+            >
+                <PlaceholderPattern />
+            </div>
+            <div
+                class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <PlaceholderPattern />
             </div>
         </div>
-    </AppLayout>
+        <div
+            class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
+        >
+            <PlaceholderPattern />
+        </div>
+    </div>
 </template>

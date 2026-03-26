@@ -11,10 +11,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit, index } from '@/routes/teams';
-import type { BreadcrumbItem, Team } from '@/types';
+import type { Team } from '@/types';
 
 type Props = {
     teams: Team[];
@@ -22,106 +20,93 @@ type Props = {
 
 defineProps<Props>();
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Teams',
-        href: index().url,
+defineOptions({
+    layout: {
+        breadcrumbs: [
+            {
+                title: 'Teams',
+                href: index(),
+            },
+        ],
     },
-];
+});
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Teams" />
+    <Head title="Teams" />
 
-        <h1 class="sr-only">Teams</h1>
+    <h1 class="sr-only">Teams</h1>
 
-        <SettingsLayout>
-            <div class="flex flex-col space-y-6">
-                <div class="flex items-center justify-between">
-                    <Heading
-                        variant="small"
-                        title="Teams"
-                        description="Manage your teams and team memberships"
-                    />
+    <div class="flex flex-col space-y-6">
+        <div class="flex items-center justify-between">
+            <Heading
+                variant="small"
+                title="Teams"
+                description="Manage your teams and team memberships"
+            />
 
-                    <CreateTeamModal>
-                        <Button> <Plus /> New team </Button>
-                    </CreateTeamModal>
-                </div>
+            <CreateTeamModal>
+                <Button> <Plus /> New team </Button>
+            </CreateTeamModal>
+        </div>
 
-                <div class="space-y-3">
-                    <div
-                        v-for="team in teams"
-                        :key="team.id"
-                        class="flex items-center justify-between rounded-lg border p-4"
-                    >
-                        <div class="flex items-center gap-4">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-medium">{{
-                                        team.name
-                                    }}</span>
-                                    <Badge
-                                        v-if="team.isPersonal"
-                                        variant="secondary"
-                                    >
-                                        Personal
-                                    </Badge>
-                                </div>
-                                <span class="text-sm text-muted-foreground">
-                                    {{ team.roleLabel }}
-                                </span>
-                            </div>
+        <div class="space-y-3">
+            <div
+                v-for="team in teams"
+                :key="team.id"
+                class="flex items-center justify-between rounded-lg border p-4"
+            >
+                <div class="flex items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium">{{ team.name }}</span>
+                            <Badge v-if="team.isPersonal" variant="secondary">
+                                Personal
+                            </Badge>
                         </div>
-
-                        <TooltipProvider>
-                            <div class="flex items-center gap-2">
-                                <Tooltip v-if="team.role === 'member'">
-                                    <TooltipTrigger as-child>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            as-child
-                                        >
-                                            <Link :href="edit(team.slug).url">
-                                                <Eye class="h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>View team</p>
-                                    </TooltipContent>
-                                </Tooltip>
-
-                                <Tooltip v-else>
-                                    <TooltipTrigger as-child>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            as-child
-                                        >
-                                            <Link :href="edit(team.slug).url">
-                                                <Pencil class="h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Edit team</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </div>
-                        </TooltipProvider>
+                        <span class="text-sm text-muted-foreground">
+                            {{ team.roleLabel }}
+                        </span>
                     </div>
-
-                    <p
-                        v-if="teams.length === 0"
-                        class="py-8 text-center text-muted-foreground"
-                    >
-                        You don't belong to any teams yet.
-                    </p>
                 </div>
+
+                <TooltipProvider>
+                    <div class="flex items-center gap-2">
+                        <Tooltip v-if="team.role === 'member'">
+                            <TooltipTrigger as-child>
+                                <Button variant="ghost" size="sm" as-child>
+                                    <Link :href="edit(team.slug)">
+                                        <Eye class="h-4 w-4" />
+                                    </Link>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>View team</p>
+                            </TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip v-else>
+                            <TooltipTrigger as-child>
+                                <Button variant="ghost" size="sm" as-child>
+                                    <Link :href="edit(team.slug)">
+                                        <Pencil class="h-4 w-4" />
+                                    </Link>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Edit team</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                </TooltipProvider>
             </div>
-        </SettingsLayout>
-    </AppLayout>
+
+            <p
+                v-if="teams.length === 0"
+                class="py-8 text-center text-muted-foreground"
+            >
+                You don't belong to any teams yet.
+            </p>
+        </div>
+    </div>
 </template>

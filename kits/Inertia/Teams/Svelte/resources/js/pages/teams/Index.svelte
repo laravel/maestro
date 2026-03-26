@@ -1,3 +1,16 @@
+<script module lang="ts">
+    import { index } from '@/routes/teams';
+
+    export const layout = {
+        breadcrumbs: [
+            {
+                title: 'Teams',
+                href: index(),
+            },
+        ],
+    };
+</script>
+
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
     import Eye from 'lucide-svelte/icons/eye';
@@ -14,23 +27,14 @@
         TooltipProvider,
         TooltipTrigger,
     } from '@/components/ui/tooltip';
-    import AppLayout from '@/layouts/AppLayout.svelte';
-    import SettingsLayout from '@/layouts/settings/Layout.svelte';
-    import { edit, index } from '@/routes/teams';
-    import type { BreadcrumbItem, Team } from '@/types';
+    import { edit } from '@/routes/teams';
+    import type { Team } from '@/types';
 
     let {
         teams,
     }: {
         teams: Team[];
     } = $props();
-
-    const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Teams',
-            href: index().url,
-        },
-    ];
 
     const callClickHandler = (handler: unknown, event: MouseEvent) => {
         if (typeof handler === 'function') {
@@ -48,129 +52,110 @@
 
 <AppHead title="Teams" />
 
-<AppLayout {breadcrumbs}>
-    <h1 class="sr-only">Teams</h1>
+<h1 class="sr-only">Teams</h1>
 
-    <SettingsLayout>
-        <div class="flex flex-col space-y-6">
-            <div class="flex items-center justify-between">
-                <Heading
-                    variant="small"
-                    title="Teams"
-                    description="Manage your teams and team memberships"
-                />
+<div class="flex flex-col space-y-6">
+    <div class="flex items-center justify-between">
+        <Heading
+            variant="small"
+            title="Teams"
+            description="Manage your teams and team memberships"
+        />
 
-                <CreateTeamModal>
-                    {#snippet children(props)}
-                        <Button
-                            onclick={(event) =>
-                                handleCreateTeamClick(props, event)}
-                        >
-                            <Plus class="h-4 w-4" /> New team
-                        </Button>
-                    {/snippet}
-                </CreateTeamModal>
-            </div>
+        <CreateTeamModal>
+            {#snippet children(props)}
+                <Button
+                    onclick={(event) => handleCreateTeamClick(props, event)}
+                >
+                    <Plus class="h-4 w-4" /> New team
+                </Button>
+            {/snippet}
+        </CreateTeamModal>
+    </div>
 
-            <div class="space-y-3">
-                {#each teams as team (team.id)}
-                    <div
-                        class="flex items-center justify-between rounded-lg border p-4"
-                    >
-                        <div class="flex items-center gap-4">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-medium">{team.name}</span>
+    <div class="space-y-3">
+        {#each teams as team (team.id)}
+            <div
+                class="flex items-center justify-between rounded-lg border p-4"
+            >
+                <div class="flex items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium">{team.name}</span>
 
-                                    {#if team.isPersonal}
-                                        <Badge variant="secondary">
-                                            Personal
-                                        </Badge>
-                                    {/if}
-                                </div>
-
-                                <span class="text-sm text-muted-foreground"
-                                    >{team.roleLabel}</span
-                                >
-                            </div>
+                            {#if team.isPersonal}
+                                <Badge variant="secondary">Personal</Badge>
+                            {/if}
                         </div>
 
-                        <TooltipProvider delayDuration={0}>
-                            <div class="flex items-center gap-2">
-                                {#if team.role === 'member'}
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            {#snippet child({ props })}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    asChild
-                                                    {...props}
-                                                >
-                                                    {#snippet children(
-                                                        buttonProps,
-                                                    )}
-                                                        <Link
-                                                            {...buttonProps}
-                                                            href={edit(
-                                                                team.slug,
-                                                            ).url}
-                                                        >
-                                                            <Eye
-                                                                class="h-4 w-4"
-                                                            />
-                                                        </Link>
-                                                    {/snippet}
-                                                </Button>
-                                            {/snippet}
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>View team</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                {:else}
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            {#snippet child({ props })}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    asChild
-                                                    {...props}
-                                                >
-                                                    {#snippet children(
-                                                        buttonProps,
-                                                    )}
-                                                        <Link
-                                                            {...buttonProps}
-                                                            href={edit(
-                                                                team.slug,
-                                                            ).url}
-                                                        >
-                                                            <Pencil
-                                                                class="h-4 w-4"
-                                                            />
-                                                        </Link>
-                                                    {/snippet}
-                                                </Button>
-                                            {/snippet}
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Edit team</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                {/if}
-                            </div>
-                        </TooltipProvider>
+                        <span class="text-sm text-muted-foreground"
+                            >{team.roleLabel}</span
+                        >
                     </div>
-                {/each}
+                </div>
 
-                {#if teams.length === 0}
-                    <p class="py-8 text-center text-muted-foreground">
-                        You don't belong to any teams yet.
-                    </p>
-                {/if}
+                <TooltipProvider delayDuration={0}>
+                    <div class="flex items-center gap-2">
+                        {#if team.role === 'member'}
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    {#snippet child({ props })}
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            asChild
+                                            {...props}
+                                        >
+                                            {#snippet children(buttonProps)}
+                                                <Link
+                                                    {...buttonProps}
+                                                    href={edit(team.slug)}
+                                                >
+                                                    <Eye class="h-4 w-4" />
+                                                </Link>
+                                            {/snippet}
+                                        </Button>
+                                    {/snippet}
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>View team</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        {:else}
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    {#snippet child({ props })}
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            asChild
+                                            {...props}
+                                        >
+                                            {#snippet children(buttonProps)}
+                                                <Link
+                                                    {...buttonProps}
+                                                    href={edit(team.slug)}
+                                                >
+                                                    <Pencil class="h-4 w-4" />
+                                                </Link>
+                                            {/snippet}
+                                        </Button>
+                                    {/snippet}
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Edit team</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        {/if}
+                    </div>
+                </TooltipProvider>
             </div>
-        </div>
-    </SettingsLayout>
-</AppLayout>
+        {/each}
+
+        {#if teams.length === 0}
+            <p class="py-8 text-center text-muted-foreground">
+                You don't belong to any teams yet.
+            </p>
+        {/if}
+    </div>
+</div>

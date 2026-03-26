@@ -27,7 +27,7 @@
         children?: Snippet;
     } = $props();
 
-    const currentTeam = $derived($page.props.currentTeam as Team | null);
+    const currentTeam = $derived(page.props.currentTeam as Team | null);
     const dashboardUrl = $derived(
         currentTeam ? dashboard(currentTeam.slug) : '/',
     );

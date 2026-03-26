@@ -21,8 +21,8 @@
     let { inHeader = false }: { inHeader?: boolean } = $props();
     let isMobile = $state(false);
 
-    const currentTeam = $derived($page.props.currentTeam as Team | null);
-    const teams = $derived(($page.props.teams ?? []) as Team[]);
+    const currentTeam = $derived(page.props.currentTeam as Team | null);
+    const teams = $derived((page.props.teams ?? []) as Team[]);
 
     const callClickHandler = (handler: unknown, event: MouseEvent) => {
         if (typeof handler === 'function') {
@@ -126,8 +126,8 @@
                     <button
                         type="button"
                         class="{props.class} gap-2 {inHeader ? '' : 'p-2'}"
-                        onclick={(event) => {
-                            props.onClick?.(event);
+                        onclick={() => {
+                            props.onClick?.();
                             switchTeam(team);
                         }}
                     >

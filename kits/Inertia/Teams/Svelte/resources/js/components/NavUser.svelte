@@ -16,8 +16,8 @@
     import UserMenuContent from '@/components/UserMenuContent.svelte';
     import type { Team } from '@/types';
 
-    const user = $derived($page.props.auth.user);
-    const currentTeam = $derived($page.props.currentTeam as Team | null);
+    const user = $derived(page.props.auth.user);
+    const currentTeam = $derived(page.props.currentTeam as Team | null);
     const { isMobile, state: sidebarState } = useSidebar();
 </script>
 

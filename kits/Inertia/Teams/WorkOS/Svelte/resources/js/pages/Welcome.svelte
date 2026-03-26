@@ -5,8 +5,8 @@
     import { dashboard, login } from '@/routes';
     import type { Team } from '@/types';
 
-    const auth = $derived($page.props.auth);
-    const currentTeam = $derived($page.props.currentTeam as Team | null);
+    const auth = $derived(page.props.auth);
+    const currentTeam = $derived(page.props.currentTeam as Team | null);
     const dashboardUrl = $derived(
         currentTeam ? dashboard(currentTeam.slug) : '/',
     );
