@@ -23,10 +23,10 @@
 
     let isDeleting = $state(false);
 
-    function handleDelete() {
+    const handleDelete = () => {
         isDeleting = true;
         onDelete?.(passkey.id);
-    }
+    };
 </script>
 
 <div class="flex items-center justify-between border-b p-4 last:border-b-0">

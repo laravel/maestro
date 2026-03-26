@@ -36,7 +36,8 @@ class SecurityController extends Controller implements HasMiddleware
             /* @chisel-passkeys */
             'canManagePasskeys' => Features::canManagePasskeys(),
             'passkeys' => Features::canManagePasskeys()
-                ? $request->user()->passkeys()
+                ? $request->user()
+                    ->passkeys()
                     ->select(['id', 'name', 'credential', 'created_at', 'last_used_at'])
                     ->latest()
                     ->get()

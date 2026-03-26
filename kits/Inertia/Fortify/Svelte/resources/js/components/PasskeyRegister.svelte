@@ -22,7 +22,7 @@
         },
     });
 
-    async function handleSubmit(event: SubmitEvent) {
+    const handleSubmit = async (event: SubmitEvent) => {
         event.preventDefault();
 
         if (!name.trim()) {
@@ -30,12 +30,12 @@
         }
 
         await register(name.trim());
-    }
+    };
 
-    function handleCancel() {
+    const handleCancel = () => {
         showForm = false;
         name = '';
-    }
+    };
 </script>
 
 {#if !isSupported}

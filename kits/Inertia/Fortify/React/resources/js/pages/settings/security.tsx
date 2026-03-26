@@ -37,6 +37,7 @@ import { disable, enable } from '@/routes/two-factor';
 import type { Passkey } from '@/types/auth';
 /* @end-chisel-passkeys */
 
+/* @chisel-2fa-or-passkeys */
 type Props = Record<string, never> & {
     /* @chisel-2fa */
     canManageTwoFactor?: boolean;
@@ -48,9 +49,10 @@ type Props = Record<string, never> & {
     passkeys?: Passkey[];
     /* @end-chisel-passkeys */
 };
+/* @end-chisel-2fa-or-passkeys */
 
 /* @chisel-passkeys */
-function EmptyState() {
+const EmptyState = () => {
     return (
         <div className="p-8 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
@@ -62,10 +64,12 @@ function EmptyState() {
             </p>
         </div>
     );
-}
+};
 /* @end-chisel-passkeys */
 
-export default function Security(props: Props) {
+export default function Security(
+    /* @chisel-2fa-or-passkeys */ props: Props /* @end-chisel-2fa-or-passkeys */
+) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 

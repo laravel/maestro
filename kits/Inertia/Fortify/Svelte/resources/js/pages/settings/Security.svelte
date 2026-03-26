@@ -77,15 +77,15 @@
     /* @end-chisel-2fa */
 
     /* @chisel-passkeys */
-    function handleDelete(id: number) {
+    const handleDelete = (id: number) => {
         router.delete(destroy.url(id), {
             preserveScroll: true,
         });
-    }
+    };
 
-    function handleRegisterSuccess() {
+    const handleRegisterSuccess = () => {
         router.reload();
-    }
+    };
     /* @end-chisel-passkeys */
 </script>
 

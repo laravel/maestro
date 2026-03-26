@@ -98,10 +98,8 @@ class FortifyServiceProvider extends ServiceProvider
 
         /* @chisel-passkeys */
         RateLimiter::for('passkeys', function (Request $request) {
-            $credentialId = $request->input('credential.id');
-
             return Limit::perMinute(10)->by(
-                ($credentialId ?: $request->session()->getId()).'|'.$request->ip(),
+                ($request->input('credential.id') ?: $request->session()->getId()).'|'.$request->ip(),
             );
         });
         /* @end-chisel-passkeys */

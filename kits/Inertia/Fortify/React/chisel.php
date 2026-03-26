@@ -141,6 +141,17 @@ $c->selected('auth_features', 'passkeys',
     },
 );
 
+$c->selectedAny('auth_features', ['2fa', 'passkeys'],
+    then: function (Chisel $c) {
+        $c->file('resources/js/pages/settings/security.tsx')
+            ->removeSectionMarkers('chisel-2fa-or-passkeys');
+    },
+    else: function (Chisel $c) {
+        $c->file('resources/js/pages/settings/security.tsx')
+            ->removeSection('chisel-2fa-or-passkeys');
+    },
+);
+
 $c->selected('auth_features', 'password-confirmation',
     then: function (Chisel $c) {
         $c->files(
