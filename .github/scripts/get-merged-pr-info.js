@@ -44,6 +44,7 @@ module.exports = async ({ github, context, core }) => {
         core.setOutput('found', 'false');
         core.setOutput('author', '');
         core.setOutput('author_email', '');
+        core.setOutput('co_authors', '');
 
         return;
     }
@@ -55,16 +56,65 @@ module.exports = async ({ github, context, core }) => {
     core.setOutput('url', mergedPr.html_url);
     core.setOutput('found', 'true');
 
-    const fallbackEmail = `${mergedPr.user.id}+${mergedPr.user.login}@users.noreply.github.com`;
+    const resolveEmail = async (username, userId) => {
+        const fallback = `${userId}+${username}@users.noreply.github.com`;
+        try {
+            const { data: user } = await github.rest.users.getByUsername({ username });
+            return user.email || fallback;
+        } catch (e) {
+            core.warning(`Failed to fetch user email for ${username}: ${e.message}`);
+            return fallback;
+        }
+    };
+
+    const authorEmail = await resolveEmail(mergedPr.user.login, mergedPr.user.id);
+    core.setOutput('author_email', authorEmail);
+
+    // Collect co-authors from PR commits and commit message trailers
+    const coAuthors = new Map();
+
     try {
-        const { data: user } = await github.rest.users.getByUsername({
-            username: mergedPr.user.login,
+        const { data: commits } = await github.rest.pulls.listCommits({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: mergedPr.number,
         });
 
-        const email = user.email || fallbackEmail;
-        core.setOutput('author_email', email);
+        for (const commit of commits) {
+            // Add commit authors that differ from the PR author
+            const commitAuthor = commit.author;
+            if (commitAuthor && commitAuthor.login && commitAuthor.login !== mergedPr.user.login) {
+                if (!coAuthors.has(commitAuthor.login)) {
+                    coAuthors.set(commitAuthor.login, { id: commitAuthor.id, login: commitAuthor.login });
+                }
+            }
+
+            // Parse "Co-authored-by" trailers from commit messages
+            const message = commit.commit.message || '';
+            const coAuthorPattern = /^Co-authored-by:\s+(.+?)\s+<(.+?)>\s*$/gim;
+            let match;
+            while ((match = coAuthorPattern.exec(message)) !== null) {
+                const [, name, email] = match;
+                // Skip the PR author and bot accounts
+                if (!email.includes('[bot]') && !coAuthors.has(email)) {
+                    coAuthors.set(email, { name, email });
+                }
+            }
+        }
     } catch (e) {
-        core.warning(`Failed to fetch user email for ${mergedPr.user.login}: ${e.message}`);
-        core.setOutput('author_email', fallbackEmail);
+        core.warning(`Failed to fetch PR commits: ${e.message}`);
     }
+
+    // Resolve co-author emails and build trailer lines
+    const coAuthorLines = [];
+    for (const [key, value] of coAuthors) {
+        if (value.login) {
+            const email = await resolveEmail(value.login, value.id);
+            coAuthorLines.push(`Co-authored-by: ${value.login} <${email}>`);
+        } else {
+            coAuthorLines.push(`Co-authored-by: ${value.name} <${value.email}>`);
+        }
+    }
+
+    core.setOutput('co_authors', coAuthorLines.join('\n'));
 };

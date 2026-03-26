@@ -33,7 +33,8 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
-        "@inertiajs/svelte": "^2.0.0",
+        "@inertiajs/svelte": "^3.0.0",
+        "@inertiajs/vite": "^3.0.0",
         "@sveltejs/vite-plugin-svelte": "^7.0.0",
         "bits-ui": "^2.15.0",
         "class-variance-authority": "^0.7.1",

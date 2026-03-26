@@ -147,6 +147,36 @@ test('two-factor authentication recovery codes can be viewed', function () {
         ->assertNoJavaScriptErrors();
 });
 
+test('two-factor authentication can be enabled, confirmed, and disabled without stale state', function () {
+    $user = User::factory()->create();
+
+    actingAs($user);
+
+    $browser = visit(route('security.edit'))
+        ->assertSee('Enable 2FA')
+        ->click('Enable 2FA')
+        ->assertSee('Enable two-factor authentication')
+        ->click('Continue')
+        ->assertSee('Verify authentication code');
+
+    $user->refresh();
+    $secret = decrypt($user->two_factor_secret);
+    $code = (new Google2FA)->getCurrentOtp($secret);
+
+    fillOTPCode($browser, $code);
+
+    $browser->click('Confirm')
+        ->assertSee('Disable 2FA')
+        ->assertDontSee('Enable 2FA');
+
+    $browser->click('Disable 2FA')
+        ->assertSee('Enable 2FA')
+        ->assertDontSee('Continue setup')
+        ->assertDontSee('Disable 2FA')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
 test('security page displays password section without two-factor when feature is disabled', function () {
     config(['fortify.features' => []]);
 

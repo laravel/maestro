@@ -28,13 +28,10 @@ import { Label } from '@/components/ui/label';
 /* @chisel-2fa */
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 /* @end-chisel-2fa */
-import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/security';
 /* @chisel-2fa */
 import { disable, enable } from '@/routes/two-factor';
 /* @end-chisel-2fa */
-import type { BreadcrumbItem } from '@/types';
 /* @chisel-passkeys */
 import type { Passkey } from '@/types/auth';
 /* @end-chisel-passkeys */
@@ -63,12 +60,16 @@ withDefaults(defineProps<Props>(), {
     /* @end-chisel-passkeys */
 });
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Security settings',
-        href: edit(),
+defineOptions({
+    layout: {
+        breadcrumbs: [
+            {
+                title: 'Security settings',
+                href: edit(),
+            },
+        ],
     },
-];
+});
 
 /* @chisel-2fa */
 const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth();
@@ -91,202 +92,189 @@ const handleRegisterSuccess = () => {
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Security settings" />
+    <Head title="Security settings" />
 
-        <h1 class="sr-only">Security settings</h1>
+    <h1 class="sr-only">Security settings</h1>
 
-        <SettingsLayout>
-            <div class="space-y-6">
-                <Heading
-                    variant="small"
-                    title="Update password"
-                    description="Ensure your account is using a long, random password to stay secure"
+    <div class="space-y-6">
+        <Heading
+            variant="small"
+            title="Update password"
+            description="Ensure your account is using a long, random password to stay secure"
+        />
+
+        <Form
+            v-bind="SecurityController.update.form()"
+            :options="{
+                preserveScroll: true,
+            }"
+            reset-on-success
+            :reset-on-error="[
+                'password',
+                'password_confirmation',
+                'current_password',
+            ]"
+            class="space-y-6"
+            v-slot="{ errors, processing, recentlySuccessful }"
+        >
+            <div class="grid gap-2">
+                <Label for="current_password">Current password</Label>
+                <PasswordInput
+                    id="current_password"
+                    name="current_password"
+                    class="mt-1 block w-full"
+                    autocomplete="current-password"
+                    placeholder="Current password"
                 />
+                <InputError :message="errors.current_password" />
+            </div>
 
-                <Form
-                    v-bind="SecurityController.update.form()"
-                    :options="{
-                        preserveScroll: true,
-                    }"
-                    reset-on-success
-                    :reset-on-error="[
-                        'password',
-                        'password_confirmation',
-                        'current_password',
-                    ]"
-                    class="space-y-6"
-                    v-slot="{ errors, processing, recentlySuccessful }"
+            <div class="grid gap-2">
+                <Label for="password">New password</Label>
+                <PasswordInput
+                    id="password"
+                    name="password"
+                    class="mt-1 block w-full"
+                    autocomplete="new-password"
+                    placeholder="New password"
+                />
+                <InputError :message="errors.password" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="password_confirmation">Confirm password</Label>
+                <PasswordInput
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    class="mt-1 block w-full"
+                    autocomplete="new-password"
+                    placeholder="Confirm password"
+                />
+                <InputError :message="errors.password_confirmation" />
+            </div>
+
+            <div class="flex items-center gap-4">
+                <Button
+                    :disabled="processing"
+                    data-test="update-password-button"
                 >
-                    <div class="grid gap-2">
-                        <Label for="current_password">Current password</Label>
-                        <PasswordInput
-                            id="current_password"
-                            name="current_password"
-                            class="mt-1 block w-full"
-                            autocomplete="current-password"
-                            placeholder="Current password"
-                        />
-                        <InputError :message="errors.current_password" />
-                    </div>
+                    Save password
+                </Button>
 
-                    <div class="grid gap-2">
-                        <Label for="password">New password</Label>
-                        <PasswordInput
-                            id="password"
-                            name="password"
-                            class="mt-1 block w-full"
-                            autocomplete="new-password"
-                            placeholder="New password"
-                        />
-                        <InputError :message="errors.password" />
-                    </div>
+                <Transition
+                    enter-active-class="transition ease-in-out"
+                    enter-from-class="opacity-0"
+                    leave-active-class="transition ease-in-out"
+                    leave-to-class="opacity-0"
+                >
+                    <p
+                        v-show="recentlySuccessful"
+                        class="text-sm text-neutral-600"
+                    >
+                        Saved.
+                    </p>
+                </Transition>
+            </div>
+        </Form>
+    </div>
 
-                    <div class="grid gap-2">
-                        <Label for="password_confirmation"
-                            >Confirm password</Label
-                        >
-                        <PasswordInput
-                            id="password_confirmation"
-                            name="password_confirmation"
-                            class="mt-1 block w-full"
-                            autocomplete="new-password"
-                            placeholder="Confirm password"
-                        />
-                        <InputError :message="errors.password_confirmation" />
-                    </div>
+    <!-- @chisel-2fa -->
+    <div v-if="canManageTwoFactor" class="space-y-6">
+        <Heading
+            variant="small"
+            title="Two-factor authentication"
+            description="Manage your two-factor authentication settings"
+        />
 
-                    <div class="flex items-center gap-4">
-                        <Button
-                            :disabled="processing"
-                            data-test="update-password-button"
-                        >
-                            Save password
-                        </Button>
+        <div
+            v-if="!twoFactorEnabled"
+            class="flex flex-col items-start justify-start space-y-4"
+        >
+            <p class="text-sm text-muted-foreground">
+                When you enable two-factor authentication, you will be prompted
+                for a secure pin during login. This pin can be retrieved from a
+                TOTP-supported application on your phone.
+            </p>
 
-                        <Transition
-                            enter-active-class="transition ease-in-out"
-                            enter-from-class="opacity-0"
-                            leave-active-class="transition ease-in-out"
-                            leave-to-class="opacity-0"
-                        >
-                            <p
-                                v-show="recentlySuccessful"
-                                class="text-sm text-neutral-600"
-                            >
-                                Saved.
-                            </p>
-                        </Transition>
-                    </div>
+            <div>
+                <Button v-if="hasSetupData" @click="showSetupModal = true">
+                    <ShieldCheck />Continue setup
+                </Button>
+                <Form
+                    v-else
+                    v-bind="enable.form()"
+                    @success="showSetupModal = true"
+                    #default="{ processing }"
+                >
+                    <Button type="submit" :disabled="processing">
+                        Enable 2FA
+                    </Button>
+                </Form>
+            </div>
+        </div>
+
+        <div v-else class="flex flex-col items-start justify-start space-y-4">
+            <p class="text-sm text-muted-foreground">
+                You will be prompted for a secure, random pin during login,
+                which you can retrieve from the TOTP-supported application on
+                your phone.
+            </p>
+
+            <div class="relative inline">
+                <Form v-bind="disable.form()" #default="{ processing }">
+                    <Button
+                        variant="destructive"
+                        type="submit"
+                        :disabled="processing"
+                    >
+                        Disable 2FA
+                    </Button>
                 </Form>
             </div>
 
-            <!-- @chisel-2fa -->
-            <div v-if="canManageTwoFactor" class="space-y-6">
-                <Heading
-                    variant="small"
-                    title="Two-factor authentication"
-                    description="Manage your two-factor authentication settings"
-                />
+            <TwoFactorRecoveryCodes />
+        </div>
 
+        <TwoFactorSetupModal
+            v-model:isOpen="showSetupModal"
+            :requiresConfirmation="requiresConfirmation"
+            :twoFactorEnabled="twoFactorEnabled"
+        />
+    </div>
+    <!-- @end-chisel-2fa -->
+
+    <!-- @chisel-passkeys -->
+    <div v-if="canManagePasskeys" class="space-y-6">
+        <Heading
+            variant="small"
+            title="Passkeys"
+            description="Manage your passkeys for passwordless sign-in"
+        />
+
+        <div class="overflow-hidden rounded-lg border border-border">
+            <template v-if="passkeys.length">
+                <PasskeyItem
+                    v-for="passkey in passkeys"
+                    :key="passkey.id"
+                    :passkey="passkey"
+                    @remove="handleDelete"
+                />
+            </template>
+
+            <div v-else class="p-8 text-center">
                 <div
-                    v-if="!twoFactorEnabled"
-                    class="flex flex-col items-start justify-start space-y-4"
+                    class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted"
                 >
-                    <p class="text-sm text-muted-foreground">
-                        When you enable two-factor authentication, you will be
-                        prompted for a secure pin during login. This pin can be
-                        retrieved from a TOTP-supported application on your
-                        phone.
-                    </p>
-
-                    <div>
-                        <Button
-                            v-if="hasSetupData"
-                            @click="showSetupModal = true"
-                        >
-                            <ShieldCheck />Continue setup
-                        </Button>
-                        <Form
-                            v-else
-                            v-bind="enable.form()"
-                            @success="showSetupModal = true"
-                            #default="{ processing }"
-                        >
-                            <Button type="submit" :disabled="processing">
-                                Enable 2FA
-                            </Button>
-                        </Form>
-                    </div>
+                    <KeyRound class="h-7 w-7 text-muted-foreground" />
                 </div>
-
-                <div
-                    v-else
-                    class="flex flex-col items-start justify-start space-y-4"
-                >
-                    <p class="text-sm text-muted-foreground">
-                        You will be prompted for a secure, random pin during
-                        login, which you can retrieve from the TOTP-supported
-                        application on your phone.
-                    </p>
-
-                    <div class="relative inline">
-                        <Form v-bind="disable.form()" #default="{ processing }">
-                            <Button
-                                variant="destructive"
-                                type="submit"
-                                :disabled="processing"
-                            >
-                                Disable 2FA
-                            </Button>
-                        </Form>
-                    </div>
-
-                    <TwoFactorRecoveryCodes />
-                </div>
-
-                <TwoFactorSetupModal
-                    v-model:isOpen="showSetupModal"
-                    :requiresConfirmation="requiresConfirmation"
-                    :twoFactorEnabled="twoFactorEnabled"
-                />
+                <p class="font-medium">No passkeys yet</p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                    Add a passkey to sign in without a password
+                </p>
             </div>
-            <!-- @end-chisel-2fa -->
+        </div>
 
-            <!-- @chisel-passkeys -->
-            <div v-if="canManagePasskeys" class="space-y-6">
-                <Heading
-                    variant="small"
-                    title="Passkeys"
-                    description="Manage your passkeys for passwordless sign-in"
-                />
-
-                <div class="overflow-hidden rounded-lg border border-border">
-                    <template v-if="passkeys.length">
-                        <PasskeyItem
-                            v-for="passkey in passkeys"
-                            :key="passkey.id"
-                            :passkey="passkey"
-                            @remove="handleDelete"
-                        />
-                    </template>
-
-                    <div v-else class="p-8 text-center">
-                        <div
-                            class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted"
-                        >
-                            <KeyRound class="h-7 w-7 text-muted-foreground" />
-                        </div>
-                        <p class="font-medium">No passkeys yet</p>
-                        <p class="mt-1 text-sm text-muted-foreground">
-                            Add a passkey to sign in without a password
-                        </p>
-                    </div>
-                </div>
-
-                <PasskeyRegister @success="handleRegisterSuccess" />
-            </div>
-            <!-- @end-chisel-passkeys -->
-        </SettingsLayout>
-    </AppLayout>
+        <PasskeyRegister @success="handleRegisterSuccess" />
+    </div>
+    <!-- @end-chisel-passkeys -->
 </template>
