@@ -56,6 +56,7 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
+                    data-test="team-switcher-trigger"
                     className={
                         inHeader
                             ? 'h-8 gap-1 px-2'
@@ -111,6 +112,7 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
                 {teams.map((team) => (
                     <DropdownMenuItem
                         key={team.id}
+                        data-test="team-switcher-item"
                         className={
                             inHeader
                                 ? 'cursor-pointer gap-2'
@@ -133,6 +135,7 @@ export function TeamSwitcher({ inHeader = false }: TeamSwitcherProps) {
                 <DropdownMenuSeparator />
                 <CreateTeamModal>
                     <DropdownMenuItem
+                        data-test="team-switcher-new-team"
                         className={
                             inHeader
                                 ? 'cursor-pointer gap-2'

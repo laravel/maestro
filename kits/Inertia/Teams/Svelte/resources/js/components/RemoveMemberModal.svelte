@@ -57,7 +57,8 @@
             <Button
                 variant="destructive"
                 disabled={processing}
-                onclick={removeMember}>Remove member</Button
+                onclick={removeMember}
+                data-test="remove-member-confirm">Remove member</Button
             >
         </DialogFooter>
     </DialogContent>

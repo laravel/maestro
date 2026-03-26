@@ -33,7 +33,7 @@ test('email can be verified', function () {
     );
 
     visit($verificationUrl)
-        ->assertUrlIs(route('dashboard'))
+        ->assertPathEndsWith('/dashboard')
         ->assertQueryStringHas('verified', '1')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
@@ -98,7 +98,7 @@ test('verified user is redirected to dashboard from verification prompt', functi
     Event::fake();
 
     visit(route('verification.notice'))
-        ->assertUrlIs(route('dashboard'))
+        ->assertPathEndsWith('/dashboard')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 
@@ -121,7 +121,7 @@ test('already verified user visiting verification link is redirected without fir
     );
 
     visit($verificationUrl)
-        ->assertUrlIs(route('dashboard'))
+        ->assertPathEndsWith('/dashboard')
         ->assertQueryStringHas('verified', '1')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();

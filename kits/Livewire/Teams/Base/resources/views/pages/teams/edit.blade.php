@@ -140,9 +140,9 @@ new class extends Component
                 @if ($this->permissions->canUpdateTeam)
                     <div class="space-y-4">
                         <form wire:submit="updateTeam" class="space-y-6">
-                            <flux:input wire:model="teamName" :label="__('Team name')" required />
+                            <flux:input wire:model="teamName" :label="__('Team name')" required data-test="team-name-input" />
 
-                            <flux:button variant="primary" type="submit">
+                            <flux:button variant="primary" type="submit" data-test="team-save-button">
                                 {{ __('Save') }}
                             </flux:button>
                         </form>
@@ -165,7 +165,7 @@ new class extends Component
 
                     @if ($this->permissions->canCreateInvitation)
                         <flux:modal.trigger name="invite-member">
-                            <flux:button variant="primary" icon="user-plus">
+                            <flux:button variant="primary" icon="user-plus" data-test="invite-member-button">
                                 {{ __('Invite member') }}
                             </flux:button>
                         </flux:modal.trigger>
@@ -174,7 +174,7 @@ new class extends Component
 
                 <div class="space-y-3">
                     @foreach ($members as $member)
-                        <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                        <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900" data-test="member-row">
                             <div class="flex items-center gap-4">
                                 <flux:avatar :name="$member['name']" :initials="strtoupper(substr($member['name'], 0, 1))" />
                                 <div>
@@ -186,7 +186,7 @@ new class extends Component
                             <div class="flex items-center gap-2">
                                 @if ($member['role'] !== 'owner' && $this->permissions->canUpdateMember)
                                     <flux:dropdown position="bottom" align="end">
-                                        <flux:button variant="outline" size="sm" icon:trailing="chevron-down">
+                                        <flux:button variant="outline" size="sm" icon:trailing="chevron-down" data-test="member-role-trigger">
                                             {{ $member['role_label'] }}
                                         </flux:button>
                                         <flux:menu>
@@ -195,6 +195,7 @@ new class extends Component
                                                     as="button"
                                                     type="button"
                                                     wire:click="updateMember({{ $member['id'] }}, '{{ $role['value'] }}')"
+                                                    data-test="member-role-option"
                                                 >
                                                     {{ $role['label'] }}
                                                 </flux:menu.item>
@@ -212,6 +213,7 @@ new class extends Component
                                                 variant="ghost"
                                                 size="sm"
                                                 icon="x-mark"
+                                                data-test="member-remove-button"
                                             />
                                         </flux:tooltip>
                                     </flux:modal.trigger>
@@ -241,7 +243,7 @@ new class extends Component
 
                     <div class="space-y-3">
                         @foreach ($invitations as $invitation)
-                            <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                            <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900" data-test="invitation-row">
                                 <div class="flex items-center gap-4">
                                     <div class="flex size-10 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
                                         <flux:icon name="envelope" class="text-zinc-500" />
@@ -259,6 +261,7 @@ new class extends Component
                                                 variant="ghost"
                                                 size="sm"
                                                 icon="x-mark"
+                                                data-test="invitation-cancel-button"
                                             />
                                         </flux:tooltip>
                                     </flux:modal.trigger>
@@ -292,7 +295,7 @@ new class extends Component
                         </div>
 
                         <flux:modal.trigger name="delete-team">
-                            <flux:button variant="danger">
+                            <flux:button variant="danger" data-test="delete-team-button">
                                 {{ __('Delete team') }}
                             </flux:button>
                         </flux:modal.trigger>

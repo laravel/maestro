@@ -131,12 +131,16 @@
                             name="name"
                             value={team.name}
                             required
+                            data-test="team-name-input"
                         />
                         <InputError message={errors.name} />
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button type="submit" disabled={processing}>Save</Button
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            data-test="team-save-button">Save</Button
                         >
 
                         {#if recentlySuccessful}
@@ -161,7 +165,10 @@
             />
 
             {#if permissions.canCreateInvitation}
-                <Button onclick={() => (inviteDialogOpen = true)}>
+                <Button
+                    onclick={() => (inviteDialogOpen = true)}
+                    data-test="invite-member-button"
+                >
                     <UserPlus class="h-4 w-4" /> Invite member
                 </Button>
             {/if}
@@ -171,6 +178,7 @@
             {#each members as member (member.id)}
                 <div
                     class="flex items-center justify-between rounded-lg border p-4"
+                    data-test="member-row"
                 >
                     <div class="flex items-center gap-4">
                         <Avatar class="h-10 w-10">
@@ -206,6 +214,7 @@
                                                 'aria-expanded'
                                             ]}
                                             data-state={props['data-state']}
+                                            data-test="member-role-trigger"
                                         >
                                             {member.role_label}
                                             <ChevronDown
@@ -221,6 +230,7 @@
                                                 <button
                                                     type="button"
                                                     class={props.class}
+                                                    data-test="member-role-option"
                                                     onclick={() => {
                                                         props.onClick?.();
                                                         updateMemberRole(
@@ -251,6 +261,7 @@
                                                 variant="ghost"
                                                 size="sm"
                                                 {...props}
+                                                data-test="member-remove-button"
                                                 onclick={(event) => {
                                                     callClickHandler(
                                                         props.onClick,
@@ -287,6 +298,7 @@
                 {#each invitations as invitation (invitation.code)}
                     <div
                         class="flex items-center justify-between rounded-lg border p-4"
+                        data-test="invitation-row"
                     >
                         <div class="flex items-center gap-4">
                             <div
@@ -313,6 +325,7 @@
                                                 variant="ghost"
                                                 size="sm"
                                                 {...props}
+                                                data-test="invitation-cancel-button"
                                                 onclick={(event) => {
                                                     callClickHandler(
                                                         props.onClick,
@@ -361,6 +374,7 @@
                 <Button
                     variant="destructive"
                     onclick={() => (deleteDialogOpen = true)}
+                    data-test="delete-team-button"
                 >
                     Delete team
                 </Button>

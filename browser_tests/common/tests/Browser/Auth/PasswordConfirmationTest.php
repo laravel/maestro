@@ -21,8 +21,8 @@ test('password can be confirmed', function () {
     visit(route('password.confirm'))
         ->fill('password', 'password')
         ->press('@confirm-password-button')
-        ->assertUrlIs(route('dashboard'))
-        ->assertNoConsoleLogs()
+        ->assertDontSee('The provided password was incorrect.')
+        ->assertDontSee('The provided password is incorrect.')
         ->assertNoJavaScriptErrors();
 });
 

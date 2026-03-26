@@ -33,7 +33,7 @@ export default function TeamsIndex({ teams }: Props) {
                     />
 
                     <CreateTeamModal>
-                        <Button>
+                        <Button data-test="teams-new-team-button">
                             <Plus /> New team
                         </Button>
                     </CreateTeamModal>
@@ -43,6 +43,7 @@ export default function TeamsIndex({ teams }: Props) {
                     {teams.map((team) => (
                         <div
                             key={team.id}
+                            data-test="team-row"
                             className="flex items-center justify-between rounded-lg border p-4"
                         >
                             <div className="flex items-center gap-4">
@@ -71,6 +72,7 @@ export default function TeamsIndex({ teams }: Props) {
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
+                                                    data-test="team-view-button"
                                                     asChild
                                                 >
                                                     <Link
@@ -90,6 +92,7 @@ export default function TeamsIndex({ teams }: Props) {
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
+                                                    data-test="team-edit-button"
                                                     asChild
                                                 >
                                                     <Link

@@ -71,6 +71,7 @@
                                     ).value)}
                                 placeholder="Enter team name"
                                 autocomplete="off"
+                                data-test="delete-team-name"
                             />
                             <InputError message={errors.name} />
                         </div>
@@ -85,6 +86,7 @@
                             variant="destructive"
                             type="submit"
                             disabled={!canDeleteTeam || processing}
+                            data-test="delete-team-confirm"
                         >
                             Delete team
                         </Button>

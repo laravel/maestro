@@ -58,7 +58,8 @@
             <Button
                 variant="destructive"
                 disabled={processing}
-                onclick={cancelInvitation}>Cancel invitation</Button
+                onclick={cancelInvitation}
+                data-test="cancel-invitation-confirm">Cancel invitation</Button
             >
         </DialogFooter>
     </DialogContent>

@@ -71,6 +71,7 @@ function handleOpenChange(value: boolean) {
                         <Input
                             id="email"
                             name="email"
+                            data-test="invite-email"
                             type="email"
                             placeholder="colleague@example.com"
                             required
@@ -80,7 +81,11 @@ function handleOpenChange(value: boolean) {
 
                     <div class="grid gap-2">
                         <Label for="role">Role</Label>
-                        <Select v-model="inviteRole" name="role">
+                        <Select
+                            v-model="inviteRole"
+                            name="role"
+                            data-test="invite-role"
+                        >
                             <SelectTrigger class="w-full">
                                 <SelectValue placeholder="Select a role" />
                             </SelectTrigger>
@@ -103,7 +108,11 @@ function handleOpenChange(value: boolean) {
                         <Button variant="secondary"> Cancel </Button>
                     </DialogClose>
 
-                    <Button type="submit" :disabled="processing">
+                    <Button
+                        type="submit"
+                        data-test="invite-submit"
+                        :disabled="processing"
+                    >
                         Send invitation
                     </Button>
                 </DialogFooter>

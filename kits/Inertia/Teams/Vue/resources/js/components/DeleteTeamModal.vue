@@ -72,6 +72,7 @@ const handleOpenChange = (nextOpen: boolean) => {
                         <Input
                             id="confirmation-name"
                             name="name"
+                            data-test="delete-team-name"
                             v-model="confirmationName"
                             placeholder="Enter team name"
                             autocomplete="off"
@@ -86,6 +87,7 @@ const handleOpenChange = (nextOpen: boolean) => {
                     </DialogClose>
 
                     <Button
+                        data-test="delete-team-confirm"
                         variant="destructive"
                         type="submit"
                         :disabled="!canDeleteTeam || processing"

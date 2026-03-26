@@ -56,7 +56,7 @@ new class extends Component {
             <flux:modal.close>
                 <flux:button variant="filled">{{ __('Keep invitation') }}</flux:button>
             </flux:modal.close>
-            <flux:button variant="danger" type="submit">{{ __('Cancel invitation') }}</flux:button>
+            <flux:button variant="danger" type="submit" data-test="cancel-invitation-confirm">{{ __('Cancel invitation') }}</flux:button>
         </div>
     </form>
 </flux:modal>

@@ -61,6 +61,24 @@ To run only the Pint step without the frontend lint pass:
 composer kits:pint
 ```
 
+### Browser Tests
+
+From the `orchestrator` directory, run:
+
+```bash
+composer kits:browser-tests
+```
+
+This builds each Fortify variant (4 base + 4 teams), copies the appropriate browser test suite, installs Pest + Playwright, and runs the tests — matching the steps in the CI workflow.
+
+Browser tests are organized in three layers under `browser_tests/`:
+
+- `bootstrap/` — shared Pest config, TestCase, and phpunit.xml (copied for all variants)
+- `common/` — Fortify browser tests (copied for non-teams variants)
+- `teams/` — Teams browser tests (copied for teams variants)
+
+Each variant runs exactly one test suite (common or teams), not both.
+
 ### Selective Execution
 
 Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.

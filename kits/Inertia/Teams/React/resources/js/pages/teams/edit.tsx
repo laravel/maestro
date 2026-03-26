@@ -122,6 +122,7 @@ export default function TeamEdit({
                                             <Input
                                                 id="name"
                                                 name="name"
+                                                data-test="team-name-input"
                                                 defaultValue={team.name}
                                                 required
                                             />
@@ -131,6 +132,7 @@ export default function TeamEdit({
                                         <div className="flex items-center gap-4">
                                             <Button
                                                 type="submit"
+                                                data-test="team-save-button"
                                                 disabled={processing}
                                             >
                                                 Save
@@ -172,7 +174,10 @@ export default function TeamEdit({
                         />
 
                         {permissions.canCreateInvitation ? (
-                            <Button onClick={() => setInviteDialogOpen(true)}>
+                            <Button
+                                data-test="invite-member-button"
+                                onClick={() => setInviteDialogOpen(true)}
+                            >
                                 <UserPlus /> Invite member
                             </Button>
                         ) : null}
@@ -182,6 +187,7 @@ export default function TeamEdit({
                         {members.map((member) => (
                             <div
                                 key={member.id}
+                                data-test="member-row"
                                 className="flex items-center justify-between rounded-lg border p-4"
                             >
                                 <div className="flex items-center gap-4">
@@ -214,6 +220,7 @@ export default function TeamEdit({
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
+                                                    data-test="member-role-trigger"
                                                 >
                                                     {member.role_label}
                                                     <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
@@ -223,6 +230,7 @@ export default function TeamEdit({
                                                 {availableRoles.map((role) => (
                                                     <DropdownMenuItem
                                                         key={role.value}
+                                                        data-test="member-role-option"
                                                         onSelect={() =>
                                                             updateMemberRole(
                                                                 member,
@@ -249,6 +257,7 @@ export default function TeamEdit({
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
+                                                        data-test="member-remove-button"
                                                         onClick={() =>
                                                             confirmRemoveMember(
                                                                 member,
@@ -282,6 +291,7 @@ export default function TeamEdit({
                             {invitations.map((invitation) => (
                                 <div
                                     key={invitation.code}
+                                    data-test="invitation-row"
                                     className="flex items-center justify-between rounded-lg border p-4"
                                 >
                                     <div className="flex items-center gap-4">
@@ -305,6 +315,7 @@ export default function TeamEdit({
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
+                                                        data-test="invitation-cancel-button"
                                                         onClick={() =>
                                                             confirmCancelInvitation(
                                                                 invitation,
@@ -343,6 +354,7 @@ export default function TeamEdit({
                             </div>
                             <Button
                                 variant="destructive"
+                                data-test="delete-team-button"
                                 onClick={() => setDeleteDialogOpen(true)}
                             >
                                 Delete team

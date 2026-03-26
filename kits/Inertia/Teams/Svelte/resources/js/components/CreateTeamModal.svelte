@@ -67,6 +67,7 @@
                             name="name"
                             placeholder="My team"
                             required
+                            data-test="create-team-name"
                         />
                         <InputError message={errors.name} />
                     </div>
@@ -76,8 +77,10 @@
                             <Button variant="secondary">Cancel</Button>
                         </DialogClose>
 
-                        <Button type="submit" disabled={processing}
-                            >Create team</Button
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            data-test="create-team-submit">Create team</Button
                         >
                     </DialogFooter>
                 {/snippet}

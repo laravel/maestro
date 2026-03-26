@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 new class extends Component {
-    public string $name = '';
+    public string $teamName = '';
 
     public function currentTeam(): ?array
     {
@@ -33,14 +33,14 @@ new class extends Component {
     public function createTeam(CreateTeam $createTeam): void
     {
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255', new TeamName],
+            'teamName' => ['required', 'string', 'max:255', new TeamName],
         ]);
 
-        $team = $createTeam->handle(Auth::user(), $validated['name']);
+        $team = $createTeam->handle(Auth::user(), $validated['teamName']);
 
         $this->dispatch('close-modal', name: 'create-team-switcher');
 
-        $this->reset('name');
+        $this->reset('teamName');
 
         $this->redirectRoute('teams.edit', ['team' => $team->slug], navigate: true);
     }
@@ -99,7 +99,7 @@ new class extends Component {
 
 <div>
     <flux:dropdown position="bottom" align="start">
-        <flux:button variant="ghost" class="group w-full justify-start in-data-flux-sidebar-collapsed-desktop:justify-center">
+        <flux:button variant="ghost" class="group w-full justify-start in-data-flux-sidebar-collapsed-desktop:justify-center" data-test="team-switcher-trigger">
             <flux:icon name="users" class="hidden size-4 in-data-flux-sidebar-collapsed-desktop:block" />
             <span class="truncate font-semibold in-data-flux-sidebar-collapsed-desktop:hidden">{{ $this->currentTeam()['name'] ?? __('Select team') }}</span>
             <flux:icon
@@ -116,6 +116,7 @@ new class extends Component {
                 <flux:menu.item
                     wire:click="switchTeam('{{ $team->slug }}')"
                     class="cursor-pointer"
+                    data-test="team-switcher-item"
                 >
                     <div class="flex w-full items-center justify-between">
                         <span>{{ $team->name }}</span>
@@ -129,7 +130,7 @@ new class extends Component {
             <flux:menu.separator />
 
             <flux:modal.trigger name="create-team-switcher">
-                <flux:menu.item icon="plus" class="cursor-pointer">
+                <flux:menu.item icon="plus" class="cursor-pointer" data-test="team-switcher-new-team">
                     {{ __('New team') }}
                 </flux:menu.item>
             </flux:modal.trigger>
@@ -143,14 +144,14 @@ new class extends Component {
                 <flux:subheading>{{ __('Give your team a name to get started.') }}</flux:subheading>
             </div>
 
-            <flux:input wire:model="name" :label="__('Team name')" type="text" required autofocus />
+            <flux:input wire:model="teamName" :label="__('Team name')" type="text" required autofocus data-test="switcher-create-team-name" />
 
             <div class="flex justify-end space-x-2 rtl:space-x-reverse">
                 <flux:modal.close>
                     <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
                 </flux:modal.close>
 
-                <flux:button variant="primary" type="submit">
+                <flux:button variant="primary" type="submit" data-test="switcher-create-team-submit">
                     {{ __('Create team') }}
                 </flux:button>
             </div>

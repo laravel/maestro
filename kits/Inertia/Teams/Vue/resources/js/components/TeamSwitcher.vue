@@ -90,6 +90,7 @@ onUnmounted(() => {
     <DropdownMenu>
         <DropdownMenuTrigger as-child>
             <Button
+                data-test="team-switcher-trigger"
                 variant="ghost"
                 :class="
                     props.inHeader
@@ -143,6 +144,7 @@ onUnmounted(() => {
             <DropdownMenuItem
                 v-for="team in teams"
                 :key="team.id"
+                data-test="team-switcher-item"
                 :class="teamItemClass"
                 @click="switchTeam(team)"
             >
@@ -154,7 +156,11 @@ onUnmounted(() => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <CreateTeamModal>
-                <DropdownMenuItem :class="teamItemClass" @select.prevent>
+                <DropdownMenuItem
+                    data-test="team-switcher-new-team"
+                    :class="teamItemClass"
+                    @select.prevent
+                >
                     <Plus :class="plusIconClass" />
                     <span class="text-muted-foreground">New team</span>
                 </DropdownMenuItem>

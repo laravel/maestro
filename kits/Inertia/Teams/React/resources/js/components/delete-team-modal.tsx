@@ -64,6 +64,7 @@ export default function DeleteTeamModal({ team, open, onOpenChange }: Props) {
                                     <Input
                                         id="confirmation-name"
                                         name="name"
+                                        data-test="delete-team-name"
                                         value={confirmationName}
                                         onChange={(event) =>
                                             setConfirmationName(
@@ -85,6 +86,7 @@ export default function DeleteTeamModal({ team, open, onOpenChange }: Props) {
                                 <Button
                                     variant="destructive"
                                     type="submit"
+                                    data-test="delete-team-confirm"
                                     disabled={!canDeleteTeam || processing}
                                 >
                                     Delete team

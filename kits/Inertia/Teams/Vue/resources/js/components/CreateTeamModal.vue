@@ -54,6 +54,7 @@ function handleOpenChange(value: boolean) {
                     <Input
                         id="name"
                         name="name"
+                        data-test="create-team-name"
                         placeholder="My team"
                         required
                     />
@@ -65,7 +66,11 @@ function handleOpenChange(value: boolean) {
                         <Button variant="secondary"> Cancel </Button>
                     </DialogClose>
 
-                    <Button type="submit" :disabled="processing">
+                    <Button
+                        type="submit"
+                        data-test="create-team-submit"
+                        :disabled="processing"
+                    >
                         Create team
                     </Button>
                 </DialogFooter>

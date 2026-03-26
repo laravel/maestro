@@ -45,6 +45,7 @@ export default function CreateTeamModal({ children }: PropsWithChildren) {
                                 <Input
                                     id="name"
                                     name="name"
+                                    data-test="create-team-name"
                                     placeholder="My team"
                                     required
                                 />
@@ -56,7 +57,11 @@ export default function CreateTeamModal({ children }: PropsWithChildren) {
                                     <Button variant="secondary">Cancel</Button>
                                 </DialogClose>
 
-                                <Button type="submit" disabled={processing}>
+                                <Button
+                                    type="submit"
+                                    data-test="create-team-submit"
+                                    disabled={processing}
+                                >
                                     Create team
                                 </Button>
                             </DialogFooter>

@@ -71,6 +71,7 @@ export default function InviteMemberModal({
                                         id="email"
                                         name="email"
                                         type="email"
+                                        data-test="invite-email"
                                         placeholder="colleague@example.com"
                                         required
                                     />
@@ -81,6 +82,7 @@ export default function InviteMemberModal({
                                     <Label htmlFor="role">Role</Label>
                                     <Select
                                         name="role"
+                                        data-test="invite-role"
                                         value={inviteRole}
                                         onValueChange={(value) =>
                                             setInviteRole(
@@ -111,7 +113,11 @@ export default function InviteMemberModal({
                                     <Button variant="secondary">Cancel</Button>
                                 </DialogClose>
 
-                                <Button type="submit" disabled={processing}>
+                                <Button
+                                    type="submit"
+                                    data-test="invite-submit"
+                                    disabled={processing}
+                                >
                                     Send invitation
                                 </Button>
                             </DialogFooter>

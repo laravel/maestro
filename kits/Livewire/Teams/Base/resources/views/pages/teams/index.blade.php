@@ -43,7 +43,7 @@ new #[Title('Teams')] class extends Component {
     <x-pages::settings.layout :heading="__('Teams')" :subheading="__('Manage your teams and team memberships')">
         <div class="flex items-center justify-end">
             <flux:modal.trigger name="create-team">
-                <flux:button variant="primary" icon="plus" x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-team')">
+                <flux:button variant="primary" icon="plus" x-data="" x-on:click.prevent="$dispatch('open-modal', 'create-team')" data-test="teams-new-team-button">
                     {{ __('New team') }}
                 </flux:button>
             </flux:modal.trigger>
@@ -51,7 +51,7 @@ new #[Title('Teams')] class extends Component {
 
         <div class="mt-6 space-y-3">
             @forelse ($this->teams as $team)
-                <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900" data-test="team-row">
                     <div class="flex items-center gap-4">
                         <div>
                             <div class="flex items-center gap-2">
@@ -72,6 +72,7 @@ new #[Title('Teams')] class extends Component {
                                 :icon="$team->role === 'member' ? 'eye' : 'pencil'"
                                 :href="route('teams.edit', $team->slug)"
                                 wire:navigate
+                                :data-test="$team->role === 'member' ? 'team-view-button' : 'team-edit-button'"
                             />
                         </flux:tooltip>
                     </div>
@@ -91,14 +92,14 @@ new #[Title('Teams')] class extends Component {
                 <flux:subheading>{{ __('Give your team a name to get started.') }}</flux:subheading>
             </div>
 
-            <flux:input wire:model="name" :label="__('Team name')" type="text" required autofocus />
+            <flux:input wire:model="name" :label="__('Team name')" type="text" required autofocus data-test="create-team-name" />
 
             <div class="flex justify-end space-x-2 rtl:space-x-reverse">
                 <flux:modal.close>
                     <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
                 </flux:modal.close>
 
-                <flux:button variant="primary" type="submit">
+                <flux:button variant="primary" type="submit" data-test="create-team-submit">
                     {{ __('Create team') }}
                 </flux:button>
             </div>

@@ -58,6 +58,7 @@ const cancelInvitation = () => {
                 </DialogClose>
 
                 <Button
+                    data-test="cancel-invitation-confirm"
                     variant="destructive"
                     :disabled="processing"
                     @click="cancelInvitation"

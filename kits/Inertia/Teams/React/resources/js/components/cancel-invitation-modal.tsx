@@ -58,6 +58,7 @@ export default function CancelInvitationModal({
 
                     <Button
                         variant="destructive"
+                        data-test="cancel-invitation-confirm"
                         disabled={processing}
                         onClick={cancelInvitation}
                     >

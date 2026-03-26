@@ -66,6 +66,7 @@
             {#snippet children(props)}
                 <Button
                     onclick={(event) => handleCreateTeamClick(props, event)}
+                    data-test="teams-new-team-button"
                 >
                     <Plus class="h-4 w-4" /> New team
                 </Button>
@@ -77,6 +78,7 @@
         {#each teams as team (team.id)}
             <div
                 class="flex items-center justify-between rounded-lg border p-4"
+                data-test="team-row"
             >
                 <div class="flex items-center gap-4">
                     <div>
@@ -110,6 +112,7 @@
                                                 <Link
                                                     {...buttonProps}
                                                     href={edit(team.slug)}
+                                                    data-test="team-view-button"
                                                 >
                                                     <Eye class="h-4 w-4" />
                                                 </Link>
@@ -135,6 +138,7 @@
                                                 <Link
                                                     {...buttonProps}
                                                     href={edit(team.slug)}
+                                                    data-test="team-edit-button"
                                                 >
                                                     <Pencil class="h-4 w-4" />
                                                 </Link>

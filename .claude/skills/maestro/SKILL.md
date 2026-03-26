@@ -31,7 +31,7 @@ All commands below run from the `orchestrator/` directory unless noted otherwise
 | `composer kits:pint`                                 | Run Pint on `kits/` and `browser_tests/`.                                  |
 | `composer kits:lint`                                 | Run `kits:pint`, then lint/format Inertia variants and sync back.          |
 | `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 21 kit variants sequentially. |
-| `composer kits:browser-tests`                        | Build and run browser tests for all 4 Fortify kit variants (Livewire, React, Svelte, Vue). |
+| `composer kits:browser-tests`                        | Build and run browser tests for all 8 Fortify kit variants (4 base + 4 teams). |
 | `npm run watch:kits`                                 | Run only the file watcher (no dev server).                                 |
 | `composer setup && composer ci:check`                | Run inside `build/` — installs deps, builds frontend, runs checks (see below). |
 
@@ -301,9 +301,15 @@ To run browser tests for all kits locally, run from the `orchestrator/` director
 composer kits:browser-tests
 ```
 
-This builds each Fortify variant (Livewire, React, Svelte, Vue), copies the shared browser tests, installs dependencies, and runs the tests — matching the steps in `.github/workflows/browser-tests.yml`.
+This builds each variant (4 Fortify + 4 Fortify Teams), copies the appropriate browser tests, installs dependencies, and runs the tests — matching the steps in `.github/workflows/browser-tests.yml`.
 
-To run the steps manually for a single kit, use the sequence below.
+Browser tests are split into three layers under `browser_tests/`:
+
+- `browser_tests/bootstrap/` — shared Pest config, TestCase, and phpunit.xml. Copied for all 8 jobs.
+- `browser_tests/common/` — Fortify browser tests. Copied only for non-teams builds.
+- `browser_tests/teams/` — Teams browser tests. Copied only for Teams builds.
+
+Each variant runs exactly one test suite (common or teams), not both.
 
 ### Per-Kit Command Sequence
 
@@ -315,11 +321,14 @@ cd orchestrator
 composer install --no-interaction --prefer-dist
 
 # 2) Build the target kit (replace <Kit> with Livewire, React, Svelte, or Vue)
+#    Add --teams for Teams variants
 php artisan build --kit=<Kit>
 cd ..
 
-# 3) Copy shared browser tests into build/
-cp -r browser_tests/* build/
+# 3) Copy browser test bootstrap + suite into build/
+cp -r browser_tests/bootstrap/* build/
+cp -r browser_tests/common/* build/      # For non-teams variants
+# cp -r browser_tests/teams/* build/     # For Teams variants instead
 
 # 4) Install browser testing dependencies in build/
 cd build
@@ -329,8 +338,6 @@ npm install
 npm install playwright
 
 # 5) Install Playwright browsers/deps
-# CI installs browsers when cache miss, otherwise only system deps.
-# For local parity, run browser install directly:
 npx playwright install --with-deps
 
 # 6) Prepare app env and build frontend assets
@@ -342,35 +349,6 @@ npm run build
 php vendor/bin/pest --parallel
 cd ..
 ```
-
-### Run All Matrix Kits Locally
-
-```bash
-for KIT in Livewire React Svelte Vue; do
-  echo "Running browser tests for ${KIT}"
-
-  cd orchestrator
-  composer install --no-interaction --prefer-dist
-  php artisan build --kit="${KIT}"
-  cd ..
-
-  cp -r browser_tests/* build/
-
-  cd build
-  composer remove --dev phpunit/phpunit --no-interaction --no-update
-  composer require --dev pestphp/pest pestphp/pest-plugin-browser pestphp/pest-plugin-laravel --no-interaction
-  npm install
-  npm install playwright
-  npx playwright install --with-deps
-  cp .env.example .env
-  php artisan key:generate
-  npm run build
-  php vendor/bin/pest --parallel
-  cd ..
-done
-```
-
-Kit names are case-sensitive here because the workflow matrix uses `Livewire`, `React`, `Svelte`, and `Vue` values directly for `php artisan build --kit=...`.
 
 ## Key Files Reference
 

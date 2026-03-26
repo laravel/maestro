@@ -58,6 +58,7 @@ export default function RemoveMemberModal({
 
                     <Button
                         variant="destructive"
+                        data-test="remove-member-confirm"
                         disabled={processing}
                         onClick={removeMember}
                     >

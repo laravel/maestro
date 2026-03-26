@@ -46,7 +46,9 @@ defineOptions({
             />
 
             <CreateTeamModal>
-                <Button> <Plus /> New team </Button>
+                <Button data-test="teams-new-team-button">
+                    <Plus /> New team
+                </Button>
             </CreateTeamModal>
         </div>
 
@@ -54,6 +56,7 @@ defineOptions({
             <div
                 v-for="team in teams"
                 :key="team.id"
+                data-test="team-row"
                 class="flex items-center justify-between rounded-lg border p-4"
             >
                 <div class="flex items-center gap-4">
@@ -74,7 +77,12 @@ defineOptions({
                     <div class="flex items-center gap-2">
                         <Tooltip v-if="team.role === 'member'">
                             <TooltipTrigger as-child>
-                                <Button variant="ghost" size="sm" as-child>
+                                <Button
+                                    data-test="team-view-button"
+                                    variant="ghost"
+                                    size="sm"
+                                    as-child
+                                >
                                     <Link :href="edit(team.slug)">
                                         <Eye class="h-4 w-4" />
                                     </Link>
@@ -87,7 +95,12 @@ defineOptions({
 
                         <Tooltip v-else>
                             <TooltipTrigger as-child>
-                                <Button variant="ghost" size="sm" as-child>
+                                <Button
+                                    data-test="team-edit-button"
+                                    variant="ghost"
+                                    size="sm"
+                                    as-child
+                                >
                                     <Link :href="edit(team.slug)">
                                         <Pencil class="h-4 w-4" />
                                     </Link>

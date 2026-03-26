@@ -81,6 +81,7 @@
                 onclick={props.onclick}
                 aria-expanded={props['aria-expanded']}
                 data-state={props['data-state']}
+                data-test="team-switcher-trigger"
             >
                 <Users
                     class={inHeader
@@ -126,6 +127,7 @@
                     <button
                         type="button"
                         class="{props.class} gap-2 {inHeader ? '' : 'p-2'}"
+                        data-test="team-switcher-item"
                         onclick={() => {
                             props.onClick?.();
                             switchTeam(team);
@@ -153,6 +155,7 @@
                         <button
                             type="button"
                             class="{props.class} gap-2 {inHeader ? '' : 'p-2'}"
+                            data-test="team-switcher-new-team"
                             onclick={(event) => {
                                 callClickHandler(triggerProps.onClick, event);
                             }}

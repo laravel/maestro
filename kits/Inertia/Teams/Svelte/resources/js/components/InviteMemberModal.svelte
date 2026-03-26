@@ -74,6 +74,7 @@
                                 type="email"
                                 placeholder="colleague@example.com"
                                 required
+                                data-test="invite-email"
                             />
                             <InputError message={errors.email} />
                         </div>
@@ -81,7 +82,10 @@
                         <div class="grid gap-2">
                             <Label for="role">Role</Label>
                             <Select bind:value={inviteRole}>
-                                <SelectTrigger class="w-full">
+                                <SelectTrigger
+                                    class="w-full"
+                                    data-test="invite-role"
+                                >
                                     {inviteRoleLabel}
                                 </SelectTrigger>
                                 <SelectContent>
@@ -110,8 +114,10 @@
                             <Button variant="secondary">Cancel</Button>
                         </DialogClose>
 
-                        <Button type="submit" disabled={processing}
-                            >Send invitation</Button
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            data-test="invite-submit">Send invitation</Button
                         >
                     </DialogFooter>
                 {/snippet}

@@ -61,9 +61,9 @@ new class extends Component {
         </div>
 
         <div class="space-y-4">
-            <flux:input wire:model="inviteEmail" type="email" :label="__('Email address')" required />
+            <flux:input wire:model="inviteEmail" type="email" :label="__('Email address')" required data-test="invite-email" />
 
-            <flux:select wire:model="inviteRole" :label="__('Role')">
+            <flux:select wire:model="inviteRole" :label="__('Role')" data-test="invite-role">
                 @foreach ($this->availableRoles as $role)
                     <flux:select.option value="{{ $role['value'] }}">{{ $role['label'] }}</flux:select.option>
                 @endforeach
@@ -74,7 +74,7 @@ new class extends Component {
             <flux:modal.close>
                 <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
             </flux:modal.close>
-            <flux:button variant="primary" type="submit">{{ __('Send invitation') }}</flux:button>
+            <flux:button variant="primary" type="submit" data-test="invite-submit">{{ __('Send invitation') }}</flux:button>
         </div>
     </form>
 </flux:modal>

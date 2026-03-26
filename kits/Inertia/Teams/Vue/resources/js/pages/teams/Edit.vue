@@ -118,6 +118,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                     <Input
                         id="name"
                         name="name"
+                        data-test="team-name-input"
                         :default-value="team.name"
                         required
                     />
@@ -125,7 +126,13 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <Button type="submit" :disabled="processing"> Save </Button>
+                    <Button
+                        type="submit"
+                        data-test="team-save-button"
+                        :disabled="processing"
+                    >
+                        Save
+                    </Button>
 
                     <Transition
                         enter-active-class="transition ease-in-out"
@@ -163,6 +170,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
 
                 <Button
                     v-if="permissions.canCreateInvitation"
+                    data-test="invite-member-button"
                     @click="inviteDialogOpen = true"
                 >
                     <UserPlus /> Invite member
@@ -173,6 +181,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                 <div
                     v-for="member in members"
                     :key="member.id"
+                    data-test="member-row"
                     class="flex items-center justify-between rounded-lg border p-4"
                 >
                     <div class="flex items-center gap-4">
@@ -204,7 +213,11 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                             "
                         >
                             <DropdownMenuTrigger as-child>
-                                <Button variant="outline" size="sm">
+                                <Button
+                                    data-test="member-role-trigger"
+                                    variant="outline"
+                                    size="sm"
+                                >
                                     {{ member.role_label }}
                                     <ChevronDown
                                         class="ml-2 h-4 w-4 opacity-50"
@@ -215,6 +228,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                                 <DropdownMenuItem
                                     v-for="role in availableRoles"
                                     :key="role.value"
+                                    data-test="member-role-option"
                                     @click="
                                         updateMemberRole(member, role.value)
                                     "
@@ -236,6 +250,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                             <Tooltip>
                                 <TooltipTrigger as-child>
                                     <Button
+                                        data-test="member-remove-button"
                                         variant="ghost"
                                         size="sm"
                                         @click="confirmRemoveMember(member)"
@@ -265,6 +280,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                 <div
                     v-for="invitation in invitations"
                     :key="invitation.code"
+                    data-test="invitation-row"
                     class="flex items-center justify-between rounded-lg border p-4"
                 >
                     <div class="flex items-center gap-4">
@@ -287,6 +303,7 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                         <Tooltip>
                             <TooltipTrigger as-child>
                                 <Button
+                                    data-test="invitation-cancel-button"
                                     variant="ghost"
                                     size="sm"
                                     @click="confirmCancelInvitation(invitation)"
@@ -324,7 +341,10 @@ const confirmCancelInvitation = (invitation: TeamInvitation) => {
                         Please proceed with caution, this cannot be undone.
                     </p>
                 </div>
-                <Button variant="destructive" @click="deleteDialogOpen = true"
+                <Button
+                    data-test="delete-team-button"
+                    variant="destructive"
+                    @click="deleteDialogOpen = true"
                     >Delete team</Button
                 >
             </div>

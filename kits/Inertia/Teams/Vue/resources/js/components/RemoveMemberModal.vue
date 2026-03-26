@@ -57,6 +57,7 @@ const removeMember = () => {
                 </DialogClose>
 
                 <Button
+                    data-test="remove-member-confirm"
                     variant="destructive"
                     :disabled="processing"
                     @click="removeMember"
