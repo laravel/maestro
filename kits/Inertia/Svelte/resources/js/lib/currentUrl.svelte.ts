@@ -8,6 +8,10 @@ export type CurrentUrlState = {
         urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
         currentUrl: string,
     ) => boolean;
+    isCurrentOrParentUrl: (
+        urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
+        currentUrl: string,
+    ) => boolean;
     whenCurrentUrl: <TIfTrue, TIfFalse>(
         urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
         currentUrl: string,
@@ -43,6 +47,19 @@ export function currentUrlState(): CurrentUrlState {
         return current === resolved;
     }
 
+    function isCurrentOrParentUrl(
+        urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
+        current: string,
+    ): boolean {
+        const resolved = toUrl(urlToCheck);
+
+        if (typeof resolved !== 'string') {
+            return false;
+        }
+
+        return current.startsWith(resolved);
+    }
+
     function whenCurrentUrl<TIfTrue, TIfFalse>(
         urlToCheck: NonNullable<LinkComponentBaseProps['href']>,
         current: string,
@@ -57,6 +74,7 @@ export function currentUrlState(): CurrentUrlState {
             return currentUrl;
         },
         isCurrentUrl,
+        isCurrentOrParentUrl,
         whenCurrentUrl,
     };
 }

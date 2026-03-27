@@ -18,12 +18,14 @@ From the `orchestrator` directory, build a kit by running the following command:
 php artisan build
 ```
 
-This will prompt you to build the starter kit you want. In alternative you can use the `--kit` parameter and the `--workos`, `--components` or `--blank` flags to build directly:
+This will prompt you to build the starter kit you want. In alternative you can use the `--kit` parameter and the `--workos`, `--components`, `--teams` or `--blank` flags to build directly:
 
 ```bash
 php artisan build --kit=vue # Builds the Vue (Fortify) starter kit
 php artisan build --kit=react --workos # Builds the React (WorkOS) starter kit
 php artisan build --kit=livewire --blank # Builds Blank Livewire starter kit
+php artisan build --kit=livewire --teams # Builds Livewire (Fortify Teams) starter kit
+php artisan build --kit=vue --workos --teams # Builds Vue (WorkOS Teams) starter kit
 ```
 
 ### WorkOS
@@ -59,10 +61,28 @@ To run only the Pint step without the frontend lint pass:
 composer kits:pint
 ```
 
+### Browser Tests
+
+From the `orchestrator` directory, run:
+
+```bash
+composer kits:browser-tests
+```
+
+This builds each Fortify variant (4 base + 4 teams), copies the appropriate browser test suite, installs Pest + Playwright, and runs the tests — matching the steps in the CI workflow.
+
+Browser tests are organized in three layers under `browser_tests/`:
+
+- `bootstrap/` — shared Pest config, TestCase, and phpunit.xml (copied for all variants)
+- `common/` — Fortify browser tests (copied for non-teams variants)
+- `teams/` — Teams browser tests (copied for teams variants)
+
+Each variant runs exactly one test suite (common or teams), not both.
+
 ### Selective Execution
 
 Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.
-Pass `--blank`, `--fortify`, `--workos`, and/or `--components` to target specific variants.
+Pass `--blank`, `--fortify`, `--workos`, `--components`, and/or `--teams` to target specific variants.
 Combine both to narrow down exactly which kit variants to run:
 
 ```bash
@@ -92,16 +112,27 @@ We have two stacks of starter kits: **Inertia** and **Livewire**. For these stac
 1. **Blank:** a minimal starter kit with no authentication scaffolding.
 2. **Fortify:** starter kit using _Laravel Fortify_ for authentication.
 3. **Fortify (Multi-file Components):** the same as above, but with the Blade view separated from the component code.
-4. **WorkOS:** starter kit using **[WorkOS](https://workos.com)** for authentication.
+4. **Fortify (Teams):** starter kit using _Laravel Fortify_ with Teams support.
+5. **WorkOS:** starter kit using **[WorkOS](https://workos.com)** for authentication.
+6. **WorkOS (Teams):** starter kit using **[WorkOS](https://workos.com)** with Teams support.
 
 ### Inertia
 
 1. **Blank React:** a minimal _React_ starter kit with no authentication scaffolding.
 2. **Fortify React:** _React_ starter kit using _Laravel Fortify_ for authentication.
-3. **WorkOS React:** _React_ starter kit using **[WorkOS](https://workos.com)** for authentication.
-4. **Blank Vue:** a minimal _Vue_ starter kit with no authentication scaffolding.
-5. **Fortify Vue:** _Vue_ starter kit using _Laravel Fortify_ for authentication.
-6. **WorkOS Vue:** _Vue_ starter kit using **[WorkOS](https://workos.com)** for authentication.
+3. **Fortify React (Teams):** _React_ starter kit using _Laravel Fortify_ with Teams support.
+4. **WorkOS React:** _React_ starter kit using **[WorkOS](https://workos.com)** for authentication.
+5. **WorkOS React (Teams):** _React_ starter kit using **[WorkOS](https://workos.com)** with Teams support.
+6. **Blank Svelte:** a minimal _Svelte_ starter kit with no authentication scaffolding.
+7. **Fortify Svelte:** _Svelte_ starter kit using _Laravel Fortify_ for authentication.
+8. **Fortify Svelte (Teams):** _Svelte_ starter kit using _Laravel Fortify_ with Teams support.
+9. **WorkOS Svelte:** _Svelte_ starter kit using **[WorkOS](https://workos.com)** for authentication.
+10. **WorkOS Svelte (Teams):** _Svelte_ starter kit using **[WorkOS](https://workos.com)** with Teams support.
+11. **Blank Vue:** a minimal _Vue_ starter kit with no authentication scaffolding.
+12. **Fortify Vue:** _Vue_ starter kit using _Laravel Fortify_ for authentication.
+13. **Fortify Vue (Teams):** _Vue_ starter kit using _Laravel Fortify_ with Teams support.
+14. **WorkOS Vue:** _Vue_ starter kit using **[WorkOS](https://workos.com)** for authentication.
+15. **WorkOS Vue (Teams):** _Vue_ starter kit using **[WorkOS](https://workos.com)** with Teams support.
 
 ### Starter Kit Hierarchy
 
@@ -115,14 +146,22 @@ The `kits/Shared` folder contains files that are 100% identical between Livewire
 - **Shared/Base:** Common base files (factories, gitignore files, etc.)
 - **Shared/Fortify:** Common Fortify files (Actions, Concerns, providers)
 - **Shared/WorkOS:** Common WorkOS files (routes, migrations, env, config)
+- **Shared/Teams/Base:** Common Teams files (models, actions, events, migrations)
+- **Shared/Teams/Fortify:** Teams files specific to Fortify (CreateNewUser action, UserFactory)
+- **Shared/Teams/WorkOS:** Teams files specific to WorkOS (CreatePersonalTeam listener, UserFactory)
+- **Livewire/Teams/Base:** Livewire Teams files shared between Fortify and WorkOS (layouts, components, team pages)
 
 ### Livewire
 
-Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/Auth -> Livewire/Auth -> Components (Fortify only)
+Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/Fortify -> Livewire/Fortify [-> Livewire/Components] -> Shared/Teams/Base -> Shared/Teams/Fortify -> Livewire/Teams/Base -> Livewire/Teams/Fortify
+
+OR (WorkOS): Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/WorkOS -> Livewire/WorkOS -> Shared/Teams/Base -> Shared/Teams/WorkOS -> Livewire/Teams/Base -> Livewire/Teams/WorkOS
 
 ### Inertia
 
-Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Vue] -> Shared/Auth -> Inertia/Auth/Base -> Inertia/Auth/[React|Vue]
+Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Svelte|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Svelte|Vue] -> Shared/Fortify -> Inertia/Fortify/Base -> Inertia/Fortify/[React|Svelte|Vue] -> Shared/Teams/Base -> Shared/Teams/Fortify -> Inertia/Teams/Base -> Inertia/Teams/[React|Svelte|Vue] -> Inertia/Teams/Fortify/Base -> Inertia/Teams/Fortify/[React|Svelte|Vue]
+
+OR (WorkOS): Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Svelte|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Svelte|Vue] -> Shared/WorkOS -> Inertia/WorkOS/Base -> Inertia/WorkOS/[React|Svelte|Vue] -> Shared/Teams/Base -> Shared/Teams/WorkOS -> Inertia/Teams/Base -> Inertia/Teams/[React|Svelte|Vue] -> Inertia/Teams/WorkOS/Base -> Inertia/Teams/WorkOS/[React|Svelte|Vue]
 
 Where `Shared/Blank` has the shared files across all variants, and each subsequent layer adds or overrides files.
 

@@ -23,15 +23,23 @@ jobs:
           - Livewire Kit
           - Livewire Kit (Components)
           - Livewire Kit (WorkOS)
+          - Livewire Kit (Teams)
+          - Livewire Kit (WorkOS Teams)
           - React Kit (Blank)
           - React Kit
           - React Kit (WorkOS)
+          - React Kit (Teams)
+          - React Kit (WorkOS Teams)
           - Svelte Kit (Blank)
           - Svelte Kit
           - Svelte Kit (WorkOS)
+          - Svelte Kit (Teams)
+          - Svelte Kit (WorkOS Teams)
           - Vue Kit (Blank)
           - Vue Kit
           - Vue Kit (WorkOS)
+          - Vue Kit (Teams)
+          - Vue Kit (WorkOS Teams)
         include:
           # Livewire variants
           - name: Livewire Kit (Blank)
@@ -58,6 +66,18 @@ jobs:
             path: livewire-starter-kit-workos
             node: false
 
+          - name: Livewire Kit (Teams)
+            kit: Livewire
+            build_flags: '--teams'
+            path: livewire-starter-kit-teams
+            node: false
+
+          - name: Livewire Kit (WorkOS Teams)
+            kit: Livewire
+            build_flags: '--teams --workos'
+            path: livewire-starter-kit-workos-teams
+            node: false
+
           # React variants
           - name: React Kit (Blank)
             kit: React
@@ -75,6 +95,18 @@ jobs:
             kit: React
             build_flags: '--workos'
             path: react-starter-kit-workos
+            node: true
+
+          - name: React Kit (Teams)
+            kit: React
+            build_flags: '--teams'
+            path: react-starter-kit-teams
+            node: true
+
+          - name: React Kit (WorkOS Teams)
+            kit: React
+            build_flags: '--teams --workos'
+            path: react-starter-kit-workos-teams
             node: true
 
           # Svelte variants
@@ -96,6 +128,18 @@ jobs:
             path: svelte-starter-kit-workos
             node: true
 
+          - name: Svelte Kit (Teams)
+            kit: Svelte
+            build_flags: '--teams'
+            path: svelte-starter-kit-teams
+            node: true
+
+          - name: Svelte Kit (WorkOS Teams)
+            kit: Svelte
+            build_flags: '--teams --workos'
+            path: svelte-starter-kit-workos-teams
+            node: true
+
           # Vue variants
           - name: Vue Kit (Blank)
             kit: Vue
@@ -113,6 +157,18 @@ jobs:
             kit: Vue
             build_flags: '--workos'
             path: vue-starter-kit-workos
+            node: true
+
+          - name: Vue Kit (Teams)
+            kit: Vue
+            build_flags: '--teams'
+            path: vue-starter-kit-teams
+            node: true
+
+          - name: Vue Kit (WorkOS Teams)
+            kit: Vue
+            build_flags: '--workos --teams'
+            path: vue-starter-kit-workos-teams
             node: true
 
     steps:
