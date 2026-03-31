@@ -1,8 +1,6 @@
 # Maestro
 
-Maestro is the monorepo orchestrator for the official Laravel starter kits. Use the local maestro skill before making changes:
-
-- **Skill**: `.claude/skills/maestro/SKILL.md` — project structure, commands, kit inheritance, teams feature, placeholder system, and workflow rules.
+Maestro is the monorepo orchestrator for the official Laravel starter kits. Use the `maestro` skill before making changes.
 
 ## Quick Reference
 
@@ -13,7 +11,7 @@ Maestro is the monorepo orchestrator for the official Laravel starter kits. Use 
 - Pint only: `composer kits:pint` (from `orchestrator/`) — runs Pint on `kits/` and `browser_tests/`
 - Lint: `composer kits:lint` (from `orchestrator/`) — runs `kits:pint`, then frontend lint/format for Inertia variants
 - Browser tests (all 8 kits): `composer kits:browser-tests` (from `orchestrator/`)
-- Edit in `build/` (when available), commit in `kits/`
+- Edit in `build/` only if it exists and `composer kit:run` is running; otherwise edit `kits/` directly. Always commit in `kits/`.
 
 ### Selective Execution
 
