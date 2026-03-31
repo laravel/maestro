@@ -1,3 +1,11 @@
+---
+name: maestro
+description: >
+  Maestro monorepo orchestrator for the official Laravel starter kits. Use this skill when making
+  changes to any starter kit source files, building kits, running tests, or working with the kit
+  inheritance hierarchy, placeholder system, teams feature, or any development workflow in this repo.
+---
+
 # Maestro Skill
 
 ## What is Maestro
@@ -288,7 +296,7 @@ Only Admin and Member roles are assignable. Owner is automatically set on team c
 
 1. **Build**: `cd orchestrator && php artisan build --kit=svelte`
 2. **Develop**: `composer kit:run` (starts dev server at localhost:8000 + watcher)
-3. **Edit**: Make changes in `build/` — the watcher syncs them to `kits/`
+3. **Edit**: If `build/` exists and the watcher is running, make changes in `build/` — the watcher syncs them to `kits/`. Otherwise, edit `kits/` directly.
 4. **Test**: Inside `build/`, run `composer setup && composer ci:check`
 5. **Commit**: Commit the changes in `kits/` (not `build/`)
 6. **PR**: Create PR; after merge, Maestro auto-creates PRs for affected kit repos
@@ -364,7 +372,7 @@ cd ..
 
 ## Important Rules
 
-1. **Edit in `build/`, commit in `kits/`**: Never edit `kits/` directly during development. The watcher handles syncing.
+1. **Where to edit**: If a `build/` folder exists at the project root **and** `composer kit:run` is running (dev server + file watcher), make changes in `build/` — the watcher syncs them back to `kits/`. If there is no `build/` folder or the watcher is not running, edit `kits/` directly. Always commit in `kits/` regardless.
 2. **Follow sibling patterns**: When creating a Svelte file, check the React and Vue equivalents for expected structure and behavior and vice-versa.
 3. **Layer awareness**: Know which layer a file belongs to. Shared files affect all kits. Framework-specific files only affect that framework. Teams layers sit on top of auth layers — place team-specific code in the appropriate `Teams/` directory.
 4. **Placeholder awareness**: Files in `kits/` contain `{{placeholders}}`. Files in `build/` have resolved values. The watcher handles conversion.
