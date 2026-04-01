@@ -94,12 +94,17 @@ jobs:
         working-directory: build
         run: npm install playwright
 
+      - name: Get Playwright Version
+        id: playwright-version
+        working-directory: build
+        run: echo "version=$(node -e "console.log(require('playwright/package.json').version)")" >> $GITHUB_OUTPUT
+
       - name: Cache Playwright Browsers
         uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('orchestrator/composer.lock') }}
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
