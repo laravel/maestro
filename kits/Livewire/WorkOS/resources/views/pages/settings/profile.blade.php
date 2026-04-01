@@ -1,5 +1,6 @@
 <?php
 
+use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -32,7 +33,7 @@ new #[Title('Profile settings')] class extends Component {
 
         $user->save();
 
-        $this->dispatch('profile-updated', name: $user->name);
+        Flux::toast(variant: 'success', text: __('Profile updated.'));
     }
 }; ?>
 
@@ -49,14 +50,8 @@ new #[Title('Profile settings')] class extends Component {
                 <flux:input wire:model="email" :label="__('Email')" type="email" required disabled autocomplete="email" />
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full">{{ __('Save') }}</flux:button>
-                </div>
-
-                <x-action-message class="me-3" on="profile-updated">
-                    {{ __('Saved.') }}
-                </x-action-message>
+            <div class="flex items-center justify-end">
+                <flux:button variant="primary" type="submit">{{ __('Save') }}</flux:button>
             </div>
         </form>
 
