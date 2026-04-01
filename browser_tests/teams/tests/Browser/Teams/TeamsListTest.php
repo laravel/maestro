@@ -40,6 +40,7 @@ test('new team can be created from teams list', function () {
         ->pressAndWaitFor('@create-team-submit')
         ->assertPathContains('/settings/teams/')
         ->assertSee('Test Team')
+        ->assertSee('Team created.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 
@@ -57,6 +58,7 @@ test('new team appears in team switcher after creation', function () {
         ->fill('@create-team-name', 'New Switcher Team')
         ->pressAndWaitFor('@create-team-submit')
         ->assertPathContains('/settings/teams/')
+        ->assertSee('Team created.')
         ->click('@team-switcher-trigger')
         ->assertSee('New Switcher Team')
         ->assertNoConsoleLogs()

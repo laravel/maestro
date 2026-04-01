@@ -24,6 +24,7 @@ test('owner can invite a member from the team edit page', function () {
         ->fill('@invite-email', 'invited@example.com')
         ->pressAndWaitFor('@invite-submit')
         ->assertSee('invited@example.com')
+        ->assertSee('Invitation sent.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 
@@ -72,6 +73,7 @@ test('invitation can be cancelled from the UI', function () {
         ->waitForText('Cancel invitation')
         ->pressAndWaitFor('@cancel-invitation-confirm')
         ->assertDontSee('cancel@example.com')
+        ->assertSee('Invitation cancelled.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });

@@ -31,7 +31,7 @@ test('password can be updated', function () {
         ->fill('password', 'new-password')
         ->fill('password_confirmation', 'new-password')
         ->press('@update-password-button')
-        ->assertSee('Saved')
+        ->assertSee('Password updated.')
         ->assertUrlIs(route('security.edit'))
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
@@ -200,7 +200,7 @@ test('password can be updated when two-factor feature is disabled', function () 
         ->fill('password', 'new-password')
         ->fill('password_confirmation', 'new-password')
         ->press('@update-password-button')
-        ->assertSee('Saved')
+        ->assertSee('Password updated.')
         ->assertUrlIs(route('security.edit'))
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
