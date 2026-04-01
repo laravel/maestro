@@ -61,7 +61,7 @@
         resetOnSuccess
         resetOnError={['password', 'password_confirmation', 'current_password']}
     >
-        {#snippet children({ errors, processing, recentlySuccessful })}
+        {#snippet children({ errors, processing })}
             <div class="grid gap-2">
                 <Label for="current_password">Current password</Label>
                 <PasswordInput
@@ -106,10 +106,6 @@
                 >
                     Save password
                 </Button>
-
-                {#if recentlySuccessful}
-                    <p class="text-sm text-neutral-600">Saved.</p>
-                {/if}
             </div>
         {/snippet}
     </Form>
