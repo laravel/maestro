@@ -4,9 +4,9 @@ import { Form, Head } from '@inertiajs/react';
 import { router } from '@inertiajs/react';
 import { KeyRound } from 'lucide-react';
 /* @end-chisel-passkeys */
+import { ShieldCheck } from 'lucide-react';
 import { useRef } from 'react';
 /* @chisel-2fa */
-import { ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 /* @end-chisel-2fa */
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
@@ -68,7 +68,7 @@ const EmptyState = () => {
 /* @end-chisel-passkeys */
 
 export default function Security(
-    /* @chisel-2fa-or-passkeys */ props: Props /* @end-chisel-2fa-or-passkeys */
+    /* @chisel-2fa-or-passkeys */ props: Props /* @end-chisel-2fa-or-passkeys */,
 ) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);

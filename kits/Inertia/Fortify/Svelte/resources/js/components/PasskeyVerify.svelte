@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { UrlMethodPair } from '@inertiajs/core';
     import { router } from '@inertiajs/svelte';
     import { usePasskeyVerify } from '@laravel/passkeys/svelte';
     import KeyRound from 'lucide-svelte/icons/key-round';
@@ -10,8 +11,8 @@
 
     type Props = {
         routes?: {
-            options?: string;
-            submit?: string;
+            options: UrlMethodPair;
+            submit: UrlMethodPair;
         };
         label?: string;
         loadingLabel?: string;
@@ -22,7 +23,14 @@
     const initialRoutes = untrack(() => props.routes);
 
     const { verify, isLoading, error, isSupported } = usePasskeyVerify({
-        ...(initialRoutes ? { routes: initialRoutes } : {}),
+        ...(initialRoutes
+            ? {
+                  routes: {
+                      options: initialRoutes.options.url,
+                      submit: initialRoutes.submit.url,
+                  },
+              }
+            : {}),
         onSuccess: (response) => {
             const redirect = response.redirect;
             router.visit(redirect ?? '/dashboard');

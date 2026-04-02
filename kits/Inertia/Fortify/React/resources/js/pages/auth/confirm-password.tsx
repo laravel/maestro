@@ -23,8 +23,8 @@ export default function ConfirmPassword() {
             {/* @chisel-passkeys */}
             <PasskeyVerify
                 routes={{
-                    options: confirmOptions.url(),
-                    submit: confirmStore.url(),
+                    options: confirmOptions(),
+                    submit: confirmStore(),
                 }}
                 label="Confirm with passkey"
                 loadingLabel="Confirming..."
