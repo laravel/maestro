@@ -317,7 +317,7 @@ function reconcileStaleFiles(folders, buildRelPaths, ig) {
                 removedCount++;
 
                 // Clean up empty parent directories.
-                removeEmptyParents(path.dirname(candidate), path.join(kitsDir, folders[i]));
+                removeEmptyParentDirs(candidate, path.join(kitsDir, folders[i]));
             } catch (error) {
                 log(`Error removing stale file ${relPath}: ${error.message}`, 'red');
             }
@@ -332,25 +332,23 @@ function reconcileStaleFiles(folders, buildRelPaths, ig) {
 }
 
 /**
- * Remove empty directories upward until `stopAt` is reached.
+ * Remove empty parent directories up to the kit directory root.
  */
-function removeEmptyParents(dir, stopAt) {
-    let current = dir;
+function removeEmptyParentDirs(filePath, stopAt) {
+    let dir = path.dirname(filePath);
 
-    while (current !== stopAt && current.startsWith(stopAt)) {
+    while (dir !== stopAt && dir.startsWith(stopAt)) {
         try {
-            const entries = fs.readdirSync(current);
-
-            if (entries.length > 0) {
+            const entries = fs.readdirSync(dir);
+            if (entries.length === 0) {
+                fs.rmdirSync(dir);
+            } else {
                 break;
             }
-
-            fs.rmdirSync(current);
         } catch {
             break;
         }
-
-        current = path.dirname(current);
+        dir = path.dirname(dir);
     }
 }
 
@@ -637,9 +635,7 @@ function deleteFromKit(relativePath, folders, starterKit, manifest) {
         if (fs.existsSync(targetPath)) {
             fs.unlinkSync(targetPath);
             log(`Deleted: kits/${targetFolder}/${destRelativePath}`, 'yellow');
-
-            // Clean up empty parent directories.
-            removeEmptyParents(path.dirname(targetPath), path.join(kitsDir, targetFolder));
+            removeEmptyParentDirs(targetPath, path.join(kitsDir, targetFolder));
         }
     } catch (error) {
         log(`Error deleting ${destRelativePath}: ${error.message}`, 'red');
@@ -663,7 +659,7 @@ function deleteDirFromKit(relativePath, folders, starterKit, manifest) {
             fs.rmSync(targetDir, { recursive: true, force: true });
             log(`Deleted directory: kits/${folders[i]}/${destRelativePath}`, 'yellow');
 
-            removeEmptyParents(path.dirname(targetDir), path.join(kitsDir, folders[i]));
+            removeEmptyParentDirs(targetDir, path.join(kitsDir, folders[i]));
         } catch (error) {
             log(`Error deleting directory ${destRelativePath}: ${error.message}`, 'red');
         }

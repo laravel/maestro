@@ -20,15 +20,35 @@ jobs:
         include:
           - name: Livewire Kit
             kit: Livewire
+            teams: false
 
           - name: React Kit
             kit: React
+            teams: false
 
           - name: Svelte Kit
             kit: Svelte
+            teams: false
 
           - name: Vue Kit
             kit: Vue
+            teams: false
+
+          - name: Livewire Teams Kit
+            kit: Livewire
+            teams: true
+
+          - name: React Teams Kit
+            kit: React
+            teams: true
+
+          - name: Svelte Teams Kit
+            kit: Svelte
+            teams: true
+
+          - name: Vue Teams Kit
+            kit: Vue
+            teams: true
 
     steps:
       - name: Checkout Maestro
@@ -52,10 +72,13 @@ jobs:
 
       - name: Build ${{ matrix.name }}
         working-directory: orchestrator
-        run: php artisan build --kit=${{ matrix.kit }}
+        run: php artisan build --kit=${{ matrix.kit }}${{ matrix.teams && ' --teams' || '' }}
 
-      - name: Copy Browser Tests to Build
-        run: cp -r browser_tests/* build/
+      - name: Copy Browser Test Bootstrap to Build
+        run: cp -r browser_tests/bootstrap/* build/
+
+      - name: Copy Browser Test Suite to Build
+        run: cp -r browser_tests/${{ matrix.teams && 'teams' || 'common' }}/* build/
 
       - name: Install Build Composer Dependencies
         working-directory: build
@@ -71,12 +94,17 @@ jobs:
         working-directory: build
         run: npm install playwright
 
+      - name: Get Playwright Version
+        id: playwright-version
+        working-directory: build
+        run: echo "version=$(node -e "console.log(require('playwright/package.json').version)")" >> $GITHUB_OUTPUT
+
       - name: Cache Playwright Browsers
         uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('orchestrator/composer.lock') }}
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'

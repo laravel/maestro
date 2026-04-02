@@ -19,7 +19,7 @@ class SecurityTest extends TestCase
         parent::setUp();
 
         /* @chisel-2fa */
-        $this->skipUnlessFortifyFeature(Features::twoFactorAuthentication());
+        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
 
         Features::twoFactorAuthentication([
             'confirm' => true,

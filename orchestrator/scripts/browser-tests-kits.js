@@ -2,6 +2,7 @@
 
 import { execSync } from 'child_process';
 import fs from 'fs';
+import path from 'path';
 import {
     browserTestsDir,
     buildDir,
@@ -42,11 +43,44 @@ const variants = [
         variant: 'fortify',
         buildArgs: ['build', '--no-interaction', '--kit=Vue'],
     },
+    {
+        key: 'livewire-teams',
+        display: 'Livewire Teams',
+        framework: 'livewire',
+        variant: 'teams',
+        buildArgs: ['build', '--no-interaction', '--kit=Livewire', '--teams'],
+    },
+    {
+        key: 'react-teams',
+        display: 'React Teams',
+        framework: 'react',
+        variant: 'teams',
+        buildArgs: ['build', '--no-interaction', '--kit=React', '--teams'],
+    },
+    {
+        key: 'svelte-teams',
+        display: 'Svelte Teams',
+        framework: 'svelte',
+        variant: 'teams',
+        buildArgs: ['build', '--no-interaction', '--kit=Svelte', '--teams'],
+    },
+    {
+        key: 'vue-teams',
+        display: 'Vue Teams',
+        framework: 'vue',
+        variant: 'teams',
+        buildArgs: ['build', '--no-interaction', '--kit=Vue', '--teams'],
+    },
 ];
 
-function copyBrowserTests() {
-    log('  Copying browser tests into build...', 'dim');
-    fs.cpSync(browserTestsDir, buildDir, { recursive: true });
+function prepareBrowserTests(variant) {
+    log('  Copying browser test bootstrap into build...', 'dim');
+    fs.cpSync(path.join(browserTestsDir, 'bootstrap'), buildDir, { recursive: true });
+
+    const suite = variant === 'teams' ? 'teams' : 'common';
+
+    log(`  Copying ${suite} browser tests into build...`, 'dim');
+    fs.cpSync(path.join(browserTestsDir, suite), buildDir, { recursive: true });
 }
 
 function playwrightBrowsersInstalled() {
@@ -107,7 +141,7 @@ async function browserTestVariant(variant, index, total) {
     log('  Building variant...', 'dim');
     await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
 
-    copyBrowserTests();
+    prepareBrowserTests(variant.variant);
 
     await runBrowserTestsForCurrentBuild();
 }
