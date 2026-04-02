@@ -101,7 +101,7 @@ No flags runs the full default matrix for each command.
 
 After making the changes in `build` and testing that they are working, simply commit your code and create a PR with these changes.
 
-After your PR is merged, **Maestro** will automatically create PRs for the affected starter kits with the updated code.
+After your PR is merged, **Maestro** will automatically push the changes directly to the affected starter kit repositories.
 
 ## Starter Kit Flavors
 
