@@ -235,12 +235,15 @@ jobs:
       - name: Discard Permission-Only Changes
         working-directory: ${{ matrix.path }}
         run: |
-          git diff --diff-filter=M --name-only | while read file; do
-            if git diff "$file" | grep -q '^diff --git' && \
-               ! git diff "$file" | grep -qE '^(\+([^+]|$)|-([^-]|$))'; then
-              git checkout -- "$file"
-            fi
-          done
+          FILES=$(git diff --diff-filter=M --name-only)
+          if [[ -n "$FILES" ]]; then
+            while IFS= read -r file; do
+              if git diff "$file" | grep -q '^diff --git' && \
+                 ! git diff "$file" | grep -qE '^(\+([^+]|$)|-([^-]|$))'; then
+                git checkout -- "$file"
+              fi
+            done <<< "$FILES"
+          fi
 
       - name: Check for Changes
         id: changes
