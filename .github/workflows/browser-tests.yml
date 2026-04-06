@@ -93,6 +93,8 @@ jobs:
       - name: Install Playwright
         working-directory: build
         run: npm install playwright
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
 
       - name: Get Playwright Version
         id: playwright-version
