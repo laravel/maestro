@@ -37,7 +37,7 @@ return Chisel::script(__DIR__)
                 'passkeys' => 'Passkeys',
                 'password-confirmation' => 'Password confirmation',
             ],
-            default: ['password-confirmation'],
+            default: ['email-verification', '2fa', 'passkeys', 'password-confirmation'],
             hint: 'Use space to select, enter to confirm.',
         ),
     ])
