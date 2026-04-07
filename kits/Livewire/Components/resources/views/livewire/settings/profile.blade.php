@@ -42,8 +42,12 @@
             </div>
         </form>
 
+        {{-- @chisel-email-verification --}}
         @if ($this->showDeleteUser)
+        {{-- @end-chisel-email-verification --}}
             <livewire:settings.delete-user-form />
+        {{-- @chisel-email-verification --}}
         @endif
+        {{-- @end-chisel-email-verification --}}
     </x-settings.layout>
 </section>
