@@ -33,7 +33,7 @@
                         submit: '{{ route($submitRoute) }}',
                     },
                 });
-                window.location.href = response.redirect || '/dashboard';
+                Livewire.navigate(response.redirect || '/dashboard');
             } catch (e) {
                 if (e.constructor?.name !== 'UserCancelledError') {
                     this.error = e.message;
