@@ -7,7 +7,6 @@ use Illuminate\Process\Factory;
 use Laravel\Chisel\NodePackageManager;
 use Laravel\Chisel\Question;
 use Laravel\Chisel\Script;
-use Throwable;
 
 use function Laravel\Prompts\multiselect;
 
@@ -30,30 +29,23 @@ class InstallFeaturesCommand extends Command
 
     public function handle(): int
     {
-        try {
-            $script = require base_path('chisel.php');
+        /** @var Script $script */
+        $script = require base_path('chisel.php');
 
-            if (! $script instanceof Script) {
-                $this->fail('chisel.php must return a script definition.');
-            }
+        $providedAnswers = $this->option('answers') === null
+            ? []
+            : json_decode((string) $this->option('answers'), true, 512, JSON_THROW_ON_ERROR);
 
-            $providedAnswers = $this->option('answers') === null
-                ? []
-                : json_decode((string) $this->option('answers'), true, 512, JSON_THROW_ON_ERROR);
+        $answers = $this->collectAnswers(
+            $script->questions(),
+            $providedAnswers,
+            $this->input->isInteractive(),
+        );
 
-            $answers = $this->collectAnswers(
-                $script->questions(),
-                $providedAnswers,
-                $this->input->isInteractive(),
-            );
+        $script->run($answers);
 
-            $script->run($answers);
-
-            $this->rebuildAssets();
-            $this->cleanupFiles();
-        } catch (Throwable $e) {
-            $this->fail($e->getMessage());
-        }
+        $this->rebuildAssets();
+        $this->cleanupFiles();
 
         return self::SUCCESS;
     }
@@ -117,9 +109,7 @@ class InstallFeaturesCommand extends Command
             });
 
         if (! $install->successful()) {
-            $this->warn($packageManager->installCommand().' failed. You may need to run "'.$packageManager->installCommand().'" and "'.$packageManager->buildCommand().'" manually.');
-
-            return;
+            throw new \RuntimeException($packageManager->installCommand().' failed.');
         }
 
         $this->info('Building assets...');
@@ -137,7 +127,7 @@ class InstallFeaturesCommand extends Command
             return;
         }
 
-        $this->warn('Asset build failed. You may need to run "'.$packageManager->buildCommand().'" manually.');
+        throw new \RuntimeException($packageManager->buildCommand().' failed.');
     }
 
     protected function cleanupFiles(): void
