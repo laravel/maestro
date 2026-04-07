@@ -52,12 +52,12 @@ class Profile extends Component
         $this->dispatch('profile-updated', name: $user->name);
     }
 
+    /* @chisel-email-verification */
     /**
      * Send an email verification notification to the current user.
      */
     public function resendVerificationNotification(): void
     {
-        /* @chisel-email-verification */
         $user = Auth::user();
 
         if ($user->hasVerifiedEmail()) {
@@ -69,31 +69,19 @@ class Profile extends Component
         $user->sendEmailVerificationNotification();
 
         Session::flash('status', 'verification-link-sent');
-        /* @end-chisel-email-verification */
     }
 
     #[Computed]
     public function hasUnverifiedEmail(): bool
     {
-        $hasUnverifiedEmail = false;
-
-        /* @chisel-email-verification */
-        $hasUnverifiedEmail = Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
-        /* @end-chisel-email-verification */
-
-        return $hasUnverifiedEmail;
+        return Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
     }
 
     #[Computed]
     public function showDeleteUser(): bool
     {
-        $showDeleteUser = true;
-
-        /* @chisel-email-verification */
-        $showDeleteUser = ! Auth::user() instanceof MustVerifyEmail
+        return ! Auth::user() instanceof MustVerifyEmail
             || (Auth::user() instanceof MustVerifyEmail && Auth::user()->hasVerifiedEmail());
-        /* @end-chisel-email-verification */
-
-        return $showDeleteUser;
     }
+    /* @end-chisel-email-verification */
 }

@@ -45,12 +45,12 @@ new #[Title('Profile settings')] class extends Component {
         $this->dispatch('profile-updated', name: $user->name);
     }
 
+    /* @chisel-email-verification */
     /**
      * Send an email verification notification to the current user.
      */
     public function resendVerificationNotification(): void
     {
-        /* @chisel-email-verification */
         $user = Auth::user();
 
         if ($user->hasVerifiedEmail()) {
@@ -62,33 +62,21 @@ new #[Title('Profile settings')] class extends Component {
         $user->sendEmailVerificationNotification();
 
         Session::flash('status', 'verification-link-sent');
-        /* @end-chisel-email-verification */
     }
 
     #[Computed]
     public function hasUnverifiedEmail(): bool
     {
-        $hasUnverifiedEmail = false;
-
-        /* @chisel-email-verification */
-        $hasUnverifiedEmail = Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
-        /* @end-chisel-email-verification */
-
-        return $hasUnverifiedEmail;
+        return Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
     }
 
     #[Computed]
     public function showDeleteUser(): bool
     {
-        $showDeleteUser = true;
-
-        /* @chisel-email-verification */
-        $showDeleteUser = ! Auth::user() instanceof MustVerifyEmail
+        return ! Auth::user() instanceof MustVerifyEmail
             || (Auth::user() instanceof MustVerifyEmail && Auth::user()->hasVerifiedEmail());
-        /* @end-chisel-email-verification */
-
-        return $showDeleteUser;
     }
+    /* @end-chisel-email-verification */
 }; ?>
 
 <section class="w-full">
@@ -137,8 +125,12 @@ new #[Title('Profile settings')] class extends Component {
             </div>
         </form>
 
+        {{-- @chisel-email-verification --}}
         @if ($this->showDeleteUser)
+        {{-- @end-chisel-email-verification --}}
             <livewire:pages::settings.delete-user-form />
+        {{-- @chisel-email-verification --}}
         @endif
+        {{-- @end-chisel-email-verification --}}
     </x-pages::settings.layout>
 </section>
