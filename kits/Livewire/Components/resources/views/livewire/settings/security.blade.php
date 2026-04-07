@@ -82,9 +82,7 @@
                 </div>
             </section>
         @endif
-        {{-- @end-chisel-2fa --}}
 
-        {{-- @chisel-2fa --}}
         @if ($canManageTwoFactor)
             <flux:modal
                 name="two-factor-setup-modal"
