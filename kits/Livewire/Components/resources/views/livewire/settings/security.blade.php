@@ -278,7 +278,7 @@
                                     size="sm"
                                     icon="trash"
                                     icon:variant="outline"
-                                    wire:click="confirmDelete({{ $passkey['id'] }}, '{{ addslashes($passkey['name']) }}')"
+                                    wire:click="confirmDelete({{ $passkey['id'] }})"
                                     class="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50"
                                 />
                             </div>

@@ -122,10 +122,12 @@ new #[Title('Security settings')] class extends Component {
     /**
      * Show the delete confirmation modal.
      */
-    public function confirmDelete(int $passkeyId, string $passkeyName): void
+    public function confirmDelete(int $passkeyId): void
     {
-        $this->deletingPasskeyId = $passkeyId;
-        $this->deletingPasskeyName = $passkeyName;
+        $passkey = auth()->user()->passkeys()->findOrFail($passkeyId);
+
+        $this->deletingPasskeyId = $passkey->id;
+        $this->deletingPasskeyName = $passkey->name;
         $this->showDeleteModal = true;
     }
 
@@ -307,7 +309,7 @@ new #[Title('Security settings')] class extends Component {
                                     size="sm"
                                     icon="trash"
                                     icon:variant="outline"
-                                    wire:click="confirmDelete({{ $passkey['id'] }}, '{{ addslashes($passkey['name']) }}')"
+                                    wire:click="confirmDelete({{ $passkey['id'] }})"
                                     class="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50"
                                 />
                             </div>

@@ -159,10 +159,12 @@ class Security extends Component
     /**
      * Show the delete confirmation modal.
      */
-    public function confirmDelete(int $passkeyId, string $passkeyName): void
+    public function confirmDelete(int $passkeyId): void
     {
-        $this->deletingPasskeyId = $passkeyId;
-        $this->deletingPasskeyName = $passkeyName;
+        $passkey = Auth::user()->passkeys()->findOrFail($passkeyId);
+
+        $this->deletingPasskeyId = $passkey->id;
+        $this->deletingPasskeyName = $passkey->name;
         $this->showDeleteModal = true;
     }
 
