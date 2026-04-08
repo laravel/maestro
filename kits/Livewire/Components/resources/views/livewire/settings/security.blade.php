@@ -30,7 +30,7 @@
                 viewable
             />
 
-            <div class="flex items-center justify-end">
+            <div class="flex items-center gap-4">
                 <flux:button variant="primary" type="submit" data-test="update-password-button">{{ __('Save') }}</flux:button>
             </div>
         </form>
