@@ -1,94 +1,39 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
+import SecurityController from "@/actions/App/Http/Controllers/Settings/SecurityController";
+import Heading from "@/components/Heading.vue";
+import InputError from "@/components/InputError.vue";
+import PasswordInput from "@/components/PasswordInput.vue";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { edit } from "@/routes/security";
+import { Form, Head } from "@inertiajs/vue3";
 /* @chisel-passkeys */
-import { router } from '@inertiajs/vue3';
-import { KeyRound } from 'lucide-vue-next';
+import type { Props as ManagePasskeysProps } from "@/components/ManagePasskeys.vue";
+import ManagePasskeys from "@/components/ManagePasskeys.vue";
 /* @end-chisel-passkeys */
 /* @chisel-2fa */
-import { ShieldCheck } from 'lucide-vue-next';
-import { onUnmounted, ref } from 'vue';
+import type { Props as ManageTwoFactorProps } from "@/components/ManageTwoFactor.vue";
+import ManageTwoFactor from "@/components/ManageTwoFactor.vue";
 /* @end-chisel-2fa */
-import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-/* @chisel-passkeys */
-import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
-/* @end-chisel-passkeys */
-import Heading from '@/components/Heading.vue';
-import InputError from '@/components/InputError.vue';
-/* @chisel-passkeys */
-import PasskeyItem from '@/components/PasskeyItem.vue';
-import PasskeyRegister from '@/components/PasskeyRegister.vue';
-/* @end-chisel-passkeys */
-import PasswordInput from '@/components/PasswordInput.vue';
-/* @chisel-2fa */
-import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
-import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
-/* @end-chisel-2fa */
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-/* @chisel-2fa */
-import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-/* @end-chisel-2fa */
-import { edit } from '@/routes/security';
-/* @chisel-2fa */
-import { disable, enable } from '@/routes/two-factor';
-/* @end-chisel-2fa */
-/* @chisel-passkeys */
-import type { Passkey } from '@/types/auth';
-/* @end-chisel-passkeys */
 
-type Props = {
-    /* @chisel-2fa */
-    canManageTwoFactor?: boolean;
-    requiresConfirmation?: boolean;
-    twoFactorEnabled?: boolean;
-    /* @end-chisel-2fa */
-    /* @chisel-passkeys */
-    canManagePasskeys?: boolean;
-    passkeys?: Passkey[];
-    /* @end-chisel-passkeys */
-};
+/* @chisel-2fa-or-passkeys */
+type Props = Record<string, never> /* @chisel-passkeys */ &
+    ManagePasskeysProps /* @end-chisel-passkeys */ /* @chisel-2fa */ &
+    ManageTwoFactorProps /* @end-chisel-2fa */;
 
-withDefaults(defineProps<Props>(), {
-    /* @chisel-2fa */
-    canManageTwoFactor: false,
-    requiresConfirmation: false,
-    twoFactorEnabled: false,
-    /* @end-chisel-2fa */
-    /* @chisel-passkeys */
-    canManagePasskeys: false,
-    passkeys: () => [],
-    /* @end-chisel-passkeys */
-});
+defineProps<Props>();
+/* @end-chisel-2fa-or-passkeys */
 
 defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Security settings',
+                title: "Security settings",
                 href: edit(),
             },
         ],
     },
 });
-
-/* @chisel-2fa */
-const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth();
-const showSetupModal = ref<boolean>(false);
-
-onUnmounted(() => clearTwoFactorAuthData());
-/* @end-chisel-2fa */
-
-/* @chisel-passkeys */
-const handleDelete = (id: number) => {
-    router.delete(destroy.url(id), {
-        preserveScroll: true,
-    });
-};
-
-const handleRegisterSuccess = () => {
-    router.reload();
-};
-/* @end-chisel-passkeys */
 </script>
 
 <template>
@@ -179,102 +124,17 @@ const handleRegisterSuccess = () => {
     </div>
 
     <!-- @chisel-2fa -->
-    <div v-if="canManageTwoFactor" class="space-y-6">
-        <Heading
-            variant="small"
-            title="Two-factor authentication"
-            description="Manage your two-factor authentication settings"
-        />
-
-        <div
-            v-if="!twoFactorEnabled"
-            class="flex flex-col items-start justify-start space-y-4"
-        >
-            <p class="text-sm text-muted-foreground">
-                When you enable two-factor authentication, you will be prompted
-                for a secure pin during login. This pin can be retrieved from a
-                TOTP-supported application on your phone.
-            </p>
-
-            <div>
-                <Button v-if="hasSetupData" @click="showSetupModal = true">
-                    <ShieldCheck />Continue setup
-                </Button>
-                <Form
-                    v-else
-                    v-bind="enable.form()"
-                    @success="showSetupModal = true"
-                    #default="{ processing }"
-                >
-                    <Button type="submit" :disabled="processing">
-                        Enable 2FA
-                    </Button>
-                </Form>
-            </div>
-        </div>
-
-        <div v-else class="flex flex-col items-start justify-start space-y-4">
-            <p class="text-sm text-muted-foreground">
-                You will be prompted for a secure, random pin during login,
-                which you can retrieve from the TOTP-supported application on
-                your phone.
-            </p>
-
-            <div class="relative inline">
-                <Form v-bind="disable.form()" #default="{ processing }">
-                    <Button
-                        variant="destructive"
-                        type="submit"
-                        :disabled="processing"
-                    >
-                        Disable 2FA
-                    </Button>
-                </Form>
-            </div>
-
-            <TwoFactorRecoveryCodes />
-        </div>
-
-        <TwoFactorSetupModal
-            v-model:isOpen="showSetupModal"
-            :requiresConfirmation="requiresConfirmation"
-            :twoFactorEnabled="twoFactorEnabled"
-        />
-    </div>
+    <ManageTwoFactor
+        :canManageTwoFactor="canManageTwoFactor"
+        :requiresConfirmation="requiresConfirmation"
+        :twoFactorEnabled="twoFactorEnabled"
+    />
     <!-- @end-chisel-2fa -->
 
     <!-- @chisel-passkeys -->
-    <div v-if="canManagePasskeys" class="space-y-6">
-        <Heading
-            variant="small"
-            title="Passkeys"
-            description="Manage your passkeys for passwordless sign-in"
-        />
-
-        <div class="overflow-hidden rounded-lg border border-border">
-            <template v-if="passkeys.length">
-                <PasskeyItem
-                    v-for="passkey in passkeys"
-                    :key="passkey.id"
-                    :passkey="passkey"
-                    @remove="handleDelete"
-                />
-            </template>
-
-            <div v-else class="p-8 text-center">
-                <div
-                    class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted"
-                >
-                    <KeyRound class="h-7 w-7 text-muted-foreground" />
-                </div>
-                <p class="font-medium">No passkeys yet</p>
-                <p class="mt-1 text-sm text-muted-foreground">
-                    Add a passkey to sign in without a password
-                </p>
-            </div>
-        </div>
-
-        <PasskeyRegister @success="handleRegisterSuccess" />
-    </div>
+    <ManagePasskeys
+        :canManagePasskeys="canManagePasskeys"
+        :passkeys="passkeys"
+    />
     <!-- @end-chisel-passkeys -->
 </template>
