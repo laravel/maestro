@@ -101,6 +101,7 @@ return Chisel::script(__DIR__)
                 'resources/js/components/two-factor-recovery-codes.tsx',
                 'resources/js/components/ui/input-otp.tsx',
                 'resources/js/hooks/use-two-factor-auth.ts',
+                'resources/js/pages/auth/manage-two-factor.tsx',
                 'database/migrations/2025_08_14_170933_add_two_factor_columns_to_users_table.php',
                 'tests/Feature/Auth/TwoFactorChallengeTest.php',
             )->delete();
@@ -141,6 +142,7 @@ return Chisel::script(__DIR__)
                 'resources/js/components/passkey-item.tsx',
                 'resources/js/components/passkey-register.tsx',
                 'resources/js/components/passkey-verify.tsx',
+                'resources/js/pages/auth/manage-passkeys.tsx',
                 'database/migrations/2024_01_01_000000_create_passkeys_table.php',
             )->delete();
         },
