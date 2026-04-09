@@ -8,22 +8,20 @@
 
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
-    /* @chisel-passkeys */
-    import {
-        index as confirmOptions,
-        store as confirmStore,
-    } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyConfirmationController';
-    /* @end-chisel-passkeys */
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
-    /* @chisel-passkeys */
-    import PasskeyVerify from '@/components/PasskeyVerify.svelte';
-    /* @end-chisel-passkeys */
     import PasswordInput from '@/components/PasswordInput.svelte';
     import { Button } from '@/components/ui/button';
     import { Label } from '@/components/ui/label';
     import { Spinner } from '@/components/ui/spinner';
     import { store } from '@/routes/password/confirm';
+    /* @chisel-passkeys */
+    import {
+        index as confirmOptions,
+        store as confirmStore,
+    } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyConfirmationController';
+    import PasskeyVerify from '@/components/PasskeyVerify.svelte';
+    /* @end-chisel-passkeys */
 </script>
 
 <AppHead title="Confirm password" />

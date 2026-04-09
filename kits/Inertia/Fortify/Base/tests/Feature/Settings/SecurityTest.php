@@ -38,11 +38,9 @@ class SecurityTest extends TestCase
                 ->component('{{security_settings}}')
                 /* @chisel-passkeys */
                 ->where('canManagePasskeys', true)
-                /* @end-chisel-passkeys */
-                ->where('canManageTwoFactor', true)
-                /* @chisel-passkeys */
                 ->where('passkeys', [])
                 /* @end-chisel-passkeys */
+                ->where('canManageTwoFactor', true)
                 ->where('twoFactorEnabled', false),
             );
     }
@@ -103,11 +101,9 @@ class SecurityTest extends TestCase
                 ->component('{{security_settings}}')
                 /* @chisel-passkeys */
                 ->where('canManagePasskeys', false)
-                /* @end-chisel-passkeys */
-                ->where('canManageTwoFactor', false)
-                /* @chisel-passkeys */
                 ->where('passkeys', [])
                 /* @end-chisel-passkeys */
+                ->where('canManageTwoFactor', false)
                 ->missing('twoFactorEnabled')
                 ->missing('requiresConfirmation'),
             );

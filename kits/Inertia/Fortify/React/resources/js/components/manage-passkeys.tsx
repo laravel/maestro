@@ -6,7 +6,7 @@ import type { Passkey } from "@/types/auth";
 import { router } from "@inertiajs/react";
 import { KeyRound } from "lucide-react";
 
-export type Props = Record<string, never> & {
+export type Props = {
     canManagePasskeys?: boolean;
     passkeys?: Passkey[];
 };
