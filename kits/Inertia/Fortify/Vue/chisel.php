@@ -38,6 +38,17 @@ function restoreAlphabetizedImportOrdering(Chisel $c): void
         ->replace('// },', '},');
 }
 
+function cleanupInstallFeaturesArtifacts(Chisel $c): void
+{
+    $c->file('composer.json')
+        ->removeLinesContaining('"post-install-cmd": "@php artisan install:features --ansi",');
+
+    $c->files(
+        'app/Console/Commands/InstallFeaturesCommand.php',
+        'chisel.php',
+    )->delete();
+}
+
 return Chisel::script(__DIR__)
     ->questions([
         Question::multiselect(
@@ -194,4 +205,5 @@ return Chisel::script(__DIR__)
     ->apply(function (Chisel $c): void {
         restoreAlphabetizedImportOrdering($c);
         formatFiles();
+        cleanupInstallFeaturesArtifacts($c);
     });

@@ -26,6 +26,17 @@ function existingFiles(string ...$paths): array
     return array_values(array_filter($paths, fn (string $path): bool => file_exists(__DIR__.'/'.$path)));
 }
 
+function cleanupInstallFeaturesArtifacts(Chisel $c): void
+{
+    $c->file('composer.json')
+        ->removeLinesContaining('"post-install-cmd": "@php artisan install:features --ansi",');
+
+    $c->files(
+        'app/Console/Commands/InstallFeaturesCommand.php',
+        'chisel.php',
+    )->delete();
+}
+
 return Chisel::script(__DIR__)
     ->questions([
         Question::multiselect(
@@ -208,6 +219,7 @@ return Chisel::script(__DIR__)
             )->delete();
         },
     )
-    ->apply(function (): void {
+    ->apply(function (Chisel $c): void {
         formatFiles();
+        cleanupInstallFeaturesArtifacts($c);
     });

@@ -45,7 +45,6 @@ class InstallFeaturesCommand extends Command
         $script->run($answers);
 
         $this->rebuildAssets();
-        $this->cleanupFiles();
 
         return self::SUCCESS;
     }
@@ -128,14 +127,5 @@ class InstallFeaturesCommand extends Command
         }
 
         throw new \RuntimeException($packageManager->buildCommand().' failed.');
-    }
-
-    protected function cleanupFiles(): void
-    {
-        unlink(base_path('chisel.php'));
-        unlink(__FILE__);
-
-        $this->info('Deleted chisel.php');
-        $this->info('Deleted install:features command');
     }
 }
