@@ -2,10 +2,8 @@ import js from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import prettier from 'eslint-config-prettier/flat';
 import importPlugin from 'eslint-plugin-import';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import globals from 'globals';
-import typescript from 'typescript-eslint';
+import svelte from 'eslint-plugin-svelte';
+import ts from 'typescript-eslint';
 
 const controlStatements = [
     'if',
@@ -24,28 +22,22 @@ const paddingAroundControl = [
     ]),
 ];
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
+export default ts.config(
     js.configs.recommended,
-    reactHooks.configs.flat['recommended-latest'],
-    ...typescript.configs.recommended,
+    ...ts.configs.recommended,
+    ...svelte.configs['flat/recommended'],
     {
-        ...react.configs.flat.recommended,
-        ...react.configs.flat['jsx-runtime'], // Required for React 17+
+        files: ['**/*.svelte'],
         languageOptions: {
-            globals: {
-                ...globals.browser,
+            parserOptions: {
+                parser: ts.parser,
             },
         },
-        rules: {
-            'react/react-in-jsx-scope': 'off',
-            'react/prop-types': 'off',
-            'react/no-unescaped-entities': 'off',
-        },
-        settings: {
-            react: {
-                version: 'detect',
-            },
+    },
+    {
+        files: ['**/*.svelte.ts'],
+        languageOptions: {
+            parser: ts.parser,
         },
     },
     {
@@ -62,7 +54,15 @@ export default [
             },
         },
         rules: {
+            'no-undef': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                },
+            ],
             '@typescript-eslint/consistent-type-imports': [
                 'error',
                 {
@@ -73,18 +73,11 @@ export default [
             'import/order': [
                 'error',
                 {
-                    groups: [
-                        'builtin',
-                        'external',
-                        'internal',
-                        'parent',
-                        'sibling',
-                        'index',
-                    ],
-                    alphabetize: {
-                        order: 'asc',
-                        caseInsensitive: true,
-                    },
+                    groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+                    // alphabetize: {
+                    //     order: 'asc',
+                    //     caseInsensitive: true,
+                    // },
                 },
             ],
             'import/consistent-type-specifier-style': [
@@ -119,7 +112,7 @@ export default [
             'resources/js/wayfinder/**',
         ],
     },
-    prettier, // Turn off all rules that might conflict with Prettier
+    prettier,
     {
         plugins: {
             '@stylistic': stylistic,
@@ -129,4 +122,4 @@ export default [
             '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: false }],
         },
     },
-];
+);

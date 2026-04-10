@@ -74,10 +74,10 @@ export default ts.config(
                 'error',
                 {
                     groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-                    // alphabetize: {
-                    //     order: 'asc',
-                    //     caseInsensitive: true,
-                    // },
+                    alphabetize: {
+                        order: 'asc',
+                        caseInsensitive: true,
+                    },
                 },
             ],
             'import/consistent-type-specifier-style': [

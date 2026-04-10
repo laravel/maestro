@@ -20,9 +20,22 @@ function formatFiles(): void
         exit(1);
     }
 
+    if (runCommand(['npm', 'run', 'lint']) !== 0) {
+        exit(1);
+    }
+
     if (runCommand(['npm', 'run', 'format']) !== 0) {
         exit(1);
     }
+}
+
+function restoreAlphabetizedImportOrdering(Chisel $c): void
+{
+    $c->file('eslint.config.js')
+        ->replace('// alphabetize: {', 'alphabetize: {')
+        ->replace("//     order: 'asc',", "    order: 'asc',")
+        ->replace('//     caseInsensitive: true,', '    caseInsensitive: true,')
+        ->replace('// },', '},');
 }
 
 return Chisel::script(__DIR__)
@@ -177,6 +190,7 @@ return Chisel::script(__DIR__)
             )->delete();
         },
     )
-    ->apply(function (): void {
+    ->apply(function (Chisel $c): void {
+        restoreAlphabetizedImportOrdering($c);
         formatFiles();
     });
