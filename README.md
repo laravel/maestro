@@ -153,15 +153,59 @@ The `kits/Shared` folder contains files that are 100% identical between Livewire
 
 ### Livewire
 
-Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/Fortify -> Livewire/Fortify [-> Livewire/Components] -> Shared/Teams/Base -> Shared/Teams/Fortify -> Livewire/Teams/Base -> Livewire/Teams/Fortify
+```mermaid
+flowchart TD
+    A[Shared/Blank] --> B[Livewire/Blank]
+    B --> C[Shared/Base]
+    C --> D[Livewire/Base]
+    D --> F1[Shared/Fortify]
+    D --> W1[Shared/WorkOS]
 
-OR (WorkOS): Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/WorkOS -> Livewire/WorkOS -> Shared/Teams/Base -> Shared/Teams/WorkOS -> Livewire/Teams/Base -> Livewire/Teams/WorkOS
+    F1 --> F2[Livewire/Fortify]
+    F2 -. Components variant .-> FC[Livewire/Components]
+
+    W1 --> W2[Livewire/WorkOS]
+
+    F2 --> TB[Shared/Teams/Base]
+    W2 --> TB
+    TB --> STF[Shared/Teams/Fortify]
+    TB --> STW[Shared/Teams/WorkOS]
+    STF --> LTB[Livewire/Teams/Base]
+    STW --> LTB
+    LTB --> LTF[Livewire/Teams/Fortify]
+    LTB --> LTW[Livewire/Teams/WorkOS]
+```
 
 ### Inertia
 
-Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Svelte|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Svelte|Vue] -> Shared/Fortify -> Inertia/Fortify/Base -> Inertia/Fortify/[React|Svelte|Vue] -> Shared/Teams/Base -> Shared/Teams/Fortify -> Inertia/Teams/Base -> Inertia/Teams/[React|Svelte|Vue] -> Inertia/Teams/Fortify/Base -> Inertia/Teams/Fortify/[React|Svelte|Vue]
+```mermaid
+flowchart TD
+    A[Shared/Blank] --> B[Inertia/Blank/Base]
+    B --> C["Inertia/Blank/[React|Svelte|Vue]"]
+    C --> D[Shared/Base]
+    D --> E[Inertia/Base]
+    E --> G["Inertia/[React|Svelte|Vue]"]
+    G --> F1[Shared/Fortify]
+    G --> W1[Shared/WorkOS]
 
-OR (WorkOS): Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Svelte|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Svelte|Vue] -> Shared/WorkOS -> Inertia/WorkOS/Base -> Inertia/WorkOS/[React|Svelte|Vue] -> Shared/Teams/Base -> Shared/Teams/WorkOS -> Inertia/Teams/Base -> Inertia/Teams/[React|Svelte|Vue] -> Inertia/Teams/WorkOS/Base -> Inertia/Teams/WorkOS/[React|Svelte|Vue]
+    F1 --> F2[Inertia/Fortify/Base]
+    F2 --> F3["Inertia/Fortify/[React|Svelte|Vue]"]
+
+    W1 --> W2[Inertia/WorkOS/Base]
+    W2 --> W3["Inertia/WorkOS/[React|Svelte|Vue]"]
+
+    F3 --> TB[Shared/Teams/Base]
+    W3 --> TB
+    TB --> STF[Shared/Teams/Fortify]
+    TB --> STW[Shared/Teams/WorkOS]
+    STF --> ITB[Inertia/Teams/Base]
+    STW --> ITB
+    ITB --> ITV["Inertia/Teams/[React|Svelte|Vue]"]
+    ITV --> ITFB[Inertia/Teams/Fortify/Base]
+    ITV --> ITWB[Inertia/Teams/WorkOS/Base]
+    ITFB --> ITF["Inertia/Teams/Fortify/[React|Svelte|Vue]"]
+    ITWB --> ITW["Inertia/Teams/WorkOS/[React|Svelte|Vue]"]
+```
 
 Where `Shared/Blank` has the shared files across all variants, and each subsequent layer adds or overrides files.
 
