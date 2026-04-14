@@ -7,7 +7,7 @@ Maestro is the monorepo orchestrator for the official Laravel starter kits. Use 
 - Build: `cd orchestrator && php artisan build` (interactive) or use `--kit`, `--blank`, `--workos`, `--teams` flags
 - Dev: `composer kit:run` (from `orchestrator/`)
 - Test: `composer setup && composer ci:check` (from `build/`)
-- Test all kits: `composer kits:check` (from `orchestrator/`) — builds and runs CI checks for all 21 variants
+- Test all kits: `composer kits:check` (from `orchestrator/`) — builds and runs CI checks for all 22 variants
 - Pint only: `composer kits:pint` (from `orchestrator/`) — runs Pint on `kits/` and `browser_tests/`
 - Lint: `composer kits:lint` (from `orchestrator/`) — runs `kits:pint`, then frontend lint/format for Inertia variants
 - Browser tests (all 8 kits): `composer kits:browser-tests` (from `orchestrator/`)
@@ -15,7 +15,7 @@ Maestro is the monorepo orchestrator for the official Laravel starter kits. Use 
 
 ### Selective Execution
 
-Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.
+Pass `--api`, `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.
 Pass `--blank`, `--fortify`, `--workos`, `--components`, and/or `--teams` to target specific variants.
 Combine both to narrow down exactly which kit variants to run:
 
@@ -24,6 +24,7 @@ composer kits:check -- --react --svelte
 composer kits:check -- --vue --svelte --fortify     # Vue and Svelte, Fortify variants only
 composer kits:check -- --livewire --fortify --workos # Livewire Fortify and WorkOS only
 composer kits:check -- --workos                      # all frameworks, WorkOS variant only
+composer kits:check -- --api                         # API variant only
 composer kits:lint -- --vue
 composer kits:lint -- --livewire                     # runs only the shared Pint step (no frontend lint phase)
 composer kits:browser-tests -- --vue

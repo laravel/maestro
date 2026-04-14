@@ -8,7 +8,7 @@ import { spawn } from 'child_process';
 /**
  * All recognized framework flags.
  */
-const FRAMEWORK_FLAGS = ['--livewire', '--react', '--svelte', '--vue'];
+const FRAMEWORK_FLAGS = ['--api', '--livewire', '--react', '--svelte', '--vue'];
 
 /**
  * All recognized variant flags.

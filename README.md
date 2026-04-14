@@ -26,6 +26,7 @@ php artisan build --kit=react --workos # Builds the React (WorkOS) starter kit
 php artisan build --kit=livewire --blank # Builds Blank Livewire starter kit
 php artisan build --kit=livewire --teams # Builds Livewire (Fortify Teams) starter kit
 php artisan build --kit=vue --workos --teams # Builds Vue (WorkOS Teams) starter kit
+php artisan build --kit=API # Builds the API starter kit
 ```
 
 ### WorkOS
@@ -81,7 +82,7 @@ Each variant runs exactly one test suite (common or teams), not both.
 
 ### Selective Execution
 
-Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.
+Pass `--api`, `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.
 Pass `--blank`, `--fortify`, `--workos`, `--components`, and/or `--teams` to target specific variants.
 Combine both to narrow down exactly which kit variants to run:
 
@@ -90,6 +91,7 @@ composer kits:check -- --react --svelte
 composer kits:check -- --vue --svelte --fortify     # Vue and Svelte, Fortify variants only
 composer kits:check -- --livewire --fortify --workos # Livewire Fortify and WorkOS only
 composer kits:check -- --workos                      # all frameworks, WorkOS variant only
+composer kits:check -- --api                         # API variant only
 composer kits:lint -- --vue
 composer kits:lint -- --livewire                     # runs only the shared Pint step (no frontend lint phase)
 composer kits:browser-tests -- --vue
@@ -105,7 +107,11 @@ After your PR is merged, **Maestro** will automatically push the changes directl
 
 ## Starter Kit Flavors
 
-We have two stacks of starter kits: **Inertia** and **Livewire**. For these stacks, we have several different variations within:
+We have three stacks of starter kits: **API**, **Inertia**, and **Livewire**. For these stacks, we have several different variations within:
+
+### API
+
+1. **Stateless:** API starter kit using _Laravel Sanctum_ for stateless token authentication.
 
 ### Livewire
 
@@ -150,6 +156,14 @@ The `kits/Shared` folder contains files that are 100% identical between Livewire
 - **Shared/Teams/Fortify:** Teams files specific to Fortify (CreateNewUser action, UserFactory)
 - **Shared/Teams/WorkOS:** Teams files specific to WorkOS (CreatePersonalTeam listener, UserFactory)
 - **Livewire/Teams/Base:** Livewire Teams files shared between Fortify and WorkOS (layouts, components, team pages)
+
+### API
+
+```mermaid
+flowchart TD
+    A[Shared/Blank] --> B[Shared/Base]
+    B --> C[API/Base]
+```
 
 ### Livewire
 

@@ -20,7 +20,7 @@ class BuildCommand extends Command
      * @var string
      */
     protected $signature = 'build
-                            {--kit= : The starter kit to build (Livewire, React, Svelte, or Vue)}
+                            {--kit= : The starter kit to build (API, Livewire, React, Svelte, or Vue)}
                             {--blank : Build the Blank variant (no authentication)}
                             {--workos : Build the WorkOS variant}
                             {--components : Build the Livewire Components variant}
@@ -52,6 +52,13 @@ class BuildCommand extends Command
                 label: 'Which starter kit would you like to build?',
                 options: $availableKits,
             );
+        }
+
+        // API kit has no variants — skip all variant flags and prompts
+        if ($kit === 'API') {
+            info('Building API starter kit...');
+
+            return $this->buildApiKit();
         }
 
         $workos = $this->option('workos');
@@ -228,6 +235,28 @@ class BuildCommand extends Command
 
         $variantLabel = $this->getVariantLabel($kit, $workos, $components, $blank, $teams);
         info("{$variantLabel} starter kit built successfully in the 'build' folder.");
+        info("Run 'composer kit:run' to start the development server.");
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * Build the API starter kit.
+     */
+    protected function buildApiKit(): int
+    {
+        $buildPath = $this->prepareBuildDirectory($this->sharedPath('Blank'));
+
+        info('Copying Shared Base files...');
+        File::copyDirectory($this->sharedPath('Base'), $buildPath);
+
+        info('Copying API Base kit files...');
+        File::copyDirectory($this->kitPath('API/Base'), $buildPath);
+
+        $this->writeStarterKitFile('API', workos: false);
+        $this->deleteDatabaseFile($buildPath);
+
+        info('API starter kit built successfully in the \'build\' folder.');
         info("Run 'composer kit:run' to start the development server.");
 
         return self::SUCCESS;
