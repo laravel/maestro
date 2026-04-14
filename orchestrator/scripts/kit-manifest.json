@@ -21,6 +21,8 @@
     "componentsDeleteDirectory": "resources/views/pages",
 
     "kitFolderMap": {
+        "api": ["Shared/Blank", "Shared/Base", "API/Base"],
+
         "livewire-blank": ["Shared/Blank", "Livewire/Blank"],
         "livewire": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/Fortify", "Livewire/Fortify"],
         "livewire-components": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/Fortify", "Livewire/Fortify", "Livewire/Components"],
