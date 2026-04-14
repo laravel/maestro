@@ -74,13 +74,13 @@ Every starter kit has a `ci:check` composer script that validates the kit withou
 
 **Livewire kits** run: `@test` (pint + PHPUnit) only.
 
+**API kits** run: `@test` (pint + PHPUnit) only — no frontend checks.
+
 ### Fortify Feature Matrix
 
 Run from `orchestrator/`: `php artisan fortify:matrix --kit=React|Svelte|Vue|Livewire`.
 
 Add `--teams` or Livewire-only `--components` as needed. The command builds `build/`, snapshots it, applies every `auth_features` permutation through `chisel.php`, and runs lint/checks for each result. Inertia matrix checks use Bun only; if Bun is missing, let it fail.
-
-**API kits** run: `@test` (pint + PHPUnit) only — no frontend checks.
 
 ## Starter Kit Variants (22 total)
 
