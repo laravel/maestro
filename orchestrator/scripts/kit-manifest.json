@@ -20,6 +20,10 @@
 
     "componentsDeleteDirectory": "resources/views/pages",
 
+    "kitExcludedFiles": {
+        "api": [".npmrc"]
+    },
+
     "kitFolderMap": {
         "api": ["Shared/Blank", "Shared/Base", "API/Base"],
 
