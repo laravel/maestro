@@ -14,7 +14,7 @@ class LoginTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->postJson('/api/login', [
+        $response = $this->postJson(route('login'), [
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -27,7 +27,7 @@ class LoginTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->postJson('/api/login', [
+        $response = $this->postJson(route('login'), [
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -41,7 +41,7 @@ class LoginTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->postJson('/api/login', [
+        $response = $this->postJson(route('login'), [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
@@ -51,7 +51,7 @@ class LoginTest extends TestCase
 
     public function test_login_fails_with_missing_fields(): void
     {
-        $response = $this->postJson('/api/login', []);
+        $response = $this->postJson(route('login'), []);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['email', 'password']);
@@ -59,7 +59,7 @@ class LoginTest extends TestCase
 
     public function test_login_fails_with_nonexistent_email(): void
     {
-        $response = $this->postJson('/api/login', [
+        $response = $this->postJson(route('login'), [
             'email' => 'nonexistent@example.com',
             'password' => 'password',
         ]);
@@ -72,13 +72,13 @@ class LoginTest extends TestCase
         $user = User::factory()->create();
 
         for ($i = 0; $i < 6; $i++) {
-            $this->postJson('/api/login', [
+            $this->postJson(route('login'), [
                 'email' => $user->email,
                 'password' => 'wrong-password',
             ]);
         }
 
-        $response = $this->postJson('/api/login', [
+        $response = $this->postJson(route('login'), [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
