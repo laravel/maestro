@@ -34,7 +34,7 @@ new #[Title('Teams')] class extends Component {
      * @return Collection<int, UserTeam>
      */
     #[Computed]
-    public function teams()
+    public function teams(): Collection
     {
         return Auth::user()->toUserTeams(includeCurrent: true);
     }
