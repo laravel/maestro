@@ -20,10 +20,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/token/refresh', RefreshTokenController::class)->name('token.refresh');
 
     Route::get('/me', [ProfileController::class, 'show'])->name('profile.show');
-
     Route::patch('/user', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/user', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::patch('/user/password', PasswordUpdateController::class)->name('password.update');
+
+    Route::middleware('verified')->group(function () {
+        Route::delete('/user', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::patch('/user/password', PasswordUpdateController::class)->name('password.update');
+    });
 
     Route::post('/email/verification-notification', SendVerificationNotificationController::class)
         ->middleware('throttle:6,1')
