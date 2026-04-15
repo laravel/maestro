@@ -23,11 +23,11 @@ return [
     'routes' => [
         [
             'match' => [
-                'prefixes' => ['api/*'],
+                'prefixes' => ['*'],
                 'domains' => ['*'],
             ],
             'include' => [],
-            'exclude' => [],
+            'exclude' => ['home', 'up'],
         ],
     ],
 
