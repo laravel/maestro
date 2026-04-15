@@ -210,4 +210,19 @@ class ProfileTest extends TestCase
 
         $this->assertDatabaseHas('users', ['id' => $user->id]);
     }
+
+    public function test_account_deletion_is_rejected_for_unverified_user(): void
+    {
+        $this->skipUnlessUserMustVerifyEmail();
+
+        $user = User::factory()->unverified()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+
+        $response = $this->withToken($token)->deleteJson(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+        $response->assertForbidden();
+        $this->assertDatabaseHas('users', ['id' => $user->id]);
+    }
 }
