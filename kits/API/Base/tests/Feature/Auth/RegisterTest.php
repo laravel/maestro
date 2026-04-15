@@ -14,7 +14,7 @@ class RegisterTest extends TestCase
 
     public function test_user_can_register_with_valid_data(): void
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson(route('register'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',
@@ -36,7 +36,7 @@ class RegisterTest extends TestCase
 
         Notification::fake();
 
-        $this->postJson('/api/register', [
+        $this->postJson(route('register'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',
@@ -50,7 +50,7 @@ class RegisterTest extends TestCase
 
     public function test_registration_fails_without_required_fields(): void
     {
-        $response = $this->postJson('/api/register', []);
+        $response = $this->postJson(route('register'), []);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['name', 'email', 'password']);
@@ -58,7 +58,7 @@ class RegisterTest extends TestCase
 
     public function test_registration_fails_with_invalid_email(): void
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson(route('register'), [
             'name' => 'Test User',
             'email' => 'not-an-email',
             'password' => 'password',
@@ -71,7 +71,7 @@ class RegisterTest extends TestCase
 
     public function test_registration_fails_with_short_password(): void
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson(route('register'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'short',
@@ -84,7 +84,7 @@ class RegisterTest extends TestCase
 
     public function test_registration_fails_with_mismatched_password_confirmation(): void
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson(route('register'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',
@@ -99,7 +99,7 @@ class RegisterTest extends TestCase
     {
         User::factory()->create(['email' => 'test@example.com']);
 
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson(route('register'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',

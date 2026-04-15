@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Knuckles\Scribe\Attributes\BodyParam;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -21,11 +22,13 @@ class RegisterController extends Controller
     #[ScribeResponse(['user_id' => 1, 'token' => 'YOUR_AUTH_TOKEN'], status: Response::HTTP_CREATED)]
     public function __invoke(RegisterRequest $request): JsonResponse
     {
-        $user = User::create($request->validated());
+        [$user, $token] = DB::transaction(function () use ($request): array {
+            $user = User::create($request->validated());
+
+            return [$user, $user->createToken('auth')->plainTextToken];
+        });
 
         event(new Registered($user));
-
-        $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
             'user_id' => $user->id,

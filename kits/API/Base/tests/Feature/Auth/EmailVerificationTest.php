@@ -65,7 +65,7 @@ class EmailVerificationTest extends TestCase
         $token = $user->createToken('auth')->plainTextToken;
 
         $response = $this->withToken($token)
-            ->postJson('/api/email/verification-notification');
+            ->postJson(route('verification.send'));
 
         $response->assertAccepted();
         Notification::assertSentTo($user, VerifyEmail::class);

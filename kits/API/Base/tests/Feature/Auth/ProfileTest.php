@@ -15,7 +15,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $token = $user->createToken('auth')->plainTextToken;
 
-        $response = $this->withToken($token)->getJson('/api/me');
+        $response = $this->withToken($token)->getJson(route('profile.show'));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -30,7 +30,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $token = $user->createToken('auth')->plainTextToken;
 
-        $response = $this->withToken($token)->patchJson('/api/user', [
+        $response = $this->withToken($token)->patchJson(route('profile.update'), [
             'name' => 'Updated Name',
         ]);
 
@@ -45,7 +45,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $token = $user->createToken('auth')->plainTextToken;
 
-        $response = $this->withToken($token)->patchJson('/api/user', [
+        $response = $this->withToken($token)->patchJson(route('profile.update'), [
             'email' => 'new@example.com',
         ]);
 
@@ -62,7 +62,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $token = $user->createToken('auth')->plainTextToken;
 
-        $this->withToken($token)->patchJson('/api/user', [
+        $this->withToken($token)->patchJson(route('profile.update'), [
             'email' => 'new@example.com',
         ])->assertOk();
 
@@ -74,7 +74,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $token = $user->createToken('auth')->plainTextToken;
 
-        $response = $this->withToken($token)->patchJson('/api/user', [
+        $response = $this->withToken($token)->patchJson(route('profile.update'), [
             'name' => 'Updated Name',
             'email' => $user->email,
         ]);
@@ -85,7 +85,7 @@ class ProfileTest extends TestCase
 
     public function test_update_requires_authentication(): void
     {
-        $response = $this->patchJson('/api/user', [
+        $response = $this->patchJson(route('profile.update'), [
             'name' => 'Updated Name',
         ]);
 
@@ -97,7 +97,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $token = $user->createToken('auth')->plainTextToken;
 
-        $response = $this->withToken($token)->patchJson('/api/user', [
+        $response = $this->withToken($token)->patchJson(route('profile.update'), [
             'email' => 'not-an-email',
         ]);
 
@@ -111,7 +111,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $token = $user->createToken('auth')->plainTextToken;
 
-        $response = $this->withToken($token)->patchJson('/api/user', [
+        $response = $this->withToken($token)->patchJson(route('profile.update'), [
             'email' => 'taken@example.com',
         ]);
 
@@ -124,11 +124,90 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $token = $user->createToken('auth')->plainTextToken;
 
-        $response = $this->withToken($token)->patchJson('/api/user', [
+        $response = $this->withToken($token)->patchJson(route('profile.update'), [
             'name' => '',
         ]);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
+    }
+
+    public function test_user_can_delete_their_account(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+
+        $response = $this->withToken($token)->deleteJson(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+        $response->assertNoContent();
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    }
+
+    public function test_account_deletion_removes_all_personal_access_tokens(): void
+    {
+        $user = User::factory()->create();
+        $user->createToken('other-device');
+        $token = $user->createToken('auth')->plainTextToken;
+
+        $this->withToken($token)->deleteJson(route('profile.destroy'), [
+            'password' => 'password',
+        ])->assertNoContent();
+
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+        ]);
+    }
+
+    public function test_previous_token_is_invalid_after_account_deletion(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+
+        $this->withToken($token)->deleteJson(route('profile.destroy'), [
+            'password' => 'password',
+        ])->assertNoContent();
+
+        auth()->forgetGuards();
+
+        $this->withToken($token)->getJson(route('profile.show'))->assertUnauthorized();
+    }
+
+    public function test_account_deletion_requires_authentication(): void
+    {
+        $response = $this->deleteJson(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+        $response->assertUnauthorized();
+    }
+
+    public function test_account_deletion_fails_with_wrong_password(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+
+        $response = $this->withToken($token)->deleteJson(route('profile.destroy'), [
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['password']);
+
+        $this->assertDatabaseHas('users', ['id' => $user->id]);
+    }
+
+    public function test_account_deletion_fails_without_password(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+
+        $response = $this->withToken($token)->deleteJson(route('profile.destroy'), []);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['password']);
+
+        $this->assertDatabaseHas('users', ['id' => $user->id]);
     }
 }
