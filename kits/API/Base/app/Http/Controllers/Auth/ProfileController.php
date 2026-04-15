@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\DeleteUserRequest;
 use App\Http\Requests\Auth\ProfileUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
+use Knuckles\Scribe\Attributes\Response as ScribeResponse;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Profile')]
@@ -42,5 +46,19 @@ class ProfileController extends Controller
         $user->sendEmailVerificationNotification();
 
         return new UserResource($user);
+    }
+
+    #[Endpoint('Delete Account', "Permanently delete the authenticated user's account and revoke all their tokens.")]
+    #[ScribeResponse(status: Response::HTTP_NO_CONTENT, description: 'No Content')]
+    public function destroy(DeleteUserRequest $request): Response
+    {
+        $user = $request->user();
+
+        DB::transaction(function () use ($user): void {
+            $user->tokens()->delete();
+            $user->delete();
+        });
+
+        return response()->noContent();
     }
 }
