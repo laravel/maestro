@@ -95,4 +95,21 @@ class PasswordTest extends TestCase
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['password']);
     }
+
+    public function test_password_update_is_rejected_for_unverified_user(): void
+    {
+        $this->skipUnlessUserMustVerifyEmail();
+
+        $user = User::factory()->unverified()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+
+        $response = $this->withToken($token)->patchJson(route('password.update'), [
+            'current_password' => 'password',
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ]);
+
+        $response->assertForbidden();
+        $this->assertTrue(Hash::check('password', $user->fresh()->password));
+    }
 }
