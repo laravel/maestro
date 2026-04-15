@@ -27,7 +27,7 @@ return [
                 'domains' => ['*'],
             ],
             'include' => [],
-            'exclude' => ['home', 'up'],
+            'exclude' => ['/', 'sanctum/*', 'storage/*'],
         ],
     ],
 
