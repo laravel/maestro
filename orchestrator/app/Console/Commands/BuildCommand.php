@@ -255,6 +255,7 @@ class BuildCommand extends Command
 
         $this->writeStarterKitFile('API', workos: false);
         $this->deleteDatabaseFile($buildPath);
+        $this->deleteExcludedFiles($buildPath, 'api');
 
         info('API starter kit built successfully in the \'build\' folder.');
         info("Run 'composer kit:run' to start the development server.");
@@ -339,7 +340,7 @@ class BuildCommand extends Command
     /**
      * Load the shared kit manifest from the JSON file.
      *
-     * @return array{placeholderSearchPaths: string[], componentsRelocations: array<int, array{from: string, to: string, directory?: bool}>, componentsDeleteDirectory: string, kitFolderMap: array<string, string[]>}
+     * @return array{placeholderSearchPaths: string[], componentsRelocations: array<int, array{from: string, to: string, directory?: bool}>, componentsDeleteDirectory: string, kitExcludedFiles: array<string, string[]>, kitFolderMap: array<string, string[]>}
      */
     protected function getManifest(): array
     {
@@ -600,6 +601,27 @@ class BuildCommand extends Command
 
         if (File::exists($databasePath)) {
             File::delete($databasePath);
+        }
+    }
+
+    /**
+     * Delete files from the build that the given starter kit inherits from
+     * higher layers but does not need (e.g. frontend tooling for the API kit).
+     *
+     * The list of excluded files is declared in scripts/kit-manifest.json so
+     * the watch script can also honour it when reconciling stale files.
+     */
+    protected function deleteExcludedFiles(string $buildPath, string $starterKit): void
+    {
+        $manifest = $this->getManifest();
+        $excluded = $manifest['kitExcludedFiles'][$starterKit] ?? [];
+
+        foreach ($excluded as $relativePath) {
+            $target = $buildPath.'/'.$relativePath;
+
+            if (File::exists($target)) {
+                File::delete($target);
+            }
         }
     }
 }
