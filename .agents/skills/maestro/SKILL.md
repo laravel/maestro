@@ -39,7 +39,7 @@ All commands below run from the `orchestrator/` directory unless noted otherwise
 | `composer kits:pint`                                 | Run Pint on `kits/` and `browser_tests/`.                                  |
 | `composer kits:lint`                                 | Run `kits:pint`, then lint/format Inertia variants and sync back.          |
 | `php artisan build --kit=API`                        | Build API kit directly.                                                    |
-| `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 22 kit variants sequentially. |
+| `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 23 kit variants sequentially. |
 | `composer kits:browser-tests`                        | Build and run browser tests for all 8 Fortify kit variants (4 base + 4 teams). |
 | `npm run watch:kits`                                 | Run only the file watcher (no dev server).                                 |
 | `composer setup && composer ci:check`                | Run inside `build/` — installs deps, builds frontend, runs checks (see below). |
@@ -75,13 +75,14 @@ Every starter kit has a `ci:check` composer script that validates the kit withou
 
 **API kits** run: `@test` (pint + PHPUnit) only — no frontend checks.
 
-## Starter Kit Variants (22 total)
+## Starter Kit Variants (23 total)
 
 These are the full starter kit identifiers written to `orchestrator/storage/app/private/starter_kit` and used by `orchestrator/scripts/watch.js` for layer syncing.
 
 | Stack     | Variant Identifier       | Auth / Feature Set        |
 |-----------|--------------------------|---------------------------|
 | API       | `api`                    | Sanctum Stateless         |
+| API       | `api-teams`              | Sanctum + Teams           |
 | Livewire  | `livewire-blank`         | Blank (no auth)           |
 | Livewire  | `livewire`               | Fortify                   |
 | Livewire  | `livewire-components`    | Fortify + Components      |
@@ -112,7 +113,13 @@ Starter kits are built by layering folders in priority order. Higher-priority la
 
 ```
 Shared/Blank → Shared/Base → API/Base
+
+For Teams variant, add:
+                          → Shared/Teams/Base
+                            → API/Teams
 ```
+
+The API Teams variant does **not** apply the `Shared/Teams/Fortify` layer — it provides its own `RegisterController` override (which creates the personal team) and `UserFactory` override instead of reusing the Fortify-specific `CreateNewUser` action.
 
 ### Inertia (React / Svelte / Vue)
 
@@ -172,7 +179,8 @@ For Teams (on top of Fortify or WorkOS), add:
 ```
 kits/
 ├── API/
-│   └── Base/        # Sanctum stateless API: controllers, resources, requests, routes, tests, Scribe config
+│   ├── Base/        # Sanctum stateless API: controllers, resources, requests, routes, tests, Scribe config
+│   └── Teams/       # API teams backend: team/member/invitation controllers, resources, requests, ValidTeamInvitation rule, RegisterController override, User model + UserFactory overrides, teams.php routes
 │
 ├── Shared/
 │   ├── Blank/       # Foundation: config, migrations, artisan, phpunit.xml, .env.example
