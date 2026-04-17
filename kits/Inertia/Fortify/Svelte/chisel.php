@@ -1,6 +1,6 @@
 <?php
 
-require (getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__.'/vendor/autoload.php');
+require getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__.'/vendor/autoload.php';
 
 use Laravel\Chisel\Chisel;
 use Laravel\Chisel\Question;
@@ -17,6 +17,10 @@ function runCommand(array $command): int
 function formatFiles(): void
 {
     if (runCommand(['composer', 'lint']) !== 0) {
+        exit(1);
+    }
+
+    if (runCommand(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction']) !== 0) {
         exit(1);
     }
 
@@ -119,6 +123,7 @@ return Chisel::script(__DIR__)
 
             $c->files(
                 'resources/js/pages/auth/TwoFactorChallenge.svelte',
+                'resources/js/components/ManageTwoFactor.svelte',
                 'resources/js/components/TwoFactorSetupModal.svelte',
                 'resources/js/components/TwoFactorRecoveryCodes.svelte',
                 'resources/js/components/ui/input-otp/index.ts',
@@ -166,10 +171,21 @@ return Chisel::script(__DIR__)
 
             $c->files(
                 'resources/js/components/PasskeyItem.svelte',
+                'resources/js/components/ManagePasskeys.svelte',
                 'resources/js/components/PasskeyRegister.svelte',
                 'resources/js/components/PasskeyVerify.svelte',
                 'database/migrations/2024_01_01_000000_create_passkeys_table.php',
             )->delete();
+        },
+    )
+    ->selectedAny('auth_features', ['2fa', 'passkeys'],
+        then: function (Chisel $c) {
+            $c->file('resources/js/pages/settings/Security.svelte')
+                ->removeSectionMarkers('chisel-2fa-or-passkeys');
+        },
+        else: function (Chisel $c) {
+            $c->file('resources/js/pages/settings/Security.svelte')
+                ->removeSection('chisel-2fa-or-passkeys');
         },
     )
     ->selected('auth_features', 'password-confirmation',

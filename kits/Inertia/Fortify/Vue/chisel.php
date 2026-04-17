@@ -1,6 +1,6 @@
 <?php
 
-require (getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__.'/vendor/autoload.php');
+require getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__.'/vendor/autoload.php';
 
 use Laravel\Chisel\Chisel;
 use Laravel\Chisel\Question;
@@ -17,6 +17,10 @@ function runCommand(array $command): int
 function formatFiles(): void
 {
     if (runCommand(['composer', 'lint']) !== 0) {
+        exit(1);
+    }
+
+    if (runCommand(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction']) !== 0) {
         exit(1);
     }
 
@@ -121,6 +125,7 @@ return Chisel::script(__DIR__)
 
             $c->files(
                 'resources/js/pages/auth/TwoFactorChallenge.vue',
+                'resources/js/components/ManageTwoFactor.vue',
                 'resources/js/components/TwoFactorSetupModal.vue',
                 'resources/js/components/TwoFactorRecoveryCodes.vue',
                 'resources/js/components/ui/input-otp/index.ts',
@@ -167,6 +172,7 @@ return Chisel::script(__DIR__)
 
             $c->files(
                 'resources/js/components/PasskeyItem.vue',
+                'resources/js/components/ManagePasskeys.vue',
                 'resources/js/components/PasskeyRegister.vue',
                 'resources/js/components/PasskeyVerify.vue',
                 'database/migrations/2024_01_01_000000_create_passkeys_table.php',
