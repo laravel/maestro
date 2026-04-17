@@ -1,8 +1,11 @@
 <script lang="ts">
+    import { Form } from '@inertiajs/svelte';
     import ShieldCheck from 'lucide-svelte/icons/shield-check';
     import { onDestroy } from 'svelte';
+    import Heading from '@/components/Heading.svelte';
     import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.svelte';
     import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.svelte';
+    import { Button } from '@/components/ui/button';
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
     import { disable, enable } from '@/routes/two-factor';
 
@@ -10,13 +13,13 @@
         canManageTwoFactor?: boolean;
         requiresConfirmation?: boolean;
         twoFactorEnabled?: boolean;
-    }
+    };
 
     let {
         canManageTwoFactor = false,
         requiresConfirmation = false,
         twoFactorEnabled = false,
-    }:Props = $props();
+    }: Props = $props();
 
     const twoFactorAuth = twoFactorAuthState();
     let showSetupModal = $state(false);

@@ -12,7 +12,7 @@
 </script>
 
 <script lang="ts">
-    import { Form, page } from '@inertiajs/svelte';
+    import { Form /* @chisel-2fa-or-passkeys */, page /* @end-chisel-2fa-or-passkeys */ } from '@inertiajs/svelte';
     import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
     import AppHead from '@/components/AppHead.svelte';
     import Heading from '@/components/Heading.svelte';
