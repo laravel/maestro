@@ -74,20 +74,20 @@ class FortifyMatrixCommand extends Command
             ->when($components, fn ($parts) => $parts->push('+ Components'))
             ->implode(' ');
 
-        task($label, fn ($log) => $this->run(
+        task($label, fn ($log) => $this->runProcess(
             ['php', 'artisan', 'build', '--no-interaction', ...$args],
             base_path(),
             $log,
         ));
 
-        task('Installing Composer dependencies', fn ($log) => $this->run(
+        task('Installing Composer dependencies', fn ($log) => $this->runProcess(
             ['composer', 'install', '--no-interaction', '--prefer-dist', '--no-scripts'],
             $this->buildPath,
             $log,
         ));
 
         if ($this->hasFrontend()) {
-            task('Installing npm dependencies', fn ($log) => $this->run(
+            task('Installing npm dependencies', fn ($log) => $this->runProcess(
                 ['npm', 'install'],
                 $this->buildPath,
                 $log,
@@ -113,7 +113,7 @@ class FortifyMatrixCommand extends Command
         task($this->permutationLabel($mask, $features), function ($log) use ($features) {
             $this->rsync($this->baselinePath, $this->buildPath, $log);
             $this->applyChisel($features, $log);
-            $this->run(['composer', 'lint:check'], $this->buildPath, $log);
+            $this->runProcess(['composer', 'lint:check'], $this->buildPath, $log);
 
             if ($this->shouldCheckFrontend()) {
                 $this->runFrontendChecks($log);
@@ -150,21 +150,21 @@ class FortifyMatrixCommand extends Command
             var_export($features, true),
         );
 
-        $this->run(['php', '-r', $script], $this->buildPath, $log);
+        $this->runProcess(['php', '-r', $script], $this->buildPath, $log);
     }
 
     protected function runFrontendChecks(object $log): void
     {
-        $this->run(['npm', 'install'], $this->buildPath, $log);
-        $this->run(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], $this->buildPath, $log);
-        $this->run(['npm', 'run', 'lint:check'], $this->buildPath, $log);
-        $this->run(['npm', 'run', 'format:check'], $this->buildPath, $log);
-        $this->run(['npm', 'run', 'types:check'], $this->buildPath, $log);
+        $this->runProcess(['npm', 'install'], $this->buildPath, $log);
+        $this->runProcess(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], $this->buildPath, $log);
+        $this->runProcess(['npm', 'run', 'lint:check'], $this->buildPath, $log);
+        $this->runProcess(['npm', 'run', 'format:check'], $this->buildPath, $log);
+        $this->runProcess(['npm', 'run', 'types:check'], $this->buildPath, $log);
     }
 
     protected function rsync(string $source, string $destination, object $log): void
     {
-        $this->run([
+        $this->runProcess([
             'rsync', '-a', '--delete',
             '--exclude', 'vendor',
             '--exclude', 'node_modules',
@@ -176,7 +176,7 @@ class FortifyMatrixCommand extends Command
     /**
      * @param  list<string>  $command
      */
-    protected function run(array $command, string $cwd, object $log): void
+    protected function runProcess(array $command, string $cwd, object $log): void
     {
         Process::path($cwd)
             ->timeout(0)
