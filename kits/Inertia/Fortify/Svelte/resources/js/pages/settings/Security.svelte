@@ -12,7 +12,7 @@
 </script>
 
 <script lang="ts">
-    import { Form } from '@inertiajs/svelte';
+    import { Form, page } from '@inertiajs/svelte';
     import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
     import AppHead from '@/components/AppHead.svelte';
     import Heading from '@/components/Heading.svelte';
@@ -22,28 +22,22 @@
     import { Label } from '@/components/ui/label';
     /* @chisel-2fa */
     import ManageTwoFactor from '@/components/ManageTwoFactor.svelte';
-    import type { Props as ManageTwoFactorProps } from '@/components/ManageTwoFactor.svelte';
     /* @end-chisel-2fa */
     /* @chisel-passkeys */
     import ManagePasskeys from '@/components/ManagePasskeys.svelte';
     import type { Props as ManagePasskeysProps } from '@/components/ManagePasskeys.svelte';
     /* @end-chisel-passkeys */
-
-    type Props = Record<string, never>
-        /* @chisel-passkeys */ & ManagePasskeysProps /* @end-chisel-passkeys */
-        /* @chisel-2fa */ & ManageTwoFactorProps /* @end-chisel-2fa */
-
-    let {
-        /* @chisel-passkeys */
-        canManagePasskeys = false,
-        passkeys = [],
-        /* @end-chisel-passkeys */
-        /* @chisel-2fa */
-        canManageTwoFactor = false,
-        requiresConfirmation = false,
-        twoFactorEnabled = false,
-        /* @end-chisel-2fa */
-    }: Props = $props();
+    /* @chisel-2fa */
+    const canManageTwoFactor = $derived(Boolean(page.props.canManageTwoFactor));
+    const requiresConfirmation = $derived(Boolean(page.props.requiresConfirmation));
+    const twoFactorEnabled = $derived(Boolean(page.props.twoFactorEnabled));
+    /* @end-chisel-2fa */
+    /* @chisel-passkeys */
+    const canManagePasskeys = $derived(Boolean(page.props.canManagePasskeys));
+    const passkeys = $derived(
+        (Array.isArray(page.props.passkeys) ? page.props.passkeys : []) as ManagePasskeysProps['passkeys'],
+    );
+    /* @end-chisel-passkeys */
 </script>
 
 <AppHead title="Security settings" />
@@ -119,7 +113,7 @@
 </div>
 
 <!-- @chisel-2fa -->
- <ManageTwoFactor
+<ManageTwoFactor
     {canManageTwoFactor}
     {requiresConfirmation}
     {twoFactorEnabled}

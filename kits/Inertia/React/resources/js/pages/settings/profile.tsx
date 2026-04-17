@@ -11,24 +11,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/profile';
+import type { Auth } from '@/types';
 /* @chisel-email-verification */
 import { send } from '@/routes/verification';
 /* @end-chisel-email-verification */
 
-type Props = {
-    /* @chisel-email-verification */
-    mustVerifyEmail: boolean;
+type PageProps = {
+    auth: Auth;
+    mustVerifyEmail?: boolean;
     status?: string;
-    /* @end-chisel-email-verification */
 };
 
-export default function Profile({
-    /* @chisel-email-verification */
-    mustVerifyEmail,
-    status,
-    /* @end-chisel-email-verification */
-}: Props) {
-    const { auth } = usePage().props;
+export default function Profile() {
+    const page = usePage<PageProps>();
+    const { auth } = page.props;
 
     return (
         <>
@@ -92,7 +88,7 @@ export default function Profile({
                             </div>
 
                             {/* @chisel-email-verification */}
-                            {mustVerifyEmail &&
+                            {page.props.mustVerifyEmail &&
                                 auth.user.email_verified_at === null && (
                                     <div>
                                         <p className="-mt-4 text-sm text-muted-foreground">
@@ -107,7 +103,7 @@ export default function Profile({
                                             </Link>
                                         </p>
 
-                                        {status ===
+                                        {page.props.status ===
                                             'verification-link-sent' && (
                                             <div className="mt-2 text-sm font-medium text-green-600">
                                                 A new verification link has been

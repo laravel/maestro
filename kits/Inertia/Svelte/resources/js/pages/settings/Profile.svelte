@@ -28,18 +28,6 @@
     import { send } from '@/routes/verification';
     /* @end-chisel-email-verification */
 
-    let {
-        /* @chisel-email-verification */
-        mustVerifyEmail,
-        status = '',
-        /* @end-chisel-email-verification */
-    }: {
-        /* @chisel-email-verification */
-        mustVerifyEmail: boolean;
-        status?: string;
-        /* @end-chisel-email-verification */
-    } = $props();
-
     const user = $derived(page.props.auth.user);
 </script>
 
@@ -90,7 +78,7 @@
             </div>
 
             <!-- @chisel-email-verification -->
-            {#if mustVerifyEmail && !user.email_verified_at}
+            {#if Boolean(page.props.mustVerifyEmail) && !user.email_verified_at}
                 <div>
                     <p class="-mt-4 text-sm text-muted-foreground">
                         Your email address is unverified.
@@ -99,7 +87,7 @@
                         </TextLink>
                     </p>
 
-                    {#if status === 'verification-link-sent'}
+                    {#if page.props.status === 'verification-link-sent'}
                         <div class="mt-2 text-sm font-medium text-green-600">
                             A new verification link has been sent to your email
                             address.
