@@ -21,11 +21,18 @@
     "componentsDeleteDirectory": "resources/views/pages",
 
     "kitExcludedFiles": {
-        "api": [".npmrc"]
+        "api": [".npmrc"],
+        "api-teams": [
+            ".npmrc",
+            "database/migrations/2026_01_27_000002_add_current_team_id_to_users_table.php"
+        ],
+        "livewire-teams": ["app/Http/Requests/Teams"],
+        "livewire-workos-teams": ["app/Http/Requests/Teams"]
     },
 
     "kitFolderMap": {
         "api": ["Shared/Blank", "Shared/Base", "API/Base"],
+        "api-teams": ["Shared/Blank", "Shared/Base", "API/Base", "Shared/Teams/Base", "API/Teams"],
 
         "livewire-blank": ["Shared/Blank", "Livewire/Blank"],
         "livewire": ["Shared/Blank", "Livewire/Blank", "Shared/Base", "Livewire/Base", "Shared/Fortify", "Livewire/Fortify"],

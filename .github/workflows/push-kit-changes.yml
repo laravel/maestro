@@ -17,13 +17,21 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # API variant
+          # API variants
           - name: API Kit
             kit: API
             build_flags: ''
             repository: laravel/api-starter-kit
             path: api-starter-kit
             branch: main
+            node: false
+
+          - name: API Kit (Teams)
+            kit: API
+            build_flags: '--teams'
+            repository: laravel/api-starter-kit
+            path: api-starter-kit-teams
+            branch: teams
             node: false
 
           # Livewire variants

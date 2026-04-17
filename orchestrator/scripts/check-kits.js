@@ -11,6 +11,13 @@ const variants = [
         buildArgs: ['build', '--no-interaction', '--kit=API'],
     },
     {
+        key: 'api-teams',
+        display: 'API Teams (Stateless)',
+        framework: 'api',
+        variant: 'teams',
+        buildArgs: ['build', '--no-interaction', '--kit=API', '--teams'],
+    },
+    {
         key: 'react-blank',
         display: 'React Blank',
         framework: 'react',
