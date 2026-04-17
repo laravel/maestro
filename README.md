@@ -27,6 +27,7 @@ php artisan build --kit=livewire --blank # Builds Blank Livewire starter kit
 php artisan build --kit=livewire --teams # Builds Livewire (Fortify Teams) starter kit
 php artisan build --kit=vue --workos --teams # Builds Vue (WorkOS Teams) starter kit
 php artisan build --kit=API # Builds the API starter kit
+php artisan build --kit=API --teams # Builds the API (Teams) starter kit
 ```
 
 ### WorkOS
@@ -112,6 +113,7 @@ We have three stacks of starter kits: **API**, **Inertia**, and **Livewire**. Fo
 ### API
 
 1. **Stateless:** API starter kit using _Laravel Sanctum_ for stateless token authentication.
+2. **Stateless (Teams):** the same as above, with Teams support.
 
 ### Livewire
 
@@ -163,6 +165,8 @@ The `kits/Shared` folder contains files that are 100% identical between Livewire
 flowchart TD
     A[Shared/Blank] --> B[Shared/Base]
     B --> C[API/Base]
+    C --> TB[Shared/Teams/Base]
+    TB --> ATB[API/Teams]
 ```
 
 ### Livewire
