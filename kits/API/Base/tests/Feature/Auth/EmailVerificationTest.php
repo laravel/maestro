@@ -25,7 +25,6 @@ class EmailVerificationTest extends TestCase
     public function test_user_can_verify_email(): void
     {
         $user = User::factory()->unverified()->create();
-        $token = $user->createToken('auth')->plainTextToken;
 
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
@@ -33,9 +32,10 @@ class EmailVerificationTest extends TestCase
             ['id' => $user->id, 'hash' => sha1($user->email)],
         );
 
-        $response = $this->withToken($token)->getJson($verificationUrl);
+        $response = $this->getJson($verificationUrl);
 
         $response->assertOk();
+        $response->assertJson(['message' => 'Email verified successfully.']);
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
     }
 
@@ -44,7 +44,6 @@ class EmailVerificationTest extends TestCase
         Event::fake();
 
         $user = User::factory()->unverified()->create();
-        $token = $user->createToken('auth')->plainTextToken;
 
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
@@ -52,9 +51,41 @@ class EmailVerificationTest extends TestCase
             ['id' => $user->id, 'hash' => sha1($user->email)],
         );
 
-        $this->withToken($token)->getJson($verificationUrl);
+        $this->getJson($verificationUrl);
 
         Event::assertDispatched(Verified::class);
+    }
+
+    public function test_user_can_verify_email_using_the_notification_link(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->unverified()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+        $verificationUrl = null;
+
+        $this->withToken($token)
+            ->postJson(route('verification.send'))
+            ->assertAccepted()
+            ->assertJson(['message' => 'Verification link sent.']);
+
+        Notification::assertSentTo(
+            $user,
+            VerifyEmail::class,
+            function (VerifyEmail $notification) use ($user, &$verificationUrl): bool {
+                $verificationUrl = $notification->toMail($user)->actionUrl;
+
+                return $verificationUrl !== null;
+            },
+        );
+
+        $this->assertNotNull($verificationUrl);
+
+        $this->getJson($verificationUrl)
+            ->assertOk()
+            ->assertJson(['message' => 'Email verified successfully.']);
+
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
     }
 
     public function test_verification_email_can_be_resent(): void
@@ -74,7 +105,6 @@ class EmailVerificationTest extends TestCase
     public function test_verification_fails_with_invalid_hash(): void
     {
         $user = User::factory()->unverified()->create();
-        $token = $user->createToken('auth')->plainTextToken;
 
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
@@ -82,13 +112,13 @@ class EmailVerificationTest extends TestCase
             ['id' => $user->id, 'hash' => sha1('wrong-email')],
         );
 
-        $response = $this->withToken($token)->getJson($verificationUrl);
+        $response = $this->getJson($verificationUrl);
 
         $response->assertForbidden();
         $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }
 
-    public function test_verification_requires_authentication(): void
+    public function test_verification_fails_with_tampered_signature(): void
     {
         $user = User::factory()->unverified()->create();
 
@@ -98,9 +128,27 @@ class EmailVerificationTest extends TestCase
             ['id' => $user->id, 'hash' => sha1($user->email)],
         );
 
+        $tamperedUrl = preg_replace('/signature=[^&]+/', 'signature=invalid-signature', $verificationUrl);
+        $response = $this->getJson($tamperedUrl);
+
+        $response->assertForbidden();
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_verification_fails_with_expired_signature(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->subMinute(),
+            ['id' => $user->id, 'hash' => sha1($user->email)],
+        );
+
         $response = $this->getJson($verificationUrl);
 
-        $response->assertUnauthorized();
+        $response->assertForbidden();
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }
 
     public function test_already_verified_user_is_not_re_verified(): void
@@ -108,7 +156,6 @@ class EmailVerificationTest extends TestCase
         Event::fake();
 
         $user = User::factory()->create();
-        $token = $user->createToken('auth')->plainTextToken;
 
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
@@ -116,9 +163,10 @@ class EmailVerificationTest extends TestCase
             ['id' => $user->id, 'hash' => sha1($user->email)],
         );
 
-        $response = $this->withToken($token)->getJson($verificationUrl);
+        $response = $this->getJson($verificationUrl);
 
         $response->assertOk();
+        $response->assertJson(['message' => 'Email already verified.']);
         Event::assertNotDispatched(Verified::class);
     }
 }
