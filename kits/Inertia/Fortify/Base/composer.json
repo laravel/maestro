@@ -113,10 +113,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/laravel/fortify"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/laravel/passkeys-server"
         }
     ]
 }

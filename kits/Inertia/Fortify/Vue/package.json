@@ -34,7 +34,7 @@
         "vue-tsc": "^2.2.4"
     },
     "dependencies": {
-        "@laravel/passkeys": "github:laravel/passkeys#5de668f",
+        "@laravel/passkeys": "^0.1.0",
         "@inertiajs/vite": "^3.0.0",
         "@inertiajs/vue3": "^3.0.0",
         "@vueuse/core": "^12.8.2",
