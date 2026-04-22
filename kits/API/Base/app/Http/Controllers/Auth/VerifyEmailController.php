@@ -3,29 +3,38 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
-use Knuckles\Scribe\Attributes\Authenticated;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
-use Knuckles\Scribe\Attributes\Response;
+use Knuckles\Scribe\Attributes\Response as ScribeResponse;
 
 #[Group('Authentication')]
-#[Authenticated]
 class VerifyEmailController extends Controller
 {
-    #[Endpoint('Verify Email', "Mark the authenticated user's email as verified.")]
-    #[Response(['message' => 'Email verified successfully.'], description: 'Email verified')]
-    #[Response(['message' => 'Email already verified.'], description: 'Email was already verified')]
-    public function __invoke(EmailVerificationRequest $request): JsonResponse
+    #[Endpoint('Verify Email', "Mark a user's email as verified using the signed verification link.")]
+    #[ScribeResponse(['message' => 'Email verified successfully.'], description: 'Email verified')]
+    #[ScribeResponse(['message' => 'Email already verified.'], description: 'Email was already verified')]
+    public function __invoke(Request $request): JsonResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
+        $user = User::query()->find($request->route('id'));
+
+        abort_if($user === null, Response::HTTP_FORBIDDEN);
+
+        if ($user->hasVerifiedEmail()) {
             return response()->json(['message' => __('Email already verified.')]);
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
+        abort_unless(
+            hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification())),
+            Response::HTTP_FORBIDDEN,
+        );
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
         }
 
         return response()->json(['message' => __('Email verified successfully.')]);

@@ -7,7 +7,7 @@ const variants = [
         key: 'api',
         display: 'API Stateless',
         framework: 'api',
-        variant: 'fortify',
+        variant: 'api',
         buildArgs: ['build', '--no-interaction', '--kit=API'],
     },
     {
