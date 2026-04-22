@@ -12,7 +12,7 @@
         "php": "^8.3",
         "inertiajs/inertia-laravel": "^3.0",
         "laravel/chisel": "dev-main#1642bd1",
-        "laravel/fortify": "dev-add-passkey-support#242c342",
+        "laravel/fortify": "dev-feat/add-passkeys#650d9c7",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14"
@@ -112,7 +112,7 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/benbjurstrom/fortify"
+            "url": "https://github.com/laravel/fortify"
         },
         {
             "type": "vcs",

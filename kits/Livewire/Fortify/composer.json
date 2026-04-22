@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.3",
         "laravel/chisel": "dev-main#1642bd1",
-        "laravel/fortify": "dev-add-passkey-support#242c342",
+        "laravel/fortify": "dev-feat/add-passkeys#650d9c7",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "livewire/flux": "^2.12.0",
@@ -110,7 +110,7 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/benbjurstrom/fortify"
+            "url": "https://github.com/laravel/fortify"
         },
         {
             "type": "vcs",
