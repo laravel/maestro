@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('register', RegisterController::class)->name('register');
 Route::post('login', LoginController::class)->middleware('throttle:5,1')->name('login');
+Route::get('email/verify/{id}/{hash}', VerifyEmailController::class)
+    ->middleware('signed')
+    ->name('verification.verify');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', LogoutController::class)->name('logout');
@@ -28,10 +31,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('email/verification-notification', SendVerificationNotificationController::class)
         ->middleware('throttle:6,1')
         ->name('verification.send');
-
-    Route::get('email/verify/{id}/{hash}', VerifyEmailController::class)
-        ->middleware('signed')
-        ->name('verification.verify');
 });
 
 require __DIR__.'/teams.php';
