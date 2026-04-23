@@ -22,7 +22,7 @@ class TeamMemberTest extends TestCase
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
         $response = $this
-            ->actingAs($owner)
+            ->withToken($owner->createToken('auth')->plainTextToken)
             ->patchJson(route('teams.members.update', [$team, $member]), [
                 'role' => TeamRole::Admin->value,
             ]);
@@ -35,6 +35,7 @@ class TeamMemberTest extends TestCase
             TeamRole::Admin->value,
             $team->members()->where('user_id', $member->id)->first()->pivot->role->value,
         );
+        $this->assertTrue($team->fresh()->owner()->is($owner));
     }
 
     public function test_team_member_roles_cannot_be_updated_by_non_owners(): void
@@ -49,12 +50,40 @@ class TeamMemberTest extends TestCase
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
         $response = $this
-            ->actingAs($admin)
+            ->withToken($admin->createToken('auth')->plainTextToken)
             ->patchJson(route('teams.members.update', [$team, $member]), [
                 'role' => TeamRole::Admin->value,
             ]);
 
         $response->assertForbidden();
+
+        $this->assertEquals(
+            TeamRole::Member->value,
+            $team->members()->where('user_id', $member->id)->first()->pivot->role->value,
+        );
+        $this->assertTrue($team->fresh()->owner()->is($owner));
+    }
+
+    public function test_team_owner_cannot_change_their_own_role(): void
+    {
+        $owner = User::factory()->create();
+        $team = Team::factory()->create();
+
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+        $response = $this
+            ->withToken($owner->createToken('auth')->plainTextToken)
+            ->patchJson(route('teams.members.update', [$team, $owner]), [
+                'role' => TeamRole::Admin->value,
+            ]);
+
+        $response->assertForbidden();
+
+        $this->assertEquals(
+            TeamRole::Owner->value,
+            $team->members()->where('user_id', $owner->id)->first()->pivot->role->value,
+        );
+        $this->assertTrue($team->fresh()->owner()->is($owner));
     }
 
     public function test_team_members_can_be_removed_by_owners(): void
@@ -67,12 +96,13 @@ class TeamMemberTest extends TestCase
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
         $response = $this
-            ->actingAs($owner)
+            ->withToken($owner->createToken('auth')->plainTextToken)
             ->deleteJson(route('teams.members.destroy', [$team, $member]));
 
         $response->assertNoContent();
 
         $this->assertFalse($member->fresh()->belongsToTeam($team));
+        $this->assertTrue($team->fresh()->owner()->is($owner));
     }
 
     public function test_team_members_cannot_be_removed_by_non_owners(): void
@@ -87,10 +117,13 @@ class TeamMemberTest extends TestCase
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
         $response = $this
-            ->actingAs($admin)
+            ->withToken($admin->createToken('auth')->plainTextToken)
             ->deleteJson(route('teams.members.destroy', [$team, $member]));
 
         $response->assertForbidden();
+
+        $this->assertTrue($member->fresh()->belongsToTeam($team));
+        $this->assertTrue($team->fresh()->owner()->is($owner));
     }
 
     public function test_team_owner_cannot_be_removed(): void
@@ -101,12 +134,13 @@ class TeamMemberTest extends TestCase
         $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
 
         $response = $this
-            ->actingAs($owner)
+            ->withToken($owner->createToken('auth')->plainTextToken)
             ->deleteJson(route('teams.members.destroy', [$team, $owner]));
 
         $response->assertForbidden();
 
         $this->assertTrue($owner->fresh()->belongsToTeam($team));
+        $this->assertTrue($team->fresh()->owner()->is($owner));
     }
 
     public function test_team_member_role_cannot_be_set_to_owner(): void
@@ -119,7 +153,7 @@ class TeamMemberTest extends TestCase
         $team->members()->attach($member, ['role' => TeamRole::Member->value]);
 
         $response = $this
-            ->actingAs($owner)
+            ->withToken($owner->createToken('auth')->plainTextToken)
             ->patchJson(route('teams.members.update', [$team, $member]), [
                 'role' => TeamRole::Owner->value,
             ]);
@@ -131,5 +165,6 @@ class TeamMemberTest extends TestCase
             TeamRole::Member->value,
             $team->members()->where('user_id', $member->id)->first()->pivot->role->value,
         );
+        $this->assertTrue($team->fresh()->owner()->is($owner));
     }
 }

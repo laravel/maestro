@@ -27,6 +27,8 @@ class TeamMemberController extends Controller
     {
         Gate::authorize('updateMember', $team);
 
+        abort_if($request->user()->is($user), Response::HTTP_FORBIDDEN, __('You cannot change your own role.'));
+
         $newRole = TeamRole::from($request->validated('role'));
 
         $team->memberships()
