@@ -123,7 +123,7 @@
             />
 
             <Form {...update.form(team.slug)} class="space-y-6">
-                {#snippet children({ errors, processing, recentlySuccessful })}
+                {#snippet children({ errors, processing })}
                     <div class="grid gap-2">
                         <Label for="name">Team name</Label>
                         <Input
@@ -142,10 +142,6 @@
                             disabled={processing}
                             data-test="team-save-button">Save</Button
                         >
-
-                        {#if recentlySuccessful}
-                            <p class="text-sm text-neutral-600">Saved.</p>
-                        {/if}
                     </div>
                 {/snippet}
             </Form>

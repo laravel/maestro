@@ -3,13 +3,11 @@
 namespace App\Livewire\Settings;
 
 use App\Concerns\ProfileValidationRules;
+use Flux\Flux;
 /* @chisel-email-verification */
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 /* @end-chisel-email-verification */
 use Illuminate\Support\Facades\Auth;
-/* @chisel-email-verification */
-use Illuminate\Support\Facades\Session;
-/* @end-chisel-email-verification */
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -49,7 +47,7 @@ class Profile extends Component
 
         $user->save();
 
-        $this->dispatch('profile-updated', name: $user->name);
+        Flux::toast(variant: 'success', text: __('Profile updated.'));
     }
 
     /* @chisel-email-verification */
@@ -68,7 +66,7 @@ class Profile extends Component
 
         $user->sendEmailVerificationNotification();
 
-        Session::flash('status', 'verification-link-sent');
+        Flux::toast(text: __('A new verification link has been sent to your email address.'));
     }
 
     #[Computed]

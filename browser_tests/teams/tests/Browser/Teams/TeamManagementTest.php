@@ -19,6 +19,7 @@ test('owner can rename a non-personal team', function () {
         ->clear('@team-name-input')
         ->fill('@team-name-input', 'Updated Name')
         ->pressAndWaitFor('@team-save-button')
+        ->assertSee('Team updated.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 
@@ -57,6 +58,7 @@ test('deleting a non-personal team redirects to teams index', function () {
         ->pressAndWaitFor('@delete-team-confirm')
         ->assertPathEndsWith('/settings/teams')
         ->assertSee('Teams')
+        ->assertSee('Team deleted.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 

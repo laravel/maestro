@@ -69,6 +69,7 @@ test('admin can update team name', function () {
         ->clear('@team-name-input')
         ->fill('@team-name-input', 'Admin Renamed')
         ->pressAndWaitFor('@team-save-button')
+        ->assertSee('Team updated.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 

@@ -43,6 +43,7 @@ test('owner can change member role', function () {
         ->waitForText('Admin')
         ->click('Admin')
         ->assertSee('Admin')
+        ->assertSee('Member role updated.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });
@@ -65,6 +66,7 @@ test('owner can remove a member from the team', function () {
         ->waitForText('Remove team member')
         ->pressAndWaitFor('@remove-member-confirm')
         ->assertDontSee('Remove Me')
+        ->assertSee('Member removed.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });
@@ -87,6 +89,7 @@ test('removed member falls back to personal team', function () {
         ->waitForText('Remove team member')
         ->pressAndWaitFor('@remove-member-confirm')
         ->assertDontSee('Removed Member')
+        ->assertSee('Member removed.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 

@@ -3,8 +3,10 @@
 use App\Actions\Teams\CreateTeam;
 use App\Rules\TeamName;
 use App\Support\UserTeam;
+use Flux\Flux;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -23,13 +25,16 @@ new #[Title('Teams')] class extends Component {
 
         $this->reset('name');
 
+        Flux::toast(variant: 'success', text: __('Team created.'));
+
         $this->redirectRoute('teams.edit', ['team' => $team->slug], navigate: true);
     }
 
     /**
      * @return Collection<int, UserTeam>
      */
-    public function getTeamsProperty()
+    #[Computed]
+    public function teams(): Collection
     {
         return Auth::user()->toUserTeams(includeCurrent: true);
     }

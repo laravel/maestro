@@ -30,7 +30,7 @@ test('profile information can be updated', function () {
         ->fill('name', 'Test User')
         ->fill('email', 'test@example.com')
         ->press('@update-profile-button')
-        ->assertSee('Saved')
+        ->assertSee('Profile updated.')
         ->assertUrlIs(route('profile.edit'))
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
@@ -50,7 +50,7 @@ test('email verification status is unchanged when the email address is unchanged
         ->fill('name', 'Test User')
         ->fill('email', $user->email)
         ->press('@update-profile-button')
-        ->assertSee('Saved')
+        ->assertSee('Profile updated.')
         ->assertUrlIs(route('profile.edit'))
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();

@@ -4,11 +4,13 @@ use App\Enums\TeamRole;
 use App\Models\Team;
 use App\Rules\TeamName;
 use App\Support\TeamPermissions;
+use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 new class extends Component
@@ -55,6 +57,8 @@ new class extends Component
 
         $this->populateTeamData();
 
+        Flux::toast(variant: 'success', text: __('Team updated.'));
+
         $this->redirectRoute('teams.edit', ['team' => $this->teamModel->fresh()->slug], navigate: true);
     }
 
@@ -72,6 +76,8 @@ new class extends Component
             ->update(['role' => TeamRole::from($validated['role'])]);
 
         $this->populateTeamData();
+
+        Flux::toast(variant: 'success', text: __('Member role updated.'));
     }
 
     private function populateTeamData(): void
@@ -117,13 +123,14 @@ new class extends Component
         $teamName = $this->teamData['name'] ?? $this->teamModel->name;
 
         $title = $this->permissions->canUpdateTeam
-            ? "Edit {$teamName}"
-            : "View {$teamName}";
+            ? __('Edit :name', ['name' => $teamName])
+            : __('View :name', ['name' => $teamName]);
 
         return $this->view()->title($title);
     }
 
-    public function getPermissionsProperty(): TeamPermissions
+    #[Computed]
+    public function permissions(): TeamPermissions
     {
         return Auth::user()->toTeamPermissions($this->teamModel);
     }

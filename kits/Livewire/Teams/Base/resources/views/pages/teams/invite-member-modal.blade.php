@@ -4,10 +4,12 @@ use App\Enums\TeamRole;
 use App\Models\Team;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
 use App\Rules\UniqueTeamInvitation;
+use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 new class extends Component {
@@ -44,10 +46,13 @@ new class extends Component {
         $this->reset('inviteEmail', 'inviteRole');
         $this->dispatch('close-modal', name: 'invite-member');
 
+        Flux::toast(variant: 'success', text: __('Invitation sent.'));
+
         $this->redirectRoute('teams.edit', ['team' => $this->team->slug], navigate: true);
     }
 
-    public function getAvailableRolesProperty(): array
+    #[Computed]
+    public function availableRoles(): array
     {
         return TeamRole::assignable();
     }

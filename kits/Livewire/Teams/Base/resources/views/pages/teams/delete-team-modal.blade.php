@@ -2,9 +2,11 @@
 
 use App\Models\Team;
 use App\Models\User;
+use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 new class extends Component {
@@ -17,7 +19,8 @@ new class extends Component {
         $this->team = $team;
     }
 
-    public function getDeleteConfirmLabelProperty(): string
+    #[Computed]
+    public function deleteConfirmLabel(): string
     {
         return __('Type ":name" to confirm', ['name' => $this->team->name]);
     }
@@ -31,7 +34,7 @@ new class extends Component {
         ]);
 
         if ($validated['deleteName'] !== $this->team->name) {
-            $this->addError('deleteName', 'The team name does not match.');
+            $this->addError('deleteName', __('The team name does not match.'));
 
             return;
         }
@@ -56,13 +59,16 @@ new class extends Component {
             $user->switchTeam($fallbackTeam);
         }
 
+        Flux::toast(variant: 'success', text: __('Team deleted.'));
+
         $this->redirectRoute('teams.index', navigate: true);
     }
 
     /**
      * @return Collection<int, UserTeam>
      */
-    public function getOtherTeamsProperty(): Collection
+    #[Computed]
+    public function otherTeams(): Collection
     {
         return Auth::user()->toUserTeams();
     }
