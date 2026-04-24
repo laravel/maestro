@@ -12,7 +12,7 @@
         "php": "^8.3",
         "inertiajs/inertia-laravel": "^3.0",
         "laravel/chisel": "dev-main#1642bd1",
-        "laravel/fortify": "dev-feat/add-passkeys#40e8992",
+        "laravel/fortify": "dev-feat/add-passkeys#cf108d4",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14"

@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.3",
         "laravel/chisel": "dev-main#1642bd1",
-        "laravel/fortify": "dev-feat/add-passkeys#40e8992",
+        "laravel/fortify": "dev-feat/add-passkeys#cf108d4",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "livewire/flux": "^2.12.0",
