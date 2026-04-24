@@ -19,6 +19,9 @@
     import { register } from '@/routes';
     import { store } from '@/routes/login';
     import { request } from '@/routes/password';
+    /* @chisel-passkeys */
+    import PasskeyVerify from '@/components/PasskeyVerify.svelte';
+    /* @end-chisel-passkeys */
 
     let {
         status = '',
@@ -38,6 +41,10 @@
         {status}
     </div>
 {/if}
+
+<!-- @chisel-passkeys -->
+<PasskeyVerify />
+<!-- @end-chisel-passkeys -->
 
 <Form
     {...store.form()}

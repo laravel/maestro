@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
-import InputError from '@/components/InputError.vue';
-import PasswordInput from '@/components/PasswordInput.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
+import InputError from "@/components/InputError.vue";
+import PasswordInput from "@/components/PasswordInput.vue";
+import TextLink from "@/components/TextLink.vue";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { register } from "@/routes";
+import { store } from "@/routes/login";
+import { request } from "@/routes/password";
+import { Form, Head } from "@inertiajs/vue3";
+/* @chisel-passkeys */
+import PasskeyVerify from "@/components/PasskeyVerify.vue";
+/* @end-chisel-passkeys */
 
 defineOptions({
     layout: {
-        title: 'Log in to your account',
-        description: 'Enter your email and password below to log in',
+        title: "Log in to your account",
+        description: "Enter your email and password below to log in",
     },
 });
 
@@ -35,6 +38,10 @@ defineProps<{
     >
         {{ status }}
     </div>
+
+    <!-- @chisel-passkeys -->
+    <PasskeyVerify />
+    <!-- @end-chisel-passkeys -->
 
     <Form
         v-bind="store.form()"

@@ -18,19 +18,15 @@
     import DeleteUser from '@/components/DeleteUser.svelte';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
+    /* @chisel-email-verification */
     import TextLink from '@/components/TextLink.svelte';
+    /* @end-chisel-email-verification */
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
+    /* @chisel-email-verification */
     import { send } from '@/routes/verification';
-
-    let {
-        mustVerifyEmail,
-        status = '',
-    }: {
-        mustVerifyEmail: boolean;
-        status?: string;
-    } = $props();
+    /* @end-chisel-email-verification */
 
     const user = $derived(page.props.auth.user);
 </script>
@@ -81,7 +77,8 @@
                 <InputError class="mt-2" message={errors.email} />
             </div>
 
-            {#if mustVerifyEmail && !user.email_verified_at}
+            <!-- @chisel-email-verification -->
+            {#if Boolean(page.props.mustVerifyEmail) && !user.email_verified_at}
                 <div>
                     <p class="-mt-4 text-sm text-muted-foreground">
                         Your email address is unverified.
@@ -90,7 +87,7 @@
                         </TextLink>
                     </p>
 
-                    {#if status === 'verification-link-sent'}
+                    {#if page.props.status === 'verification-link-sent'}
                         <div class="mt-2 text-sm font-medium text-green-600">
                             A new verification link has been sent to your email
                             address.
@@ -98,6 +95,7 @@
                     {/if}
                 </div>
             {/if}
+            <!-- @end-chisel-email-verification -->
 
             <div class="flex items-center gap-4">
                 <Button

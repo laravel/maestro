@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/{{variant}}-starter-kit",
+    "name": "laravel/livewire-starter-kit",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "The official Laravel starter kit for Livewire.",
     "keywords": [
         "laravel",
         "framework"
@@ -10,11 +10,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "inertiajs/inertia-laravel": "^3.0",
-        "laravel/fortify": "^1.34",
+        "laravel/chisel": "dev-main#1642bd1",
+        "laravel/fortify": "dev-feat/add-passkeys#cf108d4",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
-        "laravel/wayfinder": "^0.1.14"
+        "livewire/flux": "^2.13.1",
+        "livewire/livewire": "^4.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
@@ -59,9 +60,6 @@
         ],
         "ci:check": [
             "Composer\\Config::disableProcessTimeout",
-            "npm run lint:check",
-            "npm run format:check",
-            "npm run types:check",
             "@test"
         ],
         "test": [
@@ -73,6 +71,7 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
+        "post-install-cmd": "@php artisan install:features --ansi",
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
@@ -80,6 +79,7 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
+            "@php rename_livewire_files.php",
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
@@ -102,5 +102,16 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/laravel/chisel"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/laravel/fortify"
+        }
+    ]
 }
