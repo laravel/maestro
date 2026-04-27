@@ -4,26 +4,22 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\PasswordUpdateRequest;
+use Dedoc\Scramble\Attributes\BodyParameter;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
-use Knuckles\Scribe\Attributes\Authenticated;
-use Knuckles\Scribe\Attributes\BodyParam;
-use Knuckles\Scribe\Attributes\Endpoint;
-use Knuckles\Scribe\Attributes\Group;
-use Knuckles\Scribe\Attributes\Response;
 
 #[Group('Password')]
-#[Authenticated]
 class PasswordUpdateController extends Controller
 {
-    #[Endpoint('Update Password', "Update the authenticated user's password.")]
-    #[BodyParam('password_confirmation', 'string', required: true, description: 'Must match the password field.', example: 'new-password')]
-    #[Response(['message' => 'Password updated successfully.'])]
+    #[Endpoint(title: 'Update Password', description: "Update the authenticated user's password.")]
+    #[BodyParameter('password_confirmation', description: 'Must match the password field.', required: true, type: 'string')]
     public function __invoke(PasswordUpdateRequest $request): JsonResponse
     {
         $request->user()->update([
             'password' => $request->validated('password'),
         ]);
 
-        return response()->json(['message' => __('Password updated successfully.')]);
+        return response()->json(['message' => (string) __('Password updated successfully.')]);
     }
 }

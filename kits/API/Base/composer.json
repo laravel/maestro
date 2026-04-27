@@ -10,7 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "knuckleswtf/scribe": "^5.9",
+        "dedoc/scramble": "^0.13.21",
         "laravel/framework": "^13.6",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
@@ -43,8 +43,7 @@
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
-            "@php artisan migrate --force",
-            "@php artisan scribe:generate"
+            "@php artisan migrate --force"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",

@@ -3,20 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Knuckles\Scribe\Attributes\Authenticated;
-use Knuckles\Scribe\Attributes\Endpoint;
-use Knuckles\Scribe\Attributes\Group;
-use Knuckles\Scribe\Attributes\Response;
 
 #[Group('Authentication')]
-#[Authenticated]
 class RefreshTokenController extends Controller
 {
-    #[Endpoint('Refresh Token', 'Revoke the current API token and issue a new one.')]
-    #[Response(['token' => 'YOUR_NEW_AUTH_TOKEN'])]
+    #[Endpoint(title: 'Refresh Token', description: 'Revoke the current API token and issue a new one.')]
     public function __invoke(Request $request): JsonResponse
     {
         $user = $request->user();
