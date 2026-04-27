@@ -24,14 +24,14 @@ class VerifyEmailController extends Controller
 
         abort_if($user === null, Response::HTTP_FORBIDDEN);
 
-        if ($user->hasVerifiedEmail()) {
-            return response()->json(['message' => __('Email already verified.')]);
-        }
-
         abort_unless(
             hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification())),
             Response::HTTP_FORBIDDEN,
         );
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => __('Email already verified.')]);
+        }
 
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
