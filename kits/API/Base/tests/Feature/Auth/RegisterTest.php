@@ -109,4 +109,67 @@ class RegisterTest extends TestCase
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['email']);
     }
+
+    public function test_register_endpoint_allows_up_to_five_attempts_per_minute(): void
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $response = $this->postJson(route('register'), [
+                'name' => "User {$i}",
+                'email' => "user{$i}@example.com",
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
+
+            $this->assertNotSame(429, $response->status());
+        }
+    }
+
+    public function test_register_endpoint_is_rate_limited(): void
+    {
+        for ($i = 0; $i < 6; $i++) {
+            $this->postJson(route('register'), [
+                'name' => "User {$i}",
+                'email' => "user{$i}@example.com",
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
+        }
+
+        $response = $this->postJson(route('register'), [
+            'name' => 'Final User',
+            'email' => 'final@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertTooManyRequests();
+    }
+
+    public function test_register_throttle_keys_per_ip(): void
+    {
+        for ($i = 0; $i < 6; $i++) {
+            $this->postJson(route('register'), [
+                'name' => "User {$i}",
+                'email' => "user{$i}@example.com",
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
+        }
+
+        $this->postJson(route('register'), [
+            'name' => 'Same IP',
+            'email' => 'same@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertTooManyRequests();
+
+        $this->withServerVariables(['REMOTE_ADDR' => '10.0.0.99'])
+            ->postJson(route('register'), [
+                'name' => 'Different IP',
+                'email' => 'different@example.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ])
+            ->assertCreated();
+    }
 }
