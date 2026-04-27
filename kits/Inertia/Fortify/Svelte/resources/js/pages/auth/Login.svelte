@@ -16,18 +16,20 @@
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
     import { Spinner } from '@/components/ui/spinner';
-    import { register } from '@/routes';
     import { store } from '@/routes/login';
-    import { request } from '@/routes/password';
 
     let {
         status = '',
         canResetPassword,
         canRegister,
+        registerUrl,
+        forgotPasswordUrl,
     }: {
         status?: string;
         canResetPassword: boolean;
         canRegister: boolean;
+        registerUrl: string | null;
+        forgotPasswordUrl: string | null;
     } = $props();
 </script>
 
@@ -62,8 +64,8 @@
             <div class="grid gap-2">
                 <div class="flex items-center justify-between">
                     <Label for="password">Password</Label>
-                    {#if canResetPassword}
-                        <TextLink href={request()} class="text-sm">
+                    {#if canResetPassword && forgotPasswordUrl}
+                        <TextLink href={forgotPasswordUrl} class="text-sm">
                             Forgot password?
                         </TextLink>
                     {/if}
@@ -96,10 +98,10 @@
             </Button>
         </div>
 
-        {#if canRegister}
+        {#if canRegister && registerUrl}
             <div class="text-center text-sm text-muted-foreground">
                 Don't have an account?
-                <TextLink href={register()}>Sign up</TextLink>
+                <TextLink href={registerUrl}>Sign up</TextLink>
             </div>
         {/if}
     {/snippet}

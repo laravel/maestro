@@ -16,13 +16,19 @@
     import { Label } from '@/components/ui/label';
     import { Spinner } from '@/components/ui/spinner';
     import { login } from '@/routes';
-    import { store } from '@/routes/register';
+
+    let {
+        registerUrl,
+    }: {
+        registerUrl: string;
+    } = $props();
 </script>
 
 <AppHead title="Register" />
 
 <Form
-    {...store.form()}
+    action={registerUrl}
+    method="post"
     resetOnSuccess={['password', 'password_confirmation']}
     class="flex flex-col gap-6"
 >

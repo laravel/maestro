@@ -1,5 +1,10 @@
 import { useHttp } from '@inertiajs/svelte';
-import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
+
+export type TwoFactorAuthUrls = {
+    qrCodeUrl: string;
+    secretKeyUrl: string;
+    recoveryCodesUrl: string;
+};
 
 type TwoFactorAuthState = {
     qrCodeSvg: string | null;
@@ -27,15 +32,30 @@ const state = $state<TwoFactorAuthState>({
     errors: [],
 });
 
+let cachedUrls: TwoFactorAuthUrls | null = null;
+
 const hasSetupData = (): boolean =>
     state.qrCodeSvg !== null && state.manualSetupKey !== null;
 
-export function twoFactorAuthState(): TwoFactorAuthStateApi {
+export function twoFactorAuthState(
+    urls?: TwoFactorAuthUrls,
+): TwoFactorAuthStateApi {
     const http = useHttp();
 
+    if (urls) {
+        cachedUrls = urls;
+    }
+
     const fetchQrCode = async (): Promise<void> => {
+        if (!cachedUrls) {
+            return;
+        }
+
         try {
-            const { svg } = (await http.submit(qrCode())) as {
+            const { svg } = (await http.submit({
+                url: cachedUrls.qrCodeUrl,
+                method: 'get',
+            })) as {
                 svg: string;
                 url: string;
             };
@@ -48,8 +68,15 @@ export function twoFactorAuthState(): TwoFactorAuthStateApi {
     };
 
     const fetchSetupKey = async (): Promise<void> => {
+        if (!cachedUrls) {
+            return;
+        }
+
         try {
-            const { secretKey: key } = (await http.submit(secretKey())) as {
+            const { secretKey: key } = (await http.submit({
+                url: cachedUrls.secretKeyUrl,
+                method: 'get',
+            })) as {
                 secretKey: string;
             };
 
@@ -77,11 +104,16 @@ export function twoFactorAuthState(): TwoFactorAuthStateApi {
     };
 
     const fetchRecoveryCodes = async (): Promise<void> => {
+        if (!cachedUrls) {
+            return;
+        }
+
         try {
             clearErrors();
-            state.recoveryCodesList = (await http.submit(
-                recoveryCodes(),
-            )) as string[];
+            state.recoveryCodesList = (await http.submit({
+                url: cachedUrls.recoveryCodesUrl,
+                method: 'get',
+            })) as string[];
         } catch {
             state.errors = [...state.errors, 'Failed to fetch recovery codes'];
             state.recoveryCodesList = [];

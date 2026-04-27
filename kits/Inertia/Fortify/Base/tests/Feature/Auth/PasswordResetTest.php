@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
@@ -25,6 +26,11 @@ class PasswordResetTest extends TestCase
         $response = $this->get(route('password.request'));
 
         $response->assertOk();
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('{{auth_forgot_password}}')
+            ->where('forgotPasswordSubmitUrl', route('password.email')),
+        );
     }
 
     public function test_reset_password_link_can_be_requested()
@@ -50,6 +56,11 @@ class PasswordResetTest extends TestCase
             $response = $this->get(route('password.reset', $notification->token));
 
             $response->assertOk();
+
+            $response->assertInertia(fn (Assert $page) => $page
+                ->component('{{auth_reset_password}}')
+                ->where('resetPasswordSubmitUrl', route('password.update')),
+            );
 
             return true;
         });

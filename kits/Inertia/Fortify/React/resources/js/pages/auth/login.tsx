@@ -7,20 +7,22 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
-import { request } from '@/routes/password';
 
 type Props = {
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
+    registerUrl: string | null;
+    forgotPasswordUrl: string | null;
 };
 
 export default function Login({
     status,
     canResetPassword,
     canRegister,
+    registerUrl,
+    forgotPasswordUrl,
 }: Props) {
     return (
         <>
@@ -52,9 +54,9 @@ export default function Login({
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
-                                    {canResetPassword && (
+                                    {canResetPassword && forgotPasswordUrl && (
                                         <TextLink
-                                            href={request()}
+                                            href={forgotPasswordUrl}
                                             className="ml-auto text-sm"
                                             tabIndex={5}
                                         >
@@ -94,10 +96,10 @@ export default function Login({
                             </Button>
                         </div>
 
-                        {canRegister && (
+                        {canRegister && registerUrl && (
                             <div className="text-center text-sm text-muted-foreground">
                                 Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
+                                <TextLink href={registerUrl} tabIndex={5}>
                                     Sign up
                                 </TextLink>
                             </div>

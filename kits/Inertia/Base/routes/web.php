@@ -1,10 +1,12 @@
 <?php
 
+use App\Support\FortifyFeaturePayload;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::inertia('/', '{{welcome}}', [
-    'canRegister' => Features::enabled(Features::registration()),
+    'canRegister' => fn () => Features::enabled(Features::registration()),
+    'registerUrl' => fn () => FortifyFeaturePayload::registerUrl(),
 ])->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {

@@ -21,7 +21,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/hooks/use-appearance';
 import { useClipboard } from '@/hooks/use-clipboard';
 import { OTP_MAX_LENGTH } from '@/hooks/use-two-factor-auth';
-import { confirm } from '@/routes/two-factor';
 
 function GridScanIcon() {
     return (
@@ -141,9 +140,11 @@ function TwoFactorSetupStep({
 function TwoFactorVerificationStep({
     onClose,
     onBack,
+    confirmUrl,
 }: {
     onClose: () => void;
     onBack: () => void;
+    confirmUrl: string;
 }) {
     const [code, setCode] = useState<string>('');
     const pinInputContainerRef = useRef<HTMLDivElement>(null);
@@ -156,7 +157,8 @@ function TwoFactorVerificationStep({
 
     return (
         <Form
-            {...confirm.form()}
+            action={confirmUrl}
+            method="post"
             onSuccess={() => onClose()}
             resetOnError
             resetOnSuccess
@@ -238,6 +240,7 @@ type Props = {
     clearSetupData: () => void;
     fetchSetupData: () => Promise<void>;
     errors: string[];
+    confirmUrl: string;
 };
 
 export default function TwoFactorSetupModal({
@@ -250,6 +253,7 @@ export default function TwoFactorSetupModal({
     clearSetupData,
     fetchSetupData,
     errors,
+    confirmUrl,
 }: Props) {
     const [showVerificationStep, setShowVerificationStep] =
         useState<boolean>(false);
@@ -333,6 +337,7 @@ export default function TwoFactorSetupModal({
                         <TwoFactorVerificationStep
                             onClose={handleClose}
                             onBack={() => setShowVerificationStep(false)}
+                            confirmUrl={confirmUrl}
                         />
                     ) : (
                         <TwoFactorSetupStep

@@ -7,6 +7,7 @@ use App\Actions\Fortify\ResetUserPassword;
 use App\Http\Responses\LoginResponse;
 use App\Http\Responses\RegisterResponse;
 use App\Http\Responses\TwoFactorLoginResponse;
+use App\Support\FortifyFeaturePayload;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -58,25 +59,34 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(fn (Request $request) => Inertia::render('{{auth_login}}', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'canRegister' => Features::enabled(Features::registration()),
+            'registerUrl' => FortifyFeaturePayload::registerUrl(),
+            'forgotPasswordUrl' => FortifyFeaturePayload::forgotPasswordUrl(),
             'status' => $request->session()->get('status'),
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('{{auth_reset_password}}', [
             'email' => $request->email,
             'token' => $request->route('token'),
+            'resetPasswordSubmitUrl' => FortifyFeaturePayload::resetPasswordSubmitUrl(),
         ]));
 
         Fortify::requestPasswordResetLinkView(fn (Request $request) => Inertia::render('{{auth_forgot_password}}', [
             'status' => $request->session()->get('status'),
+            'forgotPasswordSubmitUrl' => FortifyFeaturePayload::forgotPasswordSubmitUrl(),
         ]));
 
         Fortify::verifyEmailView(fn (Request $request) => Inertia::render('{{auth_verify_email}}', [
             'status' => $request->session()->get('status'),
+            'verificationSendUrl' => FortifyFeaturePayload::verificationSendUrl(),
         ]));
 
-        Fortify::registerView(fn () => Inertia::render('{{auth_register}}'));
+        Fortify::registerView(fn () => Inertia::render('{{auth_register}}', [
+            'registerUrl' => FortifyFeaturePayload::registerUrl(),
+        ]));
 
-        Fortify::twoFactorChallengeView(fn () => Inertia::render('{{auth_two_factor_challenge}}'));
+        Fortify::twoFactorChallengeView(fn () => Inertia::render('{{auth_two_factor_challenge}}', [
+            'twoFactorLoginUrl' => FortifyFeaturePayload::twoFactorLoginUrl(),
+        ]));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('{{auth_confirm_password}}'));
     }

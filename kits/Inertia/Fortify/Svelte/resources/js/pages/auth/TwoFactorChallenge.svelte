@@ -9,8 +9,13 @@
         InputOTPGroup,
         InputOTPSlot,
     } from '@/components/ui/input-otp';
-    import { store } from '@/routes/two-factor/login';
     import type { TwoFactorConfigContent } from '@/types';
+
+    let {
+        twoFactorLoginUrl,
+    }: {
+        twoFactorLoginUrl: string;
+    } = $props();
 
     let showRecoveryInput = $state(false);
     let code = $state('');
@@ -52,7 +57,8 @@
 <div class="space-y-6">
     {#if !showRecoveryInput}
         <Form
-            {...store.form()}
+            action={twoFactorLoginUrl}
+            method="post"
             class="space-y-4"
             resetOnError
             onError={() => (code = '')}
@@ -94,7 +100,12 @@
             {/snippet}
         </Form>
     {:else}
-        <Form {...store.form()} class="space-y-4" resetOnError>
+        <Form
+            action={twoFactorLoginUrl}
+            method="post"
+            class="space-y-4"
+            resetOnError
+        >
             {#snippet children({ errors, processing, clearErrors })}
                 <Input
                     name="recovery_code"

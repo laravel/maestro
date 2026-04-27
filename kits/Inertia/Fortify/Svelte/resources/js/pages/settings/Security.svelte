@@ -25,19 +25,38 @@
     import { Button } from '@/components/ui/button';
     import { Label } from '@/components/ui/label';
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
-    import { disable, enable } from '@/routes/two-factor';
+
+    export type TwoFactorUrls = {
+        enableUrl: string;
+        disableUrl: string;
+        confirmUrl: string;
+        qrCodeUrl: string;
+        secretKeyUrl: string;
+        recoveryCodesUrl: string;
+        regenerateUrl: string;
+    };
 
     let {
         canManageTwoFactor = false,
         requiresConfirmation = false,
         twoFactorEnabled = false,
+        twoFactorUrls = null,
     }: {
         canManageTwoFactor?: boolean;
         requiresConfirmation?: boolean;
         twoFactorEnabled?: boolean;
+        twoFactorUrls?: TwoFactorUrls | null;
     } = $props();
 
-    const twoFactorAuth = twoFactorAuthState();
+    const twoFactorAuth = twoFactorAuthState(
+        twoFactorUrls
+            ? {
+                  qrCodeUrl: twoFactorUrls.qrCodeUrl,
+                  secretKeyUrl: twoFactorUrls.secretKeyUrl,
+                  recoveryCodesUrl: twoFactorUrls.recoveryCodesUrl,
+              }
+            : undefined,
+    );
     let showSetupModal = $state(false);
 
     onDestroy(() => twoFactorAuth.clearTwoFactorAuthData());
@@ -111,7 +130,7 @@
     </Form>
 </div>
 
-{#if canManageTwoFactor}
+{#if canManageTwoFactor && twoFactorUrls}
     <div class="space-y-6">
         <Heading
             variant="small"
@@ -134,7 +153,8 @@
                         </Button>
                     {:else}
                         <Form
-                            {...enable.form()}
+                            action={twoFactorUrls.enableUrl}
+                            method="post"
                             onSuccess={() => (showSetupModal = true)}
                         >
                             {#snippet children({ processing })}
@@ -155,7 +175,7 @@
                 </p>
 
                 <div class="relative inline">
-                    <Form {...disable.form()}>
+                    <Form action={twoFactorUrls.disableUrl} method="delete">
                         {#snippet children({ processing })}
                             <Button
                                 variant="destructive"
@@ -168,7 +188,9 @@
                     </Form>
                 </div>
 
-                <TwoFactorRecoveryCodes />
+                <TwoFactorRecoveryCodes
+                    regenerateUrl={twoFactorUrls.regenerateUrl}
+                />
             </div>
         {/if}
 
@@ -176,6 +198,7 @@
             bind:isOpen={showSetupModal}
             {requiresConfirmation}
             {twoFactorEnabled}
+            confirmUrl={twoFactorUrls.confirmUrl}
         />
     </div>
 {/if}

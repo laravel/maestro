@@ -5,6 +5,7 @@ namespace Tests\Feature\Auth;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
@@ -17,6 +18,31 @@ class AuthenticationTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertOk();
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('{{auth_login}}')
+            ->where('canRegister', Features::enabled(Features::registration()))
+            ->where('canResetPassword', Features::enabled(Features::resetPasswords()))
+            ->where('registerUrl', Features::enabled(Features::registration()) ? route('register') : null)
+            ->where('forgotPasswordUrl', Features::enabled(Features::resetPasswords()) ? route('password.request') : null),
+        );
+    }
+
+    public function test_login_screen_omits_feature_urls_when_features_are_disabled()
+    {
+        config(['fortify.features' => []]);
+
+        $response = $this->get(route('login'));
+
+        $response->assertOk();
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('{{auth_login}}')
+            ->where('canRegister', false)
+            ->where('canResetPassword', false)
+            ->where('registerUrl', null)
+            ->where('forgotPasswordUrl', null),
+        );
     }
 
     public function test_users_can_authenticate_using_the_login_screen()

@@ -15,12 +15,13 @@
     import { Label } from '@/components/ui/label';
     import { Spinner } from '@/components/ui/spinner';
     import { login } from '@/routes';
-    import { email } from '@/routes/password';
 
     let {
         status = '',
+        forgotPasswordSubmitUrl,
     }: {
         status?: string;
+        forgotPasswordSubmitUrl: string;
     } = $props();
 </script>
 
@@ -33,7 +34,7 @@
 {/if}
 
 <div class="space-y-6">
-    <Form {...email.form()}>
+    <Form action={forgotPasswordSubmitUrl} method="post">
         {#snippet children({ errors, processing })}
             <div class="grid gap-2">
                 <Label for="email">Email address</Label>

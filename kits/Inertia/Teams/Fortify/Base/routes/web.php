@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Teams\TeamInvitationController;
 use App\Http\Middleware\EnsureTeamMembership;
+use App\Support\FortifyFeaturePayload;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::inertia('/', '{{welcome}}', [
-    'canRegister' => Features::enabled(Features::registration()),
+    'canRegister' => fn () => Features::enabled(Features::registration()),
+    'registerUrl' => fn () => FortifyFeaturePayload::registerUrl(),
 ])->name('home');
 
 Route::prefix('{current_team}')
