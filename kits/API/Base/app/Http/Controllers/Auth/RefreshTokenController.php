@@ -21,10 +21,14 @@ class RefreshTokenController extends Controller
     {
         $user = $request->user();
 
-        $token = DB::transaction(function () use ($user): string {
+        $current = $user->currentAccessToken();
+        $name = $current->name;
+        $abilities = $current->abilities ?? ['*'];
+
+        $token = DB::transaction(function () use ($user, $name, $abilities): string {
             $user->currentAccessToken()->delete();
 
-            return $user->createToken('auth')->plainTextToken;
+            return $user->createToken($name, $abilities)->plainTextToken;
         });
 
         return response()->json(['token' => $token]);
