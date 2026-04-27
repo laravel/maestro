@@ -12,10 +12,7 @@ return [
     'description' => '',
 
     'intro_text' => <<<'INTRO'
-            This documentation aims to provide all the information you need to work with our API.
-
-            <aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile).
-            You can switch the language used with the tabs at the top right (or from the nav menu at the top left on mobile).</aside>
+            This documentation describes every endpoint exposed by the API, including the request shape, response payloads, and authentication requirements.
         INTRO,
 
     'base_url' => config('app.url'),
@@ -27,7 +24,7 @@ return [
                 'domains' => ['*'],
             ],
             'include' => [],
-            'exclude' => ['/', 'sanctum/*', 'storage/*'],
+            'exclude' => ['/', 'sanctum/*', 'storage/*', 'docs', 'docs/*'],
         ],
     ],
 
@@ -41,7 +38,7 @@ return [
 
     'laravel' => [
         'add_routes' => true,
-        'docs_url' => '/docs',
+        'docs_url' => '/scribe-source',
         'assets_directory' => null,
         'middleware' => [],
     ],
