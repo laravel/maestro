@@ -169,4 +169,56 @@ class EmailVerificationTest extends TestCase
         $response->assertJson(['message' => 'Email already verified.']);
         Event::assertNotDispatched(Verified::class);
     }
+
+    public function test_invalid_hash_against_verified_user_returns_forbidden_not_already_verified(): void
+    {
+        $user = User::factory()->create();
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1('wrong-email')],
+        );
+
+        $response = $this->getJson($verificationUrl);
+
+        $response->assertForbidden();
+        $this->assertStringNotContainsString('Email already verified.', (string) $response->getContent());
+    }
+
+    public function test_invalid_hash_against_unverified_user_returns_forbidden_with_same_shape(): void
+    {
+        $verifiedUser = User::factory()->create();
+        $unverifiedUser = User::factory()->unverified()->create();
+
+        $verifiedResponse = $this->getJson(URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $verifiedUser->id, 'hash' => sha1('wrong-email')],
+        ));
+
+        $unverifiedResponse = $this->getJson(URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $unverifiedUser->id, 'hash' => sha1('wrong-email')],
+        ));
+
+        $verifiedResponse->assertForbidden();
+        $unverifiedResponse->assertForbidden();
+        $this->assertSame($verifiedResponse->getContent(), $unverifiedResponse->getContent());
+        $this->assertFalse($unverifiedUser->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_verification_returns_forbidden_for_non_existent_user(): void
+    {
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => 999999, 'hash' => sha1('any@example.com')],
+        );
+
+        $response = $this->getJson($verificationUrl);
+
+        $response->assertForbidden();
+    }
 }

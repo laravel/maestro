@@ -81,4 +81,34 @@ class RefreshTokenTest extends TestCase
 
         $this->withToken($token)->postJson(route('token.refresh'))->assertUnauthorized();
     }
+
+    public function test_refresh_preserves_token_name(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('mobile-device-1')->plainTextToken;
+
+        $this->withToken($token)->postJson(route('token.refresh'))->assertOk();
+
+        $this->assertSame('mobile-device-1', $user->fresh()->tokens()->first()->name);
+    }
+
+    public function test_refresh_preserves_token_abilities(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('api-key', ['read', 'write'])->plainTextToken;
+
+        $this->withToken($token)->postJson(route('token.refresh'))->assertOk();
+
+        $this->assertSame(['read', 'write'], $user->fresh()->tokens()->first()->abilities);
+    }
+
+    public function test_refresh_preserves_default_wildcard_abilities(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+
+        $this->withToken($token)->postJson(route('token.refresh'))->assertOk();
+
+        $this->assertSame(['*'], $user->fresh()->tokens()->first()->abilities);
+    }
 }
