@@ -140,11 +140,8 @@ async function lintCurrentBuild() {
     await runQuiet('npm', ['run', 'build'], { cwd: buildDir });
 
     for (let pass = 1; pass <= MAX_LINT_PASSES; pass++) {
-        log(`  Running lint pass ${pass}...`, 'dim');
-        await runQuiet('npm', ['run', 'lint'], { cwd: buildDir });
-
-        log(`  Running format pass ${pass}...`, 'dim');
-        await runQuiet('npm', ['run', 'format'], { cwd: buildDir });
+        log(`  Running check:fix pass ${pass}...`, 'dim');
+        await runQuiet('npm', ['run', 'check:fix'], { cwd: buildDir });
     }
 }
 

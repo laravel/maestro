@@ -86,7 +86,7 @@ const code = ref<string>('');
                 <Button type="submit" class="w-full" :disabled="processing"
                     >Continue</Button
                 >
-                <div class="text-center text-sm text-muted-foreground">
+                <div class="text-muted-foreground text-center text-sm">
                     <span>or you can </span>
                     <button
                         type="button"
@@ -118,7 +118,7 @@ const code = ref<string>('');
                     >Continue</Button
                 >
 
-                <div class="text-center text-sm text-muted-foreground">
+                <div class="text-muted-foreground text-center text-sm">
                     <span>or you can </span>
                     <button
                         type="button"
