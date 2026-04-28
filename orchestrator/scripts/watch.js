@@ -280,7 +280,7 @@ function performInitialSync(folders, ig, kitType, uiComponents, starterKit, mani
 
     // Reconcile stale files that exist in kits/ but not in the build.
     if (reconcile) {
-        reconcileStaleFiles(folders, buildRelPaths, ig);
+        reconcileStaleFiles(folders, buildRelPaths, ig, starterKit, manifest);
     }
 }
 
@@ -288,13 +288,18 @@ function performInitialSync(folders, ig, kitType, uiComponents, starterKit, mani
  * Remove files from kits/ that no longer exist in the build output.
  * Only operates within the active layer set for the current starter kit.
  */
-function reconcileStaleFiles(folders, buildRelPaths, ig) {
+function reconcileStaleFiles(folders, buildRelPaths, ig, starterKit, manifest) {
     const kitFiles = collectKitFiles(folders);
+    const excludedFiles = new Set((manifest.kitExcludedFiles && manifest.kitExcludedFiles[starterKit]) || []);
     let removedCount = 0;
 
     for (const relPath of kitFiles) {
         // If the file exists in the build output, keep it.
         if (buildRelPaths.has(relPath)) {
+            continue;
+        }
+
+        if (excludedFiles.has(relPath)) {
             continue;
         }
 
