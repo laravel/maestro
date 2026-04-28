@@ -7,10 +7,11 @@ use App\Http\Controllers\Teams\TeamMemberController;
 use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('invitations/{invitation}/accept', AcceptTeamInvitationController::class)
-        ->name('invitations.accept');
+Route::get('invitations/{invitation}/accept', AcceptTeamInvitationController::class)
+    ->middleware('signed')
+    ->name('invitations.accept');
 
+Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('verified')->group(function () {
         Route::get('teams', [TeamController::class, 'index'])->name('teams.index');
         Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
