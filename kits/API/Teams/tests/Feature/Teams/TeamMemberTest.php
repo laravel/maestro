@@ -143,6 +143,26 @@ class TeamMemberTest extends TestCase
         $this->assertTrue($team->fresh()->owner()->is($owner));
     }
 
+    public function test_removing_a_user_who_is_not_a_team_member_returns_404(): void
+    {
+        $owner = User::factory()->create();
+        $stranger = User::factory()->create();
+        $team = Team::factory()->create();
+
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+        $membershipsBefore = $team->memberships()->count();
+
+        $response = $this
+            ->withToken($owner->createToken('auth')->plainTextToken)
+            ->deleteJson(route('teams.members.destroy', [$team, $stranger]));
+
+        $response->assertNotFound();
+
+        $this->assertSame($membershipsBefore, $team->fresh()->memberships()->count());
+        $this->assertFalse($stranger->fresh()->belongsToTeam($team));
+    }
+
     public function test_team_member_role_cannot_be_set_to_owner(): void
     {
         $owner = User::factory()->create();

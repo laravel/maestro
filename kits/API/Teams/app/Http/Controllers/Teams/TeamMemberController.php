@@ -43,6 +43,7 @@ class TeamMemberController extends Controller
 
     #[Endpoint('Remove a member', 'Remove a member from the team. The team owner cannot be removed.')]
     #[ScribeResponse(status: Response::HTTP_NO_CONTENT, description: 'No Content')]
+    #[ScribeResponse(status: Response::HTTP_NOT_FOUND, description: 'The user is not a member of the team.')]
     public function destroy(Team $team, User $user): Response
     {
         Gate::authorize('removeMember', $team);
@@ -51,6 +52,7 @@ class TeamMemberController extends Controller
 
         $team->memberships()
             ->where('user_id', $user->id)
+            ->firstOrFail()
             ->delete();
 
         return response()->noContent();
