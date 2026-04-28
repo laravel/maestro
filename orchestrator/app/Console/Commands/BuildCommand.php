@@ -54,11 +54,21 @@ class BuildCommand extends Command
             );
         }
 
-        // API kit has no variants — skip all variant flags and prompts
+        // API kit supports only the Teams variant on top of the base.
         if ($kit === 'API') {
-            info('Building API starter kit...');
+            $teams = $this->option('teams');
 
-            return $this->buildApiKit();
+            if (! $teams && ! $this->option('kit')) {
+                $teams = confirm(
+                    label: 'Would you like to enable the Teams feature?',
+                    default: false,
+                );
+            }
+
+            $variantLabel = $teams ? 'API (Stateless - Teams)' : 'API (Stateless)';
+            info("Building {$variantLabel} starter kit...");
+
+            return $this->buildApiKit($teams);
         }
 
         $workos = $this->option('workos');
@@ -232,6 +242,10 @@ class BuildCommand extends Command
     ): int {
         $this->writeStarterKitFile($kit, $workos, $components, $blank, $teams);
         $this->deleteDatabaseFile($buildPath);
+        $this->deleteExcludedFiles(
+            $buildPath,
+            $this->starterKitIdentifier($kit, $workos, $components, $blank, $teams),
+        );
 
         $variantLabel = $this->getVariantLabel($kit, $workos, $components, $blank, $teams);
         info("{$variantLabel} starter kit built successfully in the 'build' folder.");
@@ -243,7 +257,7 @@ class BuildCommand extends Command
     /**
      * Build the API starter kit.
      */
-    protected function buildApiKit(): int
+    protected function buildApiKit(bool $teams = false): int
     {
         $buildPath = $this->prepareBuildDirectory($this->sharedPath('Blank'));
 
@@ -253,11 +267,22 @@ class BuildCommand extends Command
         info('Copying API Base kit files...');
         File::copyDirectory($this->kitPath('API/Base'), $buildPath);
 
-        $this->writeStarterKitFile('API', workos: false);
-        $this->deleteDatabaseFile($buildPath);
-        $this->deleteExcludedFiles($buildPath, 'api');
+        if ($teams) {
+            info('Copying Shared Teams Base files...');
+            File::copyDirectory($this->sharedPath('Teams/Base'), $buildPath);
 
-        info('API starter kit built successfully in the \'build\' folder.');
+            info('Copying API Teams files...');
+            File::copyDirectory($this->kitPath('API/Teams'), $buildPath);
+        }
+
+        $starterKit = $teams ? 'api-teams' : 'api';
+
+        $this->writeStarterKitFile('API', workos: false, teams: $teams);
+        $this->deleteDatabaseFile($buildPath);
+        $this->deleteExcludedFiles($buildPath, $starterKit);
+
+        $variantLabel = $teams ? 'API (Stateless - Teams)' : 'API (Stateless)';
+        info("{$variantLabel} starter kit built successfully in the 'build' folder.");
         info("Run 'composer kit:run' to start the development server.");
 
         return self::SUCCESS;
@@ -570,6 +595,26 @@ class BuildCommand extends Command
     }
 
     /**
+     * Compute the starter kit identifier (e.g. "api-teams", "vue-workos-teams").
+     */
+    protected function starterKitIdentifier(
+        string $kit,
+        bool $workos,
+        bool $components = false,
+        bool $blank = false,
+        bool $teams = false,
+    ): string {
+        return strtolower($kit).match (true) {
+            $blank => '-blank',
+            $workos && $teams => '-workos-teams',
+            $workos => '-workos',
+            $components => '-components',
+            $teams => '-teams',
+            default => '',
+        };
+    }
+
+    /**
      * Write the starter kit identifier file.
      */
     protected function writeStarterKitFile(
@@ -579,17 +624,10 @@ class BuildCommand extends Command
         bool $blank = false,
         bool $teams = false,
     ): void {
-        $starterKit = strtolower($kit);
-        $starterKit .= match (true) {
-            $blank => '-blank',
-            $workos && $teams => '-workos-teams',
-            $workos => '-workos',
-            $components => '-components',
-            $teams => '-teams',
-            default => '',
-        };
-
-        Storage::disk('local')->put('starter_kit', $starterKit);
+        Storage::disk('local')->put(
+            'starter_kit',
+            $this->starterKitIdentifier($kit, $workos, $components, $blank, $teams),
+        );
     }
 
     /**
@@ -605,10 +643,11 @@ class BuildCommand extends Command
     }
 
     /**
-     * Delete files from the build that the given starter kit inherits from
-     * higher layers but does not need (e.g. frontend tooling for the API kit).
+     * Delete files and directories from the build that the given starter kit
+     * inherits from higher layers but does not need (e.g. frontend tooling for
+     * the API kit, form requests for Livewire).
      *
-     * The list of excluded files is declared in scripts/kit-manifest.json so
+     * The list of excluded paths is declared in scripts/kit-manifest.json so
      * the watch script can also honour it when reconciling stale files.
      */
     protected function deleteExcludedFiles(string $buildPath, string $starterKit): void
@@ -619,7 +658,9 @@ class BuildCommand extends Command
         foreach ($excluded as $relativePath) {
             $target = $buildPath.'/'.$relativePath;
 
-            if (File::exists($target)) {
+            if (File::isDirectory($target)) {
+                File::deleteDirectory($target);
+            } elseif (File::exists($target)) {
                 File::delete($target);
             }
         }

@@ -20,6 +20,7 @@ jobs:
         php: ['8.3', '8.4', '8.5']
         name:
           - API Kit
+          - API Kit (Teams)
           - Livewire Kit (Blank)
           - Livewire Kit
           - Livewire Kit (Components)
@@ -42,11 +43,17 @@ jobs:
           - Vue Kit (Teams)
           - Vue Kit (WorkOS Teams)
         include:
-          # API variant
+          # API variants
           - name: API Kit
             kit: API
             build_flags: ''
             path: api-starter-kit
+            node: false
+
+          - name: API Kit (Teams)
+            kit: API
+            build_flags: '--teams'
+            path: api-starter-kit-teams
             node: false
 
           # Livewire variants

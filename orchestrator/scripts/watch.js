@@ -290,7 +290,8 @@ function performInitialSync(folders, ig, kitType, uiComponents, starterKit, mani
  */
 function reconcileStaleFiles(folders, buildRelPaths, ig, starterKit, manifest) {
     const kitFiles = collectKitFiles(folders);
-    const excludedFiles = new Set((manifest.kitExcludedFiles && manifest.kitExcludedFiles[starterKit]) || []);
+    const excludedPaths = (manifest.kitExcludedFiles && manifest.kitExcludedFiles[starterKit]) || [];
+    const isExcluded = (relPath) => excludedPaths.some(excluded => relPath === excluded || relPath.startsWith(excluded + '/'));
     let removedCount = 0;
 
     for (const relPath of kitFiles) {
@@ -299,7 +300,7 @@ function reconcileStaleFiles(folders, buildRelPaths, ig, starterKit, manifest) {
             continue;
         }
 
-        if (excludedFiles.has(relPath)) {
+        if (isExcluded(relPath)) {
             continue;
         }
 
