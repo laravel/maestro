@@ -12,18 +12,29 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { edit } from '@/routes/security';
-import { disable, enable } from '@/routes/two-factor';
+
+export type TwoFactorUrls = {
+    enableUrl: string;
+    disableUrl: string;
+    confirmUrl: string;
+    qrCodeUrl: string;
+    secretKeyUrl: string;
+    recoveryCodesUrl: string;
+    regenerateUrl: string;
+};
 
 type Props = {
     canManageTwoFactor?: boolean;
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
+    twoFactorUrls?: TwoFactorUrls | null;
 };
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
     canManageTwoFactor: false,
     requiresConfirmation: false,
     twoFactorEnabled: false,
+    twoFactorUrls: null,
 });
 
 defineOptions({
@@ -37,7 +48,15 @@ defineOptions({
     },
 });
 
-const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth();
+const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth(
+    props.twoFactorUrls
+        ? {
+              qrCodeUrl: props.twoFactorUrls.qrCodeUrl,
+              secretKeyUrl: props.twoFactorUrls.secretKeyUrl,
+              recoveryCodesUrl: props.twoFactorUrls.recoveryCodesUrl,
+          }
+        : undefined,
+);
 const showSetupModal = ref<boolean>(false);
 
 onUnmounted(() => clearTwoFactorAuthData());
@@ -116,7 +135,7 @@ onUnmounted(() => clearTwoFactorAuthData());
         </Form>
     </div>
 
-    <div v-if="canManageTwoFactor" class="space-y-6">
+    <div v-if="canManageTwoFactor && twoFactorUrls" class="space-y-6">
         <Heading
             variant="small"
             title="Two-factor authentication"
@@ -139,7 +158,8 @@ onUnmounted(() => clearTwoFactorAuthData());
                 </Button>
                 <Form
                     v-else
-                    v-bind="enable.form()"
+                    :action="twoFactorUrls.enableUrl"
+                    method="post"
                     @success="showSetupModal = true"
                     #default="{ processing }"
                 >
@@ -158,7 +178,11 @@ onUnmounted(() => clearTwoFactorAuthData());
             </p>
 
             <div class="relative inline">
-                <Form v-bind="disable.form()" #default="{ processing }">
+                <Form
+                    :action="twoFactorUrls.disableUrl"
+                    method="delete"
+                    #default="{ processing }"
+                >
                     <Button
                         variant="destructive"
                         type="submit"
@@ -169,13 +193,16 @@ onUnmounted(() => clearTwoFactorAuthData());
                 </Form>
             </div>
 
-            <TwoFactorRecoveryCodes />
+            <TwoFactorRecoveryCodes
+                :regenerate-url="twoFactorUrls.regenerateUrl"
+            />
         </div>
 
         <TwoFactorSetupModal
             v-model:isOpen="showSetupModal"
             :requiresConfirmation="requiresConfirmation"
             :twoFactorEnabled="twoFactorEnabled"
+            :confirm-url="twoFactorUrls.confirmUrl"
         />
     </div>
 </template>

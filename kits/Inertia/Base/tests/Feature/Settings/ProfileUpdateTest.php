@@ -4,6 +4,8 @@ namespace Tests\Feature\Settings;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
+use Laravel\Fortify\Features;
 use Tests\TestCase;
 
 class ProfileUpdateTest extends TestCase
@@ -19,6 +21,29 @@ class ProfileUpdateTest extends TestCase
             ->get(route('profile.edit'));
 
         $response->assertOk();
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('{{profile_settings}}')
+            ->where('verificationSendUrl', Features::enabled(Features::emailVerification()) ? route('verification.send') : null),
+        );
+    }
+
+    public function test_profile_page_omits_verification_url_when_feature_is_disabled()
+    {
+        config(['fortify.features' => []]);
+
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('profile.edit'));
+
+        $response->assertOk();
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('{{profile_settings}}')
+            ->where('verificationSendUrl', null),
+        );
     }
 
     public function test_profile_information_can_be_updated()

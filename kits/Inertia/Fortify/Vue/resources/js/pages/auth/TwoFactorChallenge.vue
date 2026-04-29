@@ -9,8 +9,11 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from '@/components/ui/input-otp';
-import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
+
+defineProps<{
+    twoFactorLoginUrl: string;
+}>();
 
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
     if (showRecoveryInput.value) {
@@ -54,7 +57,8 @@ const code = ref<string>('');
     <div class="space-y-6">
         <template v-if="!showRecoveryInput">
             <Form
-                v-bind="store.form()"
+                :action="twoFactorLoginUrl"
+                method="post"
                 class="space-y-4"
                 reset-on-error
                 @error="code = ''"
@@ -101,7 +105,8 @@ const code = ref<string>('');
 
         <template v-else>
             <Form
-                v-bind="store.form()"
+                :action="twoFactorLoginUrl"
+                method="post"
                 class="space-y-4"
                 reset-on-error
                 #default="{ errors, processing, clearErrors }"

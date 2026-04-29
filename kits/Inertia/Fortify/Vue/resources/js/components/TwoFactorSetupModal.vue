@@ -21,12 +21,12 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
 
 type Props = {
     requiresConfirmation: boolean;
     twoFactorEnabled: boolean;
+    confirmUrl: string;
 };
 
 const { resolvedAppearance } = useAppearance();
@@ -238,7 +238,8 @@ watch(
 
                 <template v-else>
                     <Form
-                        v-bind="confirm.form()"
+                        :action="confirmUrl"
+                        method="post"
                         error-bag="confirmTwoFactorAuthentication"
                         reset-on-error
                         @finish="code = ''"

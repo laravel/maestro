@@ -30,7 +30,16 @@ class SecurityTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('{{security_settings}}')
                 ->where('canManageTwoFactor', true)
-                ->where('twoFactorEnabled', false),
+                ->where('twoFactorEnabled', false)
+                ->where('twoFactorUrls', [
+                    'enableUrl' => route('two-factor.enable'),
+                    'disableUrl' => route('two-factor.disable'),
+                    'confirmUrl' => route('two-factor.confirm'),
+                    'qrCodeUrl' => route('two-factor.qr-code'),
+                    'secretKeyUrl' => route('two-factor.secret-key'),
+                    'recoveryCodesUrl' => route('two-factor.recovery-codes'),
+                    'regenerateUrl' => route('two-factor.regenerate-recovery-codes'),
+                ]),
             );
     }
 
@@ -84,6 +93,7 @@ class SecurityTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('{{security_settings}}')
                 ->where('canManageTwoFactor', false)
+                ->where('twoFactorUrls', null)
                 ->missing('twoFactorEnabled')
                 ->missing('requiresConfirmation'),
             );

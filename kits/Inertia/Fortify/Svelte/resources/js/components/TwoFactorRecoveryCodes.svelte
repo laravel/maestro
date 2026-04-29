@@ -15,7 +15,12 @@
         CardTitle,
     } from '@/components/ui/card';
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
-    import { regenerateRecoveryCodes } from '@/routes/two-factor';
+
+    let {
+        regenerateUrl,
+    }: {
+        regenerateUrl: string;
+    } = $props();
 
     const twoFactorAuth = twoFactorAuthState();
     let isRecoveryCodesVisible = $state(false);
@@ -69,7 +74,8 @@
 
             {#if isRecoveryCodesVisible && twoFactorAuth.state.recoveryCodesList.length}
                 <Form
-                    {...regenerateRecoveryCodes.form()}
+                    action={regenerateUrl}
+                    method="post"
                     options={{ preserveScroll: true }}
                     onSuccess={() => twoFactorAuth.fetchRecoveryCodes()}
                 >

@@ -8,9 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
-import { request } from '@/routes/password';
 
 defineOptions({
     layout: {
@@ -23,6 +21,8 @@ defineProps<{
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
+    registerUrl: string | null;
+    forgotPasswordUrl: string | null;
 }>();
 </script>
 
@@ -62,8 +62,8 @@ defineProps<{
                 <div class="flex items-center justify-between">
                     <Label for="password">Password</Label>
                     <TextLink
-                        v-if="canResetPassword"
-                        :href="request()"
+                        v-if="canResetPassword && forgotPasswordUrl"
+                        :href="forgotPasswordUrl"
                         class="text-sm"
                         :tabindex="5"
                     >
@@ -102,10 +102,10 @@ defineProps<{
 
         <div
             class="text-center text-sm text-muted-foreground"
-            v-if="canRegister"
+            v-if="canRegister && registerUrl"
         >
             Don't have an account?
-            <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
+            <TextLink :href="registerUrl" :tabindex="5">Sign up</TextLink>
         </div>
     </Form>
 </template>

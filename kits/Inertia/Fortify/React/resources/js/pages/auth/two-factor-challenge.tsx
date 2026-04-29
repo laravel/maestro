@@ -10,9 +10,12 @@ import {
     InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { OTP_MAX_LENGTH } from '@/hooks/use-two-factor-auth';
-import { store } from '@/routes/two-factor/login';
 
-export default function TwoFactorChallenge() {
+type Props = {
+    twoFactorLoginUrl: string;
+};
+
+export default function TwoFactorChallenge({ twoFactorLoginUrl }: Props) {
     const [showRecoveryInput, setShowRecoveryInput] = useState<boolean>(false);
     const [code, setCode] = useState<string>('');
 
@@ -55,7 +58,8 @@ export default function TwoFactorChallenge() {
 
             <div className="space-y-6">
                 <Form
-                    {...store.form()}
+                    action={twoFactorLoginUrl}
+                    method="post"
                     className="space-y-4"
                     resetOnError
                     resetOnSuccess={!showRecoveryInput}

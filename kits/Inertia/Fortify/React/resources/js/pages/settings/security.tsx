@@ -11,21 +11,34 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
 import { edit } from '@/routes/security';
-import { disable, enable } from '@/routes/two-factor';
+
+export type TwoFactorUrls = {
+    enableUrl: string;
+    disableUrl: string;
+    confirmUrl: string;
+    qrCodeUrl: string;
+    secretKeyUrl: string;
+    recoveryCodesUrl: string;
+    regenerateUrl: string;
+};
 
 type Props = {
     canManageTwoFactor?: boolean;
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
+    twoFactorUrls?: TwoFactorUrls | null;
 };
 
 export default function Security({
     canManageTwoFactor = false,
     requiresConfirmation = false,
     twoFactorEnabled = false,
+    twoFactorUrls = null,
 }: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+
+    const showTwoFactor = canManageTwoFactor && twoFactorUrls !== null;
 
     const {
         qrCodeSvg,
@@ -37,7 +50,11 @@ export default function Security({
         recoveryCodesList,
         fetchRecoveryCodes,
         errors,
-    } = useTwoFactorAuth();
+    } = useTwoFactorAuth({
+        qrCodeUrl: twoFactorUrls?.qrCodeUrl ?? '',
+        secretKeyUrl: twoFactorUrls?.secretKeyUrl ?? '',
+        recoveryCodesUrl: twoFactorUrls?.recoveryCodesUrl ?? '',
+    });
     const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
     const prevTwoFactorEnabled = useRef(twoFactorEnabled);
 
@@ -149,7 +166,7 @@ export default function Security({
                 </Form>
             </div>
 
-            {canManageTwoFactor && (
+            {showTwoFactor && twoFactorUrls && (
                 <div className="space-y-6">
                     <Heading
                         variant="small"
@@ -165,7 +182,10 @@ export default function Security({
                             </p>
 
                             <div className="relative inline">
-                                <Form {...disable.form()}>
+                                <Form
+                                    action={twoFactorUrls.disableUrl}
+                                    method="delete"
+                                >
                                     {({ processing }) => (
                                         <Button
                                             variant="destructive"
@@ -182,6 +202,7 @@ export default function Security({
                                 recoveryCodesList={recoveryCodesList}
                                 fetchRecoveryCodes={fetchRecoveryCodes}
                                 errors={errors}
+                                regenerateUrl={twoFactorUrls.regenerateUrl}
                             />
                         </div>
                     ) : (
@@ -203,7 +224,8 @@ export default function Security({
                                     </Button>
                                 ) : (
                                     <Form
-                                        {...enable.form()}
+                                        action={twoFactorUrls.enableUrl}
+                                        method="post"
                                         onSuccess={() =>
                                             setShowSetupModal(true)
                                         }
@@ -232,6 +254,7 @@ export default function Security({
                         clearSetupData={clearSetupData}
                         fetchSetupData={fetchSetupData}
                         errors={errors}
+                        confirmUrl={twoFactorUrls.confirmUrl}
                     />
                 </div>
             )}

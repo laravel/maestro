@@ -22,13 +22,14 @@
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
-    import { send } from '@/routes/verification';
 
     let {
         mustVerifyEmail,
+        verificationSendUrl = null,
         status = '',
     }: {
         mustVerifyEmail: boolean;
+        verificationSendUrl?: string | null;
         status?: string;
     } = $props();
 
@@ -81,11 +82,11 @@
                 <InputError class="mt-2" message={errors.email} />
             </div>
 
-            {#if mustVerifyEmail && !user.email_verified_at}
+            {#if mustVerifyEmail && verificationSendUrl && !user.email_verified_at}
                 <div>
                     <p class="-mt-4 text-sm text-muted-foreground">
                         Your email address is unverified.
-                        <TextLink href={send()} as="button">
+                        <TextLink href={verificationSendUrl} as="button">
                             Click here to resend the verification email.
                         </TextLink>
                     </p>

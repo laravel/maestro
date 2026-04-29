@@ -13,12 +13,13 @@
     import { Button } from '@/components/ui/button';
     import { Spinner } from '@/components/ui/spinner';
     import { logout } from '@/routes';
-    import { send } from '@/routes/verification';
 
     let {
         status = '',
+        verificationSendUrl,
     }: {
         status?: string;
+        verificationSendUrl: string;
     } = $props();
 </script>
 
@@ -31,7 +32,7 @@
     </div>
 {/if}
 
-<Form {...send.form()} class="space-y-6 text-center">
+<Form action={verificationSendUrl} method="post" class="space-y-6 text-center">
     {#snippet children({ processing })}
         <Button type="submit" disabled={processing} variant="secondary">
             {#if processing}<Spinner />{/if}

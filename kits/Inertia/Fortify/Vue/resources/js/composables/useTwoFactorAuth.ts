@@ -1,7 +1,12 @@
 import { useHttp } from '@inertiajs/vue3';
 import type { ComputedRef, Ref } from 'vue';
 import { computed, ref } from 'vue';
-import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
+
+export type TwoFactorAuthUrls = {
+    qrCodeUrl: string;
+    secretKeyUrl: string;
+    recoveryCodesUrl: string;
+};
 
 export type UseTwoFactorAuthReturn = {
     qrCodeSvg: Ref<string | null>;
@@ -22,17 +27,31 @@ const errors = ref<string[]>([]);
 const manualSetupKey = ref<string | null>(null);
 const qrCodeSvg = ref<string | null>(null);
 const recoveryCodesList = ref<string[]>([]);
+const cachedUrls = ref<TwoFactorAuthUrls | null>(null);
 
 const hasSetupData = computed<boolean>(
     () => qrCodeSvg.value !== null && manualSetupKey.value !== null,
 );
 
-export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
+export const useTwoFactorAuth = (
+    urls?: TwoFactorAuthUrls,
+): UseTwoFactorAuthReturn => {
     const http = useHttp();
 
+    if (urls) {
+        cachedUrls.value = urls;
+    }
+
     const fetchQrCode = async (): Promise<void> => {
+        if (!cachedUrls.value) {
+            return;
+        }
+
         try {
-            const { svg } = (await http.submit(qrCode())) as {
+            const { svg } = (await http.submit({
+                url: cachedUrls.value.qrCodeUrl,
+                method: 'get',
+            })) as {
                 svg: string;
                 url: string;
             };
@@ -45,8 +64,15 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     };
 
     const fetchSetupKey = async (): Promise<void> => {
+        if (!cachedUrls.value) {
+            return;
+        }
+
         try {
-            const { secretKey: key } = (await http.submit(secretKey())) as {
+            const { secretKey: key } = (await http.submit({
+                url: cachedUrls.value.secretKeyUrl,
+                method: 'get',
+            })) as {
                 secretKey: string;
             };
 
@@ -74,11 +100,16 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     };
 
     const fetchRecoveryCodes = async (): Promise<void> => {
+        if (!cachedUrls.value) {
+            return;
+        }
+
         try {
             clearErrors();
-            recoveryCodesList.value = (await http.submit(
-                recoveryCodes(),
-            )) as string[];
+            recoveryCodesList.value = (await http.submit({
+                url: cachedUrls.value.recoveryCodesUrl,
+                method: 'get',
+            })) as string[];
         } catch {
             errors.value.push('Failed to fetch recovery codes');
             recoveryCodesList.value = [];

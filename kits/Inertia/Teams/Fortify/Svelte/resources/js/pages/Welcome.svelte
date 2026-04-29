@@ -2,13 +2,15 @@
     import { Link, page } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import { toUrl } from '@/lib/utils';
-    import { dashboard, login, register } from '@/routes';
+    import { dashboard, login } from '@/routes';
     import type { Team } from '@/types';
 
     let {
         canRegister = true,
+        registerUrl = null,
     }: {
         canRegister: boolean;
+        registerUrl?: string | null;
     } = $props();
 
     const auth = $derived(page.props.auth);
@@ -44,9 +46,9 @@
                 >
                     Log in
                 </Link>
-                {#if canRegister}
+                {#if canRegister && registerUrl}
                     <Link
-                        href={toUrl(register())}
+                        href={registerUrl}
                         class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                     >
                         Register

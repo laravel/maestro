@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
@@ -22,6 +23,11 @@ class RegistrationTest extends TestCase
         $response = $this->get(route('register'));
 
         $response->assertOk();
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('{{auth_register}}')
+            ->where('registerUrl', route('register')),
+        );
     }
 
     public function test_new_users_can_register()

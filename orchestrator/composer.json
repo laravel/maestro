@@ -67,6 +67,7 @@
         ],
         "kits:check": [
             "Composer\\Config::disableProcessTimeout",
+            "node scripts/check-banned-imports.js",
             "node scripts/check-kits.js"
         ],
         "kits:browser-tests": [
