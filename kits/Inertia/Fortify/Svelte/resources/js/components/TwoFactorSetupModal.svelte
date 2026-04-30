@@ -269,6 +269,7 @@
                                     bind:value={code}
                                     maxlength={6}
                                     disabled={processing}
+                                    autofocus
                                 >
                                     <InputOTPGroup>
                                         {#each { length: 6 } as _, i (i)}
