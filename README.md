@@ -26,6 +26,7 @@ php artisan build --kit=react --workos # Builds the React (WorkOS) starter kit
 php artisan build --kit=livewire --blank # Builds Blank Livewire starter kit
 php artisan build --kit=livewire --teams # Builds Livewire (Fortify Teams) starter kit
 php artisan build --kit=vue --workos --teams # Builds Vue (WorkOS Teams) starter kit
+php artisan build --kit=API # Builds the API starter kit
 ```
 
 ### WorkOS
@@ -81,7 +82,7 @@ Each variant runs exactly one test suite (common or teams), not both.
 
 ### Selective Execution
 
-Pass `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.
+Pass `--api`, `--livewire`, `--react`, `--svelte`, and/or `--vue` to target specific frameworks.
 Pass `--blank`, `--fortify`, `--workos`, `--components`, and/or `--teams` to target specific variants.
 Combine both to narrow down exactly which kit variants to run:
 
@@ -90,6 +91,7 @@ composer kits:check -- --react --svelte
 composer kits:check -- --vue --svelte --fortify     # Vue and Svelte, Fortify variants only
 composer kits:check -- --livewire --fortify --workos # Livewire Fortify and WorkOS only
 composer kits:check -- --workos                      # all frameworks, WorkOS variant only
+composer kits:check -- --api                         # API variant only
 composer kits:lint -- --vue
 composer kits:lint -- --livewire                     # runs only the shared Pint step (no frontend lint phase)
 composer kits:browser-tests -- --vue
@@ -105,7 +107,11 @@ After your PR is merged, **Maestro** will automatically push the changes directl
 
 ## Starter Kit Flavors
 
-We have two stacks of starter kits: **Inertia** and **Livewire**. For these stacks, we have several different variations within:
+We have three stacks of starter kits: **API**, **Inertia**, and **Livewire**. For these stacks, we have several different variations within:
+
+### API
+
+1. **Stateless:** API starter kit using _Laravel Sanctum_ for stateless token authentication.
 
 ### Livewire
 
@@ -151,17 +157,69 @@ The `kits/Shared` folder contains files that are 100% identical between Livewire
 - **Shared/Teams/WorkOS:** Teams files specific to WorkOS (CreatePersonalTeam listener, UserFactory)
 - **Livewire/Teams/Base:** Livewire Teams files shared between Fortify and WorkOS (layouts, components, team pages)
 
+### API
+
+```mermaid
+flowchart TD
+    A[Shared/Blank] --> B[Shared/Base]
+    B --> C[API/Base]
+```
+
 ### Livewire
 
-Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/Fortify -> Livewire/Fortify [-> Livewire/Components] -> Shared/Teams/Base -> Shared/Teams/Fortify -> Livewire/Teams/Base -> Livewire/Teams/Fortify
+```mermaid
+flowchart TD
+    A[Shared/Blank] --> B[Livewire/Blank]
+    B --> C[Shared/Base]
+    C --> D[Livewire/Base]
+    D --> F1[Shared/Fortify]
+    D --> W1[Shared/WorkOS]
 
-OR (WorkOS): Shared/Blank -> Livewire/Blank -> Shared/Base -> Livewire/Base -> Shared/WorkOS -> Livewire/WorkOS -> Shared/Teams/Base -> Shared/Teams/WorkOS -> Livewire/Teams/Base -> Livewire/Teams/WorkOS
+    F1 --> F2[Livewire/Fortify]
+    F2 -. Components variant .-> FC[Livewire/Components]
+
+    W1 --> W2[Livewire/WorkOS]
+
+    F2 --> TB[Shared/Teams/Base]
+    W2 --> TB
+    TB --> STF[Shared/Teams/Fortify]
+    TB --> STW[Shared/Teams/WorkOS]
+    STF --> LTB[Livewire/Teams/Base]
+    STW --> LTB
+    LTB --> LTF[Livewire/Teams/Fortify]
+    LTB --> LTW[Livewire/Teams/WorkOS]
+```
 
 ### Inertia
 
-Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Svelte|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Svelte|Vue] -> Shared/Fortify -> Inertia/Fortify/Base -> Inertia/Fortify/[React|Svelte|Vue] -> Shared/Teams/Base -> Shared/Teams/Fortify -> Inertia/Teams/Base -> Inertia/Teams/[React|Svelte|Vue] -> Inertia/Teams/Fortify/Base -> Inertia/Teams/Fortify/[React|Svelte|Vue]
+```mermaid
+flowchart TD
+    A[Shared/Blank] --> B[Inertia/Blank/Base]
+    B --> C["Inertia/Blank/[React|Svelte|Vue]"]
+    C --> D[Shared/Base]
+    D --> E[Inertia/Base]
+    E --> G["Inertia/[React|Svelte|Vue]"]
+    G --> F1[Shared/Fortify]
+    G --> W1[Shared/WorkOS]
 
-OR (WorkOS): Shared/Blank -> Inertia/Blank/Base -> Inertia/Blank/[React|Svelte|Vue] -> Shared/Base -> Inertia/Base -> Inertia/[React|Svelte|Vue] -> Shared/WorkOS -> Inertia/WorkOS/Base -> Inertia/WorkOS/[React|Svelte|Vue] -> Shared/Teams/Base -> Shared/Teams/WorkOS -> Inertia/Teams/Base -> Inertia/Teams/[React|Svelte|Vue] -> Inertia/Teams/WorkOS/Base -> Inertia/Teams/WorkOS/[React|Svelte|Vue]
+    F1 --> F2[Inertia/Fortify/Base]
+    F2 --> F3["Inertia/Fortify/[React|Svelte|Vue]"]
+
+    W1 --> W2[Inertia/WorkOS/Base]
+    W2 --> W3["Inertia/WorkOS/[React|Svelte|Vue]"]
+
+    F3 --> TB[Shared/Teams/Base]
+    W3 --> TB
+    TB --> STF[Shared/Teams/Fortify]
+    TB --> STW[Shared/Teams/WorkOS]
+    STF --> ITB[Inertia/Teams/Base]
+    STW --> ITB
+    ITB --> ITV["Inertia/Teams/[React|Svelte|Vue]"]
+    ITV --> ITFB[Inertia/Teams/Fortify/Base]
+    ITV --> ITWB[Inertia/Teams/WorkOS/Base]
+    ITFB --> ITF["Inertia/Teams/Fortify/[React|Svelte|Vue]"]
+    ITWB --> ITW["Inertia/Teams/WorkOS/[React|Svelte|Vue]"]
+```
 
 Where `Shared/Blank` has the shared files across all variants, and each subsequent layer adds or overrides files.
 
