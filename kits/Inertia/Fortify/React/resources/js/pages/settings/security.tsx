@@ -22,7 +22,9 @@ type Props = Record<string, never> /* @chisel-passkeys */ &
     ManageTwoFactorProps /* @end-chisel-2fa */;
 /* @end-chisel-2fa-or-passkeys */
 
-export default function Security(/* @chisel-2fa-or-passkeys */ props: Props /* @end-chisel-2fa-or-passkeys */) {
+export default function Security(
+    /* @chisel-2fa-or-passkeys */ props: Props /* @end-chisel-2fa-or-passkeys */,
+) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 

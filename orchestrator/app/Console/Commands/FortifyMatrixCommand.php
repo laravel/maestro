@@ -4,8 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
-
-use function Laravel\Prompts\task;
+use RuntimeException;
 
 class FortifyMatrixCommand extends Command
 {
@@ -74,30 +73,27 @@ class FortifyMatrixCommand extends Command
             ->when($components, fn ($parts) => $parts->push('+ Components'))
             ->implode(' ');
 
-        task($label, fn ($log) => $this->runProcess(
+        $this->runStep($label, fn () => $this->runProcess(
             ['php', 'artisan', 'build', '--no-interaction', ...$args],
             base_path(),
-            $log,
         ));
 
-        task('Installing Composer dependencies', fn ($log) => $this->runProcess(
+        $this->runStep('Installing Composer dependencies', fn () => $this->runProcess(
             ['composer', 'install', '--no-interaction', '--prefer-dist', '--no-scripts'],
             $this->buildPath,
-            $log,
         ));
 
         if ($this->hasFrontend()) {
-            task('Installing Bun dependencies', fn ($log) => $this->runProcess(
+            $this->runStep('Installing Bun dependencies', fn () => $this->runProcess(
                 ['bun', 'install'],
                 $this->buildPath,
-                $log,
             ));
         }
     }
 
     protected function snapshotBaseline(): void
     {
-        task('Snapshotting baseline', fn ($log) => $this->rsync($this->buildPath, $this->baselinePath, $log));
+        $this->runStep('Snapshotting baseline', fn () => $this->rsync($this->buildPath, $this->baselinePath));
     }
 
     protected function runPermutations(): void
@@ -110,13 +106,13 @@ class FortifyMatrixCommand extends Command
     {
         $features = $this->featuresFor($mask);
 
-        task($this->permutationLabel($mask, $features), function ($log) use ($features) {
-            $this->rsync($this->baselinePath, $this->buildPath, $log);
-            $this->applyChisel($features, $log);
-            $this->runProcess(['composer', 'lint:check'], $this->buildPath, $log);
+        $this->runStep($this->permutationLabel($mask, $features), function () use ($features) {
+            $this->rsync($this->baselinePath, $this->buildPath);
+            $this->applyChisel($features);
+            $this->runProcess(['composer', 'lint:check'], $this->buildPath);
 
             if ($this->shouldCheckFrontend()) {
-                $this->runFrontendChecks($log);
+                $this->runFrontendChecks();
             }
         });
     }
@@ -143,26 +139,26 @@ class FortifyMatrixCommand extends Command
     /**
      * @param  list<string>  $features
      */
-    protected function applyChisel(array $features, object $log): void
+    protected function applyChisel(array $features): void
     {
         $script = sprintf(
             '$script = require "chisel.php"; $script->run(["auth_features" => %s]);',
             var_export($features, true),
         );
 
-        $this->runProcess(['php', '-r', $script], $this->buildPath, $log);
+        $this->runProcess(['php', '-r', $script], $this->buildPath);
     }
 
-    protected function runFrontendChecks(object $log): void
+    protected function runFrontendChecks(): void
     {
-        $this->runProcess(['bun', 'install'], $this->buildPath, $log);
-        $this->runProcess(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], $this->buildPath, $log);
-        $this->runProcess(['bun', 'run', 'lint:check'], $this->buildPath, $log);
-        $this->runProcess(['bun', 'run', 'format:check'], $this->buildPath, $log);
-        $this->runProcess(['bun', 'run', 'types:check'], $this->buildPath, $log);
+        $this->runProcess(['bun', 'install'], $this->buildPath);
+        $this->runProcess(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], $this->buildPath);
+        $this->runProcess(['bun', 'run', 'lint:check'], $this->buildPath);
+        $this->runProcess(['bun', 'run', 'format:check'], $this->buildPath);
+        $this->runProcess(['bun', 'run', 'types:check'], $this->buildPath);
     }
 
-    protected function rsync(string $source, string $destination, object $log): void
+    protected function rsync(string $source, string $destination): void
     {
         $this->runProcess([
             'rsync', '-a', '--delete',
@@ -170,18 +166,59 @@ class FortifyMatrixCommand extends Command
             '--exclude', 'node_modules',
             rtrim($source, '/').'/',
             rtrim($destination, '/').'/',
-        ], base_path(), $log);
+        ], base_path());
+    }
+
+    protected function runStep(string $label, callable $callback): void
+    {
+        $this->components->task($label, function () use ($callback) {
+            $callback();
+
+            return true;
+        });
     }
 
     /**
      * @param  list<string>  $command
      */
-    protected function runProcess(array $command, string $cwd, object $log): void
+    protected function runProcess(array $command, string $cwd): void
     {
-        Process::path($cwd)
-            ->timeout(0)
-            ->run($command, fn ($_, $chunk) => $log->line(rtrim($chunk)))
-            ->throw();
+        $pendingProcess = Process::path($cwd)->timeout(0);
+
+        $result = $this->output->isVerbose()
+            ? $pendingProcess->run($command, fn ($_, $chunk) => $this->output->write($chunk))
+            : $pendingProcess->run($command);
+
+        if ($result->failed()) {
+            $this->newLine();
+            $this->components->error('Command failed: '.$this->displayCommand($command));
+            $this->writeProcessOutput('Output', $result->output());
+            $this->writeProcessOutput('Error output', $result->errorOutput());
+
+            throw new RuntimeException('Command failed with exit code '.$result->exitCode().'.');
+        }
+    }
+
+    /**
+     * @param  list<string>  $command
+     */
+    protected function displayCommand(array $command): string
+    {
+        return implode(' ', array_map('escapeshellarg', $command));
+    }
+
+    protected function writeProcessOutput(string $label, string $output): void
+    {
+        if (trim($output) === '') {
+            return;
+        }
+
+        $this->line("<fg=gray>{$label}:</>");
+        $this->output->write($output);
+
+        if (! str_ends_with($output, PHP_EOL)) {
+            $this->newLine();
+        }
     }
 
     protected function hasFrontend(): bool

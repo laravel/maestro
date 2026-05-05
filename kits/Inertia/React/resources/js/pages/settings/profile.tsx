@@ -19,7 +19,8 @@ type PageProps = {
     auth: Auth;
 };
 
-export default function Profile(/* @chisel-email-verification */
+export default function Profile(
+    /* @chisel-email-verification */
     {
         mustVerifyEmail,
         status,
