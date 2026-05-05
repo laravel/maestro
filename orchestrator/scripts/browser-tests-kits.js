@@ -85,7 +85,7 @@ function prepareBrowserTests(variant) {
 
 function playwrightBrowsersInstalled() {
     try {
-        const output = execSync('npx playwright install --dry-run', { cwd: buildDir, encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
+        const output = execSync('npx playwright install chromium --only-shell --dry-run', { cwd: buildDir, encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
         const installPaths = output.match(/Install location:\s+(.+)/g);
 
         if (!installPaths) {
@@ -108,7 +108,7 @@ async function ensurePlaywrightBrowsers() {
     }
 
     log('  Installing Playwright browsers...', 'blue');
-    await runInherit('npx', ['playwright', 'install', '--with-deps'], { cwd: buildDir });
+    await runInherit('npx', ['playwright', 'install', 'chromium', '--with-deps', '--only-shell'], { cwd: buildDir });
 }
 
 async function runBrowserTestsForCurrentBuild() {
