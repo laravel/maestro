@@ -74,6 +74,12 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Setup Bun
+        if: matrix.node
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Resolve Composer Cache Directory
         id: composer-cache
         run: echo "dir=$(composer config --global cache-files-dir)" >> "$GITHUB_OUTPUT"
@@ -86,15 +92,15 @@ jobs:
           restore-keys: |
             composer-${{ runner.os }}-
 
-      - name: Cache npm Downloads
+      - name: Cache Bun Downloads
         if: matrix.node
         uses: actions/cache@v4
         with:
-          path: ~/.npm
-          key: npm-${{ runner.os }}-${{ matrix.kit }}-${{ hashFiles('kits/**/package.json') }}
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ matrix.kit }}-${{ hashFiles('kits/**/package.json') }}
           restore-keys: |
-            npm-${{ runner.os }}-${{ matrix.kit }}-
-            npm-${{ runner.os }}-
+            bun-${{ runner.os }}-${{ matrix.kit }}-
+            bun-${{ runner.os }}-
 
       - name: Configure Composer Auth
         env:
@@ -132,7 +138,7 @@ jobs:
           composer install --no-interaction --prefer-dist --no-scripts
 
           if [ "$NODE" = "true" ]; then
-            npm install
+            bun install
           fi
 
       - name: Run Fortify Feature Matrix

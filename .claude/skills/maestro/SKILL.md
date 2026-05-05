@@ -40,6 +40,7 @@ All commands below run from the `orchestrator/` directory unless noted otherwise
 | `composer kits:lint`                                 | Run `kits:pint`, then lint/format Inertia variants and sync back.          |
 | `composer kits:check`                                | Build and run CI checks (`composer setup && composer ci:check`) for all 21 kit variants sequentially. |
 | `composer kits:browser-tests`                        | Build and run browser tests for all 8 Fortify kit variants (4 base + 4 teams). |
+| `php artisan fortify:matrix --kit=React`             | Run all Fortify `auth_features` permutations for one kit.                  |
 | `npm run watch:kits`                                 | Run only the file watcher (no dev server).                                 |
 | `composer setup && composer ci:check`                | Run inside `build/` — installs deps, builds frontend, runs checks (see below). |
 
@@ -70,6 +71,12 @@ Every starter kit has a `ci:check` composer script that validates the kit withou
 **Inertia kits** run: `eslint .`, `prettier --check .`, `tsc --noEmit` / `vue-tsc --noEmit` / `svelte-check`, then `@test` (pint + PHPUnit).
 
 **Livewire kits** run: `@test` (pint + PHPUnit) only.
+
+### Fortify Feature Matrix
+
+Run from `orchestrator/`: `php artisan fortify:matrix --kit=React|Svelte|Vue|Livewire`.
+
+Add `--teams` or Livewire-only `--components` as needed. The command builds `build/`, snapshots it, applies every `auth_features` permutation through `chisel.php`, and runs lint/checks for each result. Inertia matrix checks use Bun only; if Bun is missing, let it fail.
 
 ## Starter Kit Variants (21 total)
 
@@ -155,6 +162,8 @@ For Teams (on top of Fortify or WorkOS), add:
 - If a file exists in both `Shared/Blank` and `Inertia/Fortify/Svelte`, editing it in `build/` syncs to `Inertia/Fortify/Svelte`.
 - Files in `kits/Shared/` affect **all** kits. Files in `kits/Inertia/Svelte/` only affect Svelte.
 - The watcher **restores placeholders** (e.g., `{{dashboard}}`) before syncing back — you don't need to worry about placeholders when editing in `build/`.
+- Fortify kits use `chisel.php` plus `@chisel-*` markers to remove optional auth features. Keep markers wide enough that removed sections leave valid PHP/TS/Vue/Svelte/Blade.
+- In kit Chisel scripts, prefer Chisel helpers (`$c->npm()->run(...)`, `$c->npm()->remove(...)`) over hardcoded package-manager shell calls; Chisel follows the generated kit's Node runtime.
 
 ## Kits Folder Structure
 

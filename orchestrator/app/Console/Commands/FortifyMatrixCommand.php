@@ -14,7 +14,7 @@ class FortifyMatrixCommand extends Command
                             {--teams : Build with the Teams variant}
                             {--components : Build with the Livewire Components variant}
                             {--skip-build : Assume build/ is ready (skip artisan build + deps install)}
-                            {--skip-frontend : Skip npm lint/format checks}';
+                            {--skip-frontend : Skip Bun lint/format/type checks}';
 
     protected $description = 'Run every auth_features permutation for a Fortify kit and lint each result';
 
@@ -87,8 +87,8 @@ class FortifyMatrixCommand extends Command
         ));
 
         if ($this->hasFrontend()) {
-            task('Installing npm dependencies', fn ($log) => $this->runProcess(
-                ['npm', 'install'],
+            task('Installing Bun dependencies', fn ($log) => $this->runProcess(
+                ['bun', 'install'],
                 $this->buildPath,
                 $log,
             ));
@@ -155,11 +155,11 @@ class FortifyMatrixCommand extends Command
 
     protected function runFrontendChecks(object $log): void
     {
-        $this->runProcess(['npm', 'install'], $this->buildPath, $log);
+        $this->runProcess(['bun', 'install'], $this->buildPath, $log);
         $this->runProcess(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], $this->buildPath, $log);
-        $this->runProcess(['npm', 'run', 'lint:check'], $this->buildPath, $log);
-        $this->runProcess(['npm', 'run', 'format:check'], $this->buildPath, $log);
-        $this->runProcess(['npm', 'run', 'types:check'], $this->buildPath, $log);
+        $this->runProcess(['bun', 'run', 'lint:check'], $this->buildPath, $log);
+        $this->runProcess(['bun', 'run', 'format:check'], $this->buildPath, $log);
+        $this->runProcess(['bun', 'run', 'types:check'], $this->buildPath, $log);
     }
 
     protected function rsync(string $source, string $destination, object $log): void

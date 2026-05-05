@@ -10,7 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "laravel/chisel": "dev-main#1642bd1",
+        "laravel/chisel": "dev-main#dd669a6d8d47b151b3b5cb194ca67c294078c2bf",
         "laravel/fortify": "^1.34",
         "laravel/framework": "^13.7",
         "laravel/tinker": "^3.0",

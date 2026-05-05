@@ -14,7 +14,7 @@ function runCommand(array $command): int
     return $exitCode;
 }
 
-function formatFiles(): void
+function formatFiles(Chisel $c): void
 {
     if (runCommand(['composer', 'lint']) !== 0) {
         exit(1);
@@ -24,13 +24,8 @@ function formatFiles(): void
         exit(1);
     }
 
-    if (runCommand(['npm', 'run', 'lint']) !== 0) {
-        exit(1);
-    }
-
-    if (runCommand(['npm', 'run', 'format']) !== 0) {
-        exit(1);
-    }
+    $c->npm()->run('lint');
+    $c->npm()->run('format');
 }
 
 function restoreAlphabetizedImportOrdering(Chisel $c): void
@@ -179,6 +174,16 @@ return Chisel::script(__DIR__)
             )->delete();
         },
     )
+    ->selectedAny('auth_features', ['2fa', 'passkeys'],
+        then: function (Chisel $c) {
+            $c->file('resources/js/pages/settings/Security.vue')
+                ->removeSectionMarkers('chisel-2fa-or-passkeys');
+        },
+        else: function (Chisel $c) {
+            $c->file('resources/js/pages/settings/Security.vue')
+                ->removeSection('chisel-2fa-or-passkeys');
+        },
+    )
     ->selected('auth_features', 'password-confirmation',
         then: function (Chisel $c) {
             $c->files(
@@ -205,6 +210,6 @@ return Chisel::script(__DIR__)
     )
     ->apply(function (Chisel $c): void {
         restoreAlphabetizedImportOrdering($c);
-        formatFiles();
+        formatFiles($c);
         cleanupInstallFeaturesArtifacts($c);
     });
