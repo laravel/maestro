@@ -19,13 +19,15 @@ type PageProps = {
     auth: Auth;
 };
 
-export default function Profile({
-    /* @chisel-email-verification */ mustVerifyEmail,
-    status /* @end-chisel-email-verification */,
-}: /* @chisel-email-verification */ {
-    mustVerifyEmail: boolean;
-    status?: string;
-} /* @end-chisel-email-verification */) {
+export default function Profile(
+    {
+        /* @chisel-email-verification */ mustVerifyEmail,
+        status /* @end-chisel-email-verification */,
+    }: /* @chisel-email-verification */ {
+        mustVerifyEmail: boolean;
+        status?: string;
+    } /* @end-chisel-email-verification */,
+) {
     const { auth } = usePage<PageProps>().props;
 
     return (

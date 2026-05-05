@@ -23,7 +23,7 @@ type Props = Record<string, never> /* @chisel-passkeys */ &
 /* @end-chisel-2fa-or-passkeys */
 
 export default function Security(
-    /* @chisel-2fa-or-passkeys */ props: Props, /* @end-chisel-2fa-or-passkeys */
+    /* @chisel-2fa-or-passkeys */ props: Props /* @end-chisel-2fa-or-passkeys */,
 ) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
@@ -47,9 +47,9 @@ export default function Security(
                         preserveScroll: true,
                     }}
                     resetOnError={[
-                        "password",
-                        "password_confirmation",
-                        "current_password",
+                        'password',
+                        'password_confirmation',
+                        'current_password',
                     ]}
                     resetOnSuccess
                     onError={(errors) => {
@@ -149,7 +149,7 @@ export default function Security(
 Security.layout = {
     breadcrumbs: [
         {
-            title: "Security settings",
+            title: 'Security settings',
             href: edit(),
         },
     ],

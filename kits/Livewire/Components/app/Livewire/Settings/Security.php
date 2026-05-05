@@ -3,25 +3,31 @@
 namespace App\Livewire\Settings;
 
 use App\Concerns\PasswordValidationRules;
+/* @chisel-2fa */
+use Exception;
+/* @end-chisel-2fa */
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+/* @chisel-2fa */
+use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
+/* @end-chisel-2fa */
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
+/* @chisel-2fa */
+use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
+/* @end-chisel-2fa */
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\Locked;
-use Livewire\Attributes\Title;
-use Livewire\Component;
-/* @chisel-2fa */
-use Exception;
-use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
-use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
-use Livewire\Attributes\Validate;
-/* @end-chisel-2fa */
 /* @chisel-passkeys */
 use Laravel\Passkeys\Actions\DeletePasskey;
 /* @end-chisel-passkeys */
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
+use Livewire\Attributes\Title;
+/* @chisel-2fa */
+use Livewire\Attributes\Validate;
+/* @end-chisel-2fa */
+use Livewire\Component;
 
 #[Title('Security settings')]
 class Security extends Component
@@ -136,7 +142,7 @@ class Security extends Component
             ->select(['id', 'name', 'credential', 'created_at', 'last_used_at'])
             ->latest()
             ->get()
-            ->map(fn($passkey) => [
+            ->map(fn ($passkey) => [
                 'id' => $passkey->id,
                 'name' => $passkey->name,
                 'authenticator' => $passkey->authenticator,

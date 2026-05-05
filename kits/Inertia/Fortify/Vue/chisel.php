@@ -183,7 +183,7 @@ return Chisel::script(__DIR__)
         then: function (Chisel $c) {
             $c->files(
                 'app/Providers/FortifyServiceProvider.php',
-                'app/Http/Controllers/Settings/SecurityController.php',
+                'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
             )->removeSectionMarkers('chisel-password-confirmation');
         },
@@ -191,14 +191,9 @@ return Chisel::script(__DIR__)
             $c->file('config/fortify.php')
                 ->replace("'confirmPassword' => true,", "'confirmPassword' => false,");
 
-            $c->phpFile('app/Http/Controllers/Settings/SecurityController.php')
-                ->removeImport('Illuminate\Routing\Controllers\HasMiddleware')
-                ->removeImport('Illuminate\Routing\Controllers\Middleware')
-                ->removeInterface('HasMiddleware');
-
             $c->files(
                 'app/Providers/FortifyServiceProvider.php',
-                'app/Http/Controllers/Settings/SecurityController.php',
+                'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
             )->removeSection('chisel-password-confirmation');
 

@@ -12,7 +12,10 @@
 </script>
 
 <script lang="ts">
-    import { Form /* @chisel-2fa-or-passkeys */, page /* @end-chisel-2fa-or-passkeys */ } from '@inertiajs/svelte';
+    import {
+        Form /* @chisel-2fa-or-passkeys */,
+        page /* @end-chisel-2fa-or-passkeys */,
+    } from '@inertiajs/svelte';
     import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
     import AppHead from '@/components/AppHead.svelte';
     import Heading from '@/components/Heading.svelte';
@@ -29,13 +32,17 @@
     /* @end-chisel-passkeys */
     /* @chisel-2fa */
     const canManageTwoFactor = $derived(Boolean(page.props.canManageTwoFactor));
-    const requiresConfirmation = $derived(Boolean(page.props.requiresConfirmation));
+    const requiresConfirmation = $derived(
+        Boolean(page.props.requiresConfirmation),
+    );
     const twoFactorEnabled = $derived(Boolean(page.props.twoFactorEnabled));
     /* @end-chisel-2fa */
     /* @chisel-passkeys */
     const canManagePasskeys = $derived(Boolean(page.props.canManagePasskeys));
     const passkeys = $derived(
-        (Array.isArray(page.props.passkeys) ? page.props.passkeys : []) as ManagePasskeysProps['passkeys'],
+        (Array.isArray(page.props.passkeys)
+            ? page.props.passkeys
+            : []) as ManagePasskeysProps['passkeys'],
     );
     /* @end-chisel-passkeys */
 </script>
@@ -117,8 +124,5 @@
 <!-- @end-chisel-2fa -->
 
 <!-- @chisel-passkeys -->
-<ManagePasskeys
-    {canManagePasskeys}
-    {passkeys}
-/>
+<ManagePasskeys {canManagePasskeys} {passkeys} />
 <!-- @end-chisel-passkeys -->

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { destroy } from "@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController";
-import PasskeyItem from "@/components/PasskeyItem.vue";
-import PasskeyRegister from "@/components/PasskeyRegister.vue";
-import type { Passkey } from "@/types/auth";
-import { router } from "@inertiajs/vue3";
-import { KeyRound } from "lucide-vue-next";
+import { router } from '@inertiajs/vue3';
+import { KeyRound } from 'lucide-vue-next';
+import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
+import PasskeyItem from '@/components/PasskeyItem.vue';
+import PasskeyRegister from '@/components/PasskeyRegister.vue';
+import type { Passkey } from '@/types/auth';
 
 export type Props = {
     canManagePasskeys?: boolean;

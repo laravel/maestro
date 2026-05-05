@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import TwoFactorRecoveryCodes from "@/components/TwoFactorRecoveryCodes.vue";
-import TwoFactorSetupModal from "@/components/TwoFactorSetupModal.vue";
-import { useTwoFactorAuth } from "@/composables/useTwoFactorAuth";
-import { disable, enable } from "@/routes/two-factor";
-import { ShieldCheck } from "lucide-vue-next";
-import { onUnmounted, ref } from "vue";
+import { ShieldCheck } from 'lucide-vue-next';
+import { onUnmounted, ref } from 'vue';
+import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
+import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
+import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import { disable, enable } from '@/routes/two-factor';
 
 export type Props = {
     canManageTwoFactor?: boolean;

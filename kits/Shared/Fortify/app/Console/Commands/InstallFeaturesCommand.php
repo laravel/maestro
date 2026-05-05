@@ -7,6 +7,7 @@ use Illuminate\Process\Factory;
 use Laravel\Chisel\NodePackageManager;
 use Laravel\Chisel\Question;
 use Laravel\Chisel\Script;
+use RuntimeException;
 
 use function Laravel\Prompts\multiselect;
 
@@ -75,7 +76,7 @@ class InstallFeaturesCommand extends Command
                 }
 
                 if ($question->required) {
-                    throw new \RuntimeException("Question [{$question->name}] requires an answer.");
+                    throw new RuntimeException("Question [{$question->name}] requires an answer.");
                 }
 
                 $answers[$question->name] = [];
@@ -91,7 +92,7 @@ class InstallFeaturesCommand extends Command
                     required: $question->required,
                     hint: $question->hint,
                 ),
-                default => throw new \RuntimeException("Unsupported question type [{$question->type}]."),
+                default => throw new RuntimeException("Unsupported question type [{$question->type}]."),
             };
         }
 
@@ -112,7 +113,7 @@ class InstallFeaturesCommand extends Command
             });
 
         if (! $install->successful()) {
-            throw new \RuntimeException($packageManager->installCommand().' failed.');
+            throw new RuntimeException($packageManager->installCommand().' failed.');
         }
 
         $this->info('Building assets...');
@@ -130,6 +131,6 @@ class InstallFeaturesCommand extends Command
             return;
         }
 
-        throw new \RuntimeException($packageManager->buildCommand().' failed.');
+        throw new RuntimeException($packageManager->buildCommand().' failed.');
     }
 }

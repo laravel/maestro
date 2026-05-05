@@ -119,9 +119,6 @@ new #[Title('Profile settings')] class extends Component {
                     </flux:button>
                 </div>
 
-                <x-action-message class="me-3" on="profile-updated">
-                    {{ __('Saved.') }}
-                </x-action-message>
             </div>
         </form>
 

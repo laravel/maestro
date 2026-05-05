@@ -64,25 +64,6 @@ class SecurityTest extends TestCase
     }
     /* @end-chisel-password-confirmation */
 
-    public function test_security_page_does_not_require_password_confirmation_when_disabled()
-    {
-        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
-
-        $user = User::factory()->create();
-
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => false,
-        ]);
-
-        $this->actingAs($user)
-            ->get(route('security.edit'))
-            ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('{{security_settings}}'),
-            );
-    }
-
     public function test_security_page_renders_without_two_factor_when_feature_is_disabled()
     {
         $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
