@@ -521,7 +521,7 @@ class BuildCommand extends Command
     {
         File::ensureDirectoryExists($destination);
 
-        foreach (File::allFiles($source) as $file) {
+        foreach (File::allFiles($source, true) as $file) {
             if (! $this->copyChiselFiles && $file->getFilename() === 'chisel.php') {
                 continue;
             }
