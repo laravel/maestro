@@ -24,7 +24,8 @@ class BuildCommand extends Command
                             {--blank : Build the Blank variant (no authentication)}
                             {--workos : Build the WorkOS variant}
                             {--components : Build the Livewire Components variant}
-                            {--teams : Build the Teams variant}';
+                            {--teams : Build the Teams variant}
+                            {--chisel : Copy chisel files into the build}';
 
     /**
      * The console command description.
@@ -32,6 +33,11 @@ class BuildCommand extends Command
      * @var string
      */
     protected $description = 'Builds one of the Starter Kits';
+
+    /**
+     * Whether chisel files should be copied into the build.
+     */
+    protected bool $copyChiselFiles = false;
 
     /**
      * Execute the console command.
@@ -58,6 +64,7 @@ class BuildCommand extends Command
         $components = $this->option('components');
         $blank = $this->option('blank');
         $teams = $this->option('teams');
+        $this->copyChiselFiles = (bool) $this->option('chisel');
 
         // Apply flag priority: --workos > --components > --blank
         if ($workos) {
@@ -207,7 +214,7 @@ class BuildCommand extends Command
         File::makeDirectory($buildPath, 0755, true);
 
         info('Copying Shared Blank files...');
-        File::copyDirectory($basePath, $buildPath);
+        $this->copyKitDirectory($basePath, $buildPath);
 
         return $buildPath;
     }
@@ -245,14 +252,14 @@ class BuildCommand extends Command
         $buildPath = $this->prepareBuildDirectory($this->sharedPath('Blank'));
 
         info('Copying Livewire Blank kit files...');
-        File::copyDirectory($this->kitPath('Livewire/Blank'), $buildPath);
+        $this->copyKitDirectory($this->kitPath('Livewire/Blank'), $buildPath);
 
         if (! $blank) {
             info('Copying Shared Base files...');
-            File::copyDirectory($this->sharedPath('Base'), $buildPath);
+            $this->copyKitDirectory($this->sharedPath('Base'), $buildPath);
 
             info('Copying Livewire Base kit files...');
-            File::copyDirectory($this->kitPath('Livewire/Base'), $buildPath);
+            $this->copyKitDirectory($this->kitPath('Livewire/Base'), $buildPath);
 
             if ($workos) {
                 $this->applyWorkosVariant($buildPath, 'Livewire', $teams);
@@ -276,20 +283,20 @@ class BuildCommand extends Command
         $buildPath = $this->prepareBuildDirectory($this->sharedPath('Blank'));
 
         info('Copying Inertia Blank Base kit files...');
-        File::copyDirectory($this->kitPath('Inertia/Blank/Base'), $buildPath);
+        $this->copyKitDirectory($this->kitPath('Inertia/Blank/Base'), $buildPath);
 
         info("Copying Inertia Blank {$kit} kit files...");
-        File::copyDirectory($this->kitPath("Inertia/Blank/{$kit}"), $buildPath);
+        $this->copyKitDirectory($this->kitPath("Inertia/Blank/{$kit}"), $buildPath);
 
         if (! $blank) {
             info('Copying Shared Base files...');
-            File::copyDirectory($this->sharedPath('Base'), $buildPath);
+            $this->copyKitDirectory($this->sharedPath('Base'), $buildPath);
 
             info('Copying Inertia Base kit files...');
-            File::copyDirectory($this->kitPath('Inertia/Base'), $buildPath);
+            $this->copyKitDirectory($this->kitPath('Inertia/Base'), $buildPath);
 
             info("Copying Inertia {$kit} kit files...");
-            File::copyDirectory($this->kitPath("Inertia/{$kit}"), $buildPath);
+            $this->copyKitDirectory($this->kitPath("Inertia/{$kit}"), $buildPath);
 
             if ($workos) {
                 $this->applyWorkosVariant($buildPath, $kit, $teams);
@@ -399,22 +406,22 @@ class BuildCommand extends Command
     protected function applyWorkosVariant(string $buildPath, string $kit, bool $teams = false): void
     {
         info('Copying Shared WorkOS files...');
-        File::copyDirectory($this->sharedPath('WorkOS'), $buildPath);
+        $this->copyKitDirectory($this->sharedPath('WorkOS'), $buildPath);
 
         if ($kit === 'Livewire') {
             $workosPath = $this->kitPath('Livewire/WorkOS');
 
             info('Copying Livewire WorkOS files...');
-            File::copyDirectory($workosPath, $buildPath);
+            $this->copyKitDirectory($workosPath, $buildPath);
         } else {
             $workosBasePath = $this->kitPath('Inertia/WorkOS/Base');
             $workosKitPath = $this->kitPath("Inertia/WorkOS/{$kit}");
 
             info('Copying Inertia WorkOS Base files...');
-            File::copyDirectory($workosBasePath, $buildPath);
+            $this->copyKitDirectory($workosBasePath, $buildPath);
 
             info("Copying Inertia WorkOS {$kit} files...");
-            File::copyDirectory($workosKitPath, $buildPath);
+            $this->copyKitDirectory($workosKitPath, $buildPath);
         }
 
         if ($teams) {
@@ -428,13 +435,13 @@ class BuildCommand extends Command
     protected function applyFortifyVariant(string $buildPath, string $kit, bool $teams = false): void
     {
         info('Copying Shared Fortify files...');
-        File::copyDirectory($this->sharedPath('Fortify'), $buildPath);
+        $this->copyKitDirectory($this->sharedPath('Fortify'), $buildPath);
 
         if ($kit === 'Livewire') {
             $fortifyPath = $this->kitPath('Livewire/Fortify');
 
             info('Copying Livewire Fortify files...');
-            File::copyDirectory($fortifyPath, $buildPath);
+            $this->copyKitDirectory($fortifyPath, $buildPath);
 
             if ($teams) {
                 $this->applyTeamsVariant($buildPath, $kit, workos: false);
@@ -447,10 +454,10 @@ class BuildCommand extends Command
         $fortifyKitPath = $this->kitPath("Inertia/Fortify/{$kit}");
 
         info('Copying Inertia Fortify Base files...');
-        File::copyDirectory($fortifyBasePath, $buildPath);
+        $this->copyKitDirectory($fortifyBasePath, $buildPath);
 
         info("Copying Inertia Fortify {$kit} files...");
-        File::copyDirectory($fortifyKitPath, $buildPath);
+        $this->copyKitDirectory($fortifyKitPath, $buildPath);
 
         if ($teams) {
             $this->applyTeamsVariant($buildPath, $kit, workos: false);
@@ -468,7 +475,7 @@ class BuildCommand extends Command
         $this->relocateAuthViewsForComponents($buildPath);
 
         info('Copying Components files...');
-        File::copyDirectory($componentsPath, $buildPath);
+        $this->copyKitDirectory($componentsPath, $buildPath);
     }
 
     /**
@@ -477,34 +484,54 @@ class BuildCommand extends Command
     protected function applyTeamsVariant(string $buildPath, string $kit, bool $workos): void
     {
         info('Copying Shared Teams Base files...');
-        File::copyDirectory($this->sharedPath('Teams/Base'), $buildPath);
+        $this->copyKitDirectory($this->sharedPath('Teams/Base'), $buildPath);
 
         $authProvider = $workos ? 'WorkOS' : 'Fortify';
 
         info("Copying Shared Teams {$authProvider} files...");
-        File::copyDirectory($this->sharedPath("Teams/{$authProvider}"), $buildPath);
+        $this->copyKitDirectory($this->sharedPath("Teams/{$authProvider}"), $buildPath);
 
         if ($kit === 'Livewire') {
             info('Copying Livewire Teams Base files...');
-            File::copyDirectory($this->kitPath('Livewire/Teams/Base'), $buildPath);
+            $this->copyKitDirectory($this->kitPath('Livewire/Teams/Base'), $buildPath);
 
             info("Copying Livewire Teams {$authProvider} files...");
-            File::copyDirectory($this->kitPath("Livewire/Teams/{$authProvider}"), $buildPath);
+            $this->copyKitDirectory($this->kitPath("Livewire/Teams/{$authProvider}"), $buildPath);
 
             return;
         }
 
         info('Copying Inertia Teams Base files...');
-        File::copyDirectory($this->kitPath('Inertia/Teams/Base'), $buildPath);
+        $this->copyKitDirectory($this->kitPath('Inertia/Teams/Base'), $buildPath);
 
         info("Copying Inertia Teams {$kit} files...");
-        File::copyDirectory($this->kitPath("Inertia/Teams/{$kit}"), $buildPath);
+        $this->copyKitDirectory($this->kitPath("Inertia/Teams/{$kit}"), $buildPath);
 
         info("Copying Inertia Teams {$authProvider} Base files...");
-        File::copyDirectory($this->kitPath("Inertia/Teams/{$authProvider}/Base"), $buildPath);
+        $this->copyKitDirectory($this->kitPath("Inertia/Teams/{$authProvider}/Base"), $buildPath);
 
         info("Copying Inertia Teams {$authProvider} {$kit} files...");
-        File::copyDirectory($this->kitPath("Inertia/Teams/{$authProvider}/{$kit}"), $buildPath);
+        $this->copyKitDirectory($this->kitPath("Inertia/Teams/{$authProvider}/{$kit}"), $buildPath);
+    }
+
+    /**
+     * Copy kit files into the build directory, excluding chisel scripts by default.
+     */
+    protected function copyKitDirectory(string $source, string $destination): void
+    {
+        File::ensureDirectoryExists($destination);
+
+        foreach (File::allFiles($source) as $file) {
+            if (! $this->copyChiselFiles && $file->getFilename() === 'chisel.php') {
+                continue;
+            }
+
+            $relativePath = $file->getRelativePathname();
+            $target = $destination.'/'.$relativePath;
+
+            File::ensureDirectoryExists(dirname($target));
+            File::copy($file->getPathname(), $target);
+        }
     }
 
     /**

@@ -96,6 +96,14 @@ jobs:
             npm-${{ runner.os }}-${{ matrix.kit }}-
             npm-${{ runner.os }}-
 
+      - name: Configure Composer Auth
+        env:
+          CHISEL_TOKEN: ${{ secrets.CHISEL_TOKEN }}
+        run: |
+          if [ -n "$CHISEL_TOKEN" ]; then
+            composer config --global github-oauth.github.com "$CHISEL_TOKEN"
+          fi
+
       - name: Install Orchestrator Dependencies
         working-directory: orchestrator
         run: composer install --no-interaction --prefer-dist
@@ -107,7 +115,7 @@ jobs:
           TEAMS: ${{ matrix.teams }}
           COMPONENTS: ${{ matrix.components }}
         run: |
-          args=(--no-interaction --kit="$KIT")
+          args=(--no-interaction --chisel --kit="$KIT")
           if [ "$TEAMS" = "true" ]; then
             args+=(--teams)
           fi

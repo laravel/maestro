@@ -29,7 +29,7 @@ function existingFiles(string ...$paths): array
 function cleanupInstallFeaturesArtifacts(Chisel $c): void
 {
     $c->file('composer.json')
-        ->removeLinesContaining('"post-install-cmd": "@php artisan install:features --ansi",');
+        ->removeLinesContaining('"@php artisan install:features --ansi",');
 
     $c->files(
         'app/Console/Commands/InstallFeaturesCommand.php',

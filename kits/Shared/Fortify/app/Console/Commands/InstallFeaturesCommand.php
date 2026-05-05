@@ -29,6 +29,10 @@ class InstallFeaturesCommand extends Command
 
     public function handle(): int
     {
+        if (! file_exists(base_path('chisel.php'))) {
+            return self::SUCCESS;
+        }
+
         /** @var Script $script */
         $script = require base_path('chisel.php');
 

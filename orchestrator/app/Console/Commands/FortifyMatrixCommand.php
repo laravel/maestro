@@ -64,7 +64,7 @@ class FortifyMatrixCommand extends Command
         $teams = (bool) $this->option('teams');
         $components = (bool) $this->option('components');
 
-        $args = collect(['--kit='.$kit])
+        $args = collect(['--kit='.$kit, '--chisel'])
             ->when($teams, fn ($args) => $args->push('--teams'))
             ->when($components, fn ($args) => $args->push('--components'))
             ->all();

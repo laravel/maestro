@@ -4,8 +4,6 @@ import fs from 'fs';
 import path from 'path';
 import { buildDir, log, orchestratorDir, runInherit } from './kit-helpers.js';
 
-const prepareOnly = process.argv.includes('--prepare-only');
-
 function readEnvValue(envPath, key) {
     if (!fs.existsSync(envPath)) {
         return null;
@@ -56,18 +54,6 @@ function configureEnv() {
     }
 }
 
-function hasComposerScript(scriptName) {
-    const composerPath = path.join(buildDir, 'composer.json');
-
-    if (!fs.existsSync(composerPath)) {
-        return false;
-    }
-
-    const composer = JSON.parse(fs.readFileSync(composerPath, 'utf-8'));
-
-    return Object.prototype.hasOwnProperty.call(composer.scripts ?? {}, scriptName);
-}
-
 async function main() {
     if (!fs.existsSync(buildDir)) {
         log("The build folder does not exist. Please run 'php artisan build' first.", 'red');
@@ -78,15 +64,6 @@ async function main() {
     await runInherit('composer', ['setup'], { cwd: buildDir });
 
     configureEnv();
-
-    if (prepareOnly) {
-        if (hasComposerScript('post-install-cmd')) {
-            log('Running post-install Composer scripts...', 'blue');
-            await runInherit('composer', ['run-script', 'post-install-cmd'], { cwd: buildDir });
-        }
-
-        return;
-    }
 
     log('Starting development server...', 'green');
     await runInherit('composer', ['dev'], { cwd: buildDir });
