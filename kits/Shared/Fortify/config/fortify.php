@@ -167,7 +167,9 @@ return [
     */
 
     'features' => [
+        /* @chisel-registration */
         Features::registration(),
+        /* @end-chisel-registration */
         Features::resetPasswords(),
         Features::emailVerification(),
         /* @chisel-2fa */

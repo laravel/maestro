@@ -1,6 +1,6 @@
 <?php
 
-require (getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__.'/vendor/autoload.php');
+require getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__.'/vendor/autoload.php';
 
 use Laravel\Chisel\Chisel;
 use Laravel\Chisel\Question;
@@ -44,14 +44,50 @@ return Chisel::script(__DIR__)
             label: 'Which authentication features would you like to enable?',
             options: [
                 'email-verification' => 'Email verification',
+                'registration' => 'Registration',
                 '2fa' => 'Two-factor authentication',
                 'passkeys' => 'Passkeys',
                 'password-confirmation' => 'Password confirmation',
             ],
-            default: ['email-verification', '2fa', 'passkeys', 'password-confirmation'],
+            default: ['email-verification', 'registration', '2fa', 'passkeys', 'password-confirmation'],
             hint: 'Use space to select, enter to confirm.',
         ),
     ])
+    ->selected('auth_features', 'registration',
+        then: function (Chisel $c) {
+            $files = array_merge([
+                'config/fortify.php',
+                'app/Providers/FortifyServiceProvider.php',
+                'resources/views/pages/auth/login.blade.php',
+                'resources/views/welcome.blade.php',
+            ], existingFiles(
+                'resources/views/livewire/auth/login.blade.php',
+            ));
+
+            $c->files(...$files)->removeSectionMarkers('chisel-registration');
+        },
+        else: function (Chisel $c) {
+            $c->file('config/fortify.php')->removeSection('chisel-registration');
+
+            $files = array_merge([
+                'app/Providers/FortifyServiceProvider.php',
+                'resources/views/pages/auth/login.blade.php',
+                'resources/views/welcome.blade.php',
+            ], existingFiles(
+                'resources/views/livewire/auth/login.blade.php',
+            ));
+
+            $c->files(...$files)->removeSection('chisel-registration');
+
+            $c->files(
+                'app/Actions/Fortify/CreateNewUser.php',
+                'app/Http/Responses/RegisterResponse.php',
+                'resources/views/pages/auth/register.blade.php',
+                'resources/views/livewire/auth/register.blade.php',
+                'tests/Feature/Auth/RegistrationTest.php',
+            )->delete();
+        },
+    )
     ->selected('auth_features', 'email-verification',
         then: function (Chisel $c) {
             $files = existingFiles(

@@ -55,14 +55,41 @@ return Chisel::script(__DIR__)
             label: 'Which authentication features would you like to enable?',
             options: [
                 'email-verification' => 'Email verification',
+                'registration' => 'Registration',
                 '2fa' => 'Two-factor authentication',
                 'passkeys' => 'Passkeys',
                 'password-confirmation' => 'Password confirmation',
             ],
-            default: ['email-verification', '2fa', 'passkeys', 'password-confirmation'],
+            default: ['email-verification', 'registration', '2fa', 'passkeys', 'password-confirmation'],
             hint: 'Use space to select, enter to confirm.',
         ),
     ])
+    ->selected('auth_features', 'registration',
+        then: function (Chisel $c) {
+            $c->files(
+                'config/fortify.php',
+                'app/Providers/FortifyServiceProvider.php',
+                'resources/js/pages/auth/login.tsx',
+                'resources/js/pages/welcome.tsx',
+            )->removeSectionMarkers('chisel-registration');
+        },
+        else: function (Chisel $c) {
+            $c->file('config/fortify.php')->removeSection('chisel-registration');
+
+            $c->files(
+                'app/Providers/FortifyServiceProvider.php',
+                'resources/js/pages/auth/login.tsx',
+                'resources/js/pages/welcome.tsx',
+            )->removeSection('chisel-registration');
+
+            $c->files(
+                'app/Actions/Fortify/CreateNewUser.php',
+                'app/Http/Responses/RegisterResponse.php',
+                'resources/js/pages/auth/register.tsx',
+                'tests/Feature/Auth/RegistrationTest.php',
+            )->delete();
+        },
+    )
     ->selected('auth_features', 'email-verification',
         then: function (Chisel $c) {
             $c->files(

@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+/* @chisel-registration */
 use App\Actions\Fortify\CreateNewUser;
+/* @end-chisel-registration */
 use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -39,7 +41,9 @@ class FortifyServiceProvider extends ServiceProvider
     private function configureActions(): void
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+        /* @chisel-registration */
         Fortify::createUsersUsing(CreateNewUser::class);
+        /* @end-chisel-registration */
     }
 
     /**
@@ -49,7 +53,6 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::loginView(fn (Request $request) => Inertia::render('{{auth_login}}', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
-            'canRegister' => Features::enabled(Features::registration()),
             'status' => $request->session()->get('status'),
         ]));
 
@@ -68,7 +71,9 @@ class FortifyServiceProvider extends ServiceProvider
         ]));
         /* @end-chisel-email-verification */
 
+        /* @chisel-registration */
         Fortify::registerView(fn () => Inertia::render('{{auth_register}}'));
+        /* @end-chisel-registration */
 
         /* @chisel-2fa */
         Fortify::twoFactorChallengeView(fn () => Inertia::render('{{auth_two_factor_challenge}}'));

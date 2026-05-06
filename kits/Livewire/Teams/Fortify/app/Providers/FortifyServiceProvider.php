@@ -2,10 +2,14 @@
 
 namespace App\Providers;
 
+/* @chisel-registration */
 use App\Actions\Fortify\CreateNewUser;
+/* @end-chisel-registration */
 use App\Actions\Fortify\ResetUserPassword;
 use App\Http\Responses\LoginResponse;
+/* @chisel-registration */
 use App\Http\Responses\RegisterResponse;
+/* @end-chisel-registration */
 use App\Http\Responses\TwoFactorLoginResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -13,7 +17,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+/* @chisel-registration */
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
+/* @end-chisel-registration */
 /* @chisel-2fa */
 use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
 use Laravel\Fortify\Fortify;
@@ -28,7 +34,9 @@ class FortifyServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
+        /* @chisel-registration */
         $this->app->singleton(RegisterResponseContract::class, RegisterResponse::class);
+        /* @end-chisel-registration */
         /* @chisel-2fa */
         $this->app->singleton(TwoFactorLoginResponseContract::class, TwoFactorLoginResponse::class);
         /* @end-chisel-2fa */
@@ -50,7 +58,9 @@ class FortifyServiceProvider extends ServiceProvider
     private function configureActions(): void
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+        /* @chisel-registration */
         Fortify::createUsersUsing(CreateNewUser::class);
+        /* @end-chisel-registration */
     }
 
     /**
@@ -68,7 +78,9 @@ class FortifyServiceProvider extends ServiceProvider
         /* @chisel-password-confirmation */
         Fortify::confirmPasswordView(fn () => view('pages::auth.confirm-password'));
         /* @end-chisel-password-confirmation */
+        /* @chisel-registration */
         Fortify::registerView(fn () => view('pages::auth.register'));
+        /* @end-chisel-registration */
         Fortify::resetPasswordView(fn () => view('pages::auth.reset-password'));
         Fortify::requestPasswordResetLinkView(fn () => view('pages::auth.forgot-password'));
     }

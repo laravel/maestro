@@ -2,14 +2,11 @@
     import { Link, page } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import { toUrl } from '@/lib/utils';
-    import { dashboard, login, register } from '@/routes';
+    import { dashboard, login } from '@/routes';
+    /* @chisel-registration */
+    import { register } from '@/routes';
+    /* @end-chisel-registration */
     import type { Team } from '@/types';
-
-    let {
-        canRegister = true,
-    }: {
-        canRegister: boolean;
-    } = $props();
 
     const auth = $derived(page.props.auth);
     const currentTeam = $derived(page.props.currentTeam as Team | null);
@@ -44,14 +41,14 @@
                 >
                     Log in
                 </Link>
-                {#if canRegister}
-                    <Link
-                        href={toUrl(register())}
-                        class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                    >
-                        Register
-                    </Link>
-                {/if}
+                <!-- @chisel-registration -->
+                <Link
+                    href={toUrl(register())}
+                    class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                >
+                    Register
+                </Link>
+                <!-- @end-chisel-registration -->
             {/if}
         </nav>
     </header>
