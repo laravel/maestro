@@ -13,11 +13,12 @@ class FortifyMatrixCommand extends Command
                             {--teams : Build with the Teams variant}
                             {--components : Build with the Livewire Components variant}
                             {--skip-build : Assume build/ is ready (skip artisan build + deps install)}
-                            {--skip-frontend : Skip Bun lint/format/type checks}';
+                            {--skip-frontend : Skip Bun lint/format/type checks}
+                            {--exhaustive : Run every auth_features permutation instead of the curated scenario set}';
 
-    protected $description = 'Run every auth_features permutation for a Fortify kit and lint each result';
+    protected $description = 'Run auth_features scenarios for a Fortify kit and lint each result';
 
-    protected const FEATURES = ['email-verification', '2fa', 'passkeys', 'password-confirmation'];
+    protected const FEATURES = ['email-verification', 'registration', '2fa', 'passkeys', 'password-confirmation'];
 
     protected string $buildPath;
 
@@ -35,9 +36,9 @@ class FortifyMatrixCommand extends Command
         }
 
         $this->snapshotBaseline();
-        $this->runPermutations();
+        $scenarioCount = $this->runScenarios();
 
-        $this->components->info(sprintf('All %d permutations passed.', 1 << count(self::FEATURES)));
+        $this->components->info(sprintf('All %d %s passed.', $scenarioCount, $this->option('exhaustive') ? 'permutations' : 'scenarios'));
 
         return self::SUCCESS;
     }
@@ -96,25 +97,76 @@ class FortifyMatrixCommand extends Command
         $this->runStep('Snapshotting baseline', fn () => $this->rsync($this->buildPath, $this->baselinePath));
     }
 
-    protected function runPermutations(): void
+    protected function runScenarios(): int
     {
-        collect(range(0, (1 << count(self::FEATURES)) - 1))
-            ->each(fn ($mask) => $this->runPermutation($mask));
+        $scenarios = $this->option('exhaustive')
+            ? $this->exhaustiveScenarios()
+            : $this->curatedScenarios();
+
+        collect($scenarios)->each(fn (array $scenario) => $this->runScenario($scenario));
+
+        return count($scenarios);
     }
 
-    protected function runPermutation(int $mask): void
+    /**
+     * @param  array{label: string, features: list<string>}  $scenario
+     */
+    protected function runScenario(array $scenario): void
     {
-        $features = $this->featuresFor($mask);
-
-        $this->runStep($this->permutationLabel($mask, $features), function () use ($features) {
+        $this->runStep($this->scenarioLabel($scenario), function () use ($scenario) {
             $this->rsync($this->baselinePath, $this->buildPath);
-            $this->applyChisel($features);
+            $this->applyChisel($scenario['features']);
             $this->runProcess(['composer', 'lint:check'], $this->buildPath);
 
             if ($this->shouldCheckFrontend()) {
                 $this->runFrontendChecks();
             }
         });
+    }
+
+    /**
+     * @return list<array{label: string, features: list<string>}>
+     */
+    protected function curatedScenarios(): array
+    {
+        $allFeatures = self::FEATURES;
+
+        return collect([
+            ['label' => 'all features', 'features' => $allFeatures],
+            ['label' => 'no features', 'features' => []],
+        ])
+            ->merge(collect($allFeatures)->map(fn (string $feature): array => [
+                'label' => "{$feature} only",
+                'features' => [$feature],
+            ]))
+            ->merge(collect($allFeatures)->map(fn (string $feature): array => [
+                'label' => "all except {$feature}",
+                'features' => array_values(array_diff($allFeatures, [$feature])),
+            ]))
+            ->push([
+                'label' => '2fa + passkeys only',
+                'features' => ['2fa', 'passkeys'],
+            ])
+            ->push([
+                'label' => 'all except 2fa + passkeys',
+                'features' => array_values(array_diff($allFeatures, ['2fa', 'passkeys'])),
+            ])
+            ->unique(fn (array $scenario): string => implode('|', $scenario['features']))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array{label: string, features: list<string>}>
+     */
+    protected function exhaustiveScenarios(): array
+    {
+        return collect(range(0, (1 << count(self::FEATURES)) - 1))
+            ->map(fn (int $mask): array => [
+                'label' => 'permutation '.$mask,
+                'features' => $this->featuresFor($mask),
+            ])
+            ->all();
     }
 
     /**
@@ -129,11 +181,11 @@ class FortifyMatrixCommand extends Command
     }
 
     /**
-     * @param  list<string>  $features
+     * @param  array{label: string, features: list<string>}  $scenario
      */
-    protected function permutationLabel(int $mask, array $features): string
+    protected function scenarioLabel(array $scenario): string
     {
-        return "Permutation {$mask} — ".($features === [] ? 'no features' : implode(', ', $features));
+        return $scenario['label'].' — '.($scenario['features'] === [] ? 'no features' : implode(', ', $scenario['features']));
     }
 
     /**

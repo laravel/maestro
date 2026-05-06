@@ -3,6 +3,12 @@ name: Fortify Feature Matrix
 on:
   pull_request:
   workflow_dispatch:
+    inputs:
+      exhaustive:
+        description: Run every auth_features permutation
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -154,5 +160,8 @@ jobs:
           fi
           if [ "$NODE" != "true" ]; then
             args+=(--skip-frontend)
+          fi
+          if [ "${{ inputs.exhaustive || false }}" = "true" ]; then
+            args+=(--exhaustive)
           fi
           php artisan fortify:matrix "${args[@]}"
