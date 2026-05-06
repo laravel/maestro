@@ -91,6 +91,7 @@ return Chisel::script(__DIR__)
     ->selected('auth_features', 'email-verification',
         then: function (Chisel $c) {
             $files = existingFiles(
+                'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'app/Livewire/Settings/Profile.php',
                 'resources/views/pages/settings/profile.blade.php',
@@ -106,9 +107,8 @@ return Chisel::script(__DIR__)
                 ->removeImport('Illuminate\Contracts\Auth\MustVerifyEmail')
                 ->removeInterface('MustVerifyEmail');
 
-            $c->file('config/fortify.php')->removeLinesContaining('Features::emailVerification()');
-
             $files = existingFiles(
+                'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'app/Livewire/Settings/Profile.php',
                 'resources/views/pages/settings/profile.blade.php',

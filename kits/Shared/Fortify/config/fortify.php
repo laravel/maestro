@@ -171,7 +171,9 @@ return [
         Features::registration(),
         /* @end-chisel-registration */
         Features::resetPasswords(),
+        /* @chisel-email-verification */
         Features::emailVerification(),
+        /* @end-chisel-email-verification */
         /* @chisel-2fa */
         Features::twoFactorAuthentication([
             'confirm' => true,

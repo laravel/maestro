@@ -93,6 +93,7 @@ return Chisel::script(__DIR__)
     ->selected('auth_features', 'email-verification',
         then: function (Chisel $c) {
             $c->files(
+                'config/fortify.php',
                 'resources/js/pages/settings/Profile.vue',
                 'app/Providers/FortifyServiceProvider.php',
             )->removeSectionMarkers('chisel-email-verification');
@@ -102,9 +103,8 @@ return Chisel::script(__DIR__)
                 ->removeImport('Illuminate\Contracts\Auth\MustVerifyEmail')
                 ->removeInterface('MustVerifyEmail');
 
-            $c->file('config/fortify.php')->removeLinesContaining('Features::emailVerification()');
-
             $c->files(
+                'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'resources/js/pages/settings/Profile.vue',
             )->removeSection('chisel-email-verification');
