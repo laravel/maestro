@@ -28,6 +28,12 @@ php artisan build --kit=livewire --teams # Builds Livewire (Fortify Teams) start
 php artisan build --kit=vue --workos --teams # Builds Vue (WorkOS Teams) starter kit
 ```
 
+Use `--chisel` when you need to include the Fortify feature-selection scripts in the build output:
+
+```bash
+php artisan build --kit=vue --chisel
+```
+
 ### WorkOS
 
 When building a **WorkOS** variant for a starter kit, you can add your **WorkOS** client ID and the API key in the `orchestrator/.env` file, with this, when running the kit, it will copy these values over to the build directory.

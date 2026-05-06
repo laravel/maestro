@@ -66,6 +66,14 @@ jobs:
         with:
           node-version: 22
 
+      - name: Configure Composer Auth
+        env:
+          CHISEL_TOKEN: ${{ secrets.CHISEL_TOKEN }}
+        run: |
+          if [ -n "$CHISEL_TOKEN" ]; then
+            composer config --global github-oauth.github.com "$CHISEL_TOKEN"
+          fi
+
       - name: Install Composer Dependencies
         working-directory: orchestrator
         run: composer install --no-interaction --prefer-dist
@@ -111,11 +119,12 @@ jobs:
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         working-directory: build
-        run: npx playwright install --with-deps
+        run: npx playwright install chromium --with-deps --only-shell
 
       - name: Install Playwright Dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps
+        working-directory: build
+        run: npx playwright install-deps chromium
 
       - name: Setup Environment
         working-directory: build

@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^13.0",
-        "laravel/prompts": "^0.3.10",
+        "laravel/prompts": "^0.3.16",
         "laravel/tinker": "^3.0"
     },
     "require-dev": {
@@ -75,7 +75,7 @@
         ],
         "kit:run": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd\" \"node scripts/run.js\" \"npm run watch:kits\" --names=dev,watch --kill-others"
+            "node scripts/run.js"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

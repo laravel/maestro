@@ -1,0 +1,167 @@
+name: Fortify Feature Matrix
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      exhaustive:
+        description: Run every auth_features permutation
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  matrix:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: React
+            kit: React
+            node: true
+            teams: false
+          - name: React + Teams
+            kit: React
+            node: true
+            teams: true
+          - name: Svelte
+            kit: Svelte
+            node: true
+            teams: false
+          - name: Svelte + Teams
+            kit: Svelte
+            node: true
+            teams: true
+          - name: Vue
+            kit: Vue
+            node: true
+            teams: false
+          - name: Vue + Teams
+            kit: Vue
+            node: true
+            teams: true
+          - name: Livewire
+            kit: Livewire
+            node: false
+            teams: false
+            components: false
+          - name: Livewire Components
+            kit: Livewire
+            node: false
+            teams: false
+            components: true
+          - name: Livewire + Teams
+            kit: Livewire
+            node: false
+            teams: true
+            components: false
+
+    steps:
+      - name: Checkout Maestro
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Setup Node.js
+        if: matrix.node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Setup Bun
+        if: matrix.node
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Resolve Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config --global cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer Downloads
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ hashFiles('orchestrator/composer.lock', 'kits/**/composer.json') }}
+          restore-keys: |
+            composer-${{ runner.os }}-
+
+      - name: Cache Bun Downloads
+        if: matrix.node
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ matrix.kit }}-${{ hashFiles('kits/**/package.json') }}
+          restore-keys: |
+            bun-${{ runner.os }}-${{ matrix.kit }}-
+            bun-${{ runner.os }}-
+
+      - name: Configure Composer Auth
+        env:
+          CHISEL_TOKEN: ${{ secrets.CHISEL_TOKEN }}
+        run: |
+          if [ -n "$CHISEL_TOKEN" ]; then
+            composer config --global github-oauth.github.com "$CHISEL_TOKEN"
+          fi
+
+      - name: Install Orchestrator Dependencies
+        working-directory: orchestrator
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Build ${{ matrix.name }}
+        working-directory: orchestrator
+        env:
+          KIT: ${{ matrix.kit }}
+          TEAMS: ${{ matrix.teams }}
+          COMPONENTS: ${{ matrix.components }}
+        run: |
+          args=(--no-interaction --chisel --kit="$KIT")
+          if [ "$TEAMS" = "true" ]; then
+            args+=(--teams)
+          fi
+          if [ "$COMPONENTS" = "true" ]; then
+            args+=(--components)
+          fi
+          php artisan build "${args[@]}"
+
+      - name: Prime Build Dependencies
+        working-directory: build
+        env:
+          NODE: ${{ matrix.node }}
+        run: |
+          composer install --no-interaction --prefer-dist --no-scripts
+
+          if [ "$NODE" = "true" ]; then
+            bun install
+          fi
+
+      - name: Run Fortify Feature Matrix
+        working-directory: orchestrator
+        env:
+          KIT: ${{ matrix.kit }}
+          NODE: ${{ matrix.node }}
+          COMPONENTS: ${{ matrix.components }}
+        run: |
+          args=("--kit=$KIT" --skip-build)
+          if [ "$COMPONENTS" = "true" ]; then
+            args+=(--components)
+          fi
+          if [ "$NODE" != "true" ]; then
+            args+=(--skip-frontend)
+          fi
+          if [ "${{ inputs.exhaustive || false }}" = "true" ]; then
+            args+=(--exhaustive)
+          fi
+          php artisan fortify:matrix "${args[@]}"
