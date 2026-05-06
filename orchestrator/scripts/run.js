@@ -4,6 +4,15 @@ import fs from 'fs';
 import path from 'path';
 import { buildDir, log, orchestratorDir, runInherit } from './kit-helpers.js';
 
+const args = process.argv.slice(2);
+const chisel = args.includes('--chisel');
+const unknownArgs = args.filter(arg => arg.startsWith('--') && arg !== '--chisel');
+
+if (unknownArgs.length > 0) {
+    log(`Unknown flag(s): ${unknownArgs.join(', ')}`, 'red');
+    process.exit(1);
+}
+
 function readEnvValue(envPath, key) {
     if (!fs.existsSync(envPath)) {
         return null;
@@ -60,13 +69,34 @@ async function main() {
         process.exit(1);
     }
 
+    const chiselBuild = fs.existsSync(path.join(buildDir, 'chisel.php'));
+    const skipInitialSync = chisel || chiselBuild;
+
+    if (chiselBuild && fs.existsSync(path.join(buildDir, 'package.json'))) {
+        log('Installing frontend dependencies...', 'blue');
+        await runInherit('npm', ['install'], { cwd: buildDir });
+    }
+
     log('Running composer setup...', 'blue');
     await runInherit('composer', ['setup'], { cwd: buildDir });
 
     configureEnv();
 
-    log('Starting development server...', 'green');
-    await runInherit('composer', ['dev'], { cwd: buildDir });
+    log('Starting development server and kit watcher...', 'green');
+
+    const watchCommand = skipInitialSync
+        ? 'npm run watch:kits -- --skip-initial-sync'
+        : 'npm run watch:kits';
+
+    await runInherit('npx', [
+        'concurrently',
+        '-c',
+        '#93c5fd,#c4b5fd',
+        `composer --working-dir="${buildDir}" dev`,
+        watchCommand,
+        '--names=dev,watch',
+        '--kill-others',
+    ], { cwd: orchestratorDir });
 }
 
 main().catch(error => {

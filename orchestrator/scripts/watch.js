@@ -17,6 +17,7 @@ const uiComponentsFile = path.join(__dirname, 'ui-components.json');
 const manifestFile = path.join(__dirname, 'kit-manifest.json');
 const args = process.argv.slice(2);
 const initialSyncOnly = args.includes('--initial-sync-only');
+const skipInitialSync = args.includes('--skip-initial-sync');
 
 const colors = {
     reset: '\x1b[0m',
@@ -293,6 +294,10 @@ function reconcileStaleFiles(folders, buildRelPaths, ig) {
     let removedCount = 0;
 
     for (const relPath of kitFiles) {
+        if (relPath === 'chisel.php') {
+            continue;
+        }
+
         // If the file exists in the build output, keep it.
         if (buildRelPaths.has(relPath)) {
             continue;
@@ -727,7 +732,9 @@ function startWatching() {
     const ig = loadGitignores();
 
     // Perform initial sync to catch any changes that occurred while watcher wasn't running
-    performInitialSync(folders, ig, kitType, uiComponents, starterKit, manifest);
+    if (! skipInitialSync || initialSyncOnly) {
+        performInitialSync(folders, ig, kitType, uiComponents, starterKit, manifest);
+    }
 
     if (initialSyncOnly) {
         log('Initial sync only mode enabled. Exiting without starting watcher.', 'blue');
