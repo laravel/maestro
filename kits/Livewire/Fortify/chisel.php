@@ -5,37 +5,24 @@ require getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__.'/vendor/autoload.php'
 use Laravel\Chisel\Chisel;
 use Laravel\Chisel\Question;
 
-function runCommand(array $command): int
-{
-    $escaped = array_map('escapeshellarg', $command);
-
-    passthru(implode(' ', $escaped), $exitCode);
-
-    return $exitCode;
-}
-
-function formatFiles(): void
-{
-    if (runCommand(['composer', 'lint']) !== 0) {
-        exit(1);
-    }
-}
-
-function existingFiles(string ...$paths): array
-{
-    return array_values(array_filter($paths, fn (string $path): bool => file_exists(__DIR__.'/'.$path)));
-}
-
-function cleanupInstallFeaturesArtifacts(Chisel $c): void
-{
-    $c->file('composer.json')
-        ->removeLinesContaining('"@php artisan install:features --ansi",');
-
-    $c->files(
-        'app/Console/Commands/InstallFeaturesCommand.php',
-        'chisel.php',
-    )->delete();
-}
+/**
+ * Variant-specific filenames are supplied by the sibling chisel-paths.php.
+ * The Single-File Component variant ships the default paths file; the
+ * Multi-File Component variant overlays its own copy during build.
+ *
+ * @var array{
+ *     welcome: string,
+ *     login: string,
+ *     register: string,
+ *     confirm_password: string,
+ *     verify_email: string,
+ *     two_factor_challenge: string,
+ *     profile_files: list<string>,
+ *     security_files: list<string>,
+ *     two_factor_files: list<string>,
+ * } $paths
+ */
+$paths = require __DIR__.'/chisel-paths.php';
 
 return Chisel::script(__DIR__)
     ->questions([
@@ -53,172 +40,130 @@ return Chisel::script(__DIR__)
             hint: 'Use space to select, enter to confirm.',
         ),
     ])
-    ->selected('auth_features', 'registration',
-        then: function (Chisel $c) {
-            $files = array_merge([
+    ->selected(
+        'auth_features',
+        'registration',
+        then: function (Chisel $c) use ($paths) {
+            $c->files(
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
-                'resources/views/pages/auth/login.blade.php',
-                'resources/views/welcome.blade.php',
-            ], existingFiles(
-                'resources/views/livewire/auth/login.blade.php',
-            ));
-
-            $c->files(...$files)->removeSectionMarkers('chisel-registration');
+                $paths['login'],
+                $paths['welcome'],
+            )->removeSectionMarkers('chisel-registration');
         },
-        else: function (Chisel $c) {
+        else: function (Chisel $c) use ($paths) {
             $c->file('config/fortify.php')->removeSection('chisel-registration');
 
-            $files = array_merge([
+            $c->files(
                 'app/Providers/FortifyServiceProvider.php',
-                'resources/views/pages/auth/login.blade.php',
-                'resources/views/welcome.blade.php',
-            ], existingFiles(
-                'resources/views/livewire/auth/login.blade.php',
-            ));
-
-            $c->files(...$files)->removeSection('chisel-registration');
+                $paths['login'],
+                $paths['welcome'],
+            )->removeSection('chisel-registration');
 
             $c->files(
                 'app/Actions/Fortify/CreateNewUser.php',
                 'app/Http/Responses/RegisterResponse.php',
-                'resources/views/pages/auth/register.blade.php',
-                'resources/views/livewire/auth/register.blade.php',
+                $paths['register'],
                 'tests/Feature/Auth/RegistrationTest.php',
             )->delete();
         },
     )
-    ->selected('auth_features', 'email-verification',
-        then: function (Chisel $c) {
-            $files = existingFiles(
+    ->selected(
+        'auth_features',
+        'email-verification',
+        then: function (Chisel $c) use ($paths) {
+            $c->files(
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
-                'app/Livewire/Settings/Profile.php',
-                'resources/views/pages/settings/profile.blade.php',
-                'resources/views/livewire/settings/profile.blade.php',
-            );
-
-            if ($files !== []) {
-                $c->files(...$files)->removeSectionMarkers('chisel-email-verification');
-            }
+                ...$paths['profile_files'],
+            )->removeSectionMarkers('chisel-email-verification');
         },
-        else: function (Chisel $c) {
+        else: function (Chisel $c) use ($paths) {
             $c->phpFile('app/Models/User.php')
                 ->removeImport('Illuminate\Contracts\Auth\MustVerifyEmail')
                 ->removeInterface('MustVerifyEmail');
 
-            $files = existingFiles(
+            $c->files(
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
-                'app/Livewire/Settings/Profile.php',
-                'resources/views/pages/settings/profile.blade.php',
-                'resources/views/livewire/settings/profile.blade.php',
-            );
-
-            if ($files !== []) {
-                $c->files(...$files)->removeSection('chisel-email-verification');
-            }
+                ...$paths['profile_files'],
+            )->removeSection('chisel-email-verification');
 
             $c->files(
-                'resources/views/pages/auth/verify-email.blade.php',
-                'resources/views/livewire/auth/verify-email.blade.php',
+                $paths['verify_email'],
                 'tests/Feature/Auth/EmailVerificationTest.php',
             )->delete();
         },
     )
-    ->selected('auth_features', '2fa',
-        then: function (Chisel $c) {
-            $files = array_merge([
+    ->selected(
+        'auth_features',
+        '2fa',
+        then: function (Chisel $c) use ($paths) {
+            $c->files(
                 'app/Models/User.php',
                 'database/factories/UserFactory.php',
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
-            ], existingFiles(
-                'app/Livewire/Settings/Security.php',
-                'resources/views/pages/settings/security.blade.php',
-                'resources/views/livewire/settings/security.blade.php',
-            ));
-
-            $c->files(...$files)->removeSectionMarkers('chisel-2fa');
+                ...$paths['security_files'],
+            )->removeSectionMarkers('chisel-2fa');
         },
-        else: function (Chisel $c) {
+        else: function (Chisel $c) use ($paths) {
             $c->phpFile('app/Models/User.php')
                 ->removeImport('Laravel\Fortify\TwoFactorAuthenticatable')
                 ->removeTrait('TwoFactorAuthenticatable');
 
-            $files = array_merge([
+            $c->files(
                 'app/Models/User.php',
                 'database/factories/UserFactory.php',
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
-            ], existingFiles(
-                'app/Livewire/Settings/Security.php',
-                'resources/views/pages/settings/security.blade.php',
-                'resources/views/livewire/settings/security.blade.php',
-            ));
+                ...$paths['security_files'],
+            )->removeSection('chisel-2fa');
 
-            $c->files(...$files)->removeSection('chisel-2fa');
-
-            $c->files(
-                'resources/views/pages/auth/two-factor-challenge.blade.php',
-                'resources/views/livewire/auth/two-factor-challenge.blade.php',
-                'resources/views/pages/settings/two-factor/recovery-codes.blade.php',
-                'resources/views/pages/settings/two-factor-setup-modal.blade.php',
-                'resources/views/livewire/settings/two-factor/recovery-codes.blade.php',
-                'app/Livewire/Settings/TwoFactor/RecoveryCodes.php',
+            $c->files(...[
+                $paths['two_factor_challenge'],
+                ...$paths['two_factor_files'],
                 'database/migrations/2025_08_14_170933_add_two_factor_columns_to_users_table.php',
                 'tests/Feature/Auth/TwoFactorChallengeTest.php',
-            )->delete();
+            ])->delete();
         },
     )
-    ->selected('auth_features', 'passkeys',
-        then: function (Chisel $c) {
-            $files = array_merge([
+    ->selected(
+        'auth_features',
+        'passkeys',
+        then: function (Chisel $c) use ($paths) {
+            $c->files(
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
                 'vite.config.js',
-            ], existingFiles(
-                'app/Livewire/Settings/Security.php',
-                'resources/views/pages/settings/security.blade.php',
-                'resources/views/livewire/settings/security.blade.php',
-                'resources/views/pages/auth/login.blade.php',
-                'resources/views/pages/auth/confirm-password.blade.php',
-                'resources/views/livewire/auth/login.blade.php',
-                'resources/views/livewire/auth/confirm-password.blade.php',
-            ));
-
-            $c->files(...$files)->removeSectionMarkers('chisel-passkeys');
+                $paths['login'],
+                $paths['confirm_password'],
+                ...$paths['security_files'],
+            )->removeSectionMarkers('chisel-passkeys');
         },
-        else: function (Chisel $c) {
+        else: function (Chisel $c) use ($paths) {
             $c->phpFile('app/Models/User.php')
                 ->removeImport('Laravel\Fortify\PasskeyAuthenticatable')
                 ->removeImport('Laravel\Fortify\Contracts\PasskeyUser')
                 ->removeTrait('PasskeyAuthenticatable')
                 ->removeInterface('PasskeyUser');
 
-            $files = array_merge([
+            $c->files(
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
                 'vite.config.js',
-            ], existingFiles(
-                'app/Livewire/Settings/Security.php',
-                'resources/views/pages/settings/security.blade.php',
-                'resources/views/livewire/settings/security.blade.php',
-                'resources/views/pages/auth/login.blade.php',
-                'resources/views/pages/auth/confirm-password.blade.php',
-                'resources/views/livewire/auth/login.blade.php',
-                'resources/views/livewire/auth/confirm-password.blade.php',
-            ));
-
-            $c->files(...$files)->removeSection('chisel-passkeys');
+                $paths['login'],
+                $paths['confirm_password'],
+                ...$paths['security_files'],
+            )->removeSection('chisel-passkeys');
 
             $c->npm()->remove('@laravel/passkeys');
 
@@ -230,7 +175,9 @@ return Chisel::script(__DIR__)
             )->delete();
         },
     )
-    ->selected('auth_features', 'password-confirmation',
+    ->selected(
+        'auth_features',
+        'password-confirmation',
         then: function (Chisel $c) {
             $c->files(
                 'app/Providers/FortifyServiceProvider.php',
@@ -238,7 +185,7 @@ return Chisel::script(__DIR__)
                 'tests/Feature/Settings/SecurityTest.php',
             )->removeSectionMarkers('chisel-password-confirmation');
         },
-        else: function (Chisel $c) {
+        else: function (Chisel $c) use ($paths) {
             $c->file('config/fortify.php')
                 ->replace("'confirmPassword' => true,", "'confirmPassword' => false,");
 
@@ -249,13 +196,37 @@ return Chisel::script(__DIR__)
             )->removeSection('chisel-password-confirmation');
 
             $c->files(
-                'resources/views/pages/auth/confirm-password.blade.php',
-                'resources/views/livewire/auth/confirm-password.blade.php',
+                $paths['confirm_password'],
                 'tests/Feature/Auth/PasswordConfirmationTest.php',
             )->delete();
         },
     )
     ->apply(function (Chisel $c): void {
-        formatFiles();
-        cleanupInstallFeaturesArtifacts($c);
+        chiselRun(['composer', 'lint'], 'Composer Lint');
+
+        $c->file('composer.json')
+            ->removeLinesContaining('"@php artisan install:features --ansi"');
+
+        $c->files(
+            'app/Console/Commands/InstallFeaturesCommand.php',
+            'chisel.php',
+            'chisel-paths.php',
+        )->delete();
     });
+
+function chiselRun(array $command, string $label): void
+{
+    $escaped = array_map('escapeshellarg', $command);
+    passthru(implode(' ', $escaped), $exitCode);
+
+    if ($exitCode === 0) {
+        return;
+    }
+
+    fwrite(
+        STDERR,
+        "\nchisel: {$label} step failed (exit {$exitCode}). Your project may be in a partially-modified state — review the output above before continuing.\n",
+    );
+
+    exit($exitCode);
+}

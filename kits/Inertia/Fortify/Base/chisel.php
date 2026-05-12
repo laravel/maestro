@@ -239,7 +239,6 @@ return Chisel::script(__DIR__)
         )->delete();
     });
 
-
 function chiselRun(array $command, string $label): void
 {
     $escaped = array_map('escapeshellarg', $command);
@@ -251,7 +250,7 @@ function chiselRun(array $command, string $label): void
 
     fwrite(
         STDERR,
-        "\nchisel: {$label} step failed (exit {$exitCode}). Your project may be in a partially-modified state — review the output above before continuing.\n"
+        "\nchisel: {$label} step failed (exit {$exitCode}). Your project may be in a partially-modified state — review the output above before continuing.\n",
     );
 
     exit($exitCode);
