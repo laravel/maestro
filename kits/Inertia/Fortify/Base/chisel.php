@@ -235,10 +235,10 @@ return Chisel::script(__DIR__)
 function chiselRestoreAlphabetize(Chisel $c): void
 {
     $c->file('eslint.config.js')
-        ->replace('// alphabetize: {', 'alphabetize: {')
-        ->replace("//     order: 'asc',", "    order: 'asc',")
-        ->replace('//     caseInsensitive: true,', '    caseInsensitive: true,')
-        ->replace('// },', '},');
+        ->replace(
+            "// alphabetize: { order: 'asc', caseInsensitive: true },",
+            "alphabetize: { order: 'asc', caseInsensitive: true },",
+        );
 }
 
 function chiselCleanupInstallArtifacts(Chisel $c): void
