@@ -244,7 +244,7 @@ function chiselRestoreAlphabetize(Chisel $c): void
 function chiselCleanupInstallArtifacts(Chisel $c): void
 {
     $c->file('composer.json')
-        ->removeLinesContaining('"@php artisan install:features --ansi",');
+        ->removeLinesContaining('"@php artisan install:features --ansi"');
 
     $c->files(
         'app/Console/Commands/InstallFeaturesCommand.php',
