@@ -10,6 +10,16 @@ Maestro is an orchestrator for the [Laravel starter kits](https://laravel.com/st
 
 To contribute bug fixes or features to any of the starter kits, you need to build and run the flavor you want to update.
 
+### Initial Setup
+
+Before running any `php artisan`, Composer, or npm scripts in `orchestrator/`, install the PHP and Node.js dependencies:
+
+```bash
+cd orchestrator
+composer install
+npm install
+```
+
 ### Building a Starter Kit
 
 From the `orchestrator` directory, build a kit by running the following command:
@@ -39,6 +49,8 @@ Once you've built the kit, you can run it with the following command:
 ```bash
 composer kit:run
 ```
+
+This command requires the selected starter kit to have already been built into `build/`.
 
 This will start both the standard Laravel development server and a file watcher that automatically copies changes from the `build` folder back to the correct base kit directory.
 
