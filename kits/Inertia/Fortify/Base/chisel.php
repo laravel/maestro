@@ -219,7 +219,12 @@ return Chisel::script(__DIR__)
     )
     ->apply(function (Chisel $c): void {
         chiselRestoreAlphabetize($c);
-        chiselFormatFiles($c);
+
+        chiselRun(['composer', 'lint'], 'Composer Lint');
+
+        $c->npm()->run('lint');
+        $c->npm()->run('format');
+
         chiselCleanupInstallArtifacts($c);
     });
 
@@ -236,20 +241,6 @@ function chiselRestoreAlphabetize(Chisel $c): void
         ->replace('// },', '},');
 }
 
-function chiselFormatFiles(Chisel $c): void
-{
-    if (chiselPassthru(['composer', 'lint']) !== 0) {
-        exit(1);
-    }
-
-    if (chiselPassthru(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction']) !== 0) {
-        exit(1);
-    }
-
-    $c->npm()->run('lint');
-    $c->npm()->run('format');
-}
-
 function chiselCleanupInstallArtifacts(Chisel $c): void
 {
     $c->file('composer.json')
@@ -262,11 +253,19 @@ function chiselCleanupInstallArtifacts(Chisel $c): void
     )->delete();
 }
 
-function chiselPassthru(array $command): int
+function chiselRun(array $command, string $label): void
 {
     $escaped = array_map('escapeshellarg', $command);
-
     passthru(implode(' ', $escaped), $exitCode);
 
-    return $exitCode;
+    if ($exitCode === 0) {
+        return;
+    }
+
+    fwrite(
+        STDERR,
+        "\nchisel: {$label} step failed (exit {$exitCode}). Your project may be in a partially-modified state — review the output above before continuing.\n"
+    );
+
+    exit($exitCode);
 }
