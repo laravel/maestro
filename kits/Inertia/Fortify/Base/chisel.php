@@ -218,40 +218,26 @@ return Chisel::script(__DIR__)
         },
     )
     ->apply(function (Chisel $c): void {
-        chiselRestoreAlphabetize($c);
+        $c->file('eslint.config.js')->replace(
+            "// alphabetize: { order: 'asc', caseInsensitive: true },",
+            "alphabetize: { order: 'asc', caseInsensitive: true },",
+        );
 
         chiselRun(['composer', 'lint'], 'Composer Lint');
 
         $c->npm()->run('lint');
         $c->npm()->run('format');
 
-        chiselCleanupInstallArtifacts($c);
+        $c->file('composer.json')
+            ->removeLinesContaining('"@php artisan install:features --ansi"');
+
+        $c->files(
+            'app/Console/Commands/InstallFeaturesCommand.php',
+            'chisel.php',
+            'chisel-paths.php',
+        )->delete();
     });
 
-/**
- * Re-enable the import/order alphabetize rule that ships commented out so the
- * kit's chisel-marker'd imports lint clean in source.
- */
-function chiselRestoreAlphabetize(Chisel $c): void
-{
-    $c->file('eslint.config.js')
-        ->replace(
-            "// alphabetize: { order: 'asc', caseInsensitive: true },",
-            "alphabetize: { order: 'asc', caseInsensitive: true },",
-        );
-}
-
-function chiselCleanupInstallArtifacts(Chisel $c): void
-{
-    $c->file('composer.json')
-        ->removeLinesContaining('"@php artisan install:features --ansi"');
-
-    $c->files(
-        'app/Console/Commands/InstallFeaturesCommand.php',
-        'chisel.php',
-        'chisel-paths.php',
-    )->delete();
-}
 
 function chiselRun(array $command, string $label): void
 {
