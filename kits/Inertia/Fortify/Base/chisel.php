@@ -224,6 +224,7 @@ return Chisel::script(__DIR__)
         );
 
         chiselRun(['composer', 'lint'], 'Composer Lint');
+        chiselRun(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], 'Wayfinder');
 
         $c->npm()->run('lint');
         $c->npm()->run('format');
