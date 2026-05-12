@@ -218,16 +218,16 @@ return Chisel::script(__DIR__)
         },
     )
     ->apply(function (Chisel $c): void {
-        chisel_restore_alphabetize($c);
-        chisel_format_files($c);
-        chisel_cleanup_install_artifacts($c);
+        chiselRestoreAlphabetize($c);
+        chiselFormatFiles($c);
+        chiselCleanupInstallArtifacts($c);
     });
 
 /**
  * Re-enable the import/order alphabetize rule that ships commented out so the
  * kit's chisel-marker'd imports lint clean in source.
  */
-function chisel_restore_alphabetize(Chisel $c): void
+function chiselRestoreAlphabetize(Chisel $c): void
 {
     $c->file('eslint.config.js')
         ->replace('// alphabetize: {', 'alphabetize: {')
@@ -236,13 +236,13 @@ function chisel_restore_alphabetize(Chisel $c): void
         ->replace('// },', '},');
 }
 
-function chisel_format_files(Chisel $c): void
+function chiselFormatFiles(Chisel $c): void
 {
-    if (chisel_passthru(['composer', 'lint']) !== 0) {
+    if (chiselPassthru(['composer', 'lint']) !== 0) {
         exit(1);
     }
 
-    if (chisel_passthru(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction']) !== 0) {
+    if (chiselPassthru(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction']) !== 0) {
         exit(1);
     }
 
@@ -250,7 +250,7 @@ function chisel_format_files(Chisel $c): void
     $c->npm()->run('format');
 }
 
-function chisel_cleanup_install_artifacts(Chisel $c): void
+function chiselCleanupInstallArtifacts(Chisel $c): void
 {
     $c->file('composer.json')
         ->removeLinesContaining('"@php artisan install:features --ansi",');
@@ -262,7 +262,7 @@ function chisel_cleanup_install_artifacts(Chisel $c): void
     )->delete();
 }
 
-function chisel_passthru(array $command): int
+function chiselPassthru(array $command): int
 {
     $escaped = array_map('escapeshellarg', $command);
 
