@@ -105,11 +105,5 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/laravel/chisel"
-        }
-    ]
+    "prefer-stable": true
 }
