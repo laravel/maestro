@@ -107,7 +107,7 @@ new #[Title('Security settings')] class extends Component {
     public function loadPasskeys(): void
     {
         $this->passkeys = auth()->user()->passkeys()
-            ->select(['id', 'name', 'created_at', 'last_used_at'])
+            ->select(['id', 'name', 'credential', 'created_at', 'last_used_at'])
             ->latest()
             ->get()
             ->map(fn ($passkey) => [
