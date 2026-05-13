@@ -10,7 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "laravel/chisel": "dev-main#0c2cbd2",
+        "laravel/chisel": "^0.1.0",
         "laravel/fortify": "^1.34",
         "laravel/framework": "^13.7",
         "laravel/tinker": "^3.0",
@@ -102,12 +102,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/laravel/chisel"
-        }
-    ]
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
