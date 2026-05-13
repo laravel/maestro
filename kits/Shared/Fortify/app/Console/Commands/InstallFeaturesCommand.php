@@ -41,7 +41,8 @@ class InstallFeaturesCommand extends Command
             : json_decode((string) $this->option('answers'), true, 512, JSON_THROW_ON_ERROR);
 
         $answers = $script
-            ->ask(fn (Question $question) => match ($question->type) {
+            ->collectAnswers()
+            ->onQuestion(fn (Question $question) => match ($question->type) {
                 'multiselect' => multiselect(
                     label: $question->label,
                     options: $question->options,
@@ -51,11 +52,10 @@ class InstallFeaturesCommand extends Command
                 ),
                 default => throw new RuntimeException("Unsupported question type [{$question->type}]."),
             })
-            ->withDefaults()
             ->interactive($this->input->isInteractive())
             ->withAnswers($providedAnswers);
 
-        $script->run($answers);
+        $script->chisel($answers);
 
         $this->rebuildAssets();
 
