@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -9,6 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
+import { Form, Head } from '@inertiajs/vue3';
+
+defineProps<{
+    passwordRules: string;
+}>();
 
 defineOptions({
     layout: {
@@ -66,6 +70,7 @@ defineOptions({
                     autocomplete="new-password"
                     name="password"
                     placeholder="Password"
+                    :passwordrules="passwordRules"
                 />
                 <InputError :message="errors.password" />
             </div>
@@ -79,6 +84,7 @@ defineOptions({
                     autocomplete="new-password"
                     name="password_confirmation"
                     placeholder="Confirm password"
+                    :passwordrules="passwordRules"
                 />
                 <InputError :message="errors.password_confirmation" />
             </div>

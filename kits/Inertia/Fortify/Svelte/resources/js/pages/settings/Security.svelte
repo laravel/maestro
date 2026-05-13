@@ -31,10 +31,12 @@
         canManageTwoFactor = false,
         requiresConfirmation = false,
         twoFactorEnabled = false,
+        passwordRules,
     }: {
         canManageTwoFactor?: boolean;
         requiresConfirmation?: boolean;
         twoFactorEnabled?: boolean;
+        passwordRules: string;
     } = $props();
 
     const twoFactorAuth = twoFactorAuthState();
@@ -82,6 +84,7 @@
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     placeholder="New password"
+                    passwordrules={passwordRules}
                 />
                 <InputError message={errors.password} />
             </div>
@@ -94,6 +97,7 @@
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     placeholder="Confirm password"
+                    passwordrules={passwordRules}
                 />
                 <InputError message={errors.password_confirmation} />
             </div>
