@@ -14,7 +14,7 @@ import type { Passkey } from '@/types/auth';
 
 type Props = {
     passkey: Passkey;
-    onDelete: (id: number) => void;
+    onDelete: (id: number, onError: () => void) => void;
 };
 
 export default function PasskeyItem({ passkey, onDelete }: Props) {
@@ -22,7 +22,7 @@ export default function PasskeyItem({ passkey, onDelete }: Props) {
 
     const handleDelete = () => {
         setIsDeleting(true);
-        onDelete(passkey.id);
+        onDelete(passkey.id, () => setIsDeleting(false));
     };
 
     return (

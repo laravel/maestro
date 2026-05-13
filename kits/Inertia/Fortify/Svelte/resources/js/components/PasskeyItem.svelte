@@ -18,14 +18,16 @@
         onDelete,
     }: {
         passkey: Passkey;
-        onDelete?: (id: number) => void;
+        onDelete?: (id: number, onError: () => void) => void;
     } = $props();
 
     let isDeleting = $state(false);
 
     const handleDelete = () => {
         isDeleting = true;
-        onDelete?.(passkey.id);
+        onDelete?.(passkey.id, () => {
+            isDeleting = false;
+        });
     };
 </script>
 

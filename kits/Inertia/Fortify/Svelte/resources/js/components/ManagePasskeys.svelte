@@ -14,9 +14,10 @@
 
     let { canManagePasskeys = false, passkeys = [] }: Props = $props();
 
-    const handleDelete = (id: number) => {
+    const handleDelete = (id: number, onError: () => void) => {
         router.delete(destroy.url(id), {
             preserveScroll: true,
+            onError,
         });
     };
 

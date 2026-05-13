@@ -18,14 +18,16 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    remove: [id: number];
+    remove: [id: number, onError: () => void];
 }>();
 
 const isDeleting = ref(false);
 
 const handleDelete = () => {
     isDeleting.value = true;
-    emit('remove', props.passkey.id);
+    emit('remove', props.passkey.id, () => {
+        isDeleting.value = false;
+    });
 };
 </script>
 
