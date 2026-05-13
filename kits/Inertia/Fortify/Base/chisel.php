@@ -52,16 +52,16 @@ return Chisel::script(__DIR__)
                 'app/Providers/FortifyServiceProvider.php',
                 $paths['login'],
                 $paths['welcome'],
-            )->removeSectionMarkers('chisel-registration');
+            )->removeSectionMarkers('registration');
         },
         else: function (Chisel $c) use ($paths) {
-            $c->file('config/fortify.php')->removeSection('chisel-registration');
+            $c->file('config/fortify.php')->removeSection('registration');
 
             $c->files(
                 'app/Providers/FortifyServiceProvider.php',
                 $paths['login'],
                 $paths['welcome'],
-            )->removeSection('chisel-registration');
+            )->removeSection('registration');
 
             $c->files(
                 'app/Actions/Fortify/CreateNewUser.php',
@@ -79,10 +79,10 @@ return Chisel::script(__DIR__)
                 'config/fortify.php',
                 $paths['profile'],
                 'app/Providers/FortifyServiceProvider.php',
-            )->removeSectionMarkers('chisel-email-verification');
+            )->removeSectionMarkers('email-verification');
         },
         else: function (Chisel $c) use ($paths) {
-            $c->phpFile('app/Models/User.php')
+            $c->php('app/Models/User.php')
                 ->removeImport('Illuminate\Contracts\Auth\MustVerifyEmail')
                 ->removeInterface('MustVerifyEmail');
 
@@ -90,7 +90,7 @@ return Chisel::script(__DIR__)
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 $paths['profile'],
-            )->removeSection('chisel-email-verification');
+            )->removeSection('email-verification');
 
             $c->files(
                 $paths['verify_email'],
@@ -111,10 +111,10 @@ return Chisel::script(__DIR__)
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'app/Http/Controllers/Settings/SecurityController.php',
-            )->removeSectionMarkers('chisel-2fa');
+            )->removeSectionMarkers('2fa');
         },
         else: function (Chisel $c) use ($paths) {
-            $c->phpFile('app/Models/User.php')
+            $c->php('app/Models/User.php')
                 ->removeImport('Laravel\Fortify\TwoFactorAuthenticatable')
                 ->removeTrait('TwoFactorAuthenticatable');
 
@@ -126,7 +126,7 @@ return Chisel::script(__DIR__)
                 'app/Http/Controllers/Settings/SecurityController.php',
                 $paths['security'],
                 $paths['auth_types'],
-            )->removeSection('chisel-2fa');
+            )->removeSection('2fa');
 
             if ($paths['two_factor_otp_package'] !== null) {
                 $c->npm()->remove($paths['two_factor_otp_package']);
@@ -152,10 +152,10 @@ return Chisel::script(__DIR__)
                 $paths['security'],
                 $paths['login'],
                 $paths['confirm_password'],
-            )->removeSectionMarkers('chisel-passkeys');
+            )->removeSectionMarkers('passkeys');
         },
         else: function (Chisel $c) use ($paths) {
-            $c->phpFile('app/Models/User.php')
+            $c->php('app/Models/User.php')
                 ->removeImport('Laravel\Fortify\PasskeyAuthenticatable')
                 ->removeImport('Laravel\Fortify\Contracts\PasskeyUser')
                 ->removeTrait('PasskeyAuthenticatable')
@@ -169,7 +169,7 @@ return Chisel::script(__DIR__)
                 $paths['security'],
                 $paths['login'],
                 $paths['confirm_password'],
-            )->removeSection('chisel-passkeys');
+            )->removeSection('passkeys');
 
             $c->npm()->remove('@laravel/passkeys');
 
@@ -184,11 +184,11 @@ return Chisel::script(__DIR__)
         ['2fa', 'passkeys'],
         then: function (Chisel $c) use ($paths) {
             $c->file($paths['security'])
-                ->removeSectionMarkers('chisel-2fa-or-passkeys');
+                ->removeSectionMarkers('2fa-or-passkeys');
         },
         else: function (Chisel $c) use ($paths) {
             $c->file($paths['security'])
-                ->removeSection('chisel-2fa-or-passkeys');
+                ->removeSection('2fa-or-passkeys');
         },
     )
     ->selected(
@@ -199,7 +199,7 @@ return Chisel::script(__DIR__)
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
-            )->removeSectionMarkers('chisel-password-confirmation');
+            )->removeSectionMarkers('password-confirmation');
         },
         else: function (Chisel $c) use ($paths) {
             $c->file('config/fortify.php')
@@ -209,7 +209,7 @@ return Chisel::script(__DIR__)
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
-            )->removeSection('chisel-password-confirmation');
+            )->removeSection('password-confirmation');
 
             $c->files(
                 $paths['confirm_password'],

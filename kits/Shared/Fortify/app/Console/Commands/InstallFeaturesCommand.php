@@ -3,8 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Process\Factory;
-use Laravel\Chisel\NodePackageManager;
+use Laravel\Chisel\Chisel;
 use Laravel\Chisel\Question;
 use Laravel\Chisel\Script;
 use RuntimeException;
@@ -41,50 +40,8 @@ class InstallFeaturesCommand extends Command
             ? []
             : json_decode((string) $this->option('answers'), true, 512, JSON_THROW_ON_ERROR);
 
-        $answers = $this->collectAnswers(
-            $script->questions(),
-            $providedAnswers,
-            $this->input->isInteractive(),
-        );
-
-        $script->run($answers);
-
-        $this->rebuildAssets();
-
-        return self::SUCCESS;
-    }
-
-    /**
-     * @param  array<int, Question>  $questions
-     * @param  array<string, mixed>  $providedAnswers
-     * @return array<string, mixed>
-     */
-    protected function collectAnswers(array $questions, array $providedAnswers, bool $interactive): array
-    {
-        $answers = $providedAnswers;
-
-        foreach ($questions as $question) {
-            if (array_key_exists($question->name, $answers)) {
-                continue;
-            }
-
-            if (! $interactive) {
-                if ($question->default !== null) {
-                    $answers[$question->name] = $question->default;
-
-                    continue;
-                }
-
-                if ($question->required) {
-                    throw new RuntimeException("Question [{$question->name}] requires an answer.");
-                }
-
-                $answers[$question->name] = [];
-
-                continue;
-            }
-
-            $answers[$question->name] = match ($question->type) {
+        $answers = $script
+            ->ask(fn (Question $question) => match ($question->type) {
                 'multiselect' => multiselect(
                     label: $question->label,
                     options: $question->options,
@@ -93,44 +50,31 @@ class InstallFeaturesCommand extends Command
                     hint: $question->hint,
                 ),
                 default => throw new RuntimeException("Unsupported question type [{$question->type}]."),
-            };
-        }
+            })
+            ->withDefaults()
+            ->interactive($this->input->isInteractive())
+            ->withAnswers($providedAnswers);
 
-        return $answers;
+        $script->run($answers);
+
+        $this->rebuildAssets();
+
+        return self::SUCCESS;
     }
 
     protected function rebuildAssets(): void
     {
-        $packageManager = NodePackageManager::detect(base_path());
+        $npm = Chisel::in(base_path())->npm();
+        $packageManager = $npm->packageManager();
 
         $this->info('Installing dependencies with '.$packageManager->value.'...');
 
-        $install = (new Factory)
-            ->path(base_path())
-            ->forever()
-            ->run($packageManager->installProcessCommand(), function (string $type, string $line): void {
-                $this->output->write('    '.$line);
-            });
-
-        if (! $install->successful()) {
-            throw new RuntimeException($packageManager->installCommand().' failed.');
-        }
+        $npm->install();
 
         $this->info('Building assets...');
 
-        $build = (new Factory)
-            ->path(base_path())
-            ->forever()
-            ->run($packageManager->buildProcessCommand(), function (string $type, string $line): void {
-                $this->output->write('    '.$line);
-            });
+        $npm->run('build');
 
-        if ($build->successful()) {
-            $this->info('Assets built successfully.');
-
-            return;
-        }
-
-        throw new RuntimeException($packageManager->buildCommand().' failed.');
+        $this->info('Assets built successfully.');
     }
 }
