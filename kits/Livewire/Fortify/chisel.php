@@ -5,6 +5,23 @@ require getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__.'/vendor/autoload.php'
 use Laravel\Chisel\Chisel;
 use Laravel\Chisel\Question;
 
+function chiselRun(array $command, string $label): void
+{
+    $escaped = array_map('escapeshellarg', $command);
+    passthru(implode(' ', $escaped), $exitCode);
+
+    if ($exitCode === 0) {
+        return;
+    }
+
+    fwrite(
+        STDERR,
+        "\nchisel: {$label} step failed (exit {$exitCode}). Your project may be in a partially-modified state — review the output above before continuing.\n",
+    );
+
+    exit($exitCode);
+}
+
 /**
  * Variant-specific filenames are supplied by the sibling chisel-paths.php.
  * The Single-File Component variant ships the default paths file; the
@@ -213,20 +230,3 @@ return Chisel::script(__DIR__)
             'chisel-paths.php',
         )->delete();
     });
-
-function chiselRun(array $command, string $label): void
-{
-    $escaped = array_map('escapeshellarg', $command);
-    passthru(implode(' ', $escaped), $exitCode);
-
-    if ($exitCode === 0) {
-        return;
-    }
-
-    fwrite(
-        STDERR,
-        "\nchisel: {$label} step failed (exit {$exitCode}). Your project may be in a partially-modified state — review the output above before continuing.\n",
-    );
-
-    exit($exitCode);
-}
