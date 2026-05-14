@@ -194,7 +194,7 @@ class FortifyMatrixCommand extends Command
     protected function applyChisel(array $features): void
     {
         $script = sprintf(
-            '$script = require "chisel.php"; $script->run(["auth_features" => %s]);',
+            '$script = require "chisel.php"; $script->chisel(["auth_features" => %s]);',
             var_export($features, true),
         );
 
