@@ -53,39 +53,39 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureViews(): void
     {
-        Fortify::loginView(fn(Request $request) => Inertia::render('{{auth_login}}', [
+        Fortify::loginView(fn (Request $request) => Inertia::render('{{auth_login}}', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::resetPasswordView(fn(Request $request) => Inertia::render('{{auth_reset_password}}', [
+        Fortify::resetPasswordView(fn (Request $request) => Inertia::render('{{auth_reset_password}}', [
             'email' => $request->email,
             'token' => $request->route('token'),
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ]));
 
-        Fortify::requestPasswordResetLinkView(fn(Request $request) => Inertia::render('{{auth_forgot_password}}', [
+        Fortify::requestPasswordResetLinkView(fn (Request $request) => Inertia::render('{{auth_forgot_password}}', [
             'status' => $request->session()->get('status'),
         ]));
 
         /* @chisel-email-verification */
-        Fortify::verifyEmailView(fn(Request $request) => Inertia::render('{{auth_verify_email}}', [
+        Fortify::verifyEmailView(fn (Request $request) => Inertia::render('{{auth_verify_email}}', [
             'status' => $request->session()->get('status'),
         ]));
         /* @end-chisel-email-verification */
 
         /* @chisel-registration */
-        Fortify::registerView(fn() => Inertia::render('{{auth_register}}', [
+        Fortify::registerView(fn () => Inertia::render('{{auth_register}}', [
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ]));
         /* @end-chisel-registration */
 
         /* @chisel-2fa */
-        Fortify::twoFactorChallengeView(fn() => Inertia::render('{{auth_two_factor_challenge}}'));
+        Fortify::twoFactorChallengeView(fn () => Inertia::render('{{auth_two_factor_challenge}}'));
         /* @end-chisel-2fa */
 
         /* @chisel-password-confirmation */
-        Fortify::confirmPasswordView(fn() => Inertia::render('{{auth_confirm_password}}'));
+        Fortify::confirmPasswordView(fn () => Inertia::render('{{auth_confirm_password}}'));
         /* @end-chisel-password-confirmation */
     }
 
@@ -101,7 +101,7 @@ class FortifyServiceProvider extends ServiceProvider
         /* @end-chisel-2fa */
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });
@@ -109,7 +109,7 @@ class FortifyServiceProvider extends ServiceProvider
         /* @chisel-passkeys */
         RateLimiter::for('passkeys', function (Request $request) {
             return Limit::perMinute(10)->by(
-                ($request->input('credential.id') ?: $request->session()->getId()) . '|' . $request->ip(),
+                ($request->input('credential.id') ?: $request->session()->getId()).'|'.$request->ip(),
             );
         });
         /* @end-chisel-passkeys */
