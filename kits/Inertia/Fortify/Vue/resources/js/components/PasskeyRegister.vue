@@ -11,7 +11,21 @@ const emit = defineEmits<{
     success: [];
 }>();
 
-const name = ref('');
+const getDefaultPasskeyName = () => {
+    const ua = navigator.userAgent;
+
+    const browser = ["Chrome", "Firefox", "Safari", "Edge", "Opera"].find(
+        (browser) => new RegExp(browser).test(ua),
+    );
+
+    const os = ["iPhone", "iPad", "Android", "Mac", "Windows"].find((os) =>
+        new RegExp(os).test(ua),
+    );
+
+    return [browser, os].filter(Boolean).join(" on ") || "";
+};
+
+const name = ref(getDefaultPasskeyName());
 const showForm = ref(false);
 
 const { register, isLoading, error, isSupported } = usePasskeyRegister({
