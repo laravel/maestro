@@ -89,7 +89,7 @@ export default function Security(props: Props) {
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
                                     placeholder="New password"
-                                    passwordrules={passwordRules}
+                                    passwordrules={props.passwordRules}
                                 />
 
                                 <InputError message={errors.password} />
@@ -106,7 +106,7 @@ export default function Security(props: Props) {
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
                                     placeholder="Confirm password"
-                                    passwordrules={passwordRules}
+                                    passwordrules={props.passwordRules}
                                 />
 
                                 <InputError
