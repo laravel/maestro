@@ -73,6 +73,7 @@
                 type="text"
                 bind:value={name}
                 placeholder="e.g., MacBook Pro, iPhone"
+                class="mt-1 block w-full"
                 autofocus
             />
             <p class="text-xs text-muted-foreground">
