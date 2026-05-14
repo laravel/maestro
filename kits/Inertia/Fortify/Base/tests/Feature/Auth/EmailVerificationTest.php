@@ -21,7 +21,7 @@ class EmailVerificationTest extends TestCase
         $this->skipUnlessFortifyHas(Features::emailVerification());
     }
 
-    public function test_email_verification_screen_can_be_rendered()
+    public function test_email_verification_screen_can_be_rendered(): void
     {
         $user = User::factory()->unverified()->create();
 
@@ -30,7 +30,7 @@ class EmailVerificationTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_email_can_be_verified()
+    public function test_email_can_be_verified(): void
     {
         $user = User::factory()->unverified()->create();
 
@@ -45,11 +45,12 @@ class EmailVerificationTest extends TestCase
         $response = $this->actingAs($user)->get($verificationUrl);
 
         Event::assertDispatched(Verified::class);
+
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
         $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
     }
 
-    public function test_email_is_not_verified_with_invalid_hash()
+    public function test_email_is_not_verified_with_invalid_hash(): void
     {
         $user = User::factory()->unverified()->create();
 
