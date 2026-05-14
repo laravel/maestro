@@ -16,21 +16,12 @@ import type { Props as ManageTwoFactorProps } from "@/components/ManageTwoFactor
 import ManageTwoFactor from "@/components/ManageTwoFactor.vue";
 /* @end-chisel-2fa */
 
-/* @chisel-2fa-or-passkeys */
 type Props = {
-    /* @chisel-passkeys */
-    canManagePasskeys?: ManagePasskeysProps["canManagePasskeys"];
-    passkeys?: ManagePasskeysProps["passkeys"];
-    /* @end-chisel-passkeys */
-    /* @chisel-2fa */
-    canManageTwoFactor?: ManageTwoFactorProps["canManageTwoFactor"];
-    requiresConfirmation?: ManageTwoFactorProps["requiresConfirmation"];
-    twoFactorEnabled?: ManageTwoFactorProps["twoFactorEnabled"];
-    /* @end-chisel-2fa */
-};
+    passwordRules: string;
+} /* @chisel-passkeys */ & ManagePasskeysProps /* @end-chisel-passkeys */ /* @chisel-2fa */ &
+    ManageTwoFactorProps /* @end-chisel-2fa */;
 
 defineProps<Props>();
-/* @end-chisel-2fa-or-passkeys */
 
 defineOptions({
     layout: {
