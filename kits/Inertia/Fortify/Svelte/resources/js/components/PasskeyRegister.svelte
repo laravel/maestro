@@ -14,15 +14,15 @@
     const getDefaultPasskeyName = () => {
         const ua = navigator.userAgent;
 
-        const browser = ["Chrome", "Firefox", "Safari", "Edge", "Opera"].find(
+        const browser = ['Chrome', 'Firefox', 'Safari', 'Edge', 'Opera'].find(
             (browser) => new RegExp(browser).test(ua),
         );
 
-        const os = ["iPhone", "iPad", "Android", "Mac", "Windows"].find((os) =>
+        const os = ['iPhone', 'iPad', 'Android', 'Mac', 'Windows'].find((os) =>
             new RegExp(os).test(ua),
         );
 
-        return [browser, os].filter(Boolean).join(" on ") || "";
+        return [browser, os].filter(Boolean).join(' on ') || '';
     };
 
     let name = $state(getDefaultPasskeyName());

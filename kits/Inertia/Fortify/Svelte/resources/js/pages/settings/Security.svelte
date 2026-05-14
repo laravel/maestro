@@ -46,7 +46,7 @@
     );
     /* @end-chisel-passkeys */
 
-    let { passwordRules }: { passwordRules: string; } = $props();
+    let { passwordRules }: { passwordRules: string } = $props();
 </script>
 
 <AppHead title="Security settings" />
