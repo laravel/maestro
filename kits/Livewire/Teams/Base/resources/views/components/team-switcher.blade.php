@@ -1,17 +1,12 @@
 <?php
 
-use App\Actions\Teams\CreateTeam;
 use App\Models\Team;
-use App\Rules\TeamName;
 use App\Support\UserTeam;
-use Flux\Flux;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 new class extends Component {
-    public string $teamName = '';
-
     public function currentTeam(): ?array
     {
         $team = Auth::user()->currentTeam;
