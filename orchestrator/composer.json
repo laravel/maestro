@@ -61,6 +61,10 @@
             "pint --parallel ../kits",
             "pint --parallel ../browser_tests"
         ],
+        "kits:format": [
+            "Composer\\Config::disableProcessTimeout",
+            "node scripts/format-kits.js"
+        ],
         "kits:lint": [
             "Composer\\Config::disableProcessTimeout",
             "node scripts/lint-kits.js"
