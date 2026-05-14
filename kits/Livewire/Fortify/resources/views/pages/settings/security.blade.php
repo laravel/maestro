@@ -203,6 +203,7 @@ new #[Title('Security settings')] class extends Component {
                 type="password"
                 required
                 autocomplete="new-password"
+                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
                 viewable
             />
             <flux:input
@@ -211,6 +212,7 @@ new #[Title('Security settings')] class extends Component {
                 type="password"
                 required
                 autocomplete="new-password"
+                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
                 viewable
             />
 

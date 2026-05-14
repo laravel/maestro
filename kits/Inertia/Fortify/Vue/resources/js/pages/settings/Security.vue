@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
-import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-import Heading from '@/components/Heading.vue';
-import InputError from '@/components/InputError.vue';
-import PasswordInput from '@/components/PasswordInput.vue';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { edit } from '@/routes/security';
+import SecurityController from "@/actions/App/Http/Controllers/Settings/SecurityController";
+import Heading from "@/components/Heading.vue";
+import InputError from "@/components/InputError.vue";
+import PasswordInput from "@/components/PasswordInput.vue";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { edit } from "@/routes/security";
+import { Form, Head } from "@inertiajs/vue3";
 /* @chisel-passkeys */
-import ManagePasskeys from '@/components/ManagePasskeys.vue';
-import type { Props as ManagePasskeysProps } from '@/components/ManagePasskeys.vue';
+import type { Props as ManagePasskeysProps } from "@/components/ManagePasskeys.vue";
+import ManagePasskeys from "@/components/ManagePasskeys.vue";
 /* @end-chisel-passkeys */
 /* @chisel-2fa */
-import ManageTwoFactor from '@/components/ManageTwoFactor.vue';
-import type { Props as ManageTwoFactorProps } from '@/components/ManageTwoFactor.vue';
+import type { Props as ManageTwoFactorProps } from "@/components/ManageTwoFactor.vue";
+import ManageTwoFactor from "@/components/ManageTwoFactor.vue";
 /* @end-chisel-2fa */
 
 /* @chisel-2fa-or-passkeys */
 type Props = {
     /* @chisel-passkeys */
-    canManagePasskeys?: ManagePasskeysProps['canManagePasskeys'];
-    passkeys?: ManagePasskeysProps['passkeys'];
+    canManagePasskeys?: ManagePasskeysProps["canManagePasskeys"];
+    passkeys?: ManagePasskeysProps["passkeys"];
     /* @end-chisel-passkeys */
     /* @chisel-2fa */
-    canManageTwoFactor?: ManageTwoFactorProps['canManageTwoFactor'];
-    requiresConfirmation?: ManageTwoFactorProps['requiresConfirmation'];
-    twoFactorEnabled?: ManageTwoFactorProps['twoFactorEnabled'];
+    canManageTwoFactor?: ManageTwoFactorProps["canManageTwoFactor"];
+    requiresConfirmation?: ManageTwoFactorProps["requiresConfirmation"];
+    twoFactorEnabled?: ManageTwoFactorProps["twoFactorEnabled"];
     /* @end-chisel-2fa */
 };
 
@@ -36,7 +36,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Security settings',
+                title: "Security settings",
                 href: edit(),
             },
         ],
@@ -90,6 +90,7 @@ defineOptions({
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     placeholder="New password"
+                    :passwordrules="props.passwordRules"
                 />
                 <InputError :message="errors.password" />
             </div>
@@ -102,6 +103,7 @@ defineOptions({
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     placeholder="Confirm password"
+                    :passwordrules="props.passwordRules"
                 />
                 <InputError :message="errors.password_confirmation" />
             </div>

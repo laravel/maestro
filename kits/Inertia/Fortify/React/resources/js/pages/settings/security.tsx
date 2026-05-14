@@ -1,24 +1,25 @@
-import { Form, Head } from '@inertiajs/react';
-import { useRef } from 'react';
-import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { edit } from '@/routes/security';
+import SecurityController from "@/actions/App/Http/Controllers/Settings/SecurityController";
+import Heading from "@/components/heading";
+import InputError from "@/components/input-error";
+import PasswordInput from "@/components/password-input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { edit } from "@/routes/security";
+import { Form, Head } from "@inertiajs/react";
+import { useRef } from "react";
 /* @chisel-passkeys */
-import ManagePasskeys from '@/components/manage-passkeys';
-import type { Props as ManagePasskeysProps } from '@/components/manage-passkeys';
+import type { Props as ManagePasskeysProps } from "@/components/manage-passkeys";
+import ManagePasskeys from "@/components/manage-passkeys";
 /* @end-chisel-passkeys */
 /* @chisel-2fa */
-import ManageTwoFactor from '@/components/manage-two-factor';
-import type { Props as ManageTwoFactorProps } from '@/components/manage-two-factor';
+import type { Props as ManageTwoFactorProps } from "@/components/manage-two-factor";
+import ManageTwoFactor from "@/components/manage-two-factor";
 /* @end-chisel-2fa */
 
 /* @chisel-2fa-or-passkeys */
-type Props = Record<string, never> /* @chisel-passkeys */ &
-    ManagePasskeysProps /* @end-chisel-passkeys */ /* @chisel-2fa */ &
+type Props = {
+    passwordRules: string;
+} /* @chisel-passkeys */ & ManagePasskeysProps /* @end-chisel-passkeys */ /* @chisel-2fa */ &
     ManageTwoFactorProps /* @end-chisel-2fa */;
 /* @end-chisel-2fa-or-passkeys */
 
@@ -49,9 +50,9 @@ export default function Security(
                         preserveScroll: true,
                     }}
                     resetOnError={[
-                        'password',
-                        'password_confirmation',
-                        'current_password',
+                        "password",
+                        "password_confirmation",
+                        "current_password",
                     ]}
                     resetOnSuccess
                     onError={(errors) => {
@@ -94,6 +95,7 @@ export default function Security(
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
                                     placeholder="New password"
+                                    passwordrules={passwordRules}
                                 />
 
                                 <InputError message={errors.password} />
@@ -110,6 +112,7 @@ export default function Security(
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
                                     placeholder="Confirm password"
+                                    passwordrules={passwordRules}
                                 />
 
                                 <InputError
@@ -151,7 +154,7 @@ export default function Security(
 Security.layout = {
     breadcrumbs: [
         {
-            title: 'Security settings',
+            title: "Security settings",
             href: edit(),
         },
     ],

@@ -45,6 +45,8 @@
             : []) as ManagePasskeysProps['passkeys'],
     );
     /* @end-chisel-passkeys */
+
+    let { passwordRules }: { passwordRules: string; } = $props();
 </script>
 
 <AppHead title="Security settings" />
@@ -86,6 +88,7 @@
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     placeholder="New password"
+                    passwordrules={passwordRules}
                 />
                 <InputError message={errors.password} />
             </div>
@@ -98,6 +101,7 @@
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     placeholder="Confirm password"
+                    passwordrules={passwordRules}
                 />
                 <InputError message={errors.password_confirmation} />
             </div>
