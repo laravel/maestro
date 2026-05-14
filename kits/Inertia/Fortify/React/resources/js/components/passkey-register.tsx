@@ -11,7 +11,6 @@ type Props = {
 };
 
 export default function PasskeyRegistration({ onSuccess }: Props) {
-    const [name, setName] = useState('');
     const [showForm, setShowForm] = useState(false);
     const { register, isLoading, error, isSupported } = usePasskeyRegister({
         onSuccess: () => {
