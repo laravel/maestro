@@ -1,5 +1,4 @@
 import { usePasskeyRegister } from '@laravel/passkeys/react';
-import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -59,8 +58,7 @@ export default function PasskeyRegistration({ onSuccess }: Props) {
 
     if (!showForm) {
         return (
-            <Button onClick={() => setShowForm(true)}>
-                <Plus className="h-4 w-4" />
+            <Button variant="outline" onClick={() => setShowForm(true)}>
                 Add passkey
             </Button>
         );
@@ -83,7 +81,7 @@ export default function PasskeyRegistration({ onSuccess }: Props) {
                     autoFocus
                 />
                 <p className="text-xs text-muted-foreground">
-                    Give this passkey a name to help you identify it later
+                    A name helps you identify this passkey later.
                 </p>
             </div>
 

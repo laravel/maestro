@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { usePasskeyRegister } from '@laravel/passkeys/vue';
-import { Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -57,8 +56,7 @@ const handleCancel = () => {
         Passkeys are not supported in this browser.
     </div>
 
-    <Button v-else-if="!showForm" @click="showForm = true">
-        <Plus class="h-4 w-4" />
+    <Button v-else-if="!showForm" variant="outline" @click="showForm = true">
         Add passkey
     </Button>
 
@@ -78,7 +76,7 @@ const handleCancel = () => {
                 autofocus
             />
             <p class="text-xs text-muted-foreground">
-                Give this passkey a name to help you identify it later
+                A name helps you identify this passkey later.
             </p>
         </div>
 

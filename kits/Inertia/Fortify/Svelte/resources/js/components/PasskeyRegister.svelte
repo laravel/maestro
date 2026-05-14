@@ -1,6 +1,5 @@
 <script lang="ts">
     import { usePasskeyRegister } from '@laravel/passkeys/svelte';
-    import Plus from 'lucide-svelte/icons/plus';
     import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
@@ -57,8 +56,7 @@
         Passkeys are not supported in this browser.
     </div>
 {:else if !showForm}
-    <Button onclick={() => (showForm = true)}>
-        <Plus class="h-4 w-4" />
+    <Button variant="outline" onclick={() => (showForm = true)}>
         Add passkey
     </Button>
 {:else}
@@ -77,7 +75,7 @@
                 autofocus
             />
             <p class="text-xs text-muted-foreground">
-                Give this passkey a name to help you identify it later
+                A name helps you identify this passkey later.
             </p>
         </div>
 
