@@ -50,7 +50,7 @@ class AuthenticationTest extends TestCase
         $jsonResponse = app(PasskeyLoginResponse::class)->toResponse($request);
 
         $this->assertSame(
-            route('dashboard', ['current_team' => $user->personalTeam()->slug], absolute: false),
+            route('dashboard', ['current_team' => $user->personalTeam()->slug]),
             $jsonResponse->getData()->redirect,
         );
     }
