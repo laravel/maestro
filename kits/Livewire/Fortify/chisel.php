@@ -21,6 +21,8 @@ function chiselRun(array $command, string $label): void
             });
 
             if ($process->isSuccessful()) {
+                $logger->success(implode(' ', $command));
+
                 return $process;
             }
 

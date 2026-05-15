@@ -21,10 +21,12 @@ function chiselRun(array $command, string $label): void
             });
 
             if ($process->isSuccessful()) {
+                $logger->success(implode(' ', $command));
+
                 return $process;
             }
 
-            $logger->error('Command failed: ' . implode(' ', $command));
+            $logger->error(implode(' ', $command));
             $logger->error('Error output: ' . trim($process->getErrorOutput()));
             $logger->error('Chisel: Your project may be in a partially-modified state — review the output above before continuing.');
 
@@ -256,7 +258,7 @@ return Chisel::script(__DIR__)
         );
 
         chiselRun(['composer', 'lint'], 'Composer Lint');
-        chiselRun(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], 'Wayfinder');
+        chiselRun(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], 'Generate Wayfinder Resources');
 
         $c->npm()->run('lint');
         $c->npm()->run('format');
