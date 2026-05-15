@@ -26,7 +26,7 @@ function chiselRun(array $command, string $label): void
                 return $process;
             }
 
-            $logger->error('Command failed: ' . implode(' ', $command));
+            $logger->error(implode(' ', $command));
             $logger->error('Error output: ' . trim($process->getErrorOutput()));
             $logger->error('Chisel: Your project may be in a partially-modified state — review the output above before continuing.');
 
