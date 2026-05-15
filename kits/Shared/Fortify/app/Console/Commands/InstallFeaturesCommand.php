@@ -29,6 +29,10 @@ class InstallFeaturesCommand extends Command
 
     public function handle(): int
     {
+        if (getenv('LARAVEL_INSTALLER_DEFER_HOOKS') && $this->option('answers') === null) {
+            return self::SUCCESS;
+        }
+
         if (! file_exists(base_path('chisel.php'))) {
             return self::SUCCESS;
         }
