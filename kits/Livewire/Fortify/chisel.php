@@ -1,25 +1,40 @@
 <?php
 
-require getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__.'/vendor/autoload.php';
+require getenv('LARAVEL_INSTALLER_AUTOLOADER') ?: __DIR__ . '/vendor/autoload.php';
 
 use Laravel\Chisel\Chisel;
 use Laravel\Chisel\Question;
+use Laravel\Prompts\Support\Logger;
+use Symfony\Component\Process\Process;
+
+use function Laravel\Prompts\task;
 
 function chiselRun(array $command, string $label): void
 {
-    $escaped = array_map('escapeshellarg', $command);
-    passthru(implode(' ', $escaped), $exitCode);
+    $process = task(
+        label: $label,
+        keepSummary: true,
+        callback: function (Logger $logger) use ($command, $label) {
+            $process = new Process($command);
+            $process->run(function ($type, $line) use ($logger) {
+                $logger->line($line);
+            });
 
-    if ($exitCode === 0) {
-        return;
-    }
+            if ($process->isSuccessful()) {
+                return $process;
+            }
 
-    fwrite(
-        STDERR,
-        "\nchisel: {$label} step failed (exit {$exitCode}). Your project may be in a partially-modified state — review the output above before continuing.\n",
+            $logger->error('Command failed: ' . implode(' ', $command));
+            $logger->error('Error output: ' . trim($process->getErrorOutput()));
+            $logger->error('Chisel: Your project may be in a partially-modified state — review the output above before continuing.');
+
+            return $process;
+        },
     );
 
-    exit($exitCode);
+    if (! $process->isSuccessful()) {
+        exit($process->getExitCode());
+    }
 }
 
 /**
@@ -39,7 +54,7 @@ function chiselRun(array $command, string $label): void
  *     two_factor_files: list<string>,
  * } $paths
  */
-$paths = require __DIR__.'/chisel-paths.php';
+$paths = require __DIR__ . '/chisel-paths.php';
 
 return Chisel::script(__DIR__)
     ->questions([
