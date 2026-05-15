@@ -14,7 +14,7 @@ function chiselRun(array $command, string $label): void
     $process = task(
         label: $label,
         keepSummary: true,
-        callback: function (Logger $logger) use ($command, $label) {
+        callback: function (Logger $logger) use ($command) {
             $process = new Process($command);
             $process->run(function ($type, $line) use ($logger) {
                 $logger->line($line);
@@ -27,7 +27,7 @@ function chiselRun(array $command, string $label): void
             }
 
             $logger->error(implode(' ', $command));
-            $logger->error('Error output: ' . trim($process->getErrorOutput()));
+            $logger->error('Error output: '.trim($process->getErrorOutput()));
             $logger->error('Chisel: Your project may be in a partially-modified state — review the output above before continuing.');
 
             return $process;

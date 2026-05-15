@@ -23,9 +23,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
-/* @chisel-passkeys */
-use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
-/* @end-chisel-passkeys */
 /* @chisel-registration */
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 /* @end-chisel-registration */
@@ -34,6 +31,10 @@ use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseCo
 /* @end-chisel-2fa */
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
+/* @chisel-passkeys */
+use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
+
+/* @end-chisel-passkeys */
 
 class FortifyServiceProvider extends ServiceProvider
 {

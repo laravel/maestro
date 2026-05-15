@@ -20,15 +20,16 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
-/* @chisel-passkeys */
-use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
-/* @end-chisel-passkeys */
 /* @chisel-registration */
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 /* @end-chisel-registration */
 /* @chisel-2fa */
 use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
 use Laravel\Fortify\Fortify;
+/* @chisel-passkeys */
+use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
+
+/* @end-chisel-passkeys */
 
 /* @end-chisel-2fa */
 
