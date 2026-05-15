@@ -7,6 +7,9 @@ use App\Actions\Fortify\CreateNewUser;
 /* @end-chisel-registration */
 use App\Actions\Fortify\ResetUserPassword;
 use App\Http\Responses\LoginResponse;
+/* @chisel-passkeys */
+use App\Http\Responses\PasskeyLoginResponse;
+/* @end-chisel-passkeys */
 /* @chisel-registration */
 use App\Http\Responses\RegisterResponse;
 /* @end-chisel-registration */
@@ -20,6 +23,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+/* @chisel-passkeys */
+use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
+/* @end-chisel-passkeys */
 /* @chisel-registration */
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 /* @end-chisel-registration */
@@ -37,6 +43,9 @@ class FortifyServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
+        /* @chisel-passkeys */
+        $this->app->singleton(PasskeyLoginResponseContract::class, PasskeyLoginResponse::class);
+        /* @end-chisel-passkeys */
         /* @chisel-registration */
         $this->app->singleton(RegisterResponseContract::class, RegisterResponse::class);
         /* @end-chisel-registration */

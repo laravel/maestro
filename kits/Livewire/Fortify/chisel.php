@@ -174,6 +174,7 @@ return Chisel::script(__DIR__)
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
+                'tests/Feature/Auth/AuthenticationTest.php',
                 'tests/Feature/Settings/SecurityTest.php',
                 'vite.config.js',
                 $paths['login'],
@@ -192,6 +193,7 @@ return Chisel::script(__DIR__)
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
+                'tests/Feature/Auth/AuthenticationTest.php',
                 'tests/Feature/Settings/SecurityTest.php',
                 'vite.config.js',
                 $paths['login'],
@@ -205,6 +207,7 @@ return Chisel::script(__DIR__)
                 'resources/views/components/passkey-verify.blade.php',
                 'resources/views/components/passkey-registration.blade.php',
                 'resources/js/passkeys.js',
+                'app/Http/Responses/PasskeyLoginResponse.php',
                 'database/migrations/2024_01_01_000000_create_passkeys_table.php',
             )->delete();
         },

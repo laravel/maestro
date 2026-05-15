@@ -182,6 +182,7 @@ return Chisel::script(__DIR__)
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'app/Http/Controllers/Settings/SecurityController.php',
+                'tests/Feature/Auth/AuthenticationTest.php',
                 'tests/Feature/Settings/SecurityTest.php',
                 $paths['security'],
                 $paths['login'],
@@ -199,6 +200,7 @@ return Chisel::script(__DIR__)
                 'config/fortify.php',
                 'app/Providers/FortifyServiceProvider.php',
                 'app/Http/Controllers/Settings/SecurityController.php',
+                'tests/Feature/Auth/AuthenticationTest.php',
                 'tests/Feature/Settings/SecurityTest.php',
                 $paths['security'],
                 $paths['login'],
@@ -209,6 +211,7 @@ return Chisel::script(__DIR__)
 
             $c->files(...[
                 ...$paths['passkey_files'],
+                'app/Http/Responses/PasskeyLoginResponse.php',
                 'database/migrations/2024_01_01_000000_create_passkeys_table.php',
             ])->delete();
         },
