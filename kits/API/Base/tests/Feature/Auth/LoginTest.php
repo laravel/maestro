@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -46,7 +47,29 @@ class LoginTest extends TestCase
             'password' => 'wrong-password',
         ]);
 
-        $response->assertUnprocessable();
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['email'])
+            ->assertJsonPath('errors.email.0', __('auth.failed'));
+    }
+
+    public function test_login_checks_a_password_hash_for_nonexistent_email(): void
+    {
+        Hash::shouldReceive('check')
+            ->once()
+            ->withArgs(function (string $password, string $hash): bool {
+                return $password === 'password'
+                    && password_get_info($hash)['algoName'] !== 'unknown';
+            })
+            ->andReturnFalse();
+
+        $response = $this->postJson(route('login'), [
+            'email' => 'nonexistent@example.com',
+            'password' => 'password',
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['email'])
+            ->assertJsonPath('errors.email.0', __('auth.failed'));
     }
 
     public function test_login_fails_with_missing_fields(): void
