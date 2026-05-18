@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\PasswordUpdateRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\BodyParam;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -20,9 +21,15 @@ class PasswordUpdateController extends Controller
     #[Response(['message' => 'Password updated successfully.'])]
     public function __invoke(PasswordUpdateRequest $request): JsonResponse
     {
-        $request->user()->update([
-            'password' => $request->validated('password'),
-        ]);
+        DB::transaction(function () use ($request): void {
+            $user = $request->user();
+
+            $user->update([
+                'password' => $request->validated('password'),
+            ]);
+
+            $user->tokens()->delete();
+        });
 
         return response()->json(['message' => __('Password updated successfully.')]);
     }

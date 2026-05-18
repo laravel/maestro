@@ -15,13 +15,17 @@ use Knuckles\Scribe\Attributes\Response;
 #[Group('Authentication')]
 class LoginController extends Controller
 {
+    private const string DUMMY_PASSWORD_HASH = '$2y$12$OoT8jJofGjVA6q9C3/FvNeplQTQg0JAeDakKw2oy4vBvK/eAEksCW';
+
     #[Endpoint('Login', 'Authenticate a user and return an API token.')]
     #[Response(['token' => 'YOUR_AUTH_TOKEN'])]
     public function __invoke(LoginRequest $request): JsonResponse
     {
         $user = User::where('email', $request->email)->first();
+        $passwordHash = $user?->password ?? self::DUMMY_PASSWORD_HASH;
+        $passwordMatches = Hash::check($request->password, $passwordHash);
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $user || ! $passwordMatches) {
             throw ValidationException::withMessages([
                 'email' => [__('auth.failed')],
             ]);
