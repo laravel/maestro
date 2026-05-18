@@ -22,8 +22,60 @@ class PasswordTest extends TestCase
             'password_confirmation' => 'new-password',
         ]);
 
-        $response->assertOk();
+        $response->assertOk()
+            ->assertJson(['message' => 'Password updated successfully.']);
+
         $this->assertTrue(Hash::check('new-password', $user->fresh()->password));
+    }
+
+    public function test_password_update_revokes_current_token(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+
+        $this->withToken($token)->patchJson(route('password.update'), [
+            'current_password' => 'password',
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ])->assertOk();
+
+        $this->assertSame(0, $user->fresh()->tokens()->count());
+
+        auth()->forgetGuards();
+
+        $this->withToken($token)->getJson(route('profile.show'))->assertUnauthorized();
+    }
+
+    public function test_password_update_revokes_other_tokens_for_the_user(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+        $user->createToken('other-device');
+
+        $this->assertSame(2, $user->tokens()->count());
+
+        $this->withToken($token)->patchJson(route('password.update'), [
+            'current_password' => 'password',
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ])->assertOk();
+
+        $this->assertSame(0, $user->fresh()->tokens()->count());
+    }
+
+    public function test_failed_password_update_does_not_revoke_tokens(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('auth')->plainTextToken;
+        $user->createToken('other-device');
+
+        $this->withToken($token)->patchJson(route('password.update'), [
+            'current_password' => 'wrong-password',
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ])->assertUnprocessable();
+
+        $this->assertSame(2, $user->fresh()->tokens()->count());
     }
 
     public function test_password_update_requires_authentication(): void
