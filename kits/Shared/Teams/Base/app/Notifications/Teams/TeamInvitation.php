@@ -3,12 +3,10 @@
 namespace App\Notifications\Teams;
 
 use App\Models\TeamInvitation as TeamInvitationModel;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Route;
 
 class TeamInvitation extends Notification implements ShouldQueue
 {
@@ -39,7 +37,6 @@ class TeamInvitation extends Notification implements ShouldQueue
     {
         $team = $this->invitation->team;
         $inviter = $this->invitation->inviter;
-        $actionLabel = $this->shouldUseLoginRoute() ? 'Log in' : 'Register';
 
         return (new MailMessage)
             ->subject(__("You've been invited to join :teamName", ['teamName' => $team->name]))
@@ -47,10 +44,10 @@ class TeamInvitation extends Notification implements ShouldQueue
                 'inviterName' => $inviter->name,
                 'teamName' => $team->name,
             ]))
-            ->line(__("{$actionLabel} and visit your dashboard to accept or decline this invitation."))
+            ->line(__('Log in and visit your dashboard to accept or decline this invitation.'))
             ->action(
-                __($actionLabel),
-                route($this->shouldUseLoginRoute() ? 'login' : 'register'),
+                __('Log in'),
+                route('login', ['invitation' => $this->invitation->code]),
             );
     }
 
@@ -67,10 +64,5 @@ class TeamInvitation extends Notification implements ShouldQueue
             'team_name' => $this->invitation->team->name,
             'role' => $this->invitation->role->value,
         ];
-    }
-
-    protected function shouldUseLoginRoute(): bool
-    {
-        return ! Route::has('register') || User::where('email', $this->invitation->email)->exists();
     }
 }

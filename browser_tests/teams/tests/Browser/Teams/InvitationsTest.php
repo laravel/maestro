@@ -102,6 +102,51 @@ test('invitation can be accepted by the invited user', function () {
     expect($invitedUser->fresh()->currentTeam->id)->toBe($team->id);
 });
 
+test('login page shows team invitation alert', function () {
+    if (! file_exists(resource_path('js/pages/auth/login.tsx'))) {
+        $this->markTestSkipped('React auth invitation alert is not implemented for this stack yet.');
+    }
+
+    $owner = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Login Alert Team']);
+    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+    $invitation = TeamInvitation::factory()->create([
+        'team_id' => $team->id,
+        'email' => 'login-alert@example.com',
+        'invited_by' => $owner->id,
+    ]);
+
+    visit(route('login', ['invitation' => $invitation->code]))
+        ->assertVisible('@team-invitation-alert')
+        ->assertSee('Log in to join the "Login Alert Team" Team.')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
+test('register page preserves team invitation alert from login', function () {
+    if (! file_exists(resource_path('js/pages/auth/register.tsx'))) {
+        $this->markTestSkipped('React auth invitation alert is not implemented for this stack yet.');
+    }
+
+    $owner = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Register Alert Team']);
+    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+    $invitation = TeamInvitation::factory()->create([
+        'team_id' => $team->id,
+        'email' => 'register-alert@example.com',
+        'invited_by' => $owner->id,
+    ]);
+
+    visit(route('login', ['invitation' => $invitation->code]))
+        ->click('@team-invitation-register-link')
+        ->assertVisible('@team-invitation-alert')
+        ->assertSee('Register to join the "Register Alert Team" Team.')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
 test('pending invitations modal appears on the dashboard', function () {
     $owner = User::factory()->create(['name' => 'Taylor Otwell']);
     $team = Team::factory()->create(['name' => 'Browser Team']);
