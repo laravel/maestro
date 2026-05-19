@@ -103,8 +103,8 @@ test('invitation can be accepted by the invited user', function () {
 });
 
 test('login page shows team invitation alert', function () {
-    if (! file_exists(resource_path('js/pages/auth/login.tsx'))) {
-        $this->markTestSkipped('React auth invitation alert is not implemented for this stack yet.');
+    if (! file_exists(resource_path('js/pages/auth/login.tsx')) && ! file_exists(resource_path('js/pages/auth/Login.svelte'))) {
+        $this->markTestSkipped('Auth invitation alert is not implemented for this stack yet.');
     }
 
     $owner = User::factory()->create();
@@ -125,8 +125,8 @@ test('login page shows team invitation alert', function () {
 });
 
 test('register page preserves team invitation alert from login', function () {
-    if (! file_exists(resource_path('js/pages/auth/register.tsx'))) {
-        $this->markTestSkipped('React auth invitation alert is not implemented for this stack yet.');
+    if (! file_exists(resource_path('js/pages/auth/register.tsx')) && ! file_exists(resource_path('js/pages/auth/Register.svelte'))) {
+        $this->markTestSkipped('Auth invitation alert is not implemented for this stack yet.');
     }
 
     $owner = User::factory()->create();
