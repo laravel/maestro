@@ -75,7 +75,7 @@ class InstallFeaturesCommand extends Command
         $packageManager = $npm->packageManager();
 
         spin(
-            fn() => $npm->install(),
+            fn () => $npm->install(),
             "Installing dependencies with {$packageManager->value}...",
         );
     }
@@ -85,7 +85,7 @@ class InstallFeaturesCommand extends Command
         $npm = Chisel::in(base_path())->npm();
 
         spin(
-            fn() => $npm->run('build'),
+            fn () => $npm->run('build'),
             'Building assets...',
         );
     }
