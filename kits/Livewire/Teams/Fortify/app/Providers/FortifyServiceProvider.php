@@ -13,7 +13,9 @@ use App\Http\Responses\PasskeyLoginResponse;
 /* @chisel-registration */
 use App\Http\Responses\RegisterResponse;
 /* @end-chisel-registration */
+/* @chisel-2fa */
 use App\Http\Responses\TwoFactorLoginResponse;
+/* @end-chisel-2fa */
 /* @chisel-email-verification */
 use App\Http\Responses\VerifyEmailResponse;
 /* @end-chisel-email-verification */
@@ -26,18 +28,17 @@ use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 /* @chisel-registration */
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 /* @end-chisel-registration */
-/* @chisel-2fa */
-use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
-use Laravel\Fortify\Fortify;
 /* @chisel-email-verification */
-use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
+use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
 /* @end-chisel-email-verification */
+/* @chisel-2fa */
+use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
+/* @end-chisel-2fa */
+use Laravel\Fortify\Fortify;
 /* @chisel-passkeys */
 use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
 
 /* @end-chisel-passkeys */
-
-/* @end-chisel-2fa */
 
 class FortifyServiceProvider extends ServiceProvider
 {
