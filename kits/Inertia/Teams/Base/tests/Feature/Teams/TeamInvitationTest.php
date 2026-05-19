@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class TeamInvitationTest extends TestCase
@@ -57,16 +56,12 @@ class TeamInvitationTest extends TestCase
 
         $mail = (new TeamInvitationNotification($invitation))->toMail($invitedUser);
 
-        $this->assertSame(route('login'), $mail->actionUrl);
+        $this->assertSame(route('login', ['invitation' => $invitation->code]), $mail->actionUrl);
         $this->assertStringContainsString('dashboard', implode(' ', $mail->introLines));
     }
 
-    public function test_invitation_email_for_unknown_users_uses_register_route_when_available()
+    public function test_invitation_email_for_unknown_users_uses_login_route()
     {
-        if (! Route::has('register')) {
-            $this->markTestSkipped('This kit does not provide local registration.');
-        }
-
         $owner = User::factory()->create();
         $team = Team::factory()->create();
 
@@ -80,30 +75,7 @@ class TeamInvitationTest extends TestCase
 
         $mail = (new TeamInvitationNotification($invitation))->toMail((object) []);
 
-        $this->assertSame(route('register'), $mail->actionUrl);
-        $this->assertStringContainsString('register', strtolower(implode(' ', $mail->introLines)));
-    }
-
-    public function test_invitation_email_for_unknown_users_uses_login_route_when_registration_is_unavailable()
-    {
-        if (Route::has('register')) {
-            $this->markTestSkipped('This kit provides local registration.');
-        }
-
-        $owner = User::factory()->create();
-        $team = Team::factory()->create();
-
-        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
-
-        $invitation = TeamInvitation::factory()->create([
-            'team_id' => $team->id,
-            'email' => 'unknown@example.com',
-            'invited_by' => $owner->id,
-        ]);
-
-        $mail = (new TeamInvitationNotification($invitation))->toMail((object) []);
-
-        $this->assertSame(route('login'), $mail->actionUrl);
+        $this->assertSame(route('login', ['invitation' => $invitation->code]), $mail->actionUrl);
         $this->assertStringContainsString('log in', strtolower(implode(' ', $mail->introLines)));
     }
 
