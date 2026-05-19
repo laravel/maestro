@@ -78,8 +78,6 @@ class InstallFeaturesCommand extends Command
             fn() => $npm->install(),
             "Installing dependencies with {$packageManager->value}...",
         );
-
-        $npm->install();
     }
 
     protected function buildAssets(): void
