@@ -20,7 +20,7 @@ class RegisterController extends Controller
 {
     #[Endpoint('Register', 'Create a new user account and return an API token.')]
     #[BodyParam('password_confirmation', 'string', required: true, description: 'Must match the password field.', example: 'password')]
-    #[ResponseFromApiResource(UserResource::class, User::class, status: Response::HTTP_CREATED, additional: ['token' => 'YOUR_AUTH_TOKEN'])]
+    #[ResponseFromApiResource(UserResource::class, User::class, status: Response::HTTP_CREATED, additional: ['meta' => ['token' => 'YOUR_AUTH_TOKEN']])]
     public function __invoke(RegisterRequest $request): JsonResponse
     {
         [$user, $token] = DB::transaction(function () use ($request): array {
@@ -32,7 +32,7 @@ class RegisterController extends Controller
         event(new Registered($user));
 
         return (new UserResource($user))
-            ->additional(['token' => $token])
+            ->additional(['meta' => ['token' => $token]])
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
     }
