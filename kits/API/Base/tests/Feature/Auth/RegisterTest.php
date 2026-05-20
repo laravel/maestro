@@ -22,9 +22,10 @@ class RegisterTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonStructure(['data', 'token'])
+            ->assertJsonStructure(['data', 'meta'])
             ->assertJsonPath('data.attributes.email', 'test@example.com');
 
+        $this->assertIsString($response->json('meta.token'));
         $this->assertDatabaseHas('users', [
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -49,7 +50,7 @@ class RegisterTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonStructure(['data', 'token']);
+            ->assertJsonStructure(['data', 'meta']);
 
         $user = User::where('email', 'test@example.com')->firstOrFail();
 
