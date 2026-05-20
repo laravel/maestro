@@ -31,7 +31,7 @@ class LoginController extends Controller
             ]);
         }
 
-        $token = $user->createToken('auth')->plainTextToken;
+        $token = $user->createToken($request->string('device_name', 'auth'))->plainTextToken;
 
         return response()->json(['token' => $token]);
     }

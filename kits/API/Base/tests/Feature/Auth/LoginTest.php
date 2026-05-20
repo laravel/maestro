@@ -22,6 +22,11 @@ class LoginTest extends TestCase
 
         $response->assertOk()
             ->assertJsonStructure(['token']);
+
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+            'name' => 'auth',
+        ]);
     }
 
     public function test_login_returns_bearer_token_format(): void
@@ -36,6 +41,25 @@ class LoginTest extends TestCase
         $token = $response->json('token');
         $this->assertIsString($token);
         $this->assertNotEmpty($token);
+    }
+
+    public function test_user_can_login_with_a_device_name(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson(route('login'), [
+            'email' => $user->email,
+            'password' => 'password',
+            'device_name' => 'iPhone',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonStructure(['token']);
+
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+            'name' => 'iPhone',
+        ]);
     }
 
     public function test_login_fails_with_invalid_credentials(): void
