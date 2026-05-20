@@ -22,7 +22,8 @@ class RegisterTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonStructure(['user_id', 'token']);
+            ->assertJsonStructure(['data', 'token'])
+            ->assertJsonPath('data.attributes.email', 'test@example.com');
 
         $this->assertDatabaseHas('users', [
             'name' => 'Test User',
