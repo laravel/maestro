@@ -28,12 +28,12 @@ use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 /* @chisel-registration */
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 /* @end-chisel-registration */
-/* @chisel-email-verification */
-use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
-/* @end-chisel-email-verification */
 /* @chisel-2fa */
-use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
+use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
 /* @end-chisel-2fa */
+/* @chisel-email-verification */
+use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
+/* @end-chisel-email-verification */
 use Laravel\Fortify\Fortify;
 /* @chisel-passkeys */
 use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
