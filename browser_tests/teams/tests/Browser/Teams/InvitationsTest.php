@@ -103,10 +103,6 @@ test('invitation can be accepted by the invited user', function () {
 });
 
 test('login page shows team invitation alert', function () {
-    if (! file_exists(resource_path('js/pages/auth/login.tsx')) && ! file_exists(resource_path('js/pages/auth/Login.svelte')) && ! file_exists(resource_path('js/pages/auth/Login.vue'))) {
-        $this->markTestSkipped('Auth invitation alert is not implemented for this stack yet.');
-    }
-
     $owner = User::factory()->create();
     $team = Team::factory()->create(['name' => 'Login Alert Team']);
     $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
@@ -125,10 +121,6 @@ test('login page shows team invitation alert', function () {
 });
 
 test('register page preserves team invitation alert from login', function () {
-    if (! file_exists(resource_path('js/pages/auth/register.tsx')) && ! file_exists(resource_path('js/pages/auth/Register.svelte')) && ! file_exists(resource_path('js/pages/auth/Register.vue'))) {
-        $this->markTestSkipped('Auth invitation alert is not implemented for this stack yet.');
-    }
-
     $owner = User::factory()->create();
     $team = Team::factory()->create(['name' => 'Register Alert Team']);
     $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
