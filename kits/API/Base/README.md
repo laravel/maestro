@@ -15,6 +15,7 @@ Out of the box it ships with token-based authentication, email verification, pas
 - Profile management: view, update, and delete the authenticated user
 - Password update flow gated behind email verification
 - Email verification with signed URLs and resend endpoint
+- Header-based API version resolution helper with a `v1` default
 - Health check endpoint at the application root
 - Modern, interactive API reference rendered by Scalar from a Scribe-generated OpenAPI spec
 
@@ -23,6 +24,33 @@ Out of the box it ships with token-based authentication, email verification, pas
 - [`laravel/sanctum`](https://laravel.com/docs/sanctum) — API token authentication
 - [`knuckleswtf/scribe`](https://scribe.knuckles.wtf) — OpenAPI spec generator
 - [`scalar/laravel`](https://github.com/scalar/laravel) — Scalar UI for the API reference
+
+## API Versioning
+
+API routes remain unversioned by default. To resolve the requested representation version, use the `App\Enums\ApiVersion` helper in controllers, resources, or response objects:
+
+```php
+use App\Enums\ApiVersion;
+
+$version = ApiVersion::requested();
+```
+
+Requests without an explicit version header resolve to `v1`:
+
+```http
+GET /me
+Accept: application/json
+```
+
+Clients may request a specific supported representation version with the `X-API-Version` header:
+
+```http
+GET /me
+Accept: application/json
+X-API-Version: v1
+```
+
+Unsupported explicit versions throw an `UnsupportedApiVersionException` and render a `406 Not Acceptable` JSON response.
 
 ## API Documentation
 

@@ -13,6 +13,8 @@ return [
 
     'intro_text' => <<<'INTRO'
             This documentation describes every endpoint exposed by the API, including the request shape, response payloads, and authentication requirements.
+
+            By default, API requests resolve to `v1`. To request a specific representation version, send an `X-API-Version` header such as `v1`. URLs remain stable as representations evolve.
         INTRO,
 
     'base_url' => config('app.url'),
