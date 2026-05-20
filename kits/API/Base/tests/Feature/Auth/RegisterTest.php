@@ -29,6 +29,34 @@ class RegisterTest extends TestCase
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        $user = User::where('email', 'test@example.com')->firstOrFail();
+
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+            'name' => 'auth',
+        ]);
+    }
+
+    public function test_user_can_register_with_a_device_name(): void
+    {
+        $response = $this->postJson(route('register'), [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'device_name' => 'iPhone',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonStructure(['data', 'token']);
+
+        $user = User::where('email', 'test@example.com')->firstOrFail();
+
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+            'name' => 'iPhone',
+        ]);
     }
 
     public function test_registered_user_receives_verification_email(): void
