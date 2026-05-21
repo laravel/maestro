@@ -54,7 +54,7 @@
             {/if}
             {isLoading
                 ? (props.loadingLabel ?? 'Authenticating...')
-                : (props.label ?? 'Sign in with passkey')}
+                : (props.label ?? 'Sign in with a passkey')}
         </Button>
 
         {#if error}
