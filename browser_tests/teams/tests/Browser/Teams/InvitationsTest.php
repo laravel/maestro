@@ -101,3 +101,118 @@ test('invitation can be accepted by the invited user', function () {
 
     expect($invitedUser->fresh()->currentTeam->id)->toBe($team->id);
 });
+
+test('login page shows team invitation alert', function () {
+    $owner = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Login Alert Team']);
+    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+    $invitation = TeamInvitation::factory()->create([
+        'team_id' => $team->id,
+        'email' => 'login-alert@example.com',
+        'invited_by' => $owner->id,
+    ]);
+
+    visit(route('login', ['invitation' => $invitation->code]))
+        ->assertVisible('@team-invitation-alert')
+        ->assertSee('Log in to join the "Login Alert Team" Team.')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
+test('register page preserves team invitation alert from login', function () {
+    $owner = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Register Alert Team']);
+    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+    $invitation = TeamInvitation::factory()->create([
+        'team_id' => $team->id,
+        'email' => 'register-alert@example.com',
+        'invited_by' => $owner->id,
+    ]);
+
+    visit(route('login', ['invitation' => $invitation->code]))
+        ->click('@team-invitation-register-link')
+        ->assertVisible('@team-invitation-alert')
+        ->assertSee('Register to join the "Register Alert Team" Team.')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
+test('pending invitations modal appears on the dashboard', function () {
+    $owner = User::factory()->create(['name' => 'Taylor Otwell']);
+    $team = Team::factory()->create(['name' => 'Browser Team']);
+    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+    $invitedUser = User::factory()->create(['email' => 'browser@example.com']);
+
+    TeamInvitation::factory()->create([
+        'team_id' => $team->id,
+        'email' => 'browser@example.com',
+        'invited_by' => $owner->id,
+    ]);
+
+    actingAs($invitedUser);
+
+    visit(route('dashboard'))
+        ->waitForText('Pending team invitations')
+        ->assertVisible('@pending-invitations-modal')
+        ->assertVisible('@pending-invitation-row')
+        ->assertSee('Taylor Otwell')
+        ->assertSee('Browser Team')
+        ->assertVisible('@pending-invitation-accept')
+        ->assertVisible('@pending-invitation-decline')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
+test('pending invitations can be declined from the dashboard modal', function () {
+    $owner = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Decline Browser Team']);
+    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+    $invitedUser = User::factory()->create(['email' => 'decline-browser@example.com']);
+
+    $invitation = TeamInvitation::factory()->create([
+        'team_id' => $team->id,
+        'email' => 'decline-browser@example.com',
+        'invited_by' => $owner->id,
+    ]);
+
+    actingAs($invitedUser);
+
+    visit(route('dashboard'))
+        ->waitForText('Pending team invitations')
+        ->pressAndWaitFor('@pending-invitation-decline')
+        ->assertDontSee('Decline Browser Team')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+
+    expect(TeamInvitation::whereKey($invitation->id)->exists())->toBeFalse();
+});
+
+test('pending invitations can be accepted from the dashboard modal', function () {
+    $owner = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Accept Browser Team']);
+    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+    $invitedUser = User::factory()->create(['email' => 'accept-browser@example.com']);
+
+    TeamInvitation::factory()->create([
+        'team_id' => $team->id,
+        'email' => 'accept-browser@example.com',
+        'invited_by' => $owner->id,
+    ]);
+
+    actingAs($invitedUser);
+
+    visit(route('dashboard'))
+        ->waitForText('Pending team invitations')
+        ->pressAndWaitFor('@pending-invitation-accept')
+        ->assertPathEndsWith('/dashboard')
+        ->assertPathContains($team->slug)
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+
+    expect($invitedUser->fresh()->currentTeam->id)->toBe($team->id);
+});

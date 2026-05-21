@@ -75,6 +75,20 @@ class TeamInvitationController extends Controller
             $user->switchTeam($team);
         });
 
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Invitation accepted.')]);
+
+        return to_route('dashboard');
+    }
+
+    /**
+     * Decline the invitation.
+     */
+    public function decline(AcceptTeamInvitationRequest $request, TeamInvitation $invitation): RedirectResponse
+    {
+        $invitation->delete();
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Invitation declined.')]);
+
         return to_route('dashboard');
     }
 }
