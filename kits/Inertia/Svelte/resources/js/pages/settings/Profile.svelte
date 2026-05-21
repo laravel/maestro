@@ -38,7 +38,7 @@
 <div class="flex flex-col space-y-6">
     <Heading
         variant="small"
-        title="Profile information"
+        title="Profile"
         description="Update your name and email address"
     />
 
@@ -83,7 +83,7 @@
                     <p class="-mt-4 text-sm text-muted-foreground">
                         Your email address is unverified.
                         <TextLink href={send()} as="button">
-                            Click here to resend the verification email.
+                            Click here to re-send the verification email.
                         </TextLink>
                     </p>
 

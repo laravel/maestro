@@ -71,7 +71,7 @@
                     <Label for="password">Password</Label>
                     {#if canResetPassword}
                         <TextLink href={request()} class="text-sm">
-                            Forgot password?
+                            Forgot your password?
                         </TextLink>
                     {/if}
                 </div>

@@ -112,7 +112,7 @@
                     disabled={processing}
                     data-test="update-password-button"
                 >
-                    Save password
+                    Save
                 </Button>
             </div>
         {/snippet}
