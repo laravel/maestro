@@ -27,7 +27,7 @@
 
     let name = $state(getDefaultPasskeyName());
     let showForm = $state(false);
-    const { register, isLoading, error, isSupported } = usePasskeyRegister({
+    const passkeyRegister = usePasskeyRegister({
         onSuccess: () => {
             name = '';
             showForm = false;
@@ -42,7 +42,7 @@
             return;
         }
 
-        await register(name.trim());
+        await passkeyRegister.register(name.trim());
     };
 
     const handleCancel = () => {
@@ -51,7 +51,7 @@
     };
 </script>
 
-{#if !isSupported}
+{#if !passkeyRegister.isSupported}
     <div class="text-sm text-muted-foreground">
         Passkeys are not supported in this browser.
     </div>
@@ -79,13 +79,18 @@
             </p>
         </div>
 
-        {#if error}
-            <InputError message={error} />
+        {#if passkeyRegister.error}
+            <InputError message={passkeyRegister.error} />
         {/if}
 
         <div class="flex gap-2">
-            <Button type="submit" disabled={isLoading || !name.trim()}>
-                {isLoading ? 'Registering...' : 'Register passkey'}
+            <Button
+                type="submit"
+                disabled={passkeyRegister.isLoading || !name.trim()}
+            >
+                {passkeyRegister.isLoading
+                    ? 'Registering...'
+                    : 'Register passkey'}
             </Button>
             <Button type="button" variant="ghost" onclick={handleCancel}>
                 Cancel
