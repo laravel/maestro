@@ -74,7 +74,12 @@
 
                     <DialogFooter class="gap-2">
                         <DialogClose asChild>
-                            <Button variant="secondary">Cancel</Button>
+                            {#snippet children(props)}
+                                <Button
+                                    variant="secondary"
+                                    onclick={props.onClick}>Cancel</Button
+                                >
+                            {/snippet}
                         </DialogClose>
 
                         <Button
