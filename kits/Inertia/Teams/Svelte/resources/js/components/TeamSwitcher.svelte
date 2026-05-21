@@ -112,7 +112,7 @@
     <DropdownMenuContent
         class={inHeader
             ? 'w-56'
-            : 'w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg'}
+            : 'w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg'}
         side={inHeader ? undefined : isMobile ? 'bottom' : 'right'}
         align={inHeader ? 'end' : 'start'}
         sideOffset={inHeader ? undefined : 4}
