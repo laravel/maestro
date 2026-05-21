@@ -22,7 +22,7 @@
     let props: Props = $props();
     const initialRoutes = untrack(() => props.routes);
 
-    const { verify, isLoading, error, isSupported } = usePasskeyVerify({
+    const passkeyVerify = usePasskeyVerify({
         ...(initialRoutes
             ? {
                   routes: {
@@ -38,28 +38,28 @@
     });
 </script>
 
-{#if isSupported}
+{#if passkeyVerify.isSupported}
     <div class="grid gap-2">
         <Button
             type="button"
             variant="outline"
             class="w-full"
-            onclick={verify}
-            disabled={isLoading}
+            onclick={passkeyVerify.verify}
+            disabled={passkeyVerify.isLoading}
         >
-            {#if isLoading}
+            {#if passkeyVerify.isLoading}
                 <Spinner />
             {:else}
                 <KeyRound class="h-4 w-4" />
             {/if}
-            {isLoading
+            {passkeyVerify.isLoading
                 ? (props.loadingLabel ?? 'Authenticating...')
                 : (props.label ?? 'Sign in with a passkey')}
         </Button>
 
-        {#if error}
+        {#if passkeyVerify.error}
             <div class="text-center">
-                <InputError message={error} />
+                <InputError message={passkeyVerify.error} />
             </div>
         {/if}
     </div>
