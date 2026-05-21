@@ -23,11 +23,41 @@ class RegisterTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonStructure(['user_id', 'token']);
+            ->assertJsonStructure(['data', 'meta'])
+            ->assertJsonPath('data.attributes.email', 'test@example.com');
 
+        $this->assertIsString($response->json('meta.token'));
         $this->assertDatabaseHas('users', [
             'name' => 'Test User',
             'email' => 'test@example.com',
+        ]);
+
+        $user = User::where('email', 'test@example.com')->firstOrFail();
+
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+            'name' => 'auth',
+        ]);
+    }
+
+    public function test_user_can_register_with_a_device_name(): void
+    {
+        $response = $this->postJson(route('register'), [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'device_name' => 'iPhone',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonStructure(['data', 'meta']);
+
+        $user = User::where('email', 'test@example.com')->firstOrFail();
+
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+            'name' => 'iPhone',
         ]);
     }
 
