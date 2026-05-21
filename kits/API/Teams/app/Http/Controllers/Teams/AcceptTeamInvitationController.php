@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Teams;
 
 use App\Http\Controllers\Controller;
+use App\Http\Responses\MessageResponse;
 use App\Models\TeamInvitation;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +21,7 @@ class AcceptTeamInvitationController extends Controller
     #[ScribeResponse(['message' => 'Invitation accepted successfully.'], description: 'Invitation accepted')]
     #[ScribeResponse(status: Response::HTTP_FORBIDDEN, description: 'Invalid signature or no matching user.')]
     #[ScribeResponse(status: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Invitation already accepted or expired.')]
-    public function __invoke(Request $request, TeamInvitation $invitation): JsonResponse
+    public function __invoke(Request $request, TeamInvitation $invitation): MessageResponse
     {
         if ($invitation->isAccepted() || $invitation->isExpired()) {
             throw ValidationException::withMessages([
@@ -44,6 +44,6 @@ class AcceptTeamInvitationController extends Controller
             $invitation->update(['accepted_at' => now()]);
         });
 
-        return response()->json(['message' => __('Invitation accepted successfully.')]);
+        return new MessageResponse('Invitation accepted successfully.');
     }
 }
