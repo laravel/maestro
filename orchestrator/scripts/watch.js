@@ -294,7 +294,7 @@ function reconcileStaleFiles(folders, buildRelPaths, ig) {
     let removedCount = 0;
 
     for (const relPath of kitFiles) {
-        if (relPath === 'chisel.php') {
+        if (isChiselFile(relPath)) {
             continue;
         }
 
@@ -484,6 +484,10 @@ function isAllowedEmptyTextFile(relativePath) {
     }
 
     return allowedEmptyTextFiles.has(normalizedPath);
+}
+
+function isChiselFile(relativePath) {
+    return path.basename(relativePath).startsWith('chisel');
 }
 
 function isBlockedEmptyTextSync(relativePath, processedContent, destPath) {
