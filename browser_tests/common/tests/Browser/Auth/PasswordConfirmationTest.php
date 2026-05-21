@@ -9,7 +9,7 @@ test('confirm password screen can be rendered', function () {
     actingAs(User::factory()->create());
 
     visit(route('password.confirm'))
-        ->assertSee('Confirm your password')
+        ->assertSee('Confirm password')
         ->assertSee('This is a secure area of the application. Please confirm your password before continuing.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
