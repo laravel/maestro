@@ -77,8 +77,10 @@
                             {#snippet children(props)}
                                 <Button
                                     variant="secondary"
-                                    onclick={props.onClick}>Cancel</Button
+                                    onclick={props.onClick}
                                 >
+                                    Cancel
+                                </Button>
                             {/snippet}
                         </DialogClose>
 
