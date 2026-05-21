@@ -7,7 +7,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\URL;
 
 class TeamInvitation extends Notification implements ShouldQueue
 {
@@ -45,11 +44,8 @@ class TeamInvitation extends Notification implements ShouldQueue
                 'inviterName' => $inviter->name,
                 'teamName' => $team->name,
             ]))
-            ->action(__('Accept invitation'), URL::temporarySignedRoute(
-                'invitations.accept',
-                now()->addDays(3),
-                $this->invitation,
-            ));
+            ->line(__('Log in and visit your dashboard to accept or decline this invitation.'))
+            ->action(__('Log in'), $this->loginUrl());
     }
 
     /**
@@ -65,5 +61,15 @@ class TeamInvitation extends Notification implements ShouldQueue
             'team_name' => $this->invitation->team->name,
             'role' => $this->invitation->role->value,
         ];
+    }
+
+    private function loginUrl(): string
+    {
+        return sprintf(
+            '%s/%s?%s',
+            rtrim(config()->string('services.ui.base_url'), '/'),
+            trim(config()->string('services.ui.login_path'), '/'),
+            http_build_query(['invitation' => $this->invitation->code]),
+        );
     }
 }
