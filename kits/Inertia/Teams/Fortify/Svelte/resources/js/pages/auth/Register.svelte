@@ -109,7 +109,11 @@
             Already have an account?
             <TextLink
                 href={teamInvitation
-                    ? `/login?invitation=${teamInvitation.code}`
+                    ? login.url({
+                          query: {
+                              invitation: teamInvitation.code,
+                          },
+                      })
                     : login()}
                 class="underline underline-offset-4"
                 data-test="team-invitation-login-link"

@@ -55,7 +55,7 @@
                         class="rounded-lg border p-4"
                     >
                         <div class="space-y-1">
-                            <p class="font-medium">{invitation.teamName}</p>
+                            <p class="font-medium">{invitation.team.name}</p>
                             <p class="text-sm text-muted-foreground">
                                 {invitation.inviterName} invited you to join this
                                 team.
