@@ -122,6 +122,30 @@ class TeamInvitationTest extends TestCase
             ->assertDispatched('toast-show');
     }
 
+    public function test_pending_invitations_excludes_expired_invitations_without_deleting_them(): void
+    {
+        $owner = User::factory()->create();
+        $invitedUser = User::factory()->create(['email' => 'invited@example.com']);
+        $team = Team::factory()->create(['name' => 'Expired Team']);
+
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+        $invitation = TeamInvitation::factory()->expired()->create([
+            'team_id' => $team->id,
+            'email' => 'invited@example.com',
+            'invited_by' => $owner->id,
+        ]);
+
+        $this->actingAs($invitedUser);
+
+        Livewire::test('pages::teams.pending-invitations-modal')
+            ->assertDontSee('Expired Team');
+
+        $this->assertDatabaseHas('team_invitations', [
+            'id' => $invitation->id,
+        ]);
+    }
+
     public function test_team_invitations_cannot_be_accepted_by_user_that_wasnt_invited(): void
     {
         $owner = User::factory()->create();

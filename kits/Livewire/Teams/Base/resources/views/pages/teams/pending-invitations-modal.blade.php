@@ -26,12 +26,6 @@ new class extends Component {
     {
         $email = Str::lower(Auth::user()->email);
 
-        TeamInvitation::query()
-            ->whereRaw('LOWER(email) = ?', [$email])
-            ->whereNotNull('expires_at')
-            ->where('expires_at', '<', now())
-            ->delete();
-
         return TeamInvitation::query()
             ->with(['inviter', 'team'])
             ->whereRaw('LOWER(email) = ?', [$email])
