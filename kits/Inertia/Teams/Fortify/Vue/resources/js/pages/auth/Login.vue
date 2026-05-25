@@ -123,7 +123,11 @@ defineProps<{
             <TextLink
                 :href="
                     teamInvitation
-                        ? `/register?invitation=${teamInvitation.code}`
+                        ? register.url({
+                              query: {
+                                  invitation: teamInvitation.code,
+                              },
+                          })
                         : register()
                 "
                 :tabindex="5"
