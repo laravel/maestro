@@ -59,9 +59,9 @@ class DashboardTest extends TestCase
             ->has('pendingInvitations', 1)
             ->where('pendingInvitations.0.code', $invitation->code)
             ->where('pendingInvitations.0.inviterName', 'Taylor Otwell')
-            ->where('pendingInvitations.0.teamName', 'Laravel Team')
             ->where('pendingInvitations.0.team.name', 'Laravel Team')
-            ->where('pendingInvitations.0.team.slug', $team->slug),
+            ->where('pendingInvitations.0.team.slug', $team->slug)
+            ->missing('pendingInvitations.0.teamName'),
         );
     }
 
@@ -90,7 +90,7 @@ class DashboardTest extends TestCase
         );
     }
 
-    public function test_dashboard_deletes_expired_invitations_for_the_authenticated_user()
+    public function test_dashboard_excludes_expired_invitations_without_deleting_them()
     {
         $owner = User::factory()->create();
         $invitedUser = User::factory()->create(['email' => 'invited@example.com']);
@@ -114,7 +114,7 @@ class DashboardTest extends TestCase
             ->has('pendingInvitations', 0),
         );
 
-        $this->assertDatabaseMissing('team_invitations', [
+        $this->assertDatabaseHas('team_invitations', [
             'id' => $invitation->id,
         ]);
     }

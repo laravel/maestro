@@ -13,12 +13,6 @@ class DashboardController extends Controller
     {
         $email = strtolower($request->user()->email);
 
-        TeamInvitation::query()
-            ->whereRaw('LOWER(email) = ?', [$email])
-            ->whereNotNull('expires_at')
-            ->where('expires_at', '<', now())
-            ->delete();
-
         $pendingInvitations = TeamInvitation::query()
             ->with(['inviter', 'team'])
             ->whereRaw('LOWER(email) = ?', [$email])
@@ -31,7 +25,6 @@ class DashboardController extends Controller
             ->map(fn (TeamInvitation $invitation) => [
                 'code' => $invitation->code,
                 'inviterName' => $invitation->inviter->name,
-                'teamName' => $invitation->team->name,
                 'team' => [
                     'name' => $invitation->team->name,
                     'slug' => $invitation->team->slug,

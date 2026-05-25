@@ -116,7 +116,12 @@ export default function Register({ passwordRules, teamInvitation }: Props) {
                             <TextLink
                                 href={
                                     teamInvitation
-                                        ? `/login?invitation=${teamInvitation.code}`
+                                        ? login.url({
+                                              query: {
+                                                  invitation:
+                                                      teamInvitation.code,
+                                              },
+                                          })
                                         : login()
                                 }
                                 data-test="team-invitation-login-link"

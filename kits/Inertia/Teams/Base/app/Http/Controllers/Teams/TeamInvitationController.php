@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Teams;
 
 use App\Enums\TeamRole;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Teams\AcceptTeamInvitationRequest;
 use App\Http\Requests\Teams\CreateTeamInvitationRequest;
+use App\Http\Requests\Teams\RespondToTeamInvitationRequest;
 use App\Models\Team;
 use App\Models\TeamInvitation;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
@@ -58,7 +58,7 @@ class TeamInvitationController extends Controller
     /**
      * Accept the invitation.
      */
-    public function accept(AcceptTeamInvitationRequest $request, TeamInvitation $invitation): RedirectResponse
+    public function accept(RespondToTeamInvitationRequest $request, TeamInvitation $invitation): RedirectResponse
     {
         $user = $request->user();
 
@@ -83,7 +83,7 @@ class TeamInvitationController extends Controller
     /**
      * Decline the invitation.
      */
-    public function decline(AcceptTeamInvitationRequest $request, TeamInvitation $invitation): RedirectResponse
+    public function decline(RespondToTeamInvitationRequest $request, TeamInvitation $invitation): RedirectResponse
     {
         $invitation->delete();
 

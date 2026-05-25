@@ -118,7 +118,12 @@ export default function Login({
                             <TextLink
                                 href={
                                     teamInvitation
-                                        ? `/register?invitation=${teamInvitation.code}`
+                                        ? register.url({
+                                              query: {
+                                                  invitation:
+                                                      teamInvitation.code,
+                                              },
+                                          })
                                         : register()
                                 }
                                 data-test="team-invitation-register-link"
