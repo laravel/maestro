@@ -81,6 +81,10 @@
             "Composer\\Config::disableProcessTimeout",
             "node scripts/run.js"
         ],
+        "skeleton:sync": [
+            "Composer\\Config::disableProcessTimeout",
+            "node scripts/sync-laravel-skeleton.js"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
