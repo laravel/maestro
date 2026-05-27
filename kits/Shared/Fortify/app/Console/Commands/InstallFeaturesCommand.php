@@ -47,15 +47,20 @@ class InstallFeaturesCommand extends Command
 
         $answers = $script
             ->collectAnswers()
-            ->onQuestion(fn (Question $question) => match ($question->type) {
-                'multiselect' => multiselect(
-                    label: $question->label,
-                    options: $question->options,
-                    default: $question->default ?? [],
-                    required: $question->required,
-                    hint: $question->hint,
-                ),
-                default => throw new RuntimeException("Unsupported question type [{$question->type}]."),
+            ->onQuestion(function (Question $question) {
+                /** @var string $type */
+                $type = $question->type;
+
+                return match ($type) {
+                    'multiselect' => multiselect(
+                        label: $question->label,
+                        options: $question->options,
+                        default: $question->default ?? [],
+                        required: $question->required,
+                        hint: $question->hint,
+                    ),
+                    default => throw new RuntimeException("Unsupported question type [{$question->type}]."),
+                };
             })
             ->interactive($this->input->isInteractive())
             ->withAnswers($providedAnswers);
