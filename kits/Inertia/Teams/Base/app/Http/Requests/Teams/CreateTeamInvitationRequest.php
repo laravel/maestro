@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Teams;
 
 use App\Enums\TeamRole;
+use App\Models\Team;
 use App\Rules\UniqueTeamInvitation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -18,8 +19,19 @@ class CreateTeamInvitationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email', 'max:255', new UniqueTeamInvitation($this->route('team'))],
+            'email' => ['required', 'string', 'email', 'max:255', new UniqueTeamInvitation($this->team())],
             'role' => ['required', 'string', Rule::enum(TeamRole::class)],
         ];
+    }
+
+    private function team(): Team
+    {
+        $team = $this->route('team');
+
+        if (! $team instanceof Team) {
+            abort(404);
+        }
+
+        return $team;
     }
 }
