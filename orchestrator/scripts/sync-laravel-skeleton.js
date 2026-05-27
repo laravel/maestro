@@ -144,7 +144,7 @@ function appendConfigureDefaults(contents, configureDefaultsBlock) {
         return contents;
     }
 
-    return contents.replace(/\n\}\s*$/, `${configureDefaultsBlock}}\n`);
+    return contents.replace(/\n\}\s*$/, `\n${configureDefaultsBlock}\n}\n`);
 }
 
 function mergeAppServiceProvider(sourceContents, destinationContents) {
