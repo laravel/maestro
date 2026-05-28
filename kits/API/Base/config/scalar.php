@@ -48,7 +48,7 @@ return [
     | Scalar Galaxy package. You can change this to use a custom OpenAPI file.
     |
     */
-    'url' => '/scribe-source.openapi',
+    'url' => '/docs/api.json',
 
     /*
     |--------------------------------------------------------------------------
