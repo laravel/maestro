@@ -6,20 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Teams\AcceptTeamInvitationRequest;
 use App\Http\Responses\MessageResponse;
 use App\Models\TeamInvitation;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Knuckles\Scribe\Attributes\Authenticated;
-use Knuckles\Scribe\Attributes\Endpoint;
-use Knuckles\Scribe\Attributes\Group;
-use Knuckles\Scribe\Attributes\Response as ScribeResponse;
 
 #[Group('Team Invitations')]
-#[Authenticated]
 class AcceptTeamInvitationController extends Controller
 {
-    #[Endpoint('Accept an invitation', 'Accept a pending team invitation for the authenticated user.')]
-    #[ScribeResponse(['message' => 'Invitation accepted successfully.'], description: 'Invitation accepted')]
-    #[ScribeResponse(status: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Invitation already accepted, expired, or sent to a different email address.')]
+    #[Endpoint(title: 'Accept an invitation', description: 'Accept a pending team invitation for the authenticated user.')]
+    #[ScrambleResponse(Response::HTTP_OK, 'Invitation accepted.', type: 'array{message: string}')]
     public function __invoke(AcceptTeamInvitationRequest $request, TeamInvitation $invitation): MessageResponse
     {
         $user = $request->user();

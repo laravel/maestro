@@ -16,6 +16,7 @@ class RespondToTeamInvitationRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @ignoreParam */
             'invitation' => ['required', new ValidTeamInvitation($this->user())],
         ];
     }
