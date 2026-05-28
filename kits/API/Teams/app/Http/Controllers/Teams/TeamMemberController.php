@@ -8,21 +8,16 @@ use App\Http\Requests\Teams\UpdateTeamMemberRequest;
 use App\Http\Resources\MemberResource;
 use App\Models\Team;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
-use Knuckles\Scribe\Attributes\Authenticated;
-use Knuckles\Scribe\Attributes\Endpoint;
-use Knuckles\Scribe\Attributes\Group;
-use Knuckles\Scribe\Attributes\Response as ScribeResponse;
-use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Team Members')]
-#[Authenticated]
 class TeamMemberController extends Controller
 {
-    #[Endpoint('Update a member role', 'Update the role of a member on the team. Only team owners may update member roles.')]
-    #[ResponseFromApiResource(MemberResource::class, User::class)]
+    #[Endpoint(title: 'Update a member role', description: 'Update the role of a member on the team. Only team owners may update member roles.')]
     public function update(UpdateTeamMemberRequest $request, Team $team, User $user): JsonResponse
     {
         Gate::authorize('updateMember', $team);
@@ -38,12 +33,12 @@ class TeamMemberController extends Controller
 
         $member = $team->members()->where('users.id', $user->id)->firstOrFail();
 
-        return (new MemberResource($member))->response($request);
+        return (new MemberResource($member))
+            ->ignoreFieldsAndIncludesInQueryString()
+            ->response($request);
     }
 
-    #[Endpoint('Remove a member', 'Remove a member from the team. The team owner cannot be removed.')]
-    #[ScribeResponse(status: Response::HTTP_NO_CONTENT, description: 'No Content')]
-    #[ScribeResponse(status: Response::HTTP_NOT_FOUND, description: 'The user is not a member of the team.')]
+    #[Endpoint(title: 'Remove a member', description: 'Remove a member from the team. The team owner cannot be removed.')]
     public function destroy(Team $team, User $user): Response
     {
         Gate::authorize('removeMember', $team);

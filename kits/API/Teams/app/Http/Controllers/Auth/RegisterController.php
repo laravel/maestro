@@ -7,23 +7,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Knuckles\Scribe\Attributes\BodyParam;
-use Knuckles\Scribe\Attributes\Endpoint;
-use Knuckles\Scribe\Attributes\Group;
-use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Authentication')]
 class RegisterController extends Controller
 {
     public function __construct(protected CreateTeam $createTeam) {}
 
-    #[Endpoint('Register', 'Create a new user account, provision a personal team, and return an API token.')]
-    #[BodyParam('password_confirmation', 'string', required: true, description: 'Must match the password field.', example: 'password')]
-    #[ResponseFromApiResource(UserResource::class, User::class, status: Response::HTTP_CREATED, additional: ['meta' => ['token' => 'YOUR_AUTH_TOKEN']])]
+    #[Endpoint(title: 'Register', description: 'Create a new user account, provision a personal team, and return an API token.')]
     public function __invoke(RegisterRequest $request): JsonResponse
     {
         [$user, $token] = DB::transaction(function () use ($request): array {
@@ -37,6 +33,7 @@ class RegisterController extends Controller
         event(new Registered($user));
 
         return (new UserResource($user))
+            ->ignoreFieldsAndIncludesInQueryString()
             ->additional(['meta' => ['token' => $token]])
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
