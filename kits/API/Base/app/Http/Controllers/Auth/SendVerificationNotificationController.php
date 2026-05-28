@@ -4,20 +4,18 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Responses\MessageResponse;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Knuckles\Scribe\Attributes\Authenticated;
-use Knuckles\Scribe\Attributes\Endpoint;
-use Knuckles\Scribe\Attributes\Group;
-use Knuckles\Scribe\Attributes\Response as ScribeResponse;
 
 #[Group('Authentication')]
-#[Authenticated]
 class SendVerificationNotificationController extends Controller
 {
-    #[Endpoint('Resend Verification Email', 'Send a new email verification notification.')]
-    #[ScribeResponse(['message' => 'Verification link sent.'], status: Response::HTTP_ACCEPTED, description: 'Verification link sent')]
-    #[ScribeResponse(['message' => 'Already verified.'], status: Response::HTTP_OK, description: 'Email already verified')]
+    #[Endpoint(title: 'Resend Verification Email', description: 'Send a new email verification notification.')]
+    #[ScrambleResponse(Response::HTTP_OK, 'Email already verified.', type: 'array{message: string}')]
+    #[ScrambleResponse(Response::HTTP_ACCEPTED, 'Verification link sent.', type: 'array{message: string}')]
     public function __invoke(Request $request): MessageResponse
     {
         if ($request->user()->hasVerifiedEmail()) {

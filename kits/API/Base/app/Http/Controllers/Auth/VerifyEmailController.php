@@ -5,19 +5,18 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\MessageResponse;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
+use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Knuckles\Scribe\Attributes\Endpoint;
-use Knuckles\Scribe\Attributes\Group;
-use Knuckles\Scribe\Attributes\Response as ScribeResponse;
 
 #[Group('Authentication')]
 class VerifyEmailController extends Controller
 {
-    #[Endpoint('Verify Email', "Mark a user's email as verified using the signed verification link.")]
-    #[ScribeResponse(['message' => 'Email verified successfully.'], description: 'Email verified')]
-    #[ScribeResponse(['message' => 'Email already verified.'], description: 'Email was already verified')]
+    #[Endpoint(title: 'Verify Email', description: "Mark a user's email as verified using the signed verification link.")]
+    #[ScrambleResponse(Response::HTTP_OK, 'Email verification result.', type: 'array{message: string}')]
     public function __invoke(Request $request): MessageResponse
     {
         $user = User::query()->find($request->route('id'));

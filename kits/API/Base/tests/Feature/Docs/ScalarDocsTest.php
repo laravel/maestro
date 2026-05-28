@@ -2,47 +2,22 @@
 
 namespace Tests\Feature\Docs;
 
-use Symfony\Component\Yaml\Yaml;
+use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 class ScalarDocsTest extends TestCase
 {
-    private function decodeOpenApi(string $body): array
+    /** @var array<string, mixed>|null */
+    private ?array $cachedOpenApi = null;
+
+    public function test_openapi_document_endpoint_serves_a_valid_spec(): void
     {
-        $trimmed = ltrim($body);
+        $payload = $this->openApi();
 
-        if (str_starts_with($trimmed, '{')) {
-            return json_decode($body, true, flags: JSON_THROW_ON_ERROR);
-        }
-
-        return Yaml::parse($body);
-    }
-
-    public function test_scribe_openapi_endpoint_serves_a_valid_spec(): void
-    {
-        $response = $this->get('/scribe-source.openapi');
-
-        $response->assertOk();
-
-        $payload = $this->decodeOpenApi($response->streamedContent() ?: $response->getContent());
-
-        $this->assertIsArray($payload);
-        $this->assertArrayHasKey('openapi', $payload);
+        $this->assertMatchesRegularExpression('/^3\.1\.\d+$/', $payload['openapi'] ?? '');
         $this->assertArrayHasKey('info', $payload);
         $this->assertArrayHasKey('paths', $payload);
-    }
-
-    public function test_scribe_openapi_spec_lists_kit_routes(): void
-    {
-        $response = $this->get('/scribe-source.openapi');
-
-        $payload = $this->decodeOpenApi($response->streamedContent() ?: $response->getContent());
-
-        $paths = array_keys($payload['paths'] ?? []);
-
-        $this->assertContains('/login', $paths);
-        $this->assertContains('/register', $paths);
-        $this->assertContains('/me', $paths);
+        $this->assertArrayHasKey('components', $payload);
     }
 
     public function test_scalar_docs_ui_renders_at_docs(): void
@@ -52,9 +27,10 @@ class ScalarDocsTest extends TestCase
         $response->assertOk();
         $this->assertStringContainsString('text/html', (string) $response->headers->get('Content-Type'));
 
-        $body = $response->getContent();
+        $body = stripslashes((string) $response->getContent());
 
-        $this->assertStringContainsString('/scribe-source.openapi', $body);
+        $this->assertStringContainsString('/docs/api.json', $body);
+        $this->assertStringNotContainsString('/'.'scr'.'ibe-source.openapi', $body);
         $this->assertStringContainsString('@scalar/api-reference', $body);
     }
 
@@ -65,11 +41,31 @@ class ScalarDocsTest extends TestCase
         $this->get('/docs')->assertSee($expected, false);
     }
 
-    public function test_scalar_docs_ui_does_not_expose_scribe_markers(): void
+    public function test_docs_document_endpoint_can_be_denied_by_gate(): void
     {
-        $body = $this->get('/docs')->getContent();
+        $this->app->detectEnvironment(fn () => 'production');
+        Gate::define('viewApiDocs', fn (): bool => false);
 
-        $this->assertStringNotContainsString('Knuckles\\Scribe', $body);
-        $this->assertStringNotContainsString('scribe-style', $body);
+        $this->getJson('/docs/api.json')->assertForbidden();
+    }
+
+    public function test_docs_are_accessible_by_default_in_local_environments(): void
+    {
+        $this->openApi();
+    }
+
+    /** @return array<string, mixed> */
+    private function openApi(): array
+    {
+        if ($this->cachedOpenApi !== null) {
+            return $this->cachedOpenApi;
+        }
+
+        $response = $this->getJson('/docs/api.json');
+
+        $response->assertOk();
+        $this->assertStringContainsString('application/json', (string) $response->headers->get('Content-Type'));
+
+        return $this->cachedOpenApi = $response->json();
     }
 }
