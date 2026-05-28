@@ -35,7 +35,6 @@ class TeamInvitationController extends Controller
             ->notify(new TeamInvitationNotification($invitation));
 
         return (new TeamInvitationResource($invitation))
-            ->ignoreFieldsAndIncludesInQueryString()
             ->response($request)
             ->setStatusCode(Response::HTTP_CREATED);
     }
