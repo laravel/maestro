@@ -6,6 +6,8 @@ use Illuminate\Http\Resources\JsonApi\JsonApiResource;
 
 class UserResource extends JsonApiResource
 {
+    protected bool $usesRequestQueryString = false;
+
     /**
      * The resource's attributes.
      */

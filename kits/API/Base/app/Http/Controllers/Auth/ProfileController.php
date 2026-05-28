@@ -19,7 +19,7 @@ class ProfileController extends Controller
     #[Endpoint(title: 'Current User', description: "Get the authenticated user's information.")]
     public function show(Request $request): UserResource
     {
-        return (new UserResource($request->user()))->ignoreFieldsAndIncludesInQueryString();
+        return new UserResource($request->user());
     }
 
     #[Endpoint(title: 'Update Profile', description: "Update the authenticated user's name and/or email.")]
@@ -31,14 +31,14 @@ class ProfileController extends Controller
         if (! $user->isDirty('email') || ! ($user instanceof MustVerifyEmail)) {
             $user->save();
 
-            return (new UserResource($user))->ignoreFieldsAndIncludesInQueryString();
+            return new UserResource($user);
         }
 
         $user->email_verified_at = null;
         $user->save();
         $user->sendEmailVerificationNotification();
 
-        return (new UserResource($user))->ignoreFieldsAndIncludesInQueryString();
+        return new UserResource($user);
     }
 
     #[Endpoint(title: 'Delete Account', description: "Permanently delete the authenticated user's account and revoke all their tokens.")]
