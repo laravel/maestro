@@ -33,7 +33,6 @@ class RegisterController extends Controller
         event(new Registered($user));
 
         return (new UserResource($user))
-            ->ignoreFieldsAndIncludesInQueryString()
             ->additional(['meta' => ['token' => $token]])
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);

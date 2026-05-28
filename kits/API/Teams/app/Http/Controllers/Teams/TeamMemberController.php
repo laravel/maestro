@@ -34,7 +34,6 @@ class TeamMemberController extends Controller
         $member = $team->members()->where('users.id', $user->id)->firstOrFail();
 
         return (new MemberResource($member))
-            ->ignoreFieldsAndIncludesInQueryString()
             ->response($request);
     }
 

@@ -35,7 +35,6 @@ class TeamController extends Controller
         $team = $createTeam->handle($request->user(), $request->validated('name'));
 
         return (new TeamResource($team))
-            ->ignoreFieldsAndIncludesInQueryString()
             ->response($request)
             ->setStatusCode(Response::HTTP_CREATED);
     }
@@ -46,7 +45,6 @@ class TeamController extends Controller
         $user = $request->user();
 
         return (new TeamResource($team))
-            ->ignoreFieldsAndIncludesInQueryString()
             ->additional([
                 'meta' => [
                     'members' => MemberResource::collection($team->members()->get()),
@@ -74,7 +72,6 @@ class TeamController extends Controller
         });
 
         return (new TeamResource($team))
-            ->ignoreFieldsAndIncludesInQueryString()
             ->response($request);
     }
 

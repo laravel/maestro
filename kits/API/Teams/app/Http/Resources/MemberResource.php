@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\JsonApi\JsonApiResource;
 
 class MemberResource extends JsonApiResource
 {
+    protected bool $usesRequestQueryString = false;
+
     /**
      * Get the resource's type.
      */
