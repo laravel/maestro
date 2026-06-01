@@ -8,15 +8,12 @@ use App\Http\Responses\MessageResponse;
 use App\Models\TeamInvitation;
 use Dedoc\Scramble\Attributes\Endpoint;
 use Dedoc\Scramble\Attributes\Group;
-use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 #[Group('Team Invitations')]
 class AcceptTeamInvitationController extends Controller
 {
     #[Endpoint(title: 'Accept an invitation', description: 'Accept a pending team invitation for the authenticated user.')]
-    #[ScrambleResponse(Response::HTTP_OK, 'Invitation accepted.', type: 'array{message: string}')]
     public function __invoke(AcceptTeamInvitationRequest $request, TeamInvitation $invitation): MessageResponse
     {
         $user = $request->user();
