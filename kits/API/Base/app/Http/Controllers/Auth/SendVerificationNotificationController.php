@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Responses\MessageResponse;
 use Dedoc\Scramble\Attributes\Endpoint;
 use Dedoc\Scramble\Attributes\Group;
-use Dedoc\Scramble\Attributes\Response as ScrambleResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -14,8 +13,6 @@ use Illuminate\Http\Response;
 class SendVerificationNotificationController extends Controller
 {
     #[Endpoint(title: 'Resend Verification Email', description: 'Send a new email verification notification.')]
-    #[ScrambleResponse(Response::HTTP_OK, 'Email already verified.', type: 'array{message: string}')]
-    #[ScrambleResponse(Response::HTTP_ACCEPTED, 'Verification link sent.', type: 'array{message: string}')]
     public function __invoke(Request $request): MessageResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
