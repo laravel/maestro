@@ -63,6 +63,7 @@ The kit pairs two tools to keep the docs fully driven by your code:
 
 - The Scalar UI is mounted at `/docs` and is the public docs URL.
 - Scalar reads the OpenAPI spec live from `/docs/api.json`, which Scramble serves by analyzing your routes, controllers, form requests, and resources at request time.
+- Route selection and bearer authentication security are configured in `config/scramble.php`, including which root-level API routes are documented and which middleware marks an endpoint as authenticated.
 - Because Scramble is on demand, there is no generate command to run after code changes; refresh the page and the spec reflects the current codebase.
 
 ### Preview the docs
@@ -82,8 +83,8 @@ Scramble exposes the spec only to users who pass the `viewApiDocs` gate. The kit
 ### Customizing the docs
 
 - Edit `config/scalar.php` to change the UI — theme, layout, page title, sidebar visibility, hidden HTTP clients, and so on.
-- Edit `config/scramble.php` to change discovery defaults, server URLs, info metadata, and middleware.
-- Edit `app/Providers/ScrambleServiceProvider.php` to adjust route selection, security schemes, and document or operation transformers.
+- Edit `config/scramble.php` to change route selection, authentication security, discovery defaults, server URLs, info metadata, and middleware.
+- Edit `app/Providers/ScrambleServiceProvider.php` to adjust docs access or the exposed Scramble document route.
 
 ## Official Documentation
 
