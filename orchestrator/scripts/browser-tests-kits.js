@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import {
@@ -72,6 +72,52 @@ const variants = [
         buildArgs: ['build', '--no-interaction', '--kit=Vue', '--teams'],
     },
 ];
+
+function runCapturedToFile(command, args, options = {}) {
+    return new Promise((resolve, reject) => {
+        const outputPath = path.join(options.cwd ?? process.cwd(), `.browser-tests-output-${Date.now()}.log`);
+        const output = fs.openSync(outputPath, 'w');
+        let outputRead = false;
+        const child = spawn(command, args, {
+            ...options,
+            stdio: ['ignore', output, output],
+        });
+
+        const readOutput = () => {
+            if (outputRead) {
+                return '';
+            }
+
+            outputRead = true;
+            fs.closeSync(output);
+
+            const captured = fs.readFileSync(outputPath, 'utf-8');
+            fs.rmSync(outputPath, { force: true });
+
+            return captured;
+        };
+
+        child.on('close', code => {
+            const captured = readOutput();
+
+            if (code === 0) {
+                resolve({ stdout: captured, stderr: '' });
+
+                return;
+            }
+
+            const display = [command, ...args].join(' ');
+            const error = new Error(`Command failed: ${display}`);
+            error.output = captured;
+            reject(error);
+        });
+
+        child.on('error', error => {
+            error.output = readOutput();
+            reject(error);
+        });
+    });
+}
 
 function prepareBrowserTests(variant, { jsonMode }) {
     if (!jsonMode) {
@@ -158,7 +204,7 @@ async function runBrowserTestsForCurrentBuild(context) {
         log('  Running browser tests...', 'blue');
     }
 
-    const run = context.jsonMode ? runQuiet : runInherit;
+    const run = context.jsonMode ? runCapturedToFile : runInherit;
 
     await run('php', ['vendor/bin/pest', '--parallel'], { cwd: buildDir });
 }
