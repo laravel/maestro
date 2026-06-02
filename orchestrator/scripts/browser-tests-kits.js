@@ -73,13 +73,19 @@ const variants = [
     },
 ];
 
-function prepareBrowserTests(variant) {
-    log('  Copying browser test bootstrap into build...', 'dim');
+function prepareBrowserTests(variant, { jsonMode }) {
+    if (!jsonMode) {
+        log('  Copying browser test bootstrap into build...', 'dim');
+    }
+
     fs.cpSync(path.join(browserTestsDir, 'bootstrap'), buildDir, { recursive: true });
 
     const suite = variant === 'teams' ? 'teams' : 'common';
 
-    log(`  Copying ${suite} browser tests into build...`, 'dim');
+    if (!jsonMode) {
+        log(`  Copying ${suite} browser tests into build...`, 'dim');
+    }
+
     fs.cpSync(path.join(browserTestsDir, suite), buildDir, { recursive: true });
 }
 
@@ -100,50 +106,79 @@ function playwrightBrowsersInstalled() {
     }
 }
 
-async function ensurePlaywrightBrowsers() {
+async function ensurePlaywrightBrowsers({ jsonMode }) {
     if (playwrightBrowsersInstalled()) {
-        log('  Playwright browsers already installed, skipping...', 'dim');
+        if (!jsonMode) {
+            log('  Playwright browsers already installed, skipping...', 'dim');
+        }
 
         return;
     }
 
-    log('  Installing Playwright browsers...', 'blue');
-    await runInherit('npx', ['playwright', 'install', 'chromium', '--with-deps', '--only-shell'], { cwd: buildDir });
+    if (!jsonMode) {
+        log('  Installing Playwright browsers...', 'blue');
+    }
+
+    const run = jsonMode ? runQuiet : runInherit;
+
+    await run('npx', ['playwright', 'install', 'chromium', '--with-deps', '--only-shell'], { cwd: buildDir });
 }
 
-async function runBrowserTestsForCurrentBuild() {
-    log('  Configuring Pest + Playwright deps...', 'dim');
+async function runBrowserTestsForCurrentBuild(context) {
+    if (!context.jsonMode) {
+        log('  Configuring Pest + Playwright deps...', 'dim');
+    }
+
     await runQuiet('composer', ['remove', '--dev', 'phpunit/phpunit', '--no-interaction', '--no-update'], { cwd: buildDir });
     await runQuiet('composer', ['require', '--dev', 'pestphp/pest', 'pestphp/pest-plugin-browser', 'pestphp/pest-plugin-laravel', '--no-interaction'], { cwd: buildDir });
 
-    log('  Installing npm deps...', 'dim');
+    if (!context.jsonMode) {
+        log('  Installing npm deps...', 'dim');
+    }
+
     await runQuiet('npm', ['install'], { cwd: buildDir });
     await runQuiet('npm', ['install', 'playwright'], { cwd: buildDir });
 
-    await ensurePlaywrightBrowsers();
+    await ensurePlaywrightBrowsers(context);
 
-    log('  Preparing environment...', 'dim');
+    if (!context.jsonMode) {
+        log('  Preparing environment...', 'dim');
+    }
+
     await runQuiet('cp', ['.env.example', '.env'], { cwd: buildDir });
     await runQuiet('php', ['artisan', 'key:generate'], { cwd: buildDir });
 
-    log('  Building frontend...', 'dim');
+    if (!context.jsonMode) {
+        log('  Building frontend...', 'dim');
+    }
+
     await runQuiet('npm', ['run', 'build'], { cwd: buildDir });
 
-    log('  Running browser tests...', 'blue');
-    await runInherit('php', ['vendor/bin/pest', '--parallel'], { cwd: buildDir });
+    if (!context.jsonMode) {
+        log('  Running browser tests...', 'blue');
+    }
+
+    const run = context.jsonMode ? runQuiet : runInherit;
+
+    await run('php', ['vendor/bin/pest', '--parallel'], { cwd: buildDir });
 }
 
-async function browserTestVariant(variant, index, total) {
-    log(`\n[${index}/${total}] ${variant.display}`, 'blue');
+async function browserTestVariant(variant, index, total, context) {
+    if (!context.jsonMode) {
+        log(`\n[${index}/${total}] ${variant.display}`, 'blue');
+    }
 
     removeBuildDirectory();
 
-    log('  Building variant...', 'dim');
+    if (!context.jsonMode) {
+        log('  Building variant...', 'dim');
+    }
+
     await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
 
-    prepareBrowserTests(variant.variant);
+    prepareBrowserTests(variant.variant, context);
 
-    await runBrowserTestsForCurrentBuild();
+    await runBrowserTestsForCurrentBuild(context);
 }
 
 runMatrix({
