@@ -2,13 +2,18 @@
 import type { ToasterProps } from "vue-sonner"
 import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon, XIcon } from "@lucide/vue"
 import { Toaster as Sonner } from "vue-sonner"
+import { useAppearance } from '@/composables/useAppearance';
 import { cn } from "@/lib/utils"
 
+import 'vue-sonner/style.css';
+
 const props = defineProps<ToasterProps>()
+const { appearance } = useAppearance();
 </script>
 
 <template>
   <Sonner
+    :theme="appearance"
     :class="cn('toaster group', props.class)"
     :style="{
       '--normal-bg': 'var(--popover)',
