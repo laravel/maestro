@@ -631,6 +631,10 @@ function copyToKit(srcPath, relativePath, folders, kitType, uiComponents, starte
 function deleteFromKit(relativePath, folders, starterKit, manifest) {
     const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
 
+    if (isChiselFile(destRelativePath)) {
+        return;
+    }
+
     // Find the highest-priority folder that has this file
     const targetFolder = findSourceKitFolder(destRelativePath, folders);
 
@@ -656,6 +660,10 @@ function deleteFromKit(relativePath, folders, starterKit, manifest) {
  */
 function deleteDirFromKit(relativePath, folders, starterKit, manifest) {
     const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
+
+    if (isChiselFile(destRelativePath)) {
+        return;
+    }
 
     for (let i = folders.length - 1; i >= 0; i--) {
         const targetDir = path.join(kitsDir, folders[i], destRelativePath);
@@ -683,6 +691,10 @@ function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponent
 
     // Skip files that match .gitignore patterns
     if (ig.ignores(relativePath)) {
+        return;
+    }
+
+    if ((eventType === 'unlink' || eventType === 'unlinkDir') && isChiselFile(relativePath)) {
         return;
     }
 

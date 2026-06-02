@@ -152,23 +152,34 @@ const variants = [
     },
 ];
 
-async function checkCurrentBuild() {
-    log('  Installing dependencies...', 'dim');
+async function checkCurrentBuild({ jsonMode }) {
+    if (!jsonMode) {
+        log('  Installing dependencies...', 'dim');
+    }
+
     await runQuiet('composer', ['setup'], { cwd: buildDir });
 
-    log('  Running ci:check...', 'dim');
+    if (!jsonMode) {
+        log('  Running ci:check...', 'dim');
+    }
+
     await runQuiet('composer', ['ci:check'], { cwd: buildDir });
 }
 
-async function checkVariant(variant, index, total) {
-    log(`\n[${index}/${total}] ${variant.display}`, 'blue');
+async function checkVariant(variant, index, total, context) {
+    if (!context.jsonMode) {
+        log(`\n[${index}/${total}] ${variant.display}`, 'blue');
+    }
 
     removeBuildDirectory();
 
-    log('  Building variant...', 'dim');
+    if (!context.jsonMode) {
+        log('  Building variant...', 'dim');
+    }
+
     await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
 
-    await checkCurrentBuild();
+    await checkCurrentBuild(context);
 }
 
 runMatrix({

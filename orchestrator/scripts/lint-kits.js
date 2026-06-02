@@ -2,7 +2,10 @@
 
 import {
     buildDir,
+    buildJsonSummary,
+    buildSkippedResults,
     filterVariants,
+    isJsonOutputRequested,
     log,
     orchestratorDir,
     parseFrameworkFlags,
@@ -11,6 +14,7 @@ import {
     removeBuildDirectory,
     runInherit,
     runQuiet,
+    writeJsonSummary,
     colors,
 } from './kit-helpers.js';
 
@@ -129,62 +133,152 @@ const variants = [
 
 const MAX_LINT_PASSES = 2;
 
-async function lintCurrentBuild() {
-    log('  Installing composer deps...', 'dim');
+async function lintCurrentBuild({ jsonMode }) {
+    if (!jsonMode) {
+        log('  Installing composer deps...', 'dim');
+    }
+
     await runQuiet('composer', ['install'], { cwd: buildDir });
 
-    log('  Installing npm deps...', 'dim');
+    if (!jsonMode) {
+        log('  Installing npm deps...', 'dim');
+    }
+
     await runQuiet('npm', ['install'], { cwd: buildDir });
 
-    log('  Building frontend...', 'dim');
+    if (!jsonMode) {
+        log('  Building frontend...', 'dim');
+    }
+
     await runQuiet('npm', ['run', 'build'], { cwd: buildDir });
 
     for (let pass = 1; pass <= MAX_LINT_PASSES; pass++) {
-        log(`  Running lint pass ${pass}...`, 'dim');
+        if (!jsonMode) {
+            log(`  Running lint pass ${pass}...`, 'dim');
+        }
+
         await runQuiet('npm', ['run', 'lint'], { cwd: buildDir });
 
-        log(`  Running format pass ${pass}...`, 'dim');
+        if (!jsonMode) {
+            log(`  Running format pass ${pass}...`, 'dim');
+        }
+
         await runQuiet('npm', ['run', 'format'], { cwd: buildDir });
     }
 }
 
-function runWatcherInitialSync() {
-    log('  Syncing changes back to kits...', 'dim');
+function runWatcherInitialSync({ jsonMode }) {
+    if (!jsonMode) {
+        log('  Syncing changes back to kits...', 'dim');
+    }
 
     return runQuiet('node', ['scripts/watch.js', '--initial-sync-only'], {
         cwd: orchestratorDir,
     });
 }
 
-async function lintVariant(variant, index, total) {
-    log(`\n[${index}/${total}] ${variant.display}`, 'blue');
+async function lintVariant(variant, index, total, context) {
+    if (!context.jsonMode) {
+        log(`\n[${index}/${total}] ${variant.display}`, 'blue');
+    }
 
     removeBuildDirectory();
 
-    log('  Building variant...', 'dim');
+    if (!context.jsonMode) {
+        log('  Building variant...', 'dim');
+    }
+
     await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
 
-    await lintCurrentBuild();
-    await runWatcherInitialSync();
+    await lintCurrentBuild(context);
+    await runWatcherInitialSync(context);
 }
 
-async function runPint() {
-    log('Running Pint on kits/ and browser_tests/...', 'blue');
-    await runInherit('pint', ['--parallel', '../kits'], { cwd: orchestratorDir });
-    await runInherit('pint', ['--parallel', '../browser_tests'], { cwd: orchestratorDir });
+async function runPint({ jsonMode }) {
+    if (!jsonMode) {
+        log('Running Pint on kits/ and browser_tests/...', 'blue');
+    }
+
+    const run = jsonMode ? runQuiet : runInherit;
+
+    await run('pint', ['--parallel', '../kits'], { cwd: orchestratorDir });
+    await run('pint', ['--parallel', '../browser_tests'], { cwd: orchestratorDir });
+}
+
+function failedResultError(error) {
+    const result = {
+        message: error.message,
+    };
+
+    if (error.output) {
+        result.output = error.output;
+    }
+
+    return result;
+}
+
+function writeLintJsonSummary({ startedAt, selectedFrameworks, selectedVariants, results, message = null }) {
+    writeJsonSummary(buildJsonSummary({
+        scriptLabel: 'kits:lint',
+        startedAt,
+        finishedAt: new Date(),
+        selectedFrameworks,
+        selectedVariants,
+        results,
+        message,
+    }));
 }
 
 async function main() {
     const argv = process.argv.slice(2);
+    const jsonMode = isJsonOutputRequested(argv, process.env);
+    const startedAt = new Date();
     const selectedFrameworks = parseFrameworkFlags(argv);
     const selectedVariants = parseVariantFlags(argv);
     const active = filterVariants(variants, selectedFrameworks, selectedVariants);
+    const skipped = buildSkippedResults(variants, active);
+    const results = [];
+    const context = { jsonMode };
 
     // Always run Pint first (it applies to all frameworks including Livewire).
-    await runPint();
+    if (jsonMode) {
+        const pintStart = Date.now();
+
+        try {
+            await runPint(context);
+            results.push({ key: 'pint', display: 'Pint', status: 'passed', elapsed: Date.now() - pintStart });
+        } catch (error) {
+            results.push({ key: 'pint', display: 'Pint', status: 'failed', elapsed: Date.now() - pintStart, error: failedResultError(error) });
+            results.push(...skipped);
+            writeLintJsonSummary({ startedAt, selectedFrameworks, selectedVariants, results });
+            process.exit(1);
+        }
+    } else {
+        await runPint(context);
+    }
 
     // If only --livewire was selected, there are no Inertia variants to run.
     if (active.length === 0) {
+        if (jsonMode) {
+            const message = selectedFrameworks && selectedFrameworks.has('livewire') && selectedFrameworks.size === 1
+                ? 'Livewire has no frontend lint phase. Only the shared Pint step applies.'
+                : 'No Inertia variants matched the selected flags.';
+
+            if (selectedFrameworks && selectedFrameworks.has('livewire') && selectedFrameworks.size === 1) {
+                results.push({
+                    key: 'livewire-frontend-lint',
+                    display: 'Livewire frontend lint',
+                    framework: 'livewire',
+                    status: 'skipped',
+                    reason: 'Livewire has no frontend lint phase.',
+                });
+            }
+
+            results.push(...skipped);
+            writeLintJsonSummary({ startedAt, selectedFrameworks, selectedVariants, results, message });
+            process.exit(0);
+        }
+
         if (selectedFrameworks && selectedFrameworks.has('livewire') && selectedFrameworks.size === 1) {
             log('Livewire has no frontend lint phase. Only the shared Pint step applies.', 'yellow');
         } else {
@@ -204,26 +298,30 @@ async function main() {
         labels.push(`variants: ${[...selectedVariants].join(', ')}`);
     }
 
-    if (labels.length > 0) {
+    if (!jsonMode && labels.length > 0) {
         log(`Filters — ${labels.join(' | ')}`, 'blue');
     }
 
     const total = active.length;
-    const results = [];
-
-    // Track skipped variants for summary
-    const skipped = variants.filter(v => !active.includes(v));
 
     for (let index = 0; index < total; index++) {
         const variant = active[index];
         const start = Date.now();
 
         try {
-            await lintVariant(variant, index + 1, total);
-            results.push({ key: variant.key, display: variant.display, status: 'passed', elapsed: Date.now() - start });
-            log(`  ${colors.green}✓ Finished${colors.reset}`);
+            await lintVariant(variant, index + 1, total, context);
+            results.push({ ...variant, status: 'passed', elapsed: Date.now() - start });
+
+            if (!jsonMode) {
+                log(`  ${colors.green}✓ Finished${colors.reset}`);
+            }
         } catch (error) {
-            results.push({ key: variant.key, display: variant.display, status: 'failed', elapsed: Date.now() - start });
+            results.push({ ...variant, status: 'failed', elapsed: Date.now() - start, error: failedResultError(error) });
+
+            if (jsonMode) {
+                continue;
+            }
+
             log(`  ✗ Failed: ${error.message}`, 'red');
 
             if (error.output) {
@@ -234,11 +332,13 @@ async function main() {
         }
     }
 
-    for (const s of skipped) {
-        results.push({ key: s.key, display: s.display, status: 'skipped', reason: 'kit not selected' });
-    }
+    results.push(...skipped);
 
-    printSummary('kits:lint', results);
+    if (jsonMode) {
+        writeLintJsonSummary({ startedAt, selectedFrameworks, selectedVariants, results });
+    } else {
+        printSummary('kits:lint', results);
+    }
 
     removeBuildDirectory();
 
