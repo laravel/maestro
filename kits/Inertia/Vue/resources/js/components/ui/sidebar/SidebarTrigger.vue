@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue"
-import { PanelLeftClose, PanelLeftOpen } from "lucide-vue-next"
+import { PanelLeft } from "@lucide/vue"
 import { cn } from "@/lib/utils"
 import { Button } from '@/components/ui/button'
 import { useSidebar } from "./utils"
@@ -9,7 +9,7 @@ const props = defineProps<{
   class?: HTMLAttributes["class"]
 }>()
 
-const { isMobile, state, toggleSidebar } = useSidebar()
+const { toggleSidebar } = useSidebar()
 </script>
 
 <template>
@@ -21,8 +21,7 @@ const { isMobile, state, toggleSidebar } = useSidebar()
     :class="cn('h-7 w-7', props.class)"
     @click="toggleSidebar"
   >
-    <PanelLeftOpen v-if="isMobile || state === 'collapsed'" />
-    <PanelLeftClose v-else />
-    <span class="sr-only">Toggle sidebar</span>
+    <PanelLeft />
+    <span class="sr-only">Toggle Sidebar</span>
   </Button>
 </template>
