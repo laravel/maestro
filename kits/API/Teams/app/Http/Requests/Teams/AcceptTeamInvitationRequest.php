@@ -3,10 +3,12 @@
 namespace App\Http\Requests\Teams;
 
 use App\Rules\ValidTeamInvitation;
+use Dedoc\Scramble\Attributes\IgnoreParam;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RespondToTeamInvitationRequest extends FormRequest
+#[IgnoreParam('invitation')]
+class AcceptTeamInvitationRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
