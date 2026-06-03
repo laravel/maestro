@@ -22,8 +22,7 @@ Out of the box it ships with token-based authentication, email verification, pas
 ## Packages
 
 - [`laravel/sanctum`](https://laravel.com/docs/sanctum) — API token authentication
-- [`dedoc/scramble`](https://scramble.dedoc.co) — OpenAPI 3.1 spec generator
-- [`scalar/laravel`](https://github.com/scalar/laravel) — Scalar UI for the API reference
+- [`dedoc/scramble`](https://scramble.dedoc.co) — OpenAPI 3.1 spec generator and Scalar API reference renderer
 
 ## API Versioning
 
@@ -57,7 +56,7 @@ Unsupported explicit versions throw an `UnsupportedApiVersionException` and rend
 The kit pairs two tools to keep the docs fully driven by your code:
 
 - **Scramble** inspects routes, form requests, and API resources to produce the OpenAPI 3.1 document on demand.
-- **Scalar** renders that document as an interactive API reference at [`/docs`](http://localhost:8000/docs).
+- **Scalar** renders that document through Scramble's built-in renderer as an interactive API reference at [`/docs`](http://localhost:8000/docs).
 
 ### How it works
 
@@ -82,9 +81,8 @@ Scramble exposes the spec only to users who pass the `viewApiDocs` gate. The kit
 
 ### Customizing the docs
 
-- Edit `config/scalar.php` to change the UI — theme, layout, page title, sidebar visibility, hidden HTTP clients, and so on.
-- Edit `config/scramble.php` to change route selection, authentication security, discovery defaults, server URLs, info metadata, and middleware.
-- Edit `app/Providers/ScrambleServiceProvider.php` to adjust docs access or the exposed Scramble document route.
+- Edit `config/scramble.php` to change the Scalar renderer options, route selection, authentication security, discovery defaults, server URLs, info metadata, and middleware.
+- Edit `app/Providers/ScrambleServiceProvider.php` to adjust docs access or the exposed Scramble UI and document routes.
 
 ## Official Documentation
 
