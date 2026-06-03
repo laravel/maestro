@@ -17,6 +17,6 @@ class ScrambleServiceProvider extends ServiceProvider
         );
 
         Scramble::configure()
-            ->expose(ui: false, document: '/docs/api.json');
+            ->expose(ui: '/docs', document: '/docs/api.json');
     }
 }

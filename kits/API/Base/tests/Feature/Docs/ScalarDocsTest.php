@@ -32,11 +32,15 @@ class ScalarDocsTest extends TestCase
         $this->assertStringContainsString('/docs/api.json', $body);
         $this->assertStringNotContainsString('/'.'scr'.'ibe-source.openapi', $body);
         $this->assertStringContainsString('@scalar/api-reference', $body);
+        $this->assertStringContainsString('Scalar.createApiReference', $body);
+        $this->assertStringContainsString('customFetch', $body);
     }
 
     public function test_scalar_docs_ui_uses_configured_title(): void
     {
-        $expected = config('app.name').' API Reference';
+        $expected = config('scramble.ui.title');
+
+        $this->assertNotEmpty($expected);
 
         $this->get('/docs')->assertSee($expected, false);
     }
