@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Info } from 'lucide-vue-next';
+import { Info } from '@lucide/vue';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { TeamInvitationContext } from '@/types';
 
