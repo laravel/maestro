@@ -275,7 +275,7 @@ async function collectAllowedFiles(sourceDir) {
     return files.sort((a, b) => a.localeCompare(b));
 }
 
-export async function syncAllowedFile({ sourceDir, destinationDir, relativePath }) {
+async function syncAllowedFile({ sourceDir, destinationDir, relativePath }) {
     assertSafeRelativePath(relativePath);
 
     if (isIgnoredPath(relativePath) || !isAllowedPath(relativePath)) {
@@ -318,7 +318,7 @@ export async function syncAllowedFile({ sourceDir, destinationDir, relativePath 
     return existingContents ? 'updated' : 'added';
 }
 
-export async function syncSkeleton({ sourceDir, destinationDir = path.join(kitsDir, 'Shared', 'Blank') }) {
+async function syncSkeleton({ sourceDir, destinationDir = path.join(kitsDir, 'Shared', 'Blank') }) {
     const summary = {
         added: [],
         updated: [],
@@ -390,7 +390,7 @@ async function resolveSource() {
     return checkoutRemoteSource(source, ref);
 }
 
-export function printSummary(summary, sourceRef) {
+function printSummary(summary, sourceRef) {
     log(`Laravel skeleton source: ${sourceRef}`, 'blue');
     log(`Added: ${summary.added.length}`, 'green');
     log(`Updated: ${summary.updated.length}`, 'yellow');
