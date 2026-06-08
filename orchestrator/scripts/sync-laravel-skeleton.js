@@ -122,6 +122,28 @@ function ensureUseStatement(contents, useStatement) {
     return contents.replace(/^(namespace .+;\n)/m, `$1\n${useStatement}\n`);
 }
 
+function extractUseStatements(contents) {
+    return [...contents.matchAll(/^use .+;$/gm)].map(match => match[0]);
+}
+
+function importedName(useStatement) {
+    const match = useStatement.match(/^use\s+(.+?)(?:\s+as\s+([^;]+))?;$/);
+
+    if (!match) {
+        return null;
+    }
+
+    return match[2] || match[1].split('\\').pop();
+}
+
+function deriveUseStatements(contents, preservedBlock) {
+    return extractUseStatements(contents).filter(useStatement => {
+        const name = importedName(useStatement);
+
+        return name && new RegExp(`\\b${name}\\b`).test(preservedBlock);
+    });
+}
+
 function ensureBootCallsConfigureDefaults(contents) {
     if (contents.includes('$this->configureDefaults();')) {
         return contents;
@@ -154,14 +176,10 @@ function mergeAppServiceProvider(sourceContents, destinationContents) {
         return sourceContents;
     }
 
+    const useStatements = deriveUseStatements(destinationContents, configureDefaultsBlock);
     let merged = sourceContents;
 
-    for (const useStatement of [
-        'use Carbon\\CarbonImmutable;',
-        'use Illuminate\\Support\\Facades\\Date;',
-        'use Illuminate\\Support\\Facades\\DB;',
-        'use Illuminate\\Validation\\Rules\\Password;',
-    ]) {
+    for (const useStatement of useStatements) {
         merged = ensureUseStatement(merged, useStatement);
     }
 
@@ -202,6 +220,12 @@ function isAllowedPath(relativePath) {
     return allowedRootDirectories.has(segments[0]);
 }
 
+function isAllowedDirectory(relativePath) {
+    const segments = pathSegments(relativePath);
+
+    return segments.length > 0 && allowedRootDirectories.has(segments[0]);
+}
+
 function resolveInside(rootDir, relativePath) {
     assertSafeRelativePath(relativePath);
 
@@ -231,7 +255,7 @@ async function collectAllowedFiles(sourceDir) {
             }
 
             if (entry.isDirectory()) {
-                if (isAllowedPath(`${relativePath}/placeholder`) || isAllowedPath(relativePath)) {
+                if (isAllowedDirectory(relativePath)) {
                     await walk(entryPath);
                 }
 
@@ -298,7 +322,6 @@ export async function syncSkeleton({ sourceDir, destinationDir = path.join(kitsD
     const summary = {
         added: [],
         updated: [],
-        deleted: [],
         unchanged: [],
         skipped: [],
     };
@@ -367,11 +390,10 @@ async function resolveSource() {
     return checkoutRemoteSource(source, ref);
 }
 
-function printSummary(summary, sourceRef) {
+export function printSummary(summary, sourceRef) {
     log(`Laravel skeleton source: ${sourceRef}`, 'blue');
     log(`Added: ${summary.added.length}`, 'green');
     log(`Updated: ${summary.updated.length}`, 'yellow');
-    log(`Deleted: ${summary.deleted.length}`, 'yellow');
     log(`Unchanged: ${summary.unchanged.length}`, 'dim');
     log(`Skipped: ${summary.skipped.length}`, 'dim');
 }
