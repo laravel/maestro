@@ -72,13 +72,17 @@ class Profile extends Component
     #[Computed]
     public function hasUnverifiedEmail(): bool
     {
-        return is_a(Auth::user(), MustVerifyEmail::class) && ! Auth::user()->hasVerifiedEmail();
+        $user = Auth::user();
+
+        return $user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail();
     }
 
     #[Computed]
     public function showDeleteUser(): bool
     {
-        return ! is_a(Auth::user(), MustVerifyEmail::class) || Auth::user()->hasVerifiedEmail();
+        $user = Auth::user();
+
+        return ! $user instanceof MustVerifyEmail || $user->hasVerifiedEmail();
     }
     /* @end-chisel-email-verification */
 }

@@ -65,13 +65,13 @@
             "npm run types:check",
             "@test"
         ],
-        "test:types": [
+        "types:check": [
             "phpstan analyse"
         ],
         "test": [
             "@php artisan config:clear --ansi",
             "@lint:check",
-            "@test:types",
+            "@types:check",
             "@php artisan test"
         ],
         "post-autoload-dump": [

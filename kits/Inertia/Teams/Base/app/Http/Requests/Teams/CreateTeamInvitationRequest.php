@@ -18,20 +18,15 @@ class CreateTeamInvitationRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'email' => ['required', 'string', 'email', 'max:255', new UniqueTeamInvitation($this->team())],
-            'role' => ['required', 'string', Rule::enum(TeamRole::class)],
-        ];
-    }
-
-    private function team(): Team
-    {
         $team = $this->route('team');
 
         if (! $team instanceof Team) {
             abort(404);
         }
 
-        return $team;
+        return [
+            'email' => ['required', 'string', 'email', 'max:255', new UniqueTeamInvitation($team)],
+            'role' => ['required', 'string', Rule::enum(TeamRole::class)],
+        ];
     }
 }

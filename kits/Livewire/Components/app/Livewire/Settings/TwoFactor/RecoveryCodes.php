@@ -9,7 +9,7 @@ use Livewire\Component;
 
 class RecoveryCodes extends Component
 {
-    /** @var array<int, string> */
+    /** @var list<string> */
     #[Locked]
     public array $recoveryCodes = [];
 
