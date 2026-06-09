@@ -6,6 +6,12 @@ import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
 import { defineConfig } from 'vite';
 
+const isSvelteCheck = process.argv.some((argument) => argument.includes('svelte-check'));
+
+if (isSvelteCheck) {
+    process.env.LARAVEL_BYPASS_ENV_CHECK ??= '1';
+}
+
 export default defineConfig({
     plugins: [
         laravel({

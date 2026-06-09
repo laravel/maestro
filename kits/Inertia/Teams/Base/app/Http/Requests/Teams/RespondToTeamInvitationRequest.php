@@ -22,6 +22,8 @@ class RespondToTeamInvitationRequest extends FormRequest
 
     /**
      * Get the validation data from the request.
+     *
+     * @return array<string, mixed>
      */
     public function validationData(): array
     {
