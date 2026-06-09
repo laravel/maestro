@@ -62,7 +62,7 @@
             <span>{{ __('Don\'t have an account?') }}</span>
             <flux:link
                 :href="$teamInvitation ? route('register', ['invitation' => $teamInvitation['code']]) : route('register')"
-                data-test="team-invitation-register-link"
+                data-test="register-link"
                 wire:navigate
             >
                 {{ __('Sign up') }}

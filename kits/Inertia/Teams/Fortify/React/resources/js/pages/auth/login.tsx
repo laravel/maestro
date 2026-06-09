@@ -126,7 +126,7 @@ export default function Login({
                                           })
                                         : register()
                                 }
-                                data-test="team-invitation-register-link"
+                                data-test="register-link"
                                 tabIndex={5}
                             >
                                 Sign up

@@ -131,7 +131,7 @@ defineProps<{
                         : register()
                 "
                 :tabindex="5"
-                data-test="team-invitation-register-link"
+                data-test="register-link"
             >
                 Sign up
             </TextLink>

@@ -132,7 +132,7 @@ test('register page preserves team invitation alert from login', function () {
     ]);
 
     visit(route('login', ['invitation' => $invitation->code]))
-        ->click('@team-invitation-register-link')
+        ->click('@register-link')
         ->assertVisible('@team-invitation-alert')
         ->assertSee('Register to join the "Register Alert Team" Team.')
         ->assertNoConsoleLogs()
