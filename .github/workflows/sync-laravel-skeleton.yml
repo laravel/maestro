@@ -63,6 +63,5 @@ jobs:
           base: main
           title: Sync Laravel skeleton changes
           commit-message: Sync Laravel skeleton changes
-          body: |
-            This automated PR syncs selected upstream `laravel/laravel` skeleton files into `kits/Shared/Blank`.
+          body-path: .sync-pr-body.md
           add-paths: kits/Shared/Blank

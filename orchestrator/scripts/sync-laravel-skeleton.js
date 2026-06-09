@@ -5,7 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { pathToFileURL } from 'node:url';
 
-import { kitsDir, log, runQuiet } from './kit-helpers.js';
+import { kitsDir, log, rootDir, runQuiet } from './kit-helpers.js';
 
 const upstreamRepository = 'https://github.com/laravel/laravel';
 
@@ -398,6 +398,32 @@ function printSummary(summary, sourceRef) {
     log(`Skipped: ${summary.skipped.length}`, 'dim');
 }
 
+function buildPrBody(summary, sourceRef) {
+    const lines = [
+        'This automated PR syncs upstream [`laravel/laravel`](https://github.com/laravel/laravel) skeleton files into `kits/Shared/Blank`.',
+        '',
+        `**Source:** \`${sourceRef}\``,
+    ];
+
+    if (summary.added.length > 0) {
+        lines.push('', '**Added:**');
+
+        for (const file of summary.added) {
+            lines.push(`- \`${file}\``);
+        }
+    }
+
+    if (summary.updated.length > 0) {
+        lines.push('', '**Updated:**');
+
+        for (const file of summary.updated) {
+            lines.push(`- \`${file}\``);
+        }
+    }
+
+    return lines.join('\n') + '\n';
+}
+
 async function main() {
     const source = await resolveSource();
 
@@ -405,6 +431,7 @@ async function main() {
         const summary = await syncSkeleton({ sourceDir: source.sourceDir });
 
         printSummary(summary, source.ref);
+        await fs.writeFile(path.join(rootDir, '.sync-pr-body.md'), buildPrBody(summary, source.ref));
     } finally {
         await source.cleanup();
     }
