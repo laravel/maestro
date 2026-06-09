@@ -170,8 +170,13 @@ function mergeAppServiceProvider(sourceContents, destinationContents) {
     }
 
     merged = ensureBootCallsConfigureDefaults(merged);
+    merged = appendConfigureDefaults(merged, configureDefaultsBlock);
 
-    return appendConfigureDefaults(merged, configureDefaultsBlock);
+    if (!merged.includes('$this->configureDefaults();')) {
+        throw new Error('Failed to inject configureDefaults() into AppServiceProvider — upstream format may have changed');
+    }
+
+    return merged;
 }
 
 async function fileExists(file) {
