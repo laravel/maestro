@@ -29,19 +29,6 @@ const allowedRootFiles = new Set([
     'pint.json',
 ]);
 
-const ignoredRootFiles = new Set([
-    '.gitignore',
-    '.gitattributes',
-    'README.md',
-    'composer.lock',
-    'package-lock.json',
-    'pnpm-lock.yaml',
-    'yarn.lock',
-    'bun.lock',
-    'bun.lockb',
-    'npm-shrinkwrap.json',
-]);
-
 const ignoredPathSegments = new Set([
     '.git',
     'node_modules',
@@ -82,8 +69,7 @@ function assertSafeRelativePath(relativePath) {
 function isIgnoredPath(relativePath) {
     const segments = pathSegments(relativePath);
 
-    return ignoredRootFiles.has(relativePath)
-        || ignoredPathPrefixes.some(prefix => relativePath.startsWith(prefix))
+    return ignoredPathPrefixes.some(prefix => relativePath.startsWith(prefix))
         || segments.some(segment => ignoredPathSegments.has(segment));
 }
 
