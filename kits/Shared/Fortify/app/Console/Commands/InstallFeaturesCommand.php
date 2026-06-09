@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Laravel\Chisel\Chisel;
 use Laravel\Chisel\Question;
 use Laravel\Chisel\Script;
+
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\spin;
 
