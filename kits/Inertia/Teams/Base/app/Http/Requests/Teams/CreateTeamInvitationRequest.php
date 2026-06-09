@@ -20,9 +20,7 @@ class CreateTeamInvitationRequest extends FormRequest
     {
         $team = $this->route('team');
 
-        if (! $team instanceof Team) {
-            abort(404);
-        }
+        abort_if(! $team instanceof Team, 404);
 
         return [
             'email' => ['required', 'string', 'email', 'max:255', new UniqueTeamInvitation($team)],
