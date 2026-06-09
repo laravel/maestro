@@ -1,14 +1,15 @@
-import { router } from '@inertiajs/react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { router } from "@inertiajs/react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import TeamInvitationController from "@/actions/App/Http/Controllers/Teams/TeamInvitationController";
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog';
-import type { DashboardInvitation } from '@/types';
+} from "@/components/ui/dialog";
+import type { DashboardInvitation } from "@/types";
 
 type Props = {
     invitations: DashboardInvitation[];
@@ -24,14 +25,14 @@ export default function PendingInvitationsModal({
     const [processingCode, setProcessingCode] = useState<string | null>(null);
 
     const acceptInvitation = (invitation: DashboardInvitation) => {
-        router.visit(`/invitations/${invitation.code}/accept`, {
+        router.visit(TeamInvitationController.accept(invitation), {
             onStart: () => setProcessingCode(invitation.code),
             onFinish: () => setProcessingCode(null),
         });
     };
 
     const declineInvitation = (invitation: DashboardInvitation) => {
-        router.delete(`/invitations/${invitation.code}`, {
+        router.visit(TeamInvitationController.decline(invitation), {
             onStart: () => setProcessingCode(invitation.code),
             onFinish: () => setProcessingCode(null),
             onSuccess: () => {

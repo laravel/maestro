@@ -1,5 +1,6 @@
 <script lang="ts">
     import { router } from '@inertiajs/svelte';
+    import TeamInvitationController from '@/actions/App/Http/Controllers/Teams/TeamInvitationController';
     import { Button } from '@/components/ui/button';
     import {
         Dialog,
@@ -19,14 +20,14 @@
     let processingCode = $state<string | null>(null);
 
     const acceptInvitation = (invitation: DashboardInvitation) => {
-        router.visit(`/invitations/${invitation.code}/accept`, {
+        router.visit(TeamInvitationController.accept(invitation), {
             onStart: () => (processingCode = invitation.code),
             onFinish: () => (processingCode = null),
         });
     };
 
     const declineInvitation = (invitation: DashboardInvitation) => {
-        router.delete(`/invitations/${invitation.code}`, {
+        router.visit(TeamInvitationController.decline(invitation), {
             onStart: () => (processingCode = invitation.code),
             onFinish: () => (processingCode = null),
             onSuccess: () => {

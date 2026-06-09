@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import TeamInvitationController from '@/actions/App/Http/Controllers/Teams/TeamInvitationController';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -21,14 +22,14 @@ const open = ref(true);
 const processingCode = ref<string | null>(null);
 
 const acceptInvitation = (invitation: DashboardInvitation) => {
-    router.visit(`/invitations/${invitation.code}/accept`, {
+    router.visit(TeamInvitationController.accept(invitation), {
         onStart: () => (processingCode.value = invitation.code),
         onFinish: () => (processingCode.value = null),
     });
 };
 
 const declineInvitation = (invitation: DashboardInvitation) => {
-    router.delete(`/invitations/${invitation.code}`, {
+    router.visit(TeamInvitationController.decline(invitation), {
         onStart: () => (processingCode.value = invitation.code),
         onFinish: () => (processingCode.value = null),
         onSuccess: () => {
