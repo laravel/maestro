@@ -412,6 +412,8 @@ function buildPrBody(summary, sourceRef) {
         }
     }
 
+    lines.push('', '> **Note:** This sync does not detect files deleted upstream. Review the [skeleton repo](https://github.com/laravel/laravel) if removals are expected.');
+
     return lines.join('\n') + '\n';
 }
 
