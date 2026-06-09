@@ -115,13 +115,11 @@
         <div class="text-center text-sm text-muted-foreground">
             Don't have an account?
             <TextLink
-                href={teamInvitation
-                    ? register.url({
-                          query: {
-                              invitation: teamInvitation.code,
-                          },
-                      })
-                    : register()}
+                href={register({
+                    query: {
+                        invitation: teamInvitation?.code,
+                    },
+                })}
                 data-test="register-link"
             >
                 Sign up
