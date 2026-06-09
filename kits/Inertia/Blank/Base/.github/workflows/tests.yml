@@ -55,7 +55,7 @@ jobs:
         run: npm run build
 
       - name: Run Type Analysis
-        run: composer test:types
+        run: composer types:check
 
       - name: Tests
         run: php artisan test
