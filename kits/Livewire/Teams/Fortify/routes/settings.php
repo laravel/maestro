@@ -37,5 +37,5 @@ Route::get('.well-known/passkey-endpoints', function () {
         'enroll' => route('security.edit'),
         'manage' => route('security.edit'),
     ]);
-})->name('passkey.endpoints');
+})->name('well-known.passkeys');
 /* @end-chisel-passkeys */
