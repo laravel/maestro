@@ -278,20 +278,24 @@ jobs:
       - name: Commit and Push Changes
         if: steps.changes.outputs.has_changes == 'true'
         working-directory: ${{ matrix.path }}
+        env:
+          COMMIT_MSG: ${{ steps.pr-info.outputs.title }}
+          PR_FOUND: ${{ steps.pr-info.outputs.found }}
+          PR_AUTHOR: ${{ steps.pr-info.outputs.author }}
+          PR_AUTHOR_EMAIL: ${{ steps.pr-info.outputs.author_email }}
+          CO_AUTHORS: ${{ steps.pr-info.outputs.co_authors }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add -A
 
-          COMMIT_MSG="${{ steps.pr-info.outputs.title }}"
           TRAILERS=""
 
-          if [[ "${{ steps.pr-info.outputs.found }}" == "true" ]]; then
-            TRAILERS="Co-authored-by: ${{ steps.pr-info.outputs.author }} <${{ steps.pr-info.outputs.author_email }}>"
+          if [[ "$PR_FOUND" == "true" ]]; then
+            TRAILERS="Co-authored-by: $PR_AUTHOR <$PR_AUTHOR_EMAIL>"
           fi
 
-          CO_AUTHORS="${{ steps.pr-info.outputs.co_authors }}"
           if [[ -n "$CO_AUTHORS" ]]; then
             if [[ -n "$TRAILERS" ]]; then
               TRAILERS="$TRAILERS
