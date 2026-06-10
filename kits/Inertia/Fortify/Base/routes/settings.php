@@ -29,3 +29,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::inertia('settings/appearance', '{{appearance_settings}}')->name('appearance.edit');
 });
+
+/* @chisel-passkeys */
+Route::get('.well-known/passkey-endpoints', function () {
+    return response()->json([
+        'enroll' => route('security.edit'),
+        'manage' => route('security.edit'),
+    ]);
+})->name('passkey.endpoints');
+/* @end-chisel-passkeys */
