@@ -42,6 +42,10 @@ jobs:
         working-directory: orchestrator
         run: vendor/bin/pint --parallel ../kits/Shared/Blank
 
+      - name: Build Pull Request Body
+        working-directory: orchestrator
+        run: node scripts/sync-laravel-skeleton.js --write-pr-body
+
       - name: Check for Blank Layer Changes
         id: changes
         run: |

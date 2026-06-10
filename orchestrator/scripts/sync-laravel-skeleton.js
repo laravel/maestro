@@ -40,6 +40,23 @@ const ignoredPathPrefixes = [
 ];
 
 const appServiceProviderPath = 'app/Providers/AppServiceProvider.php';
+const prBodyPath = path.join(rootDir, '.sync-pr-body.md');
+
+const localPathReplacements = new Map([
+    [
+        'config/filesystems.php',
+        [
+            [
+                "rtrim(env('APP_URL', 'http://localhost'), '/')",
+                "rtrim((string) env('APP_URL', 'http://localhost'), '/')",
+            ],
+            [
+                "rtrim(env('APP_URL'), '/')",
+                "rtrim((string) env('APP_URL'), '/')",
+            ],
+        ],
+    ],
+]);
 
 const newFileBlockedPrefixes = [
     'app/Models/',
@@ -153,6 +170,22 @@ function appendConfigureDefaults(contents, configureDefaultsBlock) {
     }
 
     return contents.replace(/\n\}\s*$/, `\n${configureDefaultsBlock}\n}\n`);
+}
+
+function applyLocalPathReplacements(relativePath, contents) {
+    const replacements = localPathReplacements.get(relativePath);
+
+    if (!replacements) {
+        return contents;
+    }
+
+    let updatedContents = contents;
+
+    for (const [search, replacement] of replacements) {
+        updatedContents = updatedContents.split(search).join(replacement);
+    }
+
+    return updatedContents;
 }
 
 function mergeAppServiceProvider(sourceContents, destinationContents) {
@@ -299,6 +332,10 @@ async function syncAllowedFile({ sourceDir, destinationDir, relativePath }) {
         );
     }
 
+    if (localPathReplacements.has(relativePath)) {
+        sourceContents = Buffer.from(applyLocalPathReplacements(relativePath, sourceContents.toString('utf8')), 'utf8');
+    }
+
     if (existingContents && Buffer.compare(sourceContents, existingContents) === 0) {
         return 'unchanged';
     }
@@ -417,14 +454,80 @@ function buildPrBody(summary, sourceRef) {
     return lines.join('\n') + '\n';
 }
 
+function parseChangedBlankLayerFile(line) {
+    const blankLayerPrefix = 'kits/Shared/Blank/';
+    const status = line.slice(0, 2);
+    const pathPart = line.slice(3);
+    const filePath = pathPart.includes(' -> ') ? pathPart.split(' -> ').pop() : pathPart;
+
+    if (!filePath.startsWith(blankLayerPrefix)) {
+        return null;
+    }
+
+    return {
+        path: filePath.slice(blankLayerPrefix.length),
+        status,
+    };
+}
+
+async function collectChangedBlankLayerFiles() {
+    const { stdout } = await runQuiet('git', ['status', '--porcelain', '--', 'kits/Shared/Blank'], { cwd: rootDir });
+    const summary = {
+        added: [],
+        updated: [],
+    };
+
+    for (const line of stdout.split('\n').filter(Boolean)) {
+        const changedFile = parseChangedBlankLayerFile(line);
+
+        if (!changedFile) {
+            continue;
+        }
+
+        if (changedFile.status === '??' || changedFile.status.includes('A')) {
+            summary.added.push(changedFile.path);
+        } else {
+            summary.updated.push(changedFile.path);
+        }
+    }
+
+    summary.added.sort((a, b) => a.localeCompare(b));
+    summary.updated.sort((a, b) => a.localeCompare(b));
+
+    return summary;
+}
+
+async function readPrBodySourceRef() {
+    const body = await fs.readFile(prBodyPath, 'utf8');
+    const match = body.match(/^\*\*Source:\*\* `(.+)`$/m);
+
+    if (!match) {
+        throw new Error('Unable to determine Laravel skeleton source for PR body');
+    }
+
+    return match[1];
+}
+
+async function writePrBodyFromGitStatus(sourceRef) {
+    const summary = await collectChangedBlankLayerFiles();
+
+    await fs.writeFile(prBodyPath, buildPrBody(summary, sourceRef));
+}
+
 async function main() {
+    if (process.argv.includes('--write-pr-body')) {
+        await writePrBodyFromGitStatus(await readPrBodySourceRef());
+
+        return;
+    }
+
     const source = await resolveSource();
 
     try {
         const summary = await syncSkeleton({ sourceDir: source.sourceDir });
 
         printSummary(summary, source.ref);
-        await fs.writeFile(path.join(rootDir, '.sync-pr-body.md'), buildPrBody(summary, source.ref));
+        await writePrBodyFromGitStatus(source.ref);
     } finally {
         await source.cleanup();
     }
