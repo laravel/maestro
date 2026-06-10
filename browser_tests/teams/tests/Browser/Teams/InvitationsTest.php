@@ -115,7 +115,7 @@ test('login page shows team invitation alert', function () {
 
     visit(route('login', ['invitation' => $invitation->code]))
         ->assertVisible('@team-invitation-alert')
-        ->assertSee('Log in to join the "Login Alert Team" Team.')
+        ->assertSee('Log in to join the "Login Alert Team" team.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });
@@ -134,7 +134,7 @@ test('register page preserves team invitation alert from login', function () {
     visit(route('login', ['invitation' => $invitation->code]))
         ->click('@register-link')
         ->assertVisible('@team-invitation-alert')
-        ->assertSee('Register to join the "Register Alert Team" Team.')
+        ->assertSee('Register to join the "Register Alert Team" team.')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });
