@@ -125,6 +125,7 @@ class TeamController extends Controller
         Gate::authorize('leave', $team);
 
         $user = $request->user();
+
         $fallbackTeam = $user->isCurrentTeam($team)
             ? $user->fallbackTeam($team)
             : null;
