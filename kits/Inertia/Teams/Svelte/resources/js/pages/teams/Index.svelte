@@ -14,11 +14,13 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
     import Eye from 'lucide-svelte/icons/eye';
+    import LogOut from 'lucide-svelte/icons/log-out';
     import Pencil from 'lucide-svelte/icons/pencil';
     import Plus from 'lucide-svelte/icons/plus';
     import AppHead from '@/components/AppHead.svelte';
     import CreateTeamModal from '@/components/CreateTeamModal.svelte';
     import Heading from '@/components/Heading.svelte';
+    import LeaveTeamModal from '@/components/LeaveTeamModal.svelte';
     import { Badge } from '@/components/ui/badge';
     import { Button } from '@/components/ui/button';
     import {
@@ -36,6 +38,9 @@
         teams: Team[];
     } = $props();
 
+    let leaveTeamDialogOpen = $state(false);
+    let teamLeaving = $state<Team | null>(null);
+
     const callClickHandler = (handler: unknown, event: MouseEvent) => {
         if (typeof handler === 'function') {
             handler(event);
@@ -47,6 +52,11 @@
         event: MouseEvent,
     ) => {
         callClickHandler(props.onClick, event);
+    };
+
+    const openLeaveTeamDialog = (team: Team) => {
+        teamLeaving = team;
+        leaveTeamDialogOpen = true;
     };
 </script>
 
@@ -77,7 +87,7 @@
     <div class="space-y-3">
         {#each teams as team (team.id)}
             <div
-                class="flex items-center justify-between rounded-lg border p-4"
+                class="flex items-center justify-between gap-4 rounded-lg border p-4"
                 data-test="team-row"
             >
                 <div class="flex items-center gap-4">
@@ -98,6 +108,28 @@
 
                 <TooltipProvider delayDuration={0}>
                     <div class="flex items-center gap-2">
+                        {#if !team.isPersonal && team.role !== 'owner'}
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    {#snippet child({ props })}
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            {...props}
+                                            onclick={() =>
+                                                openLeaveTeamDialog(team)}
+                                            data-test="team-leave-button"
+                                        >
+                                            <LogOut class="h-4 w-4" />
+                                        </Button>
+                                    {/snippet}
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Leave team</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        {/if}
+
                         {#if team.role === 'member'}
                             <Tooltip>
                                 <TooltipTrigger>
@@ -163,3 +195,5 @@
         {/if}
     </div>
 </div>
+
+<LeaveTeamModal bind:open={leaveTeamDialogOpen} team={teamLeaving} />
