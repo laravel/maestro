@@ -262,7 +262,7 @@ class TeamTest extends TestCase
     public function test_leaving_current_team_switches_to_alphabetically_first_remaining_team()
     {
         $owner = User::factory()->create();
-        $member = User::factory()->create();
+        $member = User::factory()->create(['name' => 'Mike']);
 
         $zuluTeam = Team::factory()->create(['name' => 'Zulu Team']);
         $zuluTeam->members()->attach($owner, ['role' => TeamRole::Owner->value]);

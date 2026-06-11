@@ -85,8 +85,8 @@ test('members can leave a non-personal team from teams list', function () {
         ->assertVisible('@leave-team-confirm')
         ->pressAndWaitFor('@leave-team-confirm')
         ->assertPathEndsWith('/settings/teams')
-        ->assertDontSee('Leave Browser Team')
-        ->assertSee('You left the team "Leave Browser Team"')
+        ->waitForText('You left the team "Leave Browser Team"')
+        ->assertMissing('@team-leave-button')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 
