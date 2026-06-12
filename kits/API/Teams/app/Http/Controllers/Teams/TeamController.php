@@ -75,10 +75,24 @@ class TeamController extends Controller
             ->response($request);
     }
 
+    #[Endpoint(title: 'Leave a team', description: 'Remove the authenticated user from a non-personal team they do not own.')]
+    public function leave(Request $request, Team $team): Response
+    {
+        Gate::authorize('leave', $team);
+
+        $user = $request->user();
+
+        $team->memberships()
+            ->where('user_id', $user->id)
+            ->delete();
+
+        return response()->noContent();
+    }
+
     #[Endpoint(title: 'Delete a team', description: 'Soft delete a team. Requires the team name as confirmation.')]
     public function destroy(DeleteTeamRequest $request, Team $team): Response
     {
-        DB::transaction(function () use ($team) {
+        DB::transaction(function () use ($team): void {
             $team->invitations()->delete();
             $team->memberships()->delete();
             $team->delete();

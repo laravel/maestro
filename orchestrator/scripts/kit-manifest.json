@@ -24,6 +24,7 @@
         "api": [".npmrc"],
         "api-teams": [
             ".npmrc",
+            "app/Http/Middleware/SetTeamUrlDefaults.php",
             "database/migrations/2026_01_27_000002_add_current_team_id_to_users_table.php"
         ],
         "livewire-teams": ["app/Http/Requests/Teams"],

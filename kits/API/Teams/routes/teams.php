@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('teams/{team}', [TeamController::class, 'show'])->name('teams.show');
             Route::patch('teams/{team}', [TeamController::class, 'update'])->name('teams.update');
             Route::delete('teams/{team}', [TeamController::class, 'destroy'])->name('teams.destroy');
+            Route::delete('teams/{team}/leave', [TeamController::class, 'leave'])->name('teams.leave');
 
             Route::patch('teams/{team}/members/{user}', [TeamMemberController::class, 'update'])
                 ->name('teams.members.update');

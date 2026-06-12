@@ -179,6 +179,62 @@ class TeamTest extends TestCase
         ]);
     }
 
+    public function test_members_can_leave_non_personal_teams(): void
+    {
+        $owner = User::factory()->create();
+        $member = User::factory()->create();
+        $team = Team::factory()->create();
+
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+        $team->members()->attach($member, ['role' => TeamRole::Member->value]);
+
+        $this
+            ->actingAs($member)
+            ->deleteJson(route('teams.leave', $team))
+            ->assertNoContent();
+
+        $this->assertFalse($member->fresh()->belongsToTeam($team));
+    }
+
+    public function test_personal_teams_cannot_be_left(): void
+    {
+        $user = User::factory()->create();
+        $personalTeam = $user->personalTeam();
+
+        $this
+            ->actingAs($user)
+            ->deleteJson(route('teams.leave', $personalTeam))
+            ->assertForbidden();
+
+        $this->assertTrue($user->fresh()->belongsToTeam($personalTeam));
+    }
+
+    public function test_team_owners_cannot_leave_their_team(): void
+    {
+        $owner = User::factory()->create();
+        $team = Team::factory()->create();
+
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+        $this
+            ->actingAs($owner)
+            ->deleteJson(route('teams.leave', $team))
+            ->assertForbidden();
+
+        $this->assertTrue($owner->fresh()->belongsToTeam($team));
+    }
+
+    public function test_users_cannot_leave_teams_they_dont_belong_to(): void
+    {
+        $user = User::factory()->create();
+        $team = Team::factory()->create();
+
+        $this
+            ->actingAs($user)
+            ->deleteJson(route('teams.leave', $team))
+            ->assertForbidden();
+    }
+
     public function test_personal_teams_cannot_be_deleted(): void
     {
         $user = User::factory()->create();
