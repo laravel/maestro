@@ -8,6 +8,9 @@ use Illuminate\Http\Response;
 
 class MessageResponse implements Responsable
 {
+    /**
+     * @param  array<string, string|array<int, string>>  $headers
+     */
     public function __construct(
         private readonly string $message,
         private readonly int $status = Response::HTTP_OK,
