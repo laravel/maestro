@@ -10,6 +10,8 @@ class UserResource extends JsonApiResource
 
     /**
      * The resource's attributes.
+     *
+     * @var array<int, string>
      */
     public $attributes = [
         'name',

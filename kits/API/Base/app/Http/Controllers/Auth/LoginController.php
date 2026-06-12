@@ -19,11 +19,20 @@ class LoginController extends Controller
     #[Endpoint(title: 'Login', description: 'Authenticate a user and return an API token.')]
     public function __invoke(LoginRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->first();
-        $passwordHash = $user?->password ?? self::DUMMY_PASSWORD_HASH;
-        $passwordMatches = Hash::check($request->password, $passwordHash);
+        $user = User::query()
+            ->where('email', (string) $request->string('email'))
+            ->first();
+        $password = (string) $request->string('password');
 
-        if (! $user || ! $passwordMatches) {
+        if (! $user) {
+            Hash::check($password, self::DUMMY_PASSWORD_HASH);
+
+            throw ValidationException::withMessages([
+                'email' => [__('auth.failed')],
+            ]);
+        }
+
+        if (! Hash::check($password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => [__('auth.failed')],
             ]);
