@@ -51,7 +51,7 @@ class TeamController extends Controller
                     'invitations' => TeamInvitationResource::collection(
                         $team->invitations()->whereNull('accepted_at')->get(),
                     ),
-                    'permissions' => $user->toTeamPermissions($team)->toArray(),
+                    'permissions' => $user->toTeamPermissions($team),
                     'available_roles' => TeamRole::assignable(),
                 ],
             ])
