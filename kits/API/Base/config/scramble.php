@@ -32,6 +32,16 @@ return [
      */
     'export_path' => 'api.json',
 
+    /*
+     * Cache configuration for the generated OpenAPI document.
+     *
+     * Use `scramble:cache` to warm the cache and `scramble:clear` to invalidate it.
+     */
+    'cache' => [
+        'key' => 'scramble.openapi',
+        'store' => 'file',
+    ],
+
     'info' => [
         'version' => env('API_VERSION', '1.0.0'),
         'description' => '',
