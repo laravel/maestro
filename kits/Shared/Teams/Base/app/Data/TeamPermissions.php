@@ -2,7 +2,10 @@
 
 namespace App\Data;
 
-readonly class TeamPermissions
+use Illuminate\Contracts\Support\Arrayable;
+
+/** @implements Arrayable<string, bool> */
+readonly class TeamPermissions implements Arrayable
 {
     public function __construct(
         public bool $canUpdateTeam,
@@ -14,5 +17,21 @@ readonly class TeamPermissions
         public bool $canCancelInvitation,
     ) {
         //
+    }
+
+    /**
+     * @return array{canUpdateTeam: bool, canDeleteTeam: bool, canAddMember: bool, canUpdateMember: bool, canRemoveMember: bool, canCreateInvitation: bool, canCancelInvitation: bool}
+     */
+    public function toArray(): array
+    {
+        return [
+            'canUpdateTeam' => $this->canUpdateTeam,
+            'canDeleteTeam' => $this->canDeleteTeam,
+            'canAddMember' => $this->canAddMember,
+            'canUpdateMember' => $this->canUpdateMember,
+            'canRemoveMember' => $this->canRemoveMember,
+            'canCreateInvitation' => $this->canCreateInvitation,
+            'canCancelInvitation' => $this->canCancelInvitation,
+        ];
     }
 }
