@@ -306,9 +306,10 @@ Only Admin and Member roles are assignable. Owner is automatically set on team c
 1. **Build**: `cd orchestrator && php artisan build --kit=svelte`
 2. **Develop**: `composer kit:run` (starts dev server at localhost:8000 + watcher)
 3. **Edit**: If `build/` exists and the watcher is running, make changes in `build/` — the watcher syncs them to `kits/`. Otherwise, edit `kits/` directly.
-4. **Test**: Inside `build/`, run `composer setup && composer ci:check`
-5. **Commit**: Commit the changes in `kits/` (not `build/`)
-6. **PR**: Create PR; after merge, Maestro auto-creates PRs for affected kit repos
+4. **Stop `kit:run`**: Press Ctrl+C before running `kits:lint` or `kits:check` — running them while the watcher is active corrupts `kits/`.
+5. **Test**: `composer kits:pint` → `composer kits:lint` (Inertia only) → `composer kits:check`
+6. **Commit**: Commit the changes in `kits/` (not `build/`)
+7. **PR**: Create PR; after merge, Maestro auto-creates PRs for affected kit repos
 
 ## Browser Tests (Local CI Parity)
 
@@ -385,6 +386,7 @@ cd ..
 2. **Follow sibling patterns**: When creating a Svelte file, check the React and Vue equivalents for expected structure and behavior and vice-versa.
 3. **Layer awareness**: Know which layer a file belongs to. Shared files affect all kits. Framework-specific files only affect that framework. Teams layers sit on top of auth layers — place team-specific code in the appropriate `Teams/` directory.
 4. **Placeholder awareness**: Files in `kits/` contain `{{placeholders}}`. Files in `build/` have resolved values. The watcher handles conversion.
-5. **Lint changes**: Run `composer lint` in `orchestrator` for orchestrator PHP linting. Run `composer kits:pint` for fast PHP formatting of `kits/` and `browser_tests/`. Run `composer kits:lint` to run Pint then lint/format all Inertia variants and sync changes back to `kits/`.
-6. **Test after changes**: Run `composer setup && composer ci:check` inside `build/` to verify nothing is broken.
+5. **Lint/check while watcher is stopped**: `kits:lint` and `kits:check` both delete and rebuild `build/` for each variant. If `kit:run` is active, the watcher interprets those deletions as file removals and propagates them to `kits/`, corrupting the source. Always stop `kit:run` before running `kits:lint` or `kits:check`. `kits:pint` is safe to run at any time — it operates directly on `kits/` and never touches `build/`.
+6. **Lint changes**: Run `composer kits:pint` for fast PHP formatting of `kits/` and `browser_tests/`. Run `composer kits:lint` to run Pint then lint/format all Inertia variants and sync changes back to `kits/`.
+7. **Test after changes**: Run `composer setup && composer ci:check` inside `build/` to verify nothing is broken.
 7. **Teams layer placement**: When modifying teams code, choose the correct layer: `Shared/Teams/Base` for cross-stack logic (models, traits, middleware), `Shared/Teams/{Fortify|WorkOS}` for auth-variant-specific overrides, `Inertia/Teams/Base` or `Livewire/Teams/Base` for stack-specific backend, and `Inertia/Teams/{React|Svelte|Vue}` or `Livewire/Teams/{Fortify|WorkOS}` for frontend/variant-specific UI.
