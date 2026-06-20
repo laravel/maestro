@@ -63,10 +63,6 @@ class User extends Authenticatable implements PasskeyUser
      */
     public function initials(): string
     {
-        return Str::of($this->name)
-            ->explode(' ')
-            ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
-            ->implode('');
+        return Str::initials($this->name);
     }
 }
