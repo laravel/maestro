@@ -186,6 +186,7 @@ runMatrix({
     scriptLabel: 'kits:check',
     allVariants: variants,
     runVariant: checkVariant,
+    guardActiveWatcher: true,
 }).catch(error => {
     log(`\nCheck kits failed: ${error.message}`, 'red');
     process.exit(1);

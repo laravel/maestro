@@ -4,6 +4,7 @@ import {
     buildDir,
     buildJsonSummary,
     buildSkippedResults,
+    ensureNoActiveWatcher,
     filterVariants,
     isJsonOutputRequested,
     log,
@@ -239,6 +240,10 @@ async function main() {
     const skipped = buildSkippedResults(variants, active);
     const results = [];
     const context = { jsonMode };
+
+    if (active.length > 0) {
+        ensureNoActiveWatcher({ scriptLabel: 'kits:lint', jsonMode, startedAt, selectedFrameworks, selectedVariants });
+    }
 
     // Always run Pint first (it applies to all frameworks including Livewire).
     if (jsonMode) {

@@ -141,4 +141,5 @@ await runMatrix({
     allVariants: variants,
     runVariant: formatVariant,
     successVerb: 'Formatted',
+    guardActiveWatcher: true,
 });

@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 
 /**
  * All recognized framework flags.
@@ -35,6 +35,8 @@ export const rootDir = path.dirname(orchestratorDir);
 export const buildDir = path.join(rootDir, 'build');
 export const kitsDir = path.join(rootDir, 'kits');
 export const browserTestsDir = path.join(rootDir, 'browser_tests');
+const realOrchestratorDir = fs.realpathSync(orchestratorDir);
+const watchScript = fs.realpathSync(path.join(orchestratorDir, 'scripts', 'watch.js'));
 
 /**
  * ANSI color codes for terminal output.
@@ -197,6 +199,78 @@ export function runInherit(command, args, options = {}) {
     });
 }
 
+function readProcessArgs(pid) {
+    try {
+        return fs.readFileSync(`/proc/${pid}/cmdline`, 'utf-8').split('\0').filter(Boolean);
+    } catch {
+        return [];
+    }
+}
+
+function readProcessCwd(pid) {
+    try {
+        return fs.realpathSync(`/proc/${pid}/cwd`);
+    } catch {
+        return null;
+    }
+}
+
+function isRepoWatcherProcess(pid) {
+    const cwd = readProcessCwd(pid);
+
+    if (cwd !== realOrchestratorDir) {
+        return false;
+    }
+
+    const args = readProcessArgs(pid);
+
+    if (args.includes('--initial-sync-only')) {
+        return false;
+    }
+
+    return args.some(arg => path.resolve(cwd, arg) === watchScript);
+}
+
+export function isWatcherRunning() {
+    const result = spawnSync('pgrep', ['-f', 'watch.js'], { encoding: 'utf8' });
+
+    if (result.error || result.status !== 0 || !result.stdout || result.stdout.trim().length === 0) {
+        return false;
+    }
+
+    return result.stdout
+        .trim()
+        .split('\n')
+        .some(pid => isRepoWatcherProcess(pid));
+}
+
+function watcherRunningMessage(scriptLabel) {
+    return `kit:run (watcher) is running. Stop it before running ${scriptLabel}.`;
+}
+
+export function ensureNoActiveWatcher({ scriptLabel, jsonMode, startedAt, selectedFrameworks = null, selectedVariants = null }) {
+    if (!isWatcherRunning()) {
+        return;
+    }
+
+    const error = new Error(watcherRunningMessage(scriptLabel));
+
+    if (jsonMode) {
+        writeJsonSummary(buildJsonSummary({
+            scriptLabel,
+            startedAt,
+            finishedAt: new Date(),
+            selectedFrameworks,
+            selectedVariants,
+            results: [{ key: 'watcher', display: 'Watcher check', status: 'failed', elapsed: 0, error }],
+        }));
+    } else {
+        log(`\n${error.message}`, 'red');
+    }
+
+    process.exit(1);
+}
+
 /**
  * Human-readable elapsed time.
  */
@@ -245,11 +319,13 @@ function normalizeResult(result) {
     }
 
     if (result.error) {
+        const message = typeof result.error === 'string' ? result.error : result.error.message;
+
         normalized.error = {
-            message: result.error.message,
+            message,
         };
 
-        if (result.error.output) {
+        if (typeof result.error !== 'string' && result.error.output) {
             normalized.error.output = result.error.output;
         }
     }
@@ -402,8 +478,9 @@ export function removeBuildDirectory() {
  * @param {Array}    options.allVariants     Full variant list before filtering.
  * @param {Function} options.runVariant      Async (variant, index, total) => void.
  * @param {string}   [options.successVerb]   Verb for the per-variant success line (default 'Passed').
+ * @param {boolean}  [options.guardActiveWatcher] Stop before destructive build operations if the watcher is running.
  */
-export async function runMatrix({ scriptLabel, allVariants, runVariant, successVerb = 'Passed' }) {
+export async function runMatrix({ scriptLabel, allVariants, runVariant, successVerb = 'Passed', guardActiveWatcher = false }) {
     const argv = process.argv.slice(2);
     const jsonMode = isJsonOutputRequested(argv, process.env);
     const startedAt = new Date();
@@ -431,6 +508,10 @@ export async function runMatrix({ scriptLabel, allVariants, runVariant, successV
 
         log(message, 'yellow');
         process.exit(0);
+    }
+
+    if (guardActiveWatcher) {
+        ensureNoActiveWatcher({ scriptLabel, jsonMode, startedAt, selectedFrameworks, selectedVariants });
     }
 
     const labels = [];
