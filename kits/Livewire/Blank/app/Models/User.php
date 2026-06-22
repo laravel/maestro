@@ -49,6 +49,6 @@ class User extends Authenticatable
     {
         $initials = Str::initials($this->name, true);
 
-        return $initials[0].$initials[-1];
+        return strlen($initials) > 1 ? $initials[0].$initials[-1] : $initials;
     }
 }
