@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
-import { spawnSync } from 'child_process';
-import { createInterface } from 'readline';
 import {
     buildDir,
     buildJsonSummary,
     buildSkippedResults,
+    ensureNoActiveWatcher,
     filterVariants,
     isJsonOutputRequested,
     log,
@@ -231,28 +230,6 @@ function writeLintJsonSummary({ startedAt, selectedFrameworks, selectedVariants,
     }));
 }
 
-function isWatcherRunning() {
-    const result = spawnSync('pgrep', ['-f', 'watch.js'], { encoding: 'utf8' });
-    return result.status === 0 && result.stdout.trim().length > 0;
-}
-
-function confirmWatcherWarning() {
-    return new Promise((resolve) => {
-        const { bold, yellow, reset } = colors;
-        const line = ' **************************************';
-        const label = ' *     Watcher Is Running!            *';
-        process.stdout.write(`\n${bold}${yellow}${line}\n${label}\n${line}${reset}\n\n`);
-        process.stdout.write(' Do you really wish to run this command? (yes/no) [no]: ');
-
-        const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: false });
-        rl.once('line', (answer) => {
-            rl.close();
-            resolve(answer.trim().toLowerCase() === 'yes');
-        });
-        rl.once('close', () => resolve(false));
-    });
-}
-
 async function main() {
     const argv = process.argv.slice(2);
     const jsonMode = isJsonOutputRequested(argv, process.env);
@@ -264,15 +241,8 @@ async function main() {
     const results = [];
     const context = { jsonMode };
 
-    if (isWatcherRunning()) {
-        if (jsonMode) {
-            writeLintJsonSummary({ startedAt, selectedFrameworks, selectedVariants, results: [{ key: 'watcher', display: 'Watcher check', status: 'failed', elapsed: 0, error: 'kit:run (watcher) is running. Stop it before running kits:lint.' }] });
-            process.exit(1);
-        }
-        const confirmed = await confirmWatcherWarning();
-        if (!confirmed) {
-            process.exit(1);
-        }
+    if (active.length > 0) {
+        ensureNoActiveWatcher({ scriptLabel: 'kits:lint', jsonMode, startedAt, selectedFrameworks, selectedVariants });
     }
 
     // Always run Pint first (it applies to all frameworks including Livewire).

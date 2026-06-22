@@ -231,6 +231,7 @@ runMatrix({
     scriptLabel: 'kits:browser-tests',
     allVariants: variants,
     runVariant: browserTestVariant,
+    guardActiveWatcher: true,
 }).catch(error => {
     log(`\nBrowser tests failed: ${error.message}`, 'red');
     process.exit(1);

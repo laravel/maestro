@@ -1,30 +1,6 @@
 #!/usr/bin/env node
 
-import { spawnSync } from 'child_process';
-import { createInterface } from 'readline';
-import { buildDir, log, orchestratorDir, removeBuildDirectory, runMatrix, runQuiet, colors } from './kit-helpers.js';
-
-function isWatcherRunning() {
-    const result = spawnSync('pgrep', ['-f', 'watch.js'], { encoding: 'utf8' });
-    return result.status === 0 && result.stdout.trim().length > 0;
-}
-
-function confirmWatcherWarning() {
-    return new Promise((resolve) => {
-        const { bold, yellow, reset } = colors;
-        const line = ' **************************************';
-        const label = ' *     Watcher Is Running!            *';
-        process.stdout.write(`\n${bold}${yellow}${line}\n${label}\n${line}${reset}\n\n`);
-        process.stdout.write(' Do you really wish to run this command? (yes/no) [no]: ');
-
-        const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: false });
-        rl.once('line', (answer) => {
-            rl.close();
-            resolve(answer.trim().toLowerCase() === 'yes');
-        });
-        rl.once('close', () => resolve(false));
-    });
-}
+import { buildDir, log, orchestratorDir, removeBuildDirectory, runMatrix, runQuiet } from './kit-helpers.js';
 
 const variants = [
     {
@@ -206,17 +182,11 @@ async function checkVariant(variant, index, total, context) {
     await checkCurrentBuild(context);
 }
 
-if (isWatcherRunning()) {
-    const confirmed = await confirmWatcherWarning();
-    if (!confirmed) {
-        process.exit(1);
-    }
-}
-
 runMatrix({
     scriptLabel: 'kits:check',
     allVariants: variants,
     runVariant: checkVariant,
+    guardActiveWatcher: true,
 }).catch(error => {
     log(`\nCheck kits failed: ${error.message}`, 'red');
     process.exit(1);
