@@ -12,7 +12,21 @@
         updateSupport() {
             this.supported = Boolean(window.Passkeys?.isSupported());
         },
+        getDefaultPasskeyName() {
+            const ua = navigator.userAgent;
+
+            const browser = ['Chrome', 'Firefox', 'Safari', 'Edge', 'Opera'].find(
+                (browser) => new RegExp(browser).test(ua),
+            );
+
+            const os = ['iPhone', 'iPad', 'Android', 'Mac', 'Windows'].find((os) =>
+                new RegExp(os).test(ua),
+            );
+
+            return [browser, os].filter(Boolean).join(' on ') || '';
+        },
         init() {
+            this.name = this.getDefaultPasskeyName();
             this.updateSupport();
 
             window.addEventListener('passkeys:ready', () => this.updateSupport(), { once: true });
