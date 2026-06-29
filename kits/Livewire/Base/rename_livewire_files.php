@@ -42,16 +42,18 @@ foreach ($files as $file) {
 }
 
 if (PHP_OS_FAMILY === 'Windows') {
-    $searches = array_map(fn (string $line): string => str_replace('\\', '/', $line), $searches);
-    $replacements = array_map(fn (string $line): string => str_replace('\\', '/', $line), $replacements);
+    $toForwardSlashes = fn (string $path): string => str_replace('\\', '/', $path);
+
+    $searches = array_map($toForwardSlashes, $searches);
+    $replacements = array_map($toForwardSlashes, $replacements);
 }
 
-$chiselPaths = __DIR__.DIRECTORY_SEPARATOR.'chisel-paths.php';
+$chiselPathsFile = __DIR__.DIRECTORY_SEPARATOR.'chisel-paths.php';
 
-if (file_exists($chiselPaths)) {
+if ($searches !== [] && file_exists($chiselPathsFile)) {
     file_put_contents(
-        $chiselPaths,
-        str_replace($searches, $replacements, file_get_contents($chiselPaths))
+        $chiselPathsFile,
+        str_replace($searches, $replacements, file_get_contents($chiselPathsFile)),
     );
 }
 
