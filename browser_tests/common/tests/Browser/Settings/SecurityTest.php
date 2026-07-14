@@ -177,6 +177,33 @@ test('two-factor authentication can be enabled, confirmed, and disabled without 
         ->assertNoJavaScriptErrors();
 });
 
+test('two-factor setup can be resumed after closing the modal', function () {
+    actingAs(User::factory()->create());
+
+    $browser = visit(route('security.edit'))
+        ->assertSee('Enable 2FA')
+        ->click('Enable 2FA')
+        ->assertVisible('dialog, [role=dialog]')
+        ->keys('dialog, [role=dialog]', 'Escape')
+        ->assertMissing('dialog, [role=dialog]');
+
+    $isInertia = $browser->script('!window.Livewire');
+
+    if ($isInertia) {
+        $browser->assertSee('Continue setup')
+            ->assertDontSee('Enable 2FA')
+            ->click('Continue setup');
+    } else {
+        $browser->click('Enable 2FA');
+    }
+
+    $browser->assertVisible('dialog, [role=dialog]')
+        ->assertDontSee('Something went wrong')
+        ->assertDontSee('Failed to fetch a setup key')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
 test('security page displays password section without two-factor when feature is disabled', function () {
     config(['fortify.features' => []]);
 
