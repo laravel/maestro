@@ -77,20 +77,18 @@ class InstallFeaturesCommand extends Command
             return false;
         }
 
-        return filter_var(
-            $_ENV['LARAVEL_INSTALLER_DEFER_HOOKS']
-                ?? $_SERVER['LARAVEL_INSTALLER_DEFER_HOOKS']
-                ?? getenv('LARAVEL_INSTALLER_DEFER_HOOKS'),
-            FILTER_VALIDATE_BOOL,
-        );
+        return $this->installerFlag('LARAVEL_INSTALLER_DEFER_HOOKS');
     }
 
     protected function shouldSkipNode(): bool
     {
+        return $this->installerFlag('LARAVEL_INSTALLER_NO_NODE');
+    }
+
+    protected function installerFlag(string $name): bool
+    {
         return filter_var(
-            $_ENV['LARAVEL_INSTALLER_NO_NODE']
-                ?? $_SERVER['LARAVEL_INSTALLER_NO_NODE']
-                ?? getenv('LARAVEL_INSTALLER_NO_NODE'),
+            $_ENV[$name] ?? $_SERVER[$name] ?? getenv($name),
             FILTER_VALIDATE_BOOL,
         );
     }
