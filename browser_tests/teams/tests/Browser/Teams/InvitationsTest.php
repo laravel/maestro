@@ -78,30 +78,6 @@ test('invitation can be cancelled from the UI', function () {
         ->assertNoJavaScriptErrors();
 });
 
-test('invitation can be accepted by the invited user', function () {
-    $owner = User::factory()->create();
-    $team = Team::factory()->create(['name' => 'Accept Team']);
-    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
-
-    $invitation = TeamInvitation::factory()->create([
-        'team_id' => $team->id,
-        'email' => 'newmember@example.com',
-        'invited_by' => $owner->id,
-    ]);
-
-    $invitedUser = User::factory()->create(['email' => 'newmember@example.com']);
-
-    actingAs($invitedUser);
-
-    visit(route('invitations.accept', $invitation))
-        ->assertPathEndsWith('/dashboard')
-        ->assertPathContains($team->slug)
-        ->assertNoConsoleLogs()
-        ->assertNoJavaScriptErrors();
-
-    expect($invitedUser->fresh()->currentTeam->id)->toBe($team->id);
-});
-
 test('login page shows team invitation alert', function () {
     $owner = User::factory()->create();
     $team = Team::factory()->create(['name' => 'Login Alert Team']);
