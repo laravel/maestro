@@ -183,7 +183,8 @@ async function runBrowserTestsForCurrentBuild(context) {
     }
 
     await runQuiet('npm', ['install'], { cwd: buildDir });
-    await runQuiet('npm', ['install', 'playwright'], { cwd: buildDir });
+    // Pinned: pest-plugin-browser relies on server-side timeouts removed in Playwright 1.62, causing tests to hang forever
+    await runQuiet('npm', ['install', 'playwright@1.61.1'], { cwd: buildDir });
 
     await ensurePlaywrightBrowsers(context);
 
