@@ -353,7 +353,7 @@ cd build
 composer remove --dev phpunit/phpunit --no-interaction --no-update
 composer require --dev pestphp/pest pestphp/pest-plugin-browser pestphp/pest-plugin-laravel --no-interaction
 npm install
-npm install playwright
+npm install playwright@1.61.1  # Pinned: Playwright 1.62 removed server-side timeouts that pest-plugin-browser relies on
 
 # 5) Install Playwright browsers/deps
 npx playwright install --with-deps
