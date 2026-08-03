@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { execSync, spawn } from 'child_process';
+import { execSync } from 'child_process';
+import { spawn } from 'cross-spawn';
 import fs from 'fs';
 import path from 'path';
 import {
