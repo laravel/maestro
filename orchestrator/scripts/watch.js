@@ -214,7 +214,7 @@ function collectKitFiles(folders) {
         }
 
         for (const file of getAllFiles(folderPath)) {
-            files.add(path.relative(folderPath, file).replace(/\\/g, '/'));
+            files.add(normalizePath(path.relative(folderPath, file)));
         }
     }
 
@@ -396,7 +396,7 @@ function loadGitignores() {
 
     for (const gitignorePath of gitignoreFiles) {
         const content = fs.readFileSync(gitignorePath, 'utf-8');
-        const relativeDirPath = path.relative(buildDir, path.dirname(gitignorePath));
+        const relativeDirPath = normalizePath(path.relative(buildDir, path.dirname(gitignorePath)));
 
         // Parse each line and prefix with the relative directory path
         const lines = content.split('\n').map(line => {
@@ -411,13 +411,13 @@ function loadGitignores() {
             if (relativeDirPath) {
                 // Handle negation patterns
                 if (line.startsWith('!')) {
-                    return '!' + path.join(relativeDirPath, line.slice(1));
+                    return '!' + path.posix.join(relativeDirPath, line.slice(1));
                 }
 
-                return path.join(relativeDirPath, line);
+                return path.posix.join(relativeDirPath, line);
             }
 
-            return line;
+            return normalizePath(line);
         }).filter(Boolean);
 
         if (lines.length > 0) {
@@ -442,7 +442,7 @@ function getStarterKit() {
  * Get the relative path from the build directory.
  */
 function getRelativePath(filePath) {
-    return path.relative(buildDir, filePath);
+    return normalizePath(path.relative(buildDir, filePath));
 }
 
 /**
