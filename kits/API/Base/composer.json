@@ -11,7 +11,7 @@
     "require": {
         "php": "^8.3",
         "dedoc/scramble": "^0.13.35",
-        "laravel/framework": "^13.6",
+        "laravel/framework": "^13.17",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0"
     },
@@ -47,7 +47,7 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" --names=server,queue,logs --kill-others"
+            "@php artisan dev"
         ],
         "lint": [
             "pint --parallel"
