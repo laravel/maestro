@@ -417,7 +417,7 @@ function loadGitignores() {
                 return path.posix.join(relativeDirPath, line);
             }
 
-            return normalizePath(line);
+            return line;
         }).filter(Boolean);
 
         if (lines.length > 0) {
