@@ -34,6 +34,10 @@ jobs:
         working-directory: orchestrator
         run: composer install --no-interaction --prefer-dist
 
+      - name: Install Node Dependencies
+        working-directory: orchestrator
+        run: npm ci
+
       - name: Sync Skeleton
         working-directory: orchestrator
         run: composer skeleton:sync
