@@ -39,8 +39,17 @@
                 autocomplete="new-password"
                 :placeholder="__('Password')"
                 passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
+                error:message=""
                 viewable
             />
+
+            @if ($errors->has('password'))
+                <div role="alert" aria-live="polite" aria-atomic="true" class="mt-3 space-y-1 text-sm font-medium text-red-500 dark:text-red-400">
+                    @foreach ($errors->get('password') as $message)
+                        <p>{{ $message }}</p>
+                    @endforeach
+                </div>
+            @endif
 
             <!-- Confirm Password -->
             <flux:input

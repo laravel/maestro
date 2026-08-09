@@ -3,13 +3,17 @@
         message = '',
         class: className = '',
     }: {
-        message?: string;
+        message?: string | string[];
         class?: string;
     } = $props();
 </script>
 
-{#if message}
+{#if Array.isArray(message) ? message.length : message}
     <div class={className}>
-        <p class="text-sm text-red-600 dark:text-red-500">{message}</p>
+        {#each Array.isArray(message) ? message : [message] as msg (msg)}
+            {#if msg}
+                <p class="text-sm text-red-600 dark:text-red-500">{msg}</p>
+            {/if}
+        {/each}
     </div>
 {/if}

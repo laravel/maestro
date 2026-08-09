@@ -17,6 +17,13 @@ class HandleInertiaRequests extends Middleware
     protected $rootView = 'app';
 
     /**
+     * Determines if validation errors should be mapped to a single error message per field.
+     *
+     * @var bool
+     */
+    protected $withAllErrors = true;
+
+    /**
      * Determines the current asset version.
      *
      * @see https://inertiajs.com/asset-versioning
