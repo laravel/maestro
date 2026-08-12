@@ -36,7 +36,7 @@
         "@types/react-dom": "^19.2.0",
         "@vitejs/plugin-react": "^5.2.0",
         "clsx": "^2.1.1",
-        "concurrently": "^9.0.1",
+        "concurrently": "^10.0.3",
         "globals": "^15.14.0",
         "laravel-vite-plugin": "^3.1",
         "react": "^19.2.0",
@@ -47,6 +47,7 @@
         "vite": "^8.0.0"
     },
     "optionalDependencies": {
+        "@laravel/multiplex": "^0.4.1",
         "@rollup/rollup-linux-x64-gnu": "4.9.5",
         "@tailwindcss/oxide-linux-x64-gnu": "^4.0.1",
         "lightningcss-linux-x64-gnu": "^1.29.1"
