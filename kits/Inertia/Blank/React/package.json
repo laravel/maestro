@@ -36,7 +36,7 @@
         "@types/react-dom": "^19.2.0",
         "@vitejs/plugin-react": "^5.2.0",
         "clsx": "^2.1.1",
-        "concurrently": "^9.0.1",
+        "concurrently": "^10.0.3",
         "globals": "^15.14.0",
         "laravel-vite-plugin": "^3.1",
         "react": "^19.2.0",
