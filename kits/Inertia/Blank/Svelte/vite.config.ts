@@ -30,4 +30,9 @@ export default defineConfig({
             formVariants: true,
         }),
     ],
+    server: {
+        watch: {
+            ignored: ['**/vendor/**', '**/node_modules/**', '**/.git/**'],
+        },
+    },
 });
