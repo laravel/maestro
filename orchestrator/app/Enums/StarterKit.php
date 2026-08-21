@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum StarterKit: string
 {
+    case API = 'API';
     case Livewire = 'Livewire';
     case React = 'React';
     case Svelte = 'Svelte';
