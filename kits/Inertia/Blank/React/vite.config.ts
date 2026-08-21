@@ -30,7 +30,13 @@ export default defineConfig({
     ],
     server: {
         watch: {
-            ignored: ['**/vendor/**', '**/node_modules/**', '**/.git/**'],
+            ignored: [
+                '**/.agents/**',
+                '**/.claude/**',
+                '**/.cursor/**',
+                '**/.junie/**',
+                '**/vendor/**',
+            ],
         },
     },
 });
