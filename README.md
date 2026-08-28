@@ -71,7 +71,7 @@ From the `orchestrator` directory, run:
 composer kits:lint
 ```
 
-This command runs Pint on `kits/` and `browser_tests/` first, then loops over all Inertia variants, builds each variant, runs frontend linting/formatting in `build` (`npm install`, then lint/format), and then runs `npm run watch:kits -- --initial-sync-only` to sync changes back to `kits`.
+This command runs Pint on `kits/` and `browser_tests/` first, then loops over all Inertia variants, builds each variant, runs `npm install`, `npm run build`, and `npm run check:fix` in `build/`, and then runs `npm run watch:kits -- --initial-sync-only` to sync changes back to `kits/`.
 
 > [!WARNING]
 > Stop `composer kit:run` before running `composer kits:lint` or `composer kits:check`. Those commands delete and rebuild `build/`, and the active watcher can sync those deletions back to `kits/`. `composer kits:pint` is safe to run while the watcher is active.
