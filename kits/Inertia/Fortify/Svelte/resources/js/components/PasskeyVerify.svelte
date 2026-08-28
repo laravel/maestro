@@ -2,7 +2,7 @@
     import type { UrlMethodPair } from '@inertiajs/core';
     import { router } from '@inertiajs/svelte';
     import { usePasskeyVerify } from '@laravel/passkeys/svelte';
-    import KeyRound from 'lucide-svelte/icons/key-round';
+    import KeyRound from '@lucide/svelte/icons/key-round';
     import { untrack } from 'svelte';
     import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';

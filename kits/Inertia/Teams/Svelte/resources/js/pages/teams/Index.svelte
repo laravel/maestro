@@ -13,10 +13,10 @@
 
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
-    import Eye from 'lucide-svelte/icons/eye';
-    import LogOut from 'lucide-svelte/icons/log-out';
-    import Pencil from 'lucide-svelte/icons/pencil';
-    import Plus from 'lucide-svelte/icons/plus';
+    import Eye from '@lucide/svelte/icons/eye';
+    import LogOut from '@lucide/svelte/icons/log-out';
+    import Pencil from '@lucide/svelte/icons/pencil';
+    import Plus from '@lucide/svelte/icons/plus';
     import AppHead from '@/components/AppHead.svelte';
     import CreateTeamModal from '@/components/CreateTeamModal.svelte';
     import Heading from '@/components/Heading.svelte';

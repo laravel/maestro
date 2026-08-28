@@ -1,9 +1,9 @@
 <script lang="ts">
     import { page, router } from '@inertiajs/svelte';
-    import Check from 'lucide-svelte/icons/check';
-    import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
-    import Plus from 'lucide-svelte/icons/plus';
-    import Users from 'lucide-svelte/icons/users';
+    import Check from '@lucide/svelte/icons/check';
+    import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
+    import Plus from '@lucide/svelte/icons/plus';
+    import Users from '@lucide/svelte/icons/users';
     import { onMount } from 'svelte';
     import CreateTeamModal from '@/components/CreateTeamModal.svelte';
     import { Button } from '@/components/ui/button';

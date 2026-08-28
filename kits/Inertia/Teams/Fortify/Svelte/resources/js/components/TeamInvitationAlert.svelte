@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Info from 'lucide-svelte/icons/info';
+    import Info from '@lucide/svelte/icons/info';
     import { Alert, AlertDescription } from '@/components/ui/alert';
     import type { TeamInvitationContext } from '@/types';
 
