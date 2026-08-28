@@ -4,16 +4,18 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
-import { defineConfig } from 'vite-plus';
+import { defineConfig, lazyPlugins } from 'vite-plus';
 
-const isSvelteCheck = process.argv.some((argument) => argument.includes('svelte-check'));
+const isSvelteCheck = process.argv.some((argument) =>
+    argument.includes('svelte-check'),
+);
 
 if (isSvelteCheck) {
     process.env.LARAVEL_BYPASS_ENV_CHECK ??= '1';
 }
 
 export default defineConfig({
-    plugins: [
+    plugins: lazyPlugins(() => [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.ts'],
             refresh: true,
@@ -29,7 +31,7 @@ export default defineConfig({
         wayfinder({
             formVariants: true,
         }),
-    ],
+    ]),
     server: {
         watch: {
             ignored: [
@@ -69,9 +71,6 @@ export default defineConfig({
             'resources/js/components/ui/*',
             'resources/views/mail/*',
         ],
-        sortImports: {
-            newlinesBetween: false,
-        },
         sortTailwindcss: {
             functions: ['clsx', 'cn', 'cva'],
             entryPoint: 'resources/css/app.css',

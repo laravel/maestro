@@ -28,12 +28,11 @@
         "@sveltejs/vite-plugin-svelte": "^7.0.0",
         "@tailwindcss/vite": "^4.1.11",
         "@types/node": "^22.13.5",
-        "@voidzero-dev/vite-plus-core": "^0.1.14",
         "concurrently": "^10.0.3",
         "svelte-check": "^4.1.4",
         "typescript": "^5.7.2",
         "vite": "^8.0.0",
-        "vite-plus": "^0.1.13"
+        "vite-plus": "0.3.0"
     },
     "optionalDependencies": {
         "@laravel/multiplex": "^0.4.1",
