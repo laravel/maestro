@@ -471,6 +471,13 @@ export function removeBuildDirectory() {
 }
 
 /**
+ * Stop formatters from inheriting the parent repository's build ignore rule.
+ */
+export function ensureBuildRepositoryBoundary() {
+    fs.mkdirSync(path.join(buildDir, '.git'), { recursive: true });
+}
+
+/**
  * Run the matrix loop shared by check-kits, lint-kits, and browser-tests-kits.
  *
  * @param {object}   options

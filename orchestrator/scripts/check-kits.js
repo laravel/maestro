@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
-import { buildDir, log, orchestratorDir, removeBuildDirectory, runMatrix, runQuiet } from './kit-helpers.js';
+import {
+    buildDir,
+    ensureBuildRepositoryBoundary,
+    log,
+    orchestratorDir,
+    removeBuildDirectory,
+    runMatrix,
+    runQuiet,
+} from './kit-helpers.js';
 
 const variants = [
     {
@@ -178,6 +186,7 @@ async function checkVariant(variant, index, total, context) {
     }
 
     await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
+    ensureBuildRepositoryBoundary();
 
     await checkCurrentBuild(context);
 }

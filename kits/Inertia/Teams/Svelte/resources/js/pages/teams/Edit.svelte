@@ -18,10 +18,10 @@
 
 <script lang="ts">
     import { Form, router } from '@inertiajs/svelte';
-    import ChevronDown from 'lucide-svelte/icons/chevron-down';
-    import Mail from 'lucide-svelte/icons/mail';
-    import UserPlus from 'lucide-svelte/icons/user-plus';
-    import X from 'lucide-svelte/icons/x';
+    import ChevronDown from '@lucide/svelte/icons/chevron-down';
+    import Mail from '@lucide/svelte/icons/mail';
+    import UserPlus from '@lucide/svelte/icons/user-plus';
+    import X from '@lucide/svelte/icons/x';
     import AppHead from '@/components/AppHead.svelte';
     import CancelInvitationModal from '@/components/CancelInvitationModal.svelte';
     import DeleteTeamModal from '@/components/DeleteTeamModal.svelte';

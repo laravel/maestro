@@ -66,9 +66,9 @@ Available `--kit` values defined in `orchestrator/app/Enums/StarterKit.php`.
 
 ### CI Checks (`composer ci:check`)
 
-Every starter kit has a `ci:check` composer script that validates the kit without auto-fixing. Run `composer setup` first to install dependencies and build the frontend (`composer setup` runs `composer install`, `npm install`, and `npm run build`, which generates the Wayfinder types needed by eslint and the type checker).
+Every starter kit has a `ci:check` composer script that validates the kit without auto-fixing. Run `composer setup` first to install dependencies and build the frontend (`composer setup` runs `composer install`, `npm install`, and `npm run build`, which generates the Wayfinder types used by the frontend checks).
 
-**Inertia kits** run: `eslint .`, `prettier --check .`, `tsc --noEmit` / `vue-tsc --noEmit` / `svelte-check`, then `@test` (pint + PHPUnit).
+**Inertia kits** run: Vite+ formatting and linting via `npm run check`, framework type checking via `npm run types:check`, then `@test` (Pint + PHPUnit).
 
 **Livewire kits** run: `@test` (pint + PHPUnit) only.
 
