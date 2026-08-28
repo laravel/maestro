@@ -38,6 +38,8 @@ class FortifyMatrixCommand extends Command
             $this->buildKit();
         }
 
+        File::ensureDirectoryExists($this->buildPath.'/.git');
+
         $this->snapshotBaseline();
         $scenarioCount = $this->runScenarios();
 
@@ -81,8 +83,6 @@ class FortifyMatrixCommand extends Command
             ['php', 'artisan', 'build', '--no-interaction', ...$args],
             base_path(),
         ));
-
-        File::ensureDirectoryExists($this->buildPath.'/.git');
 
         $this->runStep('Installing Composer dependencies', fn () => $this->runProcess(
             ['composer', 'install', '--no-interaction', '--prefer-dist', '--no-scripts'],
