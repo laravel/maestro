@@ -3,6 +3,7 @@
 import {
     buildDir,
     colors,
+    ensureBuildRepositoryBoundary,
     log,
     orchestratorDir,
     removeBuildDirectory,
@@ -125,12 +126,13 @@ async function formatVariant(variant, index, total) {
 
     log('  Building variant...', 'dim');
     await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
+    ensureBuildRepositoryBoundary();
 
     log('  Installing npm deps...', 'dim');
     await runQuiet('npm', ['install'], { cwd: buildDir });
 
     log('  Running format...', 'dim');
-    await runQuiet('npm', ['run', 'format'], { cwd: buildDir });
+    await runQuiet('npm', ['exec', '--', 'vp', 'fmt'], { cwd: buildDir });
 
     log('  Syncing changes back to kits...', 'dim');
     await runQuiet('node', ['scripts/watch.js', '--initial-sync-only'], { cwd: orchestratorDir });

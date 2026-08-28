@@ -4,6 +4,7 @@ import {
     buildDir,
     buildJsonSummary,
     buildSkippedResults,
+    ensureBuildRepositoryBoundary,
     ensureNoActiveWatcher,
     filterVariants,
     isJsonOutputRequested,
@@ -184,6 +185,7 @@ async function lintVariant(variant, index, total, context) {
     }
 
     await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
+    ensureBuildRepositoryBoundary();
 
     await lintCurrentBuild(context);
     await runWatcherInitialSync(context);
