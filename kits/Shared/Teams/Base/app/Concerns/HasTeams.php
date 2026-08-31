@@ -72,6 +72,7 @@ trait HasTeams
     public function personalTeam(): ?Team
     {
         return $this->teams()
+            ->wherePivot('role', TeamRole::Owner->value)
             ->where('is_personal', true)
             ->first();
     }
