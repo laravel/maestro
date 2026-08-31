@@ -12,6 +12,13 @@ import {
 
 const variants = [
     {
+        key: 'api',
+        display: 'API Stateless',
+        framework: 'api',
+        variant: 'api',
+        buildArgs: ['build', '--no-interaction', '--kit=API'],
+    },
+    {
         key: 'react-blank',
         display: 'React Blank',
         framework: 'react',

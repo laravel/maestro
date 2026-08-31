@@ -17,6 +17,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # API variant
+          - name: API Kit
+            kit: API
+            build_flags: ''
+            repository: laravel/api-starter-kit
+            path: api-starter-kit
+            branch: main
+            node: false
+
           # Livewire variants
           - name: Livewire Kit (Blank)
             kit: Livewire
