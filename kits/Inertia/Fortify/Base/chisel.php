@@ -287,8 +287,7 @@ return Chisel::script(__DIR__)
             ->removeLinesContaining('"@php artisan install:features --ansi"');
 
         chiselRun(['composer', 'lint'], 'Composer Lint');
-        // Prefer PHP_BINARY over "php" — on Windows, PATH often points at a
-        // .bat wrapper (e.g. Herd) that Symfony Process cannot CreateProcess.
+        // Use the same PHP executable as Artisan when Windows has multiple installations on PATH.
         chiselRun([PHP_BINARY, 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], 'Generate Wayfinder Resources');
 
         if (! chiselSkipsNode()) {
