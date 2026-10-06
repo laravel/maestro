@@ -20,7 +20,7 @@ test('new user can be registered', function () {
         ->fill('password', 'password')
         ->fill('password_confirmation', 'password')
         ->press('@register-user-button')
-        ->assertPathEndsWith('/dashboard')
+        ->assertPathEndsWith('/email/verify')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 

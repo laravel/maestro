@@ -6,6 +6,7 @@ use App\Enums\TeamRole;
 use App\Models\Team;
 use App\Models\TeamInvitation;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
@@ -98,14 +99,74 @@ class TeamInvitationTest extends TestCase
 
         $this->actingAs($invitedUser);
 
-        $response = Livewire::test('pages::teams.accept-invitation', [
-            'invitation' => $invitation,
-        ]);
+        $response = Livewire::test('pages::teams.pending-invitations-modal')
+            ->call('acceptInvitation', $invitation->code);
 
         $response->assertRedirect(route('dashboard'));
 
+        $this->assertTrue(session('team-invitation-accepted'));
+
         $this->assertNotNull($invitation->fresh()->accepted_at);
         $this->assertTrue($invitedUser->fresh()->belongsToTeam($team));
+        $this->assertSame($team->id, $invitedUser->fresh()->current_team_id);
+    }
+
+    public function test_accepted_team_invitations_cannot_be_accepted_again(): void
+    {
+        $owner = User::factory()->create();
+        $invitedUser = User::factory()->create(['email' => 'invited@example.com']);
+        $team = Team::factory()->create();
+
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+        $invitation = TeamInvitation::factory()->accepted()->create([
+            'team_id' => $team->id,
+            'email' => 'invited@example.com',
+            'invited_by' => $owner->id,
+        ]);
+
+        $this->actingAs($invitedUser);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        Livewire::test('pages::teams.pending-invitations-modal')
+            ->call('acceptInvitation', $invitation->code);
+    }
+
+    public function test_accepted_invitation_toast_is_shown_on_the_dashboard(): void
+    {
+        $user = User::factory()->create();
+
+        session()->flash('team-invitation-accepted', true);
+
+        $this->actingAs($user);
+
+        Livewire::test('pages::teams.pending-invitations-modal')
+            ->assertDispatched('toast-show');
+    }
+
+    public function test_pending_invitations_excludes_expired_invitations_without_deleting_them(): void
+    {
+        $owner = User::factory()->create();
+        $invitedUser = User::factory()->create(['email' => 'invited@example.com']);
+        $team = Team::factory()->create(['name' => 'Expired Team']);
+
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+        $invitation = TeamInvitation::factory()->expired()->create([
+            'team_id' => $team->id,
+            'email' => 'invited@example.com',
+            'invited_by' => $owner->id,
+        ]);
+
+        $this->actingAs($invitedUser);
+
+        Livewire::test('pages::teams.pending-invitations-modal')
+            ->assertDontSee('Expired Team');
+
+        $this->assertDatabaseHas('team_invitations', [
+            'id' => $invitation->id,
+        ]);
     }
 
     public function test_team_invitations_cannot_be_accepted_by_user_that_wasnt_invited(): void
@@ -124,9 +185,8 @@ class TeamInvitationTest extends TestCase
 
         $this->actingAs($uninvitedUser);
 
-        $response = Livewire::test('pages::teams.accept-invitation', [
-            'invitation' => $invitation,
-        ]);
+        $response = Livewire::test('pages::teams.pending-invitations-modal')
+            ->call('acceptInvitation', $invitation->code);
 
         $response->assertHasErrors(['invitation']);
 
@@ -149,9 +209,8 @@ class TeamInvitationTest extends TestCase
 
         $this->actingAs($invitedUser);
 
-        $response = Livewire::test('pages::teams.accept-invitation', [
-            'invitation' => $invitation,
-        ]);
+        $response = Livewire::test('pages::teams.pending-invitations-modal')
+            ->call('acceptInvitation', $invitation->code);
 
         $response->assertHasErrors(['invitation']);
 

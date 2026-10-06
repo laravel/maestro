@@ -7,6 +7,8 @@ updates:
       - "/kits/Livewire/Blank/.github/workflows"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 5
     groups:
       github-actions:
         patterns:

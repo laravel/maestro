@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Eye, EyeOff } from 'lucide-vue-next';
+import { Eye, EyeOff } from '@lucide/vue';
 import { ref, useTemplateRef } from 'vue';
 import type { HTMLAttributes } from 'vue';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ defineOptions({ inheritAttrs: false });
 
 const props = defineProps<{
     class?: HTMLAttributes['class'];
+    autofocus?: boolean;
 }>();
 
 const showPassword = ref(false);
@@ -23,6 +24,7 @@ defineExpose({
 <template>
     <div class="relative">
         <Input
+            v-focus="props.autofocus"
             ref="inputRef"
             :type="showPassword ? 'text' : 'password'"
             :class="cn('pr-10', props.class)"

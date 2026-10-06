@@ -7,7 +7,7 @@ import { initializeFlashToast } from '@/lib/flashToast';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-createInertiaApp({
+void createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     layout: (name) => {
         switch (true) {
@@ -21,6 +21,15 @@ createInertiaApp({
             default:
                 return AppLayout;
         }
+    },
+    withApp: (app) => {
+        app.directive('focus', {
+            mounted: (el: HTMLElement, shouldFocus) => {
+                if (shouldFocus.value !== false) {
+                    el.focus();
+                }
+            },
+        });
     },
     progress: {
         color: '#4B5563',

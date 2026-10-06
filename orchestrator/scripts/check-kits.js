@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
-import { buildDir, log, orchestratorDir, removeBuildDirectory, runMatrix, runQuiet } from './kit-helpers.js';
+import {
+    buildDir,
+    ensureBuildRepositoryBoundary,
+    log,
+    orchestratorDir,
+    removeBuildDirectory,
+    runMatrix,
+    runQuiet,
+} from './kit-helpers.js';
 
 const variants = [
     {
@@ -152,29 +160,42 @@ const variants = [
     },
 ];
 
-async function checkCurrentBuild() {
-    log('  Installing dependencies...', 'dim');
+async function checkCurrentBuild({ jsonMode }) {
+    if (!jsonMode) {
+        log('  Installing dependencies...', 'dim');
+    }
+
     await runQuiet('composer', ['setup'], { cwd: buildDir });
 
-    log('  Running ci:check...', 'dim');
+    if (!jsonMode) {
+        log('  Running ci:check...', 'dim');
+    }
+
     await runQuiet('composer', ['ci:check'], { cwd: buildDir });
 }
 
-async function checkVariant(variant, index, total) {
-    log(`\n[${index}/${total}] ${variant.display}`, 'blue');
+async function checkVariant(variant, index, total, context) {
+    if (!context.jsonMode) {
+        log(`\n[${index}/${total}] ${variant.display}`, 'blue');
+    }
 
     removeBuildDirectory();
 
-    log('  Building variant...', 'dim');
-    await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
+    if (!context.jsonMode) {
+        log('  Building variant...', 'dim');
+    }
 
-    await checkCurrentBuild();
+    await runQuiet('php', ['artisan', ...variant.buildArgs], { cwd: orchestratorDir });
+    ensureBuildRepositoryBoundary();
+
+    await checkCurrentBuild(context);
 }
 
 runMatrix({
     scriptLabel: 'kits:check',
     allVariants: variants,
     runVariant: checkVariant,
+    guardActiveWatcher: true,
 }).catch(error => {
     log(`\nCheck kits failed: ${error.message}`, 'red');
     process.exit(1);

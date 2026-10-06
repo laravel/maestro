@@ -1,6 +1,6 @@
 <script lang="ts">
-    import KeyRound from 'lucide-svelte/icons/key-round';
-    import Trash2 from 'lucide-svelte/icons/trash-2';
+    import KeyRound from '@lucide/svelte/icons/key-round';
+    import Trash2 from '@lucide/svelte/icons/trash-2';
     import { Button } from '@/components/ui/button';
     import {
         Dialog,

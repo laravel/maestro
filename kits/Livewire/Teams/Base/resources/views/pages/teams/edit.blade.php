@@ -1,9 +1,9 @@
 <?php
 
+use App\Data\TeamPermissions;
 use App\Enums\TeamRole;
 use App\Models\Team;
 use App\Rules\TeamName;
-use App\Support\TeamPermissions;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -100,6 +100,7 @@ new class extends Component
             'name' => $member->name,
             'email' => $member->email,
             'avatar' => $member->avatar ?? null,
+            'initials' => $member->initials(),
             'role' => $member->pivot->role->value,
             'role_label' => $member->pivot->role->label(),
         ])->toArray();
@@ -141,7 +142,7 @@ new class extends Component
 <section class="w-full">
     @include('partials.settings-heading')
 
-    <flux:heading class="sr-only">{{ __('Teams') }}</flux:heading>
+    <flux:heading level="2" class="sr-only">{{ __('Teams') }}</flux:heading>
 
     <x-pages::settings.layout :heading="__('Teams')" :subheading="__('Manage your team settings')">
         <div class="space-y-10">
@@ -185,7 +186,7 @@ new class extends Component
                     @foreach ($members as $member)
                         <div class="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900" data-test="member-row">
                             <div class="flex items-center gap-4">
-                                <flux:avatar :name="$member['name']" :initials="strtoupper(substr($member['name'], 0, 1))" />
+                                <flux:avatar :name="$member['name']" :initials="$member['initials']" />
                                 <div>
                                     <div class="font-medium">{{ $member['name'] }}</div>
                                     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ $member['email'] }}</flux:text>

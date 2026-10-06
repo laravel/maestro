@@ -33,6 +33,24 @@ test('guests can browse to login page from welcome page', function () {
         ->assertNoJavaScriptErrors();
 });
 
+test('login email receives focus after Vue navigation', function () {
+    $dependencies = json_decode(
+        file_get_contents(base_path('package.json')),
+        true,
+        flags: JSON_THROW_ON_ERROR,
+    )['dependencies'];
+
+    if (! isset($dependencies['vue'])) {
+        $this->markTestSkipped('Vue starter kit only.');
+    }
+
+    visit(route('home'))
+        ->click('Log in')
+        ->assertScript('document.activeElement?.getAttribute("name")', 'email')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
 test('authenticated users see dashboard link on welcome page', function () {
     actingAs(User::factory()->create());
 

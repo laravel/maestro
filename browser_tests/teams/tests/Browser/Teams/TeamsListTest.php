@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TeamRole;
 use App\Models\Team;
 use App\Models\User;
 
@@ -61,6 +62,49 @@ test('new team appears in team switcher after creation', function () {
         ->assertSee('Team created.')
         ->click('@team-switcher-trigger')
         ->assertSee('New Switcher Team')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+});
+
+test('members can leave a non-personal team from teams list', function () {
+    $owner = User::factory()->create();
+    $member = User::factory()->create();
+    $team = Team::factory()->create(['name' => 'Leave Browser Team']);
+
+    $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+    $team->members()->attach($member, ['role' => TeamRole::Member->value]);
+    $member->switchTeam($team);
+
+    actingAs($member);
+
+    visit(route('teams.index'))
+        ->assertSee('Leave Browser Team')
+        ->assertVisible('@team-leave-button')
+        ->click('@team-leave-button')
+        ->waitForText('Leave team')
+        ->assertVisible('@leave-team-confirm')
+        ->pressAndWaitFor('@leave-team-confirm')
+        ->assertPathEndsWith('/settings/teams')
+        ->waitForText('You left the team "Leave Browser Team"')
+        ->assertMissing('@team-leave-button')
+        ->assertNoConsoleLogs()
+        ->assertNoJavaScriptErrors();
+
+    expect($member->fresh()->belongsToTeam($team))->toBeFalse();
+});
+
+test('leave action is not available for personal or owned teams', function () {
+    $user = User::factory()->create();
+    $ownedTeam = Team::factory()->create(['name' => 'Owned Browser Team']);
+
+    $ownedTeam->members()->attach($user, ['role' => TeamRole::Owner->value]);
+
+    actingAs($user);
+
+    visit(route('teams.index'))
+        ->assertSee($user->personalTeam()->name)
+        ->assertSee('Owned Browser Team')
+        ->assertMissing('@team-leave-button')
         ->assertNoConsoleLogs()
         ->assertNoJavaScriptErrors();
 });

@@ -191,19 +191,19 @@ jobs:
 
     steps:
       - name: Checkout Maestro
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: '8.4'
           extensions: mbstring, xml, ctype, json, curl
 
       - name: Setup Node.js
         if: matrix.node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
 
@@ -224,7 +224,7 @@ jobs:
         run: php artisan build --kit=${{ matrix.kit }} ${{ matrix.build_flags }} --chisel
 
       - name: Checkout Starter Kit
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ matrix.repository }}
           ref: ${{ matrix.branch }}
@@ -278,20 +278,24 @@ jobs:
       - name: Commit and Push Changes
         if: steps.changes.outputs.has_changes == 'true'
         working-directory: ${{ matrix.path }}
+        env:
+          COMMIT_MSG: ${{ steps.pr-info.outputs.title }}
+          PR_FOUND: ${{ steps.pr-info.outputs.found }}
+          PR_AUTHOR: ${{ steps.pr-info.outputs.author }}
+          PR_AUTHOR_EMAIL: ${{ steps.pr-info.outputs.author_email }}
+          CO_AUTHORS: ${{ steps.pr-info.outputs.co_authors }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add -A
 
-          COMMIT_MSG="${{ steps.pr-info.outputs.title }}"
           TRAILERS=""
 
-          if [[ "${{ steps.pr-info.outputs.found }}" == "true" ]]; then
-            TRAILERS="Co-authored-by: ${{ steps.pr-info.outputs.author }} <${{ steps.pr-info.outputs.author_email }}>"
+          if [[ "$PR_FOUND" == "true" ]]; then
+            TRAILERS="Co-authored-by: $PR_AUTHOR <$PR_AUTHOR_EMAIL>"
           fi
 
-          CO_AUTHORS="${{ steps.pr-info.outputs.co_authors }}"
           if [[ -n "$CO_AUTHORS" ]]; then
             if [[ -n "$TRAILERS" ]]; then
               TRAILERS="$TRAILERS

@@ -54,7 +54,7 @@ const allowedEmptyTextFiles = new Set([
 ]);
 
 /**
- * Get the kit type (react or vue) from the starter kit string.
+ * Get the kit type (react, svelte, or vue) from the starter kit string.
  * Returns null for livewire kits since they don't use placeholders.
  */
 function getKitType(starterKit) {
@@ -136,7 +136,7 @@ function restoreComposerVariant(content, kitType) {
         return content;
     }
 
-    // Replace the variant (react/vue) back with {{variant}} in the name field
+    // Replace the variant (react/svelte/vue) back with {{variant}} in the name field
     // Handles patterns like "laravel/react-starter-kit" or "laravel/blank-react-starter-kit"
     return content.replace(
         new RegExp(`"name":\\s*"(laravel/(?:blank-)?)${kitType}(-starter-kit)"`, 'g'),
@@ -214,7 +214,7 @@ function collectKitFiles(folders) {
         }
 
         for (const file of getAllFiles(folderPath)) {
-            files.add(path.relative(folderPath, file).replace(/\\/g, '/'));
+            files.add(normalizePath(path.relative(folderPath, file)));
         }
     }
 
@@ -396,7 +396,7 @@ function loadGitignores() {
 
     for (const gitignorePath of gitignoreFiles) {
         const content = fs.readFileSync(gitignorePath, 'utf-8');
-        const relativeDirPath = path.relative(buildDir, path.dirname(gitignorePath));
+        const relativeDirPath = normalizePath(path.relative(buildDir, path.dirname(gitignorePath)));
 
         // Parse each line and prefix with the relative directory path
         const lines = content.split('\n').map(line => {
@@ -411,10 +411,10 @@ function loadGitignores() {
             if (relativeDirPath) {
                 // Handle negation patterns
                 if (line.startsWith('!')) {
-                    return '!' + path.join(relativeDirPath, line.slice(1));
+                    return '!' + path.posix.join(relativeDirPath, line.slice(1));
                 }
 
-                return path.join(relativeDirPath, line);
+                return path.posix.join(relativeDirPath, line);
             }
 
             return line;
@@ -442,7 +442,7 @@ function getStarterKit() {
  * Get the relative path from the build directory.
  */
 function getRelativePath(filePath) {
-    return path.relative(buildDir, filePath);
+    return normalizePath(path.relative(buildDir, filePath));
 }
 
 /**
@@ -631,6 +631,10 @@ function copyToKit(srcPath, relativePath, folders, kitType, uiComponents, starte
 function deleteFromKit(relativePath, folders, starterKit, manifest) {
     const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
 
+    if (isChiselFile(destRelativePath)) {
+        return;
+    }
+
     // Find the highest-priority folder that has this file
     const targetFolder = findSourceKitFolder(destRelativePath, folders);
 
@@ -656,6 +660,10 @@ function deleteFromKit(relativePath, folders, starterKit, manifest) {
  */
 function deleteDirFromKit(relativePath, folders, starterKit, manifest) {
     const destRelativePath = remapComponentsPath(relativePath, starterKit, manifest);
+
+    if (isChiselFile(destRelativePath)) {
+        return;
+    }
 
     for (let i = folders.length - 1; i >= 0; i--) {
         const targetDir = path.join(kitsDir, folders[i], destRelativePath);
@@ -683,6 +691,10 @@ function handleFileChange(eventType, filePath, folders, ig, kitType, uiComponent
 
     // Skip files that match .gitignore patterns
     if (ig.ignores(relativePath)) {
+        return;
+    }
+
+    if ((eventType === 'unlink' || eventType === 'unlinkDir') && isChiselFile(relativePath)) {
         return;
     }
 

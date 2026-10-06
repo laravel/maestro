@@ -28,7 +28,7 @@ From the `orchestrator` directory, build a kit by running the following command:
 php artisan build
 ```
 
-This will prompt you to build the starter kit you want. In alternative you can use the `--kit` parameter and the `--workos`, `--components`, `--teams` or `--blank` flags to build directly:
+This will prompt you to build the starter kit you want. Alternatively, you can use the `--kit` parameter and the `--workos`, `--components`, `--teams` or `--blank` flags to build directly:
 
 ```bash
 php artisan build --kit=vue # Builds the Vue (Fortify) starter kit
@@ -46,7 +46,7 @@ php artisan build --kit=vue --chisel
 
 ### WorkOS
 
-When building a **WorkOS** variant for a starter kit, you can add your **WorkOS** client ID and the API key in the `orchestrator/.env` file, with this, when running the kit, it will copy these values over to the build directory.
+When building a **WorkOS** variant for a starter kit, you can add your **WorkOS** client ID and the API key in the `orchestrator/.env` file; with this configured, when running the kit, it will copy these values over to the build directory.
 
 ### Running the Starter Kit
 
@@ -71,7 +71,10 @@ From the `orchestrator` directory, run:
 composer kits:lint
 ```
 
-This command runs Pint on `kits/` and `browser_tests/` first, then loops over all Inertia variants, builds each variant, runs frontend linting/formatting in `build` (`npm install`, then lint/format), and then runs `npm run watch:kits -- --initial-sync-only` to sync changes back to `kits`.
+This command runs Pint on `kits/` and `browser_tests/` first, then loops over all Inertia variants, builds each variant, runs `npm install`, `npm run build`, and `npm run check:fix` in `build/`, and then runs `npm run watch:kits -- --initial-sync-only` to sync changes back to `kits/`.
+
+> [!WARNING]
+> Stop `composer kit:run` before running `composer kits:lint` or `composer kits:check`. Those commands delete and rebuild `build/`, and the active watcher can sync those deletions back to `kits/`. `composer kits:pint` is safe to run while the watcher is active.
 
 To run only the Pint step without the frontend lint pass:
 
@@ -167,7 +170,6 @@ The `kits/Shared` folder contains files that are 100% identical between Livewire
 - **Shared/Teams/Base:** Common Teams files (models, actions, events, migrations)
 - **Shared/Teams/Fortify:** Teams files specific to Fortify (CreateNewUser action, UserFactory)
 - **Shared/Teams/WorkOS:** Teams files specific to WorkOS (CreatePersonalTeam listener, UserFactory)
-- **Livewire/Teams/Base:** Livewire Teams files shared between Fortify and WorkOS (layouts, components, team pages)
 
 ### Livewire
 

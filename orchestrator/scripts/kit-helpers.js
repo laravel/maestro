@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { spawn } from 'child_process';
+import { spawn, sync as spawnSync } from 'cross-spawn';
 
 /**
  * All recognized framework flags.
@@ -16,6 +16,16 @@ const FRAMEWORK_FLAGS = ['--livewire', '--react', '--svelte', '--vue'];
 const VARIANT_FLAGS = ['--blank', '--fortify', '--workos', '--components', '--teams'];
 
 /**
+ * Output-mode flags that should not be treated as matrix filters.
+ */
+export const OUTPUT_FLAGS = ['--json'];
+
+/**
+ * Environment variables that indicate an agent prefers machine-readable output.
+ */
+const AGENT_OUTPUT_ENV_FLAGS = ['AI_AGENT', 'OPENCODE'];
+
+/**
  * Resolved directory paths shared across scripts.
  */
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +35,8 @@ export const rootDir = path.dirname(orchestratorDir);
 export const buildDir = path.join(rootDir, 'build');
 export const kitsDir = path.join(rootDir, 'kits');
 export const browserTestsDir = path.join(rootDir, 'browser_tests');
+const realOrchestratorDir = fs.realpathSync(orchestratorDir);
+const watchScript = fs.realpathSync(path.join(orchestratorDir, 'scripts', 'watch.js'));
 
 /**
  * ANSI color codes for terminal output.
@@ -47,12 +59,31 @@ export function log(message, color = 'reset') {
 }
 
 /**
+ * Determine whether JSON output should be used for this run.
+ */
+export function isJsonOutputRequested(argv = process.argv.slice(2), env = process.env) {
+    if (argv.includes('--json')) {
+        return true;
+    }
+
+    return AGENT_OUTPUT_ENV_FLAGS.some(key => {
+        const value = env[key];
+
+        if (value === undefined) {
+            return false;
+        }
+
+        return !['', '0', 'false', 'no', 'off'].includes(String(value).toLowerCase());
+    });
+}
+
+/**
  * Parse process.argv (after slice(2)) and return the set of selected frameworks.
  * Returns null when no framework flags are present (means "run all").
  * Exits with a non-zero code if any unrecognized --* flag is found.
  */
 export function parseFrameworkFlags(argv) {
-    const allFlags = [...FRAMEWORK_FLAGS, ...VARIANT_FLAGS];
+    const allFlags = [...FRAMEWORK_FLAGS, ...VARIANT_FLAGS, ...OUTPUT_FLAGS];
     const unknownFlags = argv.filter(arg => arg.startsWith('--') && !allFlags.includes(arg));
 
     if (unknownFlags.length > 0) {
@@ -168,6 +199,78 @@ export function runInherit(command, args, options = {}) {
     });
 }
 
+function readProcessArgs(pid) {
+    try {
+        return fs.readFileSync(`/proc/${pid}/cmdline`, 'utf-8').split('\0').filter(Boolean);
+    } catch {
+        return [];
+    }
+}
+
+function readProcessCwd(pid) {
+    try {
+        return fs.realpathSync(`/proc/${pid}/cwd`);
+    } catch {
+        return null;
+    }
+}
+
+function isRepoWatcherProcess(pid) {
+    const cwd = readProcessCwd(pid);
+
+    if (cwd !== realOrchestratorDir) {
+        return false;
+    }
+
+    const args = readProcessArgs(pid);
+
+    if (args.includes('--initial-sync-only')) {
+        return false;
+    }
+
+    return args.some(arg => path.resolve(cwd, arg) === watchScript);
+}
+
+export function isWatcherRunning() {
+    const result = spawnSync('pgrep', ['-f', 'watch.js'], { encoding: 'utf8' });
+
+    if (result.error || result.status !== 0 || !result.stdout || result.stdout.trim().length === 0) {
+        return false;
+    }
+
+    return result.stdout
+        .trim()
+        .split('\n')
+        .some(pid => isRepoWatcherProcess(pid));
+}
+
+function watcherRunningMessage(scriptLabel) {
+    return `kit:run (watcher) is running. Stop it before running ${scriptLabel}.`;
+}
+
+export function ensureNoActiveWatcher({ scriptLabel, jsonMode, startedAt, selectedFrameworks = null, selectedVariants = null }) {
+    if (!isWatcherRunning()) {
+        return;
+    }
+
+    const error = new Error(watcherRunningMessage(scriptLabel));
+
+    if (jsonMode) {
+        writeJsonSummary(buildJsonSummary({
+            scriptLabel,
+            startedAt,
+            finishedAt: new Date(),
+            selectedFrameworks,
+            selectedVariants,
+            results: [{ key: 'watcher', display: 'Watcher check', status: 'failed', elapsed: 0, error }],
+        }));
+    } else {
+        log(`\n${error.message}`, 'red');
+    }
+
+    process.exit(1);
+}
+
 /**
  * Human-readable elapsed time.
  */
@@ -186,6 +289,133 @@ function formatElapsed(ms) {
     const remainingSeconds = (seconds % 60).toFixed(0);
 
     return `${minutes}m ${remainingSeconds}s`;
+}
+
+function setToArray(value) {
+    return value ? [...value] : [];
+}
+
+function normalizeResult(result) {
+    const normalized = {
+        key: result.key,
+        display: result.display,
+        status: result.status,
+    };
+
+    if (result.framework) {
+        normalized.framework = result.framework;
+    }
+
+    if (result.variant) {
+        normalized.variant = result.variant;
+    }
+
+    if (Number.isFinite(result.elapsedMs ?? result.elapsed)) {
+        normalized.elapsedMs = result.elapsedMs ?? result.elapsed;
+    }
+
+    if (result.reason) {
+        normalized.reason = result.reason;
+    }
+
+    if (result.error) {
+        const message = typeof result.error === 'string' ? result.error : result.error.message;
+
+        normalized.error = {
+            message,
+        };
+
+        if (typeof result.error !== 'string' && result.error.output) {
+            normalized.error.output = result.error.output;
+        }
+    }
+
+    return normalized;
+}
+
+/**
+ * Convert matrix results into a stable machine-readable JSON summary object.
+ */
+export function buildJsonSummary({
+    scriptLabel,
+    startedAt,
+    finishedAt,
+    selectedFrameworks,
+    selectedVariants,
+    results,
+    message = null,
+}) {
+    const started = startedAt instanceof Date ? startedAt : new Date(startedAt);
+    const finished = finishedAt instanceof Date ? finishedAt : new Date(finishedAt);
+    const normalizedResults = results.map(normalizeResult);
+    const failed = normalizedResults.filter(result => result.status === 'failed').length;
+
+    const summary = {
+        script: scriptLabel,
+        status: failed > 0 ? 'failed' : 'passed',
+        startedAt: started.toISOString(),
+        finishedAt: finished.toISOString(),
+        elapsedMs: finished.getTime() - started.getTime(),
+        jsonMode: true,
+        filters: {
+            frameworks: setToArray(selectedFrameworks),
+            variants: setToArray(selectedVariants),
+        },
+        totals: {
+            passed: normalizedResults.filter(result => result.status === 'passed').length,
+            failed,
+            skipped: normalizedResults.filter(result => result.status === 'skipped').length,
+        },
+        results: normalizedResults,
+    };
+
+    if (message) {
+        summary.message = message;
+    }
+
+    return summary;
+}
+
+/**
+ * Format a JSON summary as the exact stdout payload for JSON mode.
+ */
+export function formatJsonSummary(summary) {
+    return `${JSON.stringify(summary, null, 2)}\n`;
+}
+
+/**
+ * Write a single JSON summary object to stdout.
+ */
+export function writeJsonSummary(summary) {
+    process.stdout.write(formatJsonSummary(summary));
+}
+
+/**
+ * Build skipped result entries for every variant excluded by active filters.
+ */
+export function buildSkippedResults(allVariants, activeVariants, reason = 'kit not selected') {
+    return allVariants
+        .filter(variant => !activeVariants.includes(variant))
+        .map(variant => ({
+            key: variant.key,
+            display: variant.display,
+            framework: variant.framework,
+            variant: variant.variant,
+            status: 'skipped',
+            reason,
+        }));
+}
+
+function failedResultError(error) {
+    const result = {
+        message: error.message,
+    };
+
+    if (error.output) {
+        result.output = error.output;
+    }
+
+    return result;
 }
 
 /**
@@ -241,6 +471,13 @@ export function removeBuildDirectory() {
 }
 
 /**
+ * Stop formatters from inheriting the parent repository's build ignore rule.
+ */
+export function ensureBuildRepositoryBoundary() {
+    fs.mkdirSync(path.join(buildDir, '.git'), { recursive: true });
+}
+
+/**
  * Run the matrix loop shared by check-kits, lint-kits, and browser-tests-kits.
  *
  * @param {object}   options
@@ -248,16 +485,40 @@ export function removeBuildDirectory() {
  * @param {Array}    options.allVariants     Full variant list before filtering.
  * @param {Function} options.runVariant      Async (variant, index, total) => void.
  * @param {string}   [options.successVerb]   Verb for the per-variant success line (default 'Passed').
+ * @param {boolean}  [options.guardActiveWatcher] Stop before destructive build operations if the watcher is running.
  */
-export async function runMatrix({ scriptLabel, allVariants, runVariant, successVerb = 'Passed' }) {
+export async function runMatrix({ scriptLabel, allVariants, runVariant, successVerb = 'Passed', guardActiveWatcher = false }) {
     const argv = process.argv.slice(2);
+    const jsonMode = isJsonOutputRequested(argv, process.env);
+    const startedAt = new Date();
     const selectedFrameworks = parseFrameworkFlags(argv);
     const selectedVariants = parseVariantFlags(argv);
     const active = filterVariants(allVariants, selectedFrameworks, selectedVariants);
+    const skipped = buildSkippedResults(allVariants, active);
 
     if (active.length === 0) {
-        log('No variants matched the selected flags.', 'yellow');
+        const message = 'No variants matched the selected flags.';
+
+        if (jsonMode) {
+            writeJsonSummary(buildJsonSummary({
+                scriptLabel,
+                startedAt,
+                finishedAt: new Date(),
+                selectedFrameworks,
+                selectedVariants,
+                results: skipped,
+                message,
+            }));
+
+            process.exit(0);
+        }
+
+        log(message, 'yellow');
         process.exit(0);
+    }
+
+    if (guardActiveWatcher) {
+        ensureNoActiveWatcher({ scriptLabel, jsonMode, startedAt, selectedFrameworks, selectedVariants });
     }
 
     const labels = [];
@@ -270,25 +531,31 @@ export async function runMatrix({ scriptLabel, allVariants, runVariant, successV
         labels.push(`variants: ${[...selectedVariants].join(', ')}`);
     }
 
-    if (labels.length > 0) {
+    if (!jsonMode && labels.length > 0) {
         log(`Filters — ${labels.join(' | ')}`, 'blue');
     }
 
     const total = active.length;
     const results = [];
 
-    const skipped = allVariants.filter(v => !active.includes(v));
-
     for (let index = 0; index < total; index++) {
         const variant = active[index];
         const start = Date.now();
 
         try {
-            await runVariant(variant, index + 1, total);
-            results.push({ key: variant.key, display: variant.display, status: 'passed', elapsed: Date.now() - start });
-            log(`  ${colors.green}✓ ${successVerb}${colors.reset}`);
+            await runVariant(variant, index + 1, total, { jsonMode });
+            results.push({ ...variant, status: 'passed', elapsed: Date.now() - start });
+
+            if (!jsonMode) {
+                log(`  ${colors.green}✓ ${successVerb}${colors.reset}`);
+            }
         } catch (error) {
-            results.push({ key: variant.key, display: variant.display, status: 'failed', elapsed: Date.now() - start });
+            results.push({ ...variant, status: 'failed', elapsed: Date.now() - start, error: failedResultError(error) });
+
+            if (jsonMode) {
+                continue;
+            }
+
             log(`  ✗ Failed: ${error.message}`, 'red');
 
             if (error.output) {
@@ -299,11 +566,20 @@ export async function runMatrix({ scriptLabel, allVariants, runVariant, successV
         }
     }
 
-    for (const s of skipped) {
-        results.push({ key: s.key, display: s.display, status: 'skipped', reason: 'kit not selected' });
-    }
+    results.push(...skipped);
 
-    printSummary(scriptLabel, results);
+    if (jsonMode) {
+        writeJsonSummary(buildJsonSummary({
+            scriptLabel,
+            startedAt,
+            finishedAt: new Date(),
+            selectedFrameworks,
+            selectedVariants,
+            results,
+        }));
+    } else {
+        printSummary(scriptLabel, results);
+    }
 
     removeBuildDirectory();
 

@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class TeamTest extends TestCase
@@ -92,7 +93,13 @@ class TeamTest extends TestCase
             ->actingAs($user)
             ->get(route('teams.edit', $team));
 
-        $response->assertOk();
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('{{teams_edit}}')
+                ->where('members.0.role', TeamRole::Owner->value)
+                ->where('members.0.role_label', TeamRole::Owner->label()),
+            );
     }
 
     public function test_teams_can_be_updated_by_owners()
@@ -251,6 +258,94 @@ class TeamTest extends TestCase
         ]);
 
         $this->assertEquals($personalTeam->id, $user->fresh()->current_team_id);
+    }
+
+    public function test_members_can_leave_non_personal_teams()
+    {
+        $owner = User::factory()->create();
+        $member = User::factory()->create();
+        $team = Team::factory()->create();
+
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+        $team->members()->attach($member, ['role' => TeamRole::Member->value]);
+
+        $response = $this
+            ->actingAs($member)
+            ->delete(route('teams.leave', $team));
+
+        $response->assertRedirect(route('teams.index'));
+        $response->assertInertiaFlash('toast', ['type' => 'success', 'message' => "You left the team \"{$team->name}\""]);
+
+        $this->assertFalse($member->fresh()->belongsToTeam($team));
+    }
+
+    public function test_leaving_current_team_switches_to_alphabetically_first_remaining_team()
+    {
+        $owner = User::factory()->create();
+        $member = User::factory()->create(['name' => 'Mike']);
+
+        $zuluTeam = Team::factory()->create(['name' => 'Zulu Team']);
+        $zuluTeam->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+        $zuluTeam->members()->attach($member, ['role' => TeamRole::Member->value]);
+
+        $alphaTeam = Team::factory()->create(['name' => 'Alpha Team']);
+        $alphaTeam->members()->attach($member, ['role' => TeamRole::Member->value]);
+
+        $betaTeam = Team::factory()->create(['name' => 'Beta Team']);
+        $betaTeam->members()->attach($member, ['role' => TeamRole::Member->value]);
+
+        $member->update(['current_team_id' => $zuluTeam->id]);
+
+        $response = $this
+            ->actingAs($member)
+            ->delete(route('teams.leave', $zuluTeam));
+
+        $response->assertRedirect(route('teams.index'));
+
+        $this->assertFalse($member->fresh()->belongsToTeam($zuluTeam));
+        $this->assertEquals($alphaTeam->id, $member->fresh()->current_team_id);
+    }
+
+    public function test_personal_teams_cannot_be_left()
+    {
+        $user = User::factory()->create();
+        $personalTeam = $user->personalTeam();
+
+        $response = $this
+            ->actingAs($user)
+            ->delete(route('teams.leave', $personalTeam));
+
+        $response->assertForbidden();
+
+        $this->assertTrue($user->fresh()->belongsToTeam($personalTeam));
+    }
+
+    public function test_team_owners_cannot_leave_their_team()
+    {
+        $owner = User::factory()->create();
+        $team = Team::factory()->create();
+
+        $team->members()->attach($owner, ['role' => TeamRole::Owner->value]);
+
+        $response = $this
+            ->actingAs($owner)
+            ->delete(route('teams.leave', $team));
+
+        $response->assertForbidden();
+
+        $this->assertTrue($owner->fresh()->belongsToTeam($team));
+    }
+
+    public function test_users_cannot_leave_teams_they_dont_belong_to()
+    {
+        $user = User::factory()->create();
+        $team = Team::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->delete(route('teams.leave', $team));
+
+        $response->assertForbidden();
     }
 
     public function test_deleting_team_switches_other_affected_users_to_their_personal_team()

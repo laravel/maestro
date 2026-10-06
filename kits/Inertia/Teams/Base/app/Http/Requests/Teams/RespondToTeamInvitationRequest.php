@@ -6,7 +6,7 @@ use App\Rules\ValidTeamInvitation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AcceptTeamInvitationRequest extends FormRequest
+class RespondToTeamInvitationRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -22,6 +22,8 @@ class AcceptTeamInvitationRequest extends FormRequest
 
     /**
      * Get the validation data from the request.
+     *
+     * @return array<string, mixed>
      */
     public function validationData(): array
     {

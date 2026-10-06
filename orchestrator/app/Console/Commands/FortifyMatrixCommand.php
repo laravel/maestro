@@ -3,8 +3,11 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use RuntimeException;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 class FortifyMatrixCommand extends Command
 {
@@ -34,6 +37,8 @@ class FortifyMatrixCommand extends Command
         if (! $this->option('skip-build')) {
             $this->buildKit();
         }
+
+        File::ensureDirectoryExists($this->buildPath.'/.git');
 
         $this->snapshotBaseline();
         $scenarioCount = $this->runScenarios();
@@ -116,6 +121,7 @@ class FortifyMatrixCommand extends Command
         $this->runStep($this->scenarioLabel($scenario), function () use ($scenario) {
             $this->rsync($this->baselinePath, $this->buildPath);
             $this->applyChisel($scenario['features']);
+            $this->assertNoChiselMarkers();
             $this->runProcess(['composer', 'lint:check'], $this->buildPath);
 
             if ($this->shouldCheckFrontend()) {
@@ -201,12 +207,34 @@ class FortifyMatrixCommand extends Command
         $this->runProcess(['php', '-r', $script], $this->buildPath);
     }
 
+    protected function assertNoChiselMarkers(): void
+    {
+        $finder = Finder::create()
+            ->files()
+            ->in($this->buildPath)
+            ->exclude(['vendor', 'node_modules'])
+            ->contains('@chisel');
+
+        $files = collect($finder)
+            ->map(fn (SplFileInfo $file): string => $file->getRelativePathname())
+            ->values();
+
+        if ($files->isEmpty()) {
+            return;
+        }
+
+        $this->newLine();
+        $this->components->error('Leftover @chisel markers found in:');
+        $this->components->bulletList($files->all());
+
+        throw new RuntimeException('Chisel left markers behind in '.$files->count().' file(s).');
+    }
+
     protected function runFrontendChecks(): void
     {
         $this->runProcess(['bun', 'install'], $this->buildPath);
         $this->runProcess(['php', 'artisan', 'wayfinder:generate', '--with-form', '--no-interaction'], $this->buildPath);
-        $this->runProcess(['bun', 'run', 'lint:check'], $this->buildPath);
-        $this->runProcess(['bun', 'run', 'format:check'], $this->buildPath);
+        $this->runProcess(['bun', 'run', 'check'], $this->buildPath);
         $this->runProcess(['bun', 'run', 'types:check'], $this->buildPath);
     }
 

@@ -1,0 +1,73 @@
+name: Sync Laravel Skeleton
+
+on:
+  schedule:
+    - cron: '0 9 * * 3'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: Sync Laravel Skeleton
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Maestro
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+
+      - name: Install Composer Dependencies
+        working-directory: orchestrator
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Install Node Dependencies
+        working-directory: orchestrator
+        run: npm ci
+
+      - name: Sync Skeleton
+        working-directory: orchestrator
+        run: composer skeleton:sync
+
+      - name: Format Blank Layer
+        working-directory: orchestrator
+        run: vendor/bin/pint --parallel ../kits/Shared/Blank
+
+      - name: Build Pull Request Body
+        working-directory: orchestrator
+        run: node scripts/sync-laravel-skeleton.js --write-pr-body
+
+      - name: Check for Blank Layer Changes
+        id: changes
+        run: |
+          if [[ -n "$(git status --porcelain -- kits/Shared/Blank)" ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No kits/Shared/Blank changes detected, skipping PR."
+          fi
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ github.token }}
+          branch: automation/sync-laravel-skeleton
+          base: main
+          title: Sync Laravel skeleton changes
+          commit-message: Sync Laravel skeleton changes
+          body-path: .sync-pr-body.md
+          add-paths: kits/Shared/Blank

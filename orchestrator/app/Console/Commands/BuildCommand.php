@@ -276,7 +276,7 @@ class BuildCommand extends Command
     }
 
     /**
-     * Build an Inertia starter kit (React or Vue).
+     * Build an Inertia starter kit (React, Svelte, or Vue).
      */
     protected function buildInertiaKit(string $kit, bool $workos = false, bool $blank = false, bool $teams = false): int
     {

@@ -2,12 +2,12 @@
 
 namespace App\Concerns;
 
+use App\Data\TeamPermissions;
+use App\Data\UserTeam;
 use App\Enums\TeamPermission;
 use App\Enums\TeamRole;
 use App\Models\Membership;
 use App\Models\Team;
-use App\Support\TeamPermissions;
-use App\Support\UserTeam;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -71,8 +71,8 @@ trait HasTeams
      */
     public function personalTeam(): ?Team
     {
-        return $this->teams()
-            ->where('is_personal', true)
+        return $this->ownedTeams()
+            ->where('teams.is_personal', true)
             ->first();
     }
 
