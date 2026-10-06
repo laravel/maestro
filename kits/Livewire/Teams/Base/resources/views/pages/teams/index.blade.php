@@ -1,11 +1,13 @@
 <?php
 
 use App\Actions\Teams\CreateTeam;
+use App\Models\Team;
 use App\Rules\TeamName;
 use App\Support\UserTeam;
 use Flux\Flux;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -15,6 +17,8 @@ new #[Title('Teams')] class extends Component {
 
     public function createTeam(CreateTeam $createTeam): void
     {
+        Gate::authorize('create', Team::class);
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255', new TeamName],
         ]);
