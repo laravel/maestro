@@ -66,6 +66,7 @@ class UserFactory extends Factory
         ]);
     }
 
+    /* @chisel-2fa */
     /**
      * Indicate that the model has two-factor authentication configured.
      */
@@ -77,4 +78,5 @@ class UserFactory extends Factory
             'two_factor_confirmed_at' => now(),
         ]);
     }
+    /* @end-chisel-2fa */
 }
