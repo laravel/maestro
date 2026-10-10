@@ -32,8 +32,8 @@
         "concurrently": "^10.0.3",
         "svelte-check": "^4.1.4",
         "typescript": "^5.7.2",
-        "vite": "^8.0.0",
-        "vite-plus": "0.3.0"
+        "vite": "npm:@voidzero-dev/vite-plus-core@0.3.3",
+        "vite-plus": "0.3.3"
     },
     "optionalDependencies": {
         "@laravel/multiplex": "^0.4.1",
@@ -43,5 +43,8 @@
         "@tailwindcss/oxide-win32-x64-msvc": "^4.0.1",
         "lightningcss-linux-x64-gnu": "^1.29.1",
         "lightningcss-win32-x64-msvc": "^1.29.1"
+    },
+    "overrides": {
+        "vite": "npm:@voidzero-dev/vite-plus-core@0.3.3"
     }
 }
