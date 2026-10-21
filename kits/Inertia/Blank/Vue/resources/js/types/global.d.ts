@@ -2,7 +2,7 @@ import type { Directive } from 'vue';
 import type { Auth } from '@/types/auth';
 
 // Extend ImportMeta interface for Vite...
-declare module 'vite/client' {
+declare module 'vite-plus/client' {
     interface ImportMetaEnv {
         readonly VITE_APP_NAME: string;
         [key: string]: string | boolean | undefined;
