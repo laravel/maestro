@@ -7,7 +7,7 @@
     },
     "devDependencies": {
         "chokidar": "^4.0.0",
-        "concurrently": "^9.2.4",
+        "concurrently": "^10.0.6",
         "cross-spawn": "^7.0.6",
         "ignore": "^7.0.0"
     }
