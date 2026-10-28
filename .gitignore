@@ -1,4 +1,5 @@
 .idea/
+.amp/portals/*
 build/
 browser_tests/tests/Browser/Screenshots/
 
