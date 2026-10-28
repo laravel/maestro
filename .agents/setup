@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# Prepares an Amp orb to build and check the Laravel starter kits.
+# Runs on fresh orbs and again on stale snapshots, so every step must be idempotent.
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+php_version="8.4"
+
+step() {
+  local label="$1"
+  shift
+  local start=$SECONDS
+  echo "==> ${label}"
+  "$@"
+  echo "<== ${label} ($((SECONDS - start))s)"
+}
+
+install_php() {
+  # Same PHP version and extensions as .github/workflows/tests.yml.
+  local packages=(
+    "php${php_version}-cli"
+    "php${php_version}-curl"
+    "php${php_version}-mbstring"
+    "php${php_version}-xml"
+    "php${php_version}-zip"
+    "php${php_version}-sqlite3"
+    "php${php_version}-intl"
+    "php${php_version}-bcmath"
+  )
+  local missing=()
+  for package in "${packages[@]}"; do
+    dpkg -s "$package" >/dev/null 2>&1 || missing+=("$package")
+  done
+  if [ "${#missing[@]}" -eq 0 ]; then
+    echo "PHP ${php_version} packages already installed"
+    return
+  fi
+
+  # Debian 12 ships PHP 8.2; the orchestrator needs >= 8.3, so use the Sury repository.
+  if [ ! -f /etc/apt/sources.list.d/php.list ]; then
+    sudo curl -fsSL -o /usr/share/keyrings/php-sury.gpg https://packages.sury.org/php/apt.gpg
+    echo "deb [signed-by=/usr/share/keyrings/php-sury.gpg] https://packages.sury.org/php/ bookworm main" |
+      sudo tee /etc/apt/sources.list.d/php.list >/dev/null
+  fi
+  sudo apt-get update -qq
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends "${missing[@]}"
+  sudo update-alternatives --set php "/usr/bin/php${php_version}"
+}
+
+install_composer() {
+  if command -v composer >/dev/null 2>&1; then
+    echo "Composer already installed"
+    return
+  fi
+  local installer
+  installer="$(mktemp)"
+  curl -fsSL -o "$installer" https://getcomposer.org/installer
+  sudo php "$installer" --quiet --install-dir=/usr/local/bin --filename=composer
+  rm -f -- "$installer"
+}
+
+install_orchestrator() {
+  cd "$repo_root/orchestrator"
+  composer install --no-interaction --prefer-dist --no-progress
+  npm ci --no-audit --no-fund --loglevel=error
+  [ -f .env ] || cp -- .env.example .env
+  grep -q '^APP_KEY=.\+' .env || php artisan key:generate --no-interaction
+}
+
+prewarm_kit_caches() {
+  # Kits have no lockfiles, so fill the Composer and npm caches once by installing one
+  # variant per stack. Later `composer setup` runs in build/ then mostly hit the cache.
+  local marker="$HOME/.cache/maestro-orb/kit-caches-warmed"
+  if [ -f "$marker" ]; then
+    echo "Kit dependency caches already warm"
+    return
+  fi
+  if [ -e "$repo_root/build" ]; then
+    echo "Skipping: build/ exists and php artisan build would replace it"
+    return
+  fi
+  local kit
+  for kit in React Vue Svelte Livewire; do
+    echo "--- ${kit}"
+    if ! (
+      cd "$repo_root/orchestrator" &&
+        php artisan build --kit="$kit" --no-interaction >/dev/null &&
+        cd "$repo_root/build" &&
+        composer install --no-interaction --no-scripts --no-progress --quiet &&
+        npm install --no-audit --no-fund --loglevel=error
+    ); then
+      echo "warning: could not prewarm ${kit} caches" >&2
+      rm -rf -- "$repo_root/build"
+      return
+    fi
+    rm -rf -- "$repo_root/build"
+  done
+  mkdir -p -- "$(dirname "$marker")"
+  touch -- "$marker"
+}
+
+step "Install PHP ${php_version}" install_php
+step "Install Composer" install_composer
+step "Install orchestrator dependencies" install_orchestrator
+step "Prewarm kit dependency caches" prewarm_kit_caches
