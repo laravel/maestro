@@ -1,5 +1,6 @@
 {
     "$schema": "https://shadcn-svelte.com/schema.json",
+    "style": "vega",
     "tailwind": {
         "config": "",
         "css": "resources/css/app.css",
