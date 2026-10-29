@@ -67,39 +67,8 @@ install_orchestrator() {
   grep -q '^APP_KEY=.\+' .env || php artisan key:generate --no-interaction
 }
 
-prewarm_kit_caches() {
-  # Kits have no lockfiles, so fill the Composer and npm caches once by installing one
-  # variant per stack. Later `composer setup` runs in build/ then mostly hit the cache.
-  local marker="$HOME/.cache/maestro-orb/kit-caches-warmed"
-  if [ -f "$marker" ]; then
-    echo "Kit dependency caches already warm"
-    return
-  fi
-  if [ -e "$repo_root/build" ]; then
-    echo "Skipping: build/ exists and php artisan build would replace it"
-    return
-  fi
-  local kit
-  for kit in React Vue Svelte Livewire; do
-    echo "--- ${kit}"
-    if ! (
-      cd "$repo_root/orchestrator" &&
-        php artisan build --kit="$kit" --no-interaction >/dev/null &&
-        cd "$repo_root/build" &&
-        composer install --no-interaction --no-scripts --no-progress --quiet &&
-        npm install --no-audit --no-fund --loglevel=error
-    ); then
-      echo "warning: could not prewarm ${kit} caches" >&2
-      rm -rf -- "$repo_root/build"
-      return
-    fi
-    rm -rf -- "$repo_root/build"
-  done
-  mkdir -p -- "$(dirname "$marker")"
-  touch -- "$marker"
-}
-
 step "Install PHP ${php_version}" install_php
 step "Install Composer" install_composer
 step "Install orchestrator dependencies" install_orchestrator
-step "Prewarm kit dependency caches" prewarm_kit_caches
+# Install kit dependencies on demand in build/; resolving all four stacks without
+# lockfiles makes startup depend on optional downloads and discards the installs.
