@@ -96,6 +96,9 @@ class SecurityTest extends TestCase
         ])->save();
 
         $this->actingAs($user);
+        /* @chisel-password-confirmation */
+        $this->withSession(['auth.password_confirmed_at' => time()]);
+        /* @end-chisel-password-confirmation */
 
         $component = Livewire::test('pages::settings.security');
 
@@ -109,6 +112,54 @@ class SecurityTest extends TestCase
     }
     /* @end-chisel-2fa */
 
+    /* @chisel-2fa */
+    public function test_two_factor_setup_does_not_reveal_the_secret_when_already_enabled(): void
+    {
+        $user = User::factory()->create();
+
+        $user->forceFill([
+            'two_factor_secret' => encrypt('test-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['code1', 'code2'])),
+            'two_factor_confirmed_at' => now(),
+        ])->save();
+
+        $this->actingAs($user);
+        /* @chisel-password-confirmation */
+        $this->withSession(['auth.password_confirmed_at' => time()]);
+        /* @end-chisel-password-confirmation */
+
+        Livewire::test('pages::settings.two-factor-setup-modal', ['requiresConfirmation' => true])
+            ->call('startTwoFactorSetup')
+            ->assertSet('manualSetupKey', '')
+            ->assertSet('qrCodeSvg', '');
+
+        $this->assertSame('test-secret', decrypt($user->refresh()->two_factor_secret));
+    }
+
+    /* @chisel-password-confirmation */
+    public function test_two_factor_cannot_be_disabled_after_password_confirmation_expires(): void
+    {
+        $user = User::factory()->create();
+
+        $user->forceFill([
+            'two_factor_secret' => encrypt('test-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['code1', 'code2'])),
+            'two_factor_confirmed_at' => now(),
+        ])->save();
+
+        $this->actingAs($user)->withSession(['auth.password_confirmed_at' => time()]);
+
+        $component = Livewire::test('pages::settings.security');
+
+        session()->put('auth.password_confirmed_at', time() - config('auth.password_timeout') - 1);
+
+        $component->call('disable');
+
+        $this->assertTrue($user->refresh()->hasEnabledTwoFactorAuthentication());
+    }
+    /* @end-chisel-password-confirmation */
+    /* @end-chisel-2fa */
+
     public function test_password_can_be_updated(): void
     {
         $user = User::factory()->create([
@@ -116,6 +167,9 @@ class SecurityTest extends TestCase
         ]);
 
         $this->actingAs($user);
+        /* @chisel-password-confirmation */
+        $this->withSession(['auth.password_confirmed_at' => time()]);
+        /* @end-chisel-password-confirmation */
 
         $response = Livewire::test('pages::settings.security')
             ->set('current_password', 'password')
@@ -135,6 +189,9 @@ class SecurityTest extends TestCase
         ]);
 
         $this->actingAs($user);
+        /* @chisel-password-confirmation */
+        $this->withSession(['auth.password_confirmed_at' => time()]);
+        /* @end-chisel-password-confirmation */
 
         $response = Livewire::test('pages::settings.security')
             ->set('current_password', 'wrong-password')

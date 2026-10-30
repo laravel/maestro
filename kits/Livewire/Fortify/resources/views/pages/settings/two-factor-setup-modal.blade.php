@@ -1,5 +1,8 @@
 <?php
 
+/* @chisel-password-confirmation */
+use App\Livewire\Actions\EnsurePasswordIsConfirmed;
+/* @end-chisel-password-confirmation */
 use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
 use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use Livewire\Attributes\Computed;
@@ -36,6 +39,14 @@ new class extends Component {
     #[On('start-two-factor-setup')]
     public function startTwoFactorSetup(): void
     {
+        /* @chisel-password-confirmation */
+        app(EnsurePasswordIsConfirmed::class)();
+        /* @end-chisel-password-confirmation */
+
+        if (auth()->user()->hasEnabledTwoFactorAuthentication()) {
+            return;
+        }
+
         $enableTwoFactorAuthentication = app(EnableTwoFactorAuthentication::class);
         $enableTwoFactorAuthentication(auth()->user());
 
@@ -85,6 +96,10 @@ new class extends Component {
      */
     public function confirmTwoFactor(ConfirmTwoFactorAuthentication $confirmTwoFactorAuthentication): void
     {
+        /* @chisel-password-confirmation */
+        app(EnsurePasswordIsConfirmed::class)();
+        /* @end-chisel-password-confirmation */
+
         $this->validate();
 
         $confirmTwoFactorAuthentication(auth()->user(), $this->code);

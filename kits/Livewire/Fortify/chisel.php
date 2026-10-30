@@ -241,11 +241,13 @@ return Chisel::script(__DIR__)
     ->selected(
         'auth_features',
         'password-confirmation',
-        then: function (Chisel $c) {
+        then: function (Chisel $c) use ($paths) {
             $c->files(
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
+                ...$paths['security_files'],
+                ...$paths['two_factor_files'],
             )->removeSectionMarkers('password-confirmation');
         },
         else: function (Chisel $c) use ($paths) {
@@ -256,10 +258,13 @@ return Chisel::script(__DIR__)
                 'app/Providers/FortifyServiceProvider.php',
                 'routes/settings.php',
                 'tests/Feature/Settings/SecurityTest.php',
+                ...$paths['security_files'],
+                ...$paths['two_factor_files'],
             )->removeSection('password-confirmation');
 
             $c->files(
                 $paths['confirm_password'],
+                'app/Livewire/Actions/EnsurePasswordIsConfirmed.php',
                 'tests/Feature/Auth/PasswordConfirmationTest.php',
             )->delete();
         },
