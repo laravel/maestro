@@ -3,6 +3,7 @@
 namespace App\Livewire\Actions;
 
 use Illuminate\Support\Facades\Date;
+use Livewire\Livewire;
 
 class EnsurePasswordIsConfirmed
 {
@@ -14,7 +15,9 @@ class EnsurePasswordIsConfirmed
         $secondsSinceConfirmation = Date::now()->unix() - (int) session('auth.password_confirmed_at', 0);
 
         if ($secondsSinceConfirmation > (int) config('auth.password_timeout', 10800)) {
-            abort(redirect()->guest(route('password.confirm')));
+            session()->put('url.intended', Livewire::originalUrl());
+
+            abort(redirect()->route('password.confirm'));
         }
     }
 }
