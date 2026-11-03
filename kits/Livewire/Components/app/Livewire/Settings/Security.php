@@ -222,6 +222,8 @@ class Security extends Component
         /* @end-chisel-password-confirmation */
 
         if (auth()->user()->hasEnabledTwoFactorAuthentication()) {
+            $this->twoFactorEnabled = true;
+
             return;
         }
 

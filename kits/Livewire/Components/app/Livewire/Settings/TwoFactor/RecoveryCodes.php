@@ -17,10 +17,14 @@ class RecoveryCodes extends Component
     public array $recoveryCodes = [];
 
     /**
-     * Mount the component.
+     * Load the recovery codes so the user can view them.
      */
-    public function mount(): void
+    public function viewRecoveryCodes(): void
     {
+        /* @chisel-password-confirmation */
+        app(EnsurePasswordIsConfirmed::class)();
+        /* @end-chisel-password-confirmation */
+
         $this->loadRecoveryCodes();
     }
 

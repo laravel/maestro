@@ -44,6 +44,8 @@ new class extends Component {
         /* @end-chisel-password-confirmation */
 
         if (auth()->user()->hasEnabledTwoFactorAuthentication()) {
+            $this->dispatch('two-factor-enabled');
+
             return;
         }
 

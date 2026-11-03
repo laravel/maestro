@@ -130,6 +130,7 @@ class SecurityTest extends TestCase
 
         Livewire::test('pages::settings.two-factor-setup-modal', ['requiresConfirmation' => true])
             ->call('startTwoFactorSetup')
+            ->assertDispatched('two-factor-enabled')
             ->assertSet('manualSetupKey', '')
             ->assertSet('qrCodeSvg', '');
 
@@ -157,7 +158,51 @@ class SecurityTest extends TestCase
 
         $this->assertTrue($user->refresh()->hasEnabledTwoFactorAuthentication());
     }
+
+    public function test_recovery_codes_cannot_be_viewed_or_regenerated_after_password_confirmation_expires(): void
+    {
+        $user = User::factory()->create();
+
+        $user->forceFill([
+            'two_factor_secret' => encrypt('test-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['code1', 'code2'])),
+            'two_factor_confirmed_at' => now(),
+        ])->save();
+
+        $this->actingAs($user)->withSession(['auth.password_confirmed_at' => time()]);
+
+        $viewer = Livewire::test('pages::settings.two-factor.recovery-codes');
+        $regenerator = Livewire::test('pages::settings.two-factor.recovery-codes');
+
+        session()->put('auth.password_confirmed_at', time() - config('auth.password_timeout') - 1);
+
+        $viewer->call('viewRecoveryCodes')->assertStatus(302);
+        $regenerator->call('regenerateRecoveryCodes')->assertStatus(302);
+
+        $this->assertSame(['code1', 'code2'], json_decode(decrypt($user->refresh()->two_factor_recovery_codes), true));
+    }
     /* @end-chisel-password-confirmation */
+
+    public function test_recovery_codes_are_only_loaded_when_requested(): void
+    {
+        $user = User::factory()->create();
+
+        $user->forceFill([
+            'two_factor_secret' => encrypt('test-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['code1', 'code2'])),
+            'two_factor_confirmed_at' => now(),
+        ])->save();
+
+        $this->actingAs($user);
+        /* @chisel-password-confirmation */
+        $this->withSession(['auth.password_confirmed_at' => time()]);
+        /* @end-chisel-password-confirmation */
+
+        Livewire::test('pages::settings.two-factor.recovery-codes')
+            ->assertSet('recoveryCodes', [])
+            ->call('viewRecoveryCodes')
+            ->assertSet('recoveryCodes', ['code1', 'code2']);
+    }
     /* @end-chisel-2fa */
 
     public function test_password_can_be_updated(): void
