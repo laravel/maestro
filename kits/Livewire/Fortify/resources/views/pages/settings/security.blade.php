@@ -1,9 +1,6 @@
 <?php
 
 use App\Concerns\PasswordValidationRules;
-/* @chisel-password-confirmation */
-use App\Livewire\Actions\EnsurePasswordIsConfirmed;
-/* @end-chisel-password-confirmation */
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -109,10 +106,6 @@ new #[Title('Security settings')] class extends Component {
      */
     public function loadPasskeys(): void
     {
-        /* @chisel-password-confirmation */
-        app(EnsurePasswordIsConfirmed::class)();
-        /* @end-chisel-password-confirmation */
-
         $this->passkeys = auth()->user()->passkeys()
             ->select(['id', 'name', 'credential', 'created_at', 'last_used_at'])
             ->latest()
@@ -132,10 +125,6 @@ new #[Title('Security settings')] class extends Component {
      */
     public function confirmDelete(int $passkeyId): void
     {
-        /* @chisel-password-confirmation */
-        app(EnsurePasswordIsConfirmed::class)();
-        /* @end-chisel-password-confirmation */
-
         $passkey = auth()->user()->passkeys()->findOrFail($passkeyId);
 
         $this->deletingPasskeyId = $passkey->id;
@@ -148,10 +137,6 @@ new #[Title('Security settings')] class extends Component {
      */
     public function deletePasskey(DeletePasskey $deletePasskey): void
     {
-        /* @chisel-password-confirmation */
-        app(EnsurePasswordIsConfirmed::class)();
-        /* @end-chisel-password-confirmation */
-
         if (! $this->deletingPasskeyId) {
             return;
         }
@@ -190,10 +175,6 @@ new #[Title('Security settings')] class extends Component {
      */
     public function disable(DisableTwoFactorAuthentication $disableTwoFactorAuthentication): void
     {
-        /* @chisel-password-confirmation */
-        app(EnsurePasswordIsConfirmed::class)();
-        /* @end-chisel-password-confirmation */
-
         $disableTwoFactorAuthentication(auth()->user());
 
         $this->twoFactorEnabled = false;

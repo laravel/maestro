@@ -2,9 +2,6 @@
 
 namespace App\Livewire\Settings\TwoFactor;
 
-/* @chisel-password-confirmation */
-use App\Livewire\Actions\EnsurePasswordIsConfirmed;
-/* @end-chisel-password-confirmation */
 use Exception;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
 use Livewire\Attributes\Locked;
@@ -21,10 +18,6 @@ class RecoveryCodes extends Component
      */
     public function viewRecoveryCodes(): void
     {
-        /* @chisel-password-confirmation */
-        app(EnsurePasswordIsConfirmed::class)();
-        /* @end-chisel-password-confirmation */
-
         $this->loadRecoveryCodes();
     }
 
@@ -33,10 +26,6 @@ class RecoveryCodes extends Component
      */
     public function regenerateRecoveryCodes(GenerateNewRecoveryCodes $generateNewRecoveryCodes): void
     {
-        /* @chisel-password-confirmation */
-        app(EnsurePasswordIsConfirmed::class)();
-        /* @end-chisel-password-confirmation */
-
         $generateNewRecoveryCodes(auth()->user());
 
         $this->loadRecoveryCodes();

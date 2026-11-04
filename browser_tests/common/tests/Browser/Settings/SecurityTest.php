@@ -11,8 +11,6 @@ use function Pest\Laravel\withoutMiddleware;
 
 beforeEach(function () {
     withoutMiddleware(RequirePassword::class);
-
-    config(['auth.password_timeout' => PHP_INT_MAX]);
 });
 
 test('password update section is displayed on security page', function () {

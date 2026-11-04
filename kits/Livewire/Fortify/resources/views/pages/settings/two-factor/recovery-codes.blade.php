@@ -1,8 +1,5 @@
 <?php
 
-/* @chisel-password-confirmation */
-use App\Livewire\Actions\EnsurePasswordIsConfirmed;
-/* @end-chisel-password-confirmation */
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -16,10 +13,6 @@ new class extends Component {
      */
     public function viewRecoveryCodes(): void
     {
-        /* @chisel-password-confirmation */
-        app(EnsurePasswordIsConfirmed::class)();
-        /* @end-chisel-password-confirmation */
-
         $this->loadRecoveryCodes();
     }
 
@@ -28,10 +21,6 @@ new class extends Component {
      */
     public function regenerateRecoveryCodes(GenerateNewRecoveryCodes $generateNewRecoveryCodes): void
     {
-        /* @chisel-password-confirmation */
-        app(EnsurePasswordIsConfirmed::class)();
-        /* @end-chisel-password-confirmation */
-
         $generateNewRecoveryCodes(auth()->user());
 
         $this->loadRecoveryCodes();
