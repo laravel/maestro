@@ -1,9 +1,14 @@
 import { createInertiaApp } from '@inertiajs/vue3';
+import { defineAsyncComponent } from 'vue';
 import { initializeTheme } from '@/composables/useAppearance';
-import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
+
+const loadAppLayout = () => import('@/layouts/AppLayout.vue');
+const loadSettingsLayout = () => import('@/layouts/settings/Layout.vue');
+
+const AppLayout = defineAsyncComponent(loadAppLayout);
+const SettingsLayout = defineAsyncComponent(loadSettingsLayout);
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -40,3 +45,17 @@ initializeTheme();
 
 // This will listen for flash toast data from the server...
 initializeFlashToast();
+
+// This will preload the layouts once the browser is idle...
+if (typeof window !== 'undefined') {
+    const preloadLayouts = () => {
+        void loadAppLayout();
+        void loadSettingsLayout();
+    };
+
+    if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(preloadLayouts);
+    } else {
+        setTimeout(preloadLayouts, 1);
+    }
+}
