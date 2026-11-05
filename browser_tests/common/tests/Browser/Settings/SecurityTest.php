@@ -141,6 +141,7 @@ test('two-factor authentication recovery codes can be viewed', function () {
         ->assertSee('View recovery codes')
         ->click('View recovery codes')
         ->assertSee('Hide recovery codes')
+        ->assertSee('code-1')
         ->assertSee('Regenerate codes')
         ->assertSee('Each recovery code can be used once')
         ->assertNoConsoleLogs()
