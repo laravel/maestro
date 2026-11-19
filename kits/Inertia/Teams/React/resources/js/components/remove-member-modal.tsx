@@ -52,8 +52,8 @@ export default function RemoveMemberModal({
                 </DialogHeader>
 
                 <DialogFooter className="gap-2">
-                    <DialogClose asChild>
-                        <Button variant="secondary">Cancel</Button>
+                    <DialogClose render={<Button variant="secondary" />}>
+                        Cancel
                     </DialogClose>
 
                     <Button

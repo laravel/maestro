@@ -199,15 +199,17 @@ export default function TeamEdit({
                                     {member.role !== 'owner' &&
                                     permissions.canUpdateMember ? (
                                         <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    data-test="member-role-trigger"
-                                                >
-                                                    {member.role_label}
-                                                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                                                </Button>
+                                            <DropdownMenuTrigger
+                                                render={
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        data-test="member-role-trigger"
+                                                    />
+                                                }
+                                            >
+                                                {member.role_label}
+                                                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent>
                                                 {availableRoles.map((role) => (
@@ -236,19 +238,21 @@ export default function TeamEdit({
                                     permissions.canRemoveMember ? (
                                         <TooltipProvider>
                                             <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        data-test="member-remove-button"
-                                                        onClick={() =>
-                                                            confirmRemoveMember(
-                                                                member,
-                                                            )
-                                                        }
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </Button>
+                                                <TooltipTrigger
+                                                    render={
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            data-test="member-remove-button"
+                                                            onClick={() =>
+                                                                confirmRemoveMember(
+                                                                    member,
+                                                                )
+                                                            }
+                                                        />
+                                                    }
+                                                >
+                                                    <X className="h-4 w-4" />
                                                 </TooltipTrigger>
                                                 <TooltipContent>
                                                     <p>Remove member</p>
@@ -294,19 +298,21 @@ export default function TeamEdit({
                                     {permissions.canCancelInvitation ? (
                                         <TooltipProvider>
                                             <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        data-test="invitation-cancel-button"
-                                                        onClick={() =>
-                                                            confirmCancelInvitation(
-                                                                invitation,
-                                                            )
-                                                        }
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </Button>
+                                                <TooltipTrigger
+                                                    render={
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            data-test="invitation-cancel-button"
+                                                            onClick={() =>
+                                                                confirmCancelInvitation(
+                                                                    invitation,
+                                                                )
+                                                            }
+                                                        />
+                                                    }
+                                                >
+                                                    <X className="h-4 w-4" />
                                                 </TooltipTrigger>
                                                 <TooltipContent>
                                                     <p>Cancel invitation</p>
