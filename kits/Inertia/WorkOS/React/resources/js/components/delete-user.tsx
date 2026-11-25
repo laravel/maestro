@@ -29,8 +29,8 @@ export default function DeleteUser() {
                 </div>
 
                 <Dialog>
-                    <DialogTrigger asChild>
-                        <Button variant="destructive">Delete account</Button>
+                    <DialogTrigger render={<Button variant="destructive" />}>
+                        Delete account
                     </DialogTrigger>
                     <DialogContent>
                         <DialogTitle>
@@ -53,25 +53,25 @@ export default function DeleteUser() {
                             {({ resetAndClearErrors, processing }) => (
                                 <>
                                     <DialogFooter className="gap-2">
-                                        <DialogClose asChild>
-                                            <Button
-                                                variant="secondary"
-                                                onClick={() =>
-                                                    resetAndClearErrors()
-                                                }
-                                            >
-                                                Cancel
-                                            </Button>
+                                        <DialogClose
+                                            render={
+                                                <Button
+                                                    variant="secondary"
+                                                    onClick={() =>
+                                                        resetAndClearErrors()
+                                                    }
+                                                />
+                                            }
+                                        >
+                                            Cancel
                                         </DialogClose>
 
                                         <Button
                                             variant="destructive"
                                             disabled={processing}
-                                            asChild
+                                            render={<button type="submit" />}
                                         >
-                                            <button type="submit">
-                                                Delete account
-                                            </button>
+                                            Delete account
                                         </Button>
                                     </DialogFooter>
                                 </>

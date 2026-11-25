@@ -52,8 +52,8 @@ export default function CancelInvitationModal({
                 </DialogHeader>
 
                 <DialogFooter className="gap-2">
-                    <DialogClose asChild>
-                        <Button variant="secondary">Keep invitation</Button>
+                    <DialogClose render={<Button variant="secondary" />}>
+                        Keep invitation
                     </DialogClose>
 
                     <Button
