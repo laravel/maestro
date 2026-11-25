@@ -46,8 +46,7 @@ const leaveTeam = () => {
                 <DialogTitle>Leave team</DialogTitle>
                 <DialogDescription>
                     Are you sure you want to leave
-                    <strong>{{ props.team?.name }}</strong
-                    >?
+                    <strong>{{ props.team?.name }}</strong>?
                 </DialogDescription>
             </DialogHeader>
 

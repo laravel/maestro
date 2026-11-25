@@ -32,8 +32,8 @@
         "@vitejs/plugin-vue": "^6.0.0",
         "concurrently": "^10.0.3",
         "typescript": "^5.2.2",
-        "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-        "vite-plus": "1.4.0",
+        "vite": "npm:@voidzero-dev/vite-plus-core@8.3.8001",
+        "vite-plus": "1.8.0",
         "vue-tsc": "^3.3.13"
     },
     "optionalDependencies": {
@@ -46,6 +46,6 @@
         "lightningcss-win32-x64-msvc": "^1.29.1"
     },
     "overrides": {
-        "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0"
+        "vite": "npm:@voidzero-dev/vite-plus-core@8.3.8001"
     }
 }
